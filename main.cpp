@@ -75,6 +75,13 @@ struct VertexData {
 	Vector2 texcoord;
 };
 
+struct Sphere
+{
+	Vector3 center;//中心点
+	float radius;//半径
+
+};
+
 void Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
 }
@@ -599,6 +606,67 @@ void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mip
 
 }
 
+
+void DrawSphere(VertexData* vertexData) {
+	const uint32_t kSubdivision = 16;//分割数
+	const float pi = 3.14f;//π
+	const float kLonEvery = 2.0f * pi / kSubdivision;//経度分割1つ分の角度(φd)
+	const float kLatEvery = pi / kSubdivision;//緯度分割1つ分の角度(θd)
+
+	//緯度の方向に分割-π/2~π/2
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -pi / 2.0f + kLatEvery * latIndex;//現在の緯度(θ)
+		//経度の方向に分割
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			uint32_t start = (lonIndex * kSubdivision + lonIndex) * 6;
+			float lon = lonIndex * kLonEvery;//現在の経度(φ)
+			float u = float(lonIndex) / float(kSubdivision);
+			float v = 1.0f - float(latIndex) / float(kSubdivision);
+			//a 左下
+			vertexData[start].position.x = cos(lat) * cos(lon);
+			vertexData[start].position.y = sin(lat);
+			vertexData[start].position.z = cos(lat) * sin(lon);
+			vertexData[start].position.w = 1.0f;
+			vertexData[start].texcoord = { u,v};
+			//b 左上
+			vertexData[start+1].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData[start+1].position.y = sin(lat + kLatEvery);
+			vertexData[start+1].position.z = cos(lat + kLatEvery) * sin(lon);
+			vertexData[start+1].position.w = 1.0f;
+			vertexData[start+1].texcoord = { u,v };
+			//c 右下
+			vertexData[start+2].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData[start+2].position.y = sin(lat);
+			vertexData[start+2].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData[start+2].position.w = 1.0f;
+			vertexData[start+2].texcoord = { u,v };
+
+
+			//b 左上
+			vertexData[start+3].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData[start+3].position.y = sin(lat + kLatEvery);
+			vertexData[start+3].position.z = cos(lat + kLatEvery) * sin(lon);
+			vertexData[start+3].position.w = 1.0f;
+			vertexData[start+3].texcoord = { u,v };
+			//d 右上
+			vertexData[start+4].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
+			vertexData[start+4].position.y = sin(lat + kLatEvery);
+			vertexData[start+4].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
+			vertexData[start+4].position.w = 1.0f;
+			vertexData[start+4].texcoord = { u,v };
+			//c 右下
+			vertexData[start+5].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData[start+5].position.y = sin(lat);
+			vertexData[start+5].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData[start+5].position.w = 1.0f;
+			vertexData[start+5].texcoord = { u,v };
+
+		}
+	}
+
+}
+
+
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -951,13 +1019,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	assert(SUCCEEDED(hr));
 	
 
-	ID3D12Resource* vertexResource = CreateBufferResoure(device, sizeof(VertexData) * 6);
+	ID3D12Resource* vertexResource = CreateBufferResoure(device, sizeof(VertexData) * 1536);
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * 1536;
 	// 1頂点あたりのサイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData);
 
@@ -966,7 +1034,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 書き込むためのアドレスを取得
 	vertexResource->Map(0, nullptr,
 		reinterpret_cast<void**>(&vertexData));
-	// 左下
+
+	DrawSphere(vertexData);
+	/*/ 左下
 	vertexData[0].position = { -0.5f, -0.5f, 0.0f, 1.0f };
 	vertexData[0].texcoord = { 0.0f,1.0f };
 	// 上
@@ -985,7 +1055,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 右下2
 	vertexData[5].position = { 0.5f, -0.5f, -0.5f, 1.0f };
 	vertexData[5].texcoord = { 1.0f,1.0f };
-	
+	*/
 
 	//Sprite用の頂点リソースを作る
 	ID3D12Resource* vertexResourceSprite = CreateBufferResoure(device, sizeof(VertexData) * 6);
@@ -1201,8 +1271,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			commandList->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
 
 			// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-			commandList->DrawInstanced(6, 1, 0, 0);
-
+			commandList->DrawInstanced(1536, 1, 0, 0);
+			
 			//Spriteの描画。
 			commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);//VBVを設定
 			//TransformationMatrixCBufferの場所を設定
@@ -1210,6 +1280,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//描画
 			commandList->DrawInstanced(6, 1, 0, 0);
 			
+			
+
 			ImGui::Begin("Settings");
 			ImGui::SliderFloat3("color", &materialData->x, 0.0f, 1.0f);
 			//Sprite
