@@ -642,7 +642,8 @@ void DrawSphere(VertexData* vertexData) {
 	const float pi = 3.14f;//π
 	const float kLonEvery = 2.0f * pi / kSubdivision;//経度分割1つ分の角度(φd)
 	const float kLatEvery = pi / kSubdivision;//緯度分割1つ分の角度(θd)
-
+	float u; 
+	float v;
 	//緯度の方向に分割-π/2~π/2
 	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
 		float lat = -pi / 2.0f + kLatEvery * latIndex;//現在の緯度(θ)
@@ -650,8 +651,8 @@ void DrawSphere(VertexData* vertexData) {
 		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
 			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
 			float lon = lonIndex * kLonEvery;//現在の経度(φ)
-			float u = float(lonIndex) / float(kSubdivision);
-			float v = 1.0f - float(latIndex) / float(kSubdivision);
+			u = float(lonIndex) / float(kSubdivision);
+			v = 1.0f - float(latIndex) / float(kSubdivision);
 			//a 左下
 			vertexData[start].position.x = cos(lat) * cos(lon);
 			vertexData[start].position.y = sin(lat);
@@ -714,9 +715,11 @@ void DrawSphere(VertexData* vertexData) {
 			vertexData[start+5].normal.x = vertexData[start+5].position.x;
 			vertexData[start+5].normal.y = vertexData[start+5].position.y;
 			vertexData[start+5].normal.z = vertexData[start+5].position.z;
+			
 		}
+		
 	}
-
+	
 }
 
 
@@ -924,8 +927,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 2つ目を作る
 	device->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
 
-	//rtvHandles[0] = rtvStartHandle;
-	//rtvHandles[1].ptr = rtvHandles[0].ptr + device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 	// 初期値0でFenceを作る
 	ID3D12Fence* fence = nullptr;
@@ -1098,7 +1099,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	DrawSphere(vertexData);
 	
-	//四角形
+
 	//Sprite用の頂点リソースを作る
 	ID3D12Resource* vertexResourceSprite = CreateBufferResoure(device, sizeof(VertexData) * 6);
 	// 頂点バッファビューを作成する
@@ -1133,6 +1134,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	vertexDataSprite[0].normal = { 0.0f,0.0f,-1.0f };
 	
 	
+	//インデックスを使った四角形
+	//インデックス用の頂点リソースを作る
+	ID3D12Resource* indexResourceSprite = CreateBufferResoure(device, sizeof(uint32_t) * 6);
+	// 頂点バッファビューを作成する
+	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
+	//リソースの先頭アドレスから使う
+	indexBufferViewSprite.BufferLocation = indexResourceSprite->GetGPUVirtualAddress();
+	//使用するリソースのサイズはインデックス6つ分のサイズ
+	indexBufferViewSprite.SizeInBytes = sizeof(uint32_t) * 6;
+	//インデックスはuint32_tとする
+	indexBufferViewSprite.Format = DXGI_FORMAT_R32_UINT;
+	//データを書き込む
+	uint32_t* indexDataSprite = nullptr;
+	indexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&indexDataSprite));
+	indexDataSprite[0] = 0; indexDataSprite[1] = 1; indexDataSprite[2] = 2;
+	indexDataSprite[3] = 1; indexDataSprite[4] = 3; indexDataSprite[5] = 2;
+
 	
 	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	ID3D12Resource* wvpResouce = CreateBufferResoure(device, sizeof(TransformationMatrix));
@@ -1369,28 +1387,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//マテリアルCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(0, materialResorce->GetGPUVirtualAddress());
 			commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-			//
+			
 			//SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
 			commandList->SetGraphicsRootDescriptorTable(2,useMonsterBall ? textureSrvHandleGPU2 :  textureSrvHandleGPU);
-
 			//wvp用のCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
-			
-
-			// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
+			//球の描画
 			commandList->DrawInstanced(1536, 1, 0, 0);
 			
 			
 			//CBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
-			//Spriteの描画。
-			commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);//VBVを設定
-			//TransformationMatrixCBufferの場所を設定
-			commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
-			commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
-			//描画
-			commandList->DrawInstanced(6, 1, 0, 0);
 			
+			//TransformationMatrixCBufferの場所を設定
+			commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+			commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
+			//Spriteをインデックス描画。
+			commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);//VBVを設定
+			commandList->IASetIndexBuffer(&indexBufferViewSprite);//IBVを設定
+			//描画
+			//commandList->DrawInstanced(6, 1, 0, 0);
+			commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 			
 
 			ImGui::Begin("Settings");
