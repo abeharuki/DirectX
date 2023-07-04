@@ -14,6 +14,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 #include <vector>
+#include <fstream>
+#include <sstream>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -95,6 +97,11 @@ struct Material {
 	Matrix4x4 uvTransform;
 };
 
+struct ModelData {
+	std::vector<VertexData>vertices;
+};
+
+
 struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
@@ -128,32 +135,6 @@ Matrix4x4 MakeIdentity4x4() {
 	MakeIdentity4x4.m[2][0] = 0.0f;
 	MakeIdentity4x4.m[2][1] = 0.0f;
 	MakeIdentity4x4.m[2][2] = 1.0f;
-	MakeIdentity4x4.m[2][3] = 0.0f;
-
-	MakeIdentity4x4.m[3][0] = 0.0f;
-	MakeIdentity4x4.m[3][1] = 0.0f;
-	MakeIdentity4x4.m[3][2] = 0.0f;
-	MakeIdentity4x4.m[3][3] = 1.0f;
-
-	return MakeIdentity4x4;
-};
-
-
-Matrix4x4 MakeScaleMatrix(const Transform& tf) {
-	Matrix4x4 MakeIdentity4x4;
-	MakeIdentity4x4.m[0][0] = tf.scale.x;
-	MakeIdentity4x4.m[0][1] = tf.scale.y;
-	MakeIdentity4x4.m[0][2] = tf.scale.z;
-	MakeIdentity4x4.m[0][3] = 0.0f;
-
-	MakeIdentity4x4.m[1][0] = tf.scale.x;
-	MakeIdentity4x4.m[1][1] = tf.scale.y;
-	MakeIdentity4x4.m[1][2] = tf.scale.z;
-	MakeIdentity4x4.m[1][3] = 0.0f;
-
-	MakeIdentity4x4.m[2][0] = tf.scale.x;
-	MakeIdentity4x4.m[2][1] = tf.scale.y;
-	MakeIdentity4x4.m[2][2] = tf.scale.z;
 	MakeIdentity4x4.m[2][3] = 0.0f;
 
 	MakeIdentity4x4.m[3][0] = 0.0f;
@@ -763,6 +744,81 @@ void DrawSphere(VertexData* vertexData) {
 	
 }
 
+ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename) {
+	//必要な変数の宣言
+	ModelData modelData;//構築するModelData
+	std::vector<Vector4>positions; //位置
+	std::vector<Vector3>normals;//法線
+	std::vector<Vector2>texcoords;//テクスチャ座標
+	std::string line;//ファイルから選んだ１行を格納する
+
+	//ファイルを開く
+	std::ifstream file(directoryPath + "/" + filename);
+	assert(file.is_open());//とりあえず開けなかったら止める
+
+	//ファイルを読み,ModelDataを構築
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier;//先頭の識別子を読む
+
+		//identfierの応じた処理
+		//頂点情報を読み込む
+		if (identifier == "v") {
+			Vector4  position = { 0.0f,0.0f,0.0f,0.0f };
+			position.z *= -1.0f;//位置の反転
+			s >> position.x >> position.y >> position.z;
+			position.w = 1.0f;
+			positions.push_back(position);
+		}
+		else if (identifier == "vt") {
+			Vector2 texcoord;
+			s >> texcoord.x >> texcoord.y;
+			texcoords.push_back(texcoord);
+		}
+		else if (identifier == "vn") {
+			Vector3 normal = {0.0f,0.0f,0.0f};
+			normal.z *= -1.0f;//法線の反転
+			s >> normal.x >> normal.y >> normal.z;
+			normals.push_back(normal);
+		}
+		else if (identifier =="f") {
+			VertexData triangle[3];
+		 //面は三角形減退。その他は未対応
+			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
+				std::string vertexDefinition;
+				s >> vertexDefinition;
+				//頂点の要素へのIndexは[位置/UV/法線]で格納しているので、分解してIndexを取得する
+				std::istringstream v(vertexDefinition);
+				uint32_t elementIndices[3];
+				for (int32_t element = 0; element < 3; ++element) {
+					std::string index;
+					std::getline(v, index, '/');//区切りでインデックスを読んでく	
+					elementIndices[element] = std::stoi(index);
+				}
+
+
+				//要素へのIndexから、実際の要素の値を取得して、頂点を構築する
+				Vector4 position = positions[elementIndices[0] - 1];
+				Vector2 texcoord = texcoords[elementIndices[1] - 1];
+				Vector3 normal = normals[elementIndices[2] - 1];
+				//VertexData vertex = { position,texcoord,normal };
+				//modelData.vertices.push_back(vertex);
+				triangle[faceVertex] = { position,texcoord,normal };
+			}
+
+			modelData.vertices.push_back(triangle[2]);
+			modelData.vertices.push_back(triangle[1]);
+			modelData.vertices.push_back(triangle[0]);
+
+		}
+
+
+
+
+	}
+	return modelData;
+}
 
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -1122,7 +1178,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	assert(SUCCEEDED(hr));
 	
 
-	//球
+	/*/球
 	ID3D12Resource* vertexResource = CreateBufferResoure(device, sizeof(VertexData) * 1024);
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
@@ -1140,7 +1196,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		reinterpret_cast<void**>(&vertexData));
 
 	DrawSphere(vertexData);
-	
+	*/
+
+	//モデルの読み込み
+	ModelData modelData = LoadObjFile("resources", "plane.obj");
+	//頂点リソースを作る
+	ID3D12Resource* vertexResource = CreateBufferResoure(device, sizeof(VertexData) * modelData.vertices.size());
+	//頂点バッファビューを作成する
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();//リソースの先頭のアドレスから使う
+	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());//使用するリソースのサイズは頂点サイズ
+	vertexBufferView.StrideInBytes = sizeof(VertexData);//1頂点あたりのサイズ
+
+	//頂点リソースにデータを書き込む
+	VertexData* vertexData = nullptr;
+	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));//書き込むためのアドレスを取得
+	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData)* modelData.vertices.size());//頂点データをリソースにコピー
+
 
 	//インデックスを使った球
 	//インデックス用の頂点リソースを作る
@@ -1257,6 +1329,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	indexDataSprite[3] = 1; indexDataSprite[4] = 3; indexDataSprite[5] = 2;
 
 	
+
 	//WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	ID3D12Resource* wvpResouce = CreateBufferResoure(device, sizeof(TransformationMatrix));
 	//データを書き込む
@@ -1281,28 +1354,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	ID3D12Resource* materialResorce = CreateBufferResoure(device, sizeof(Material));
 	//マテリアルにデータを書き込む
-	Material* materialDate = nullptr;
+	Material* materialData = nullptr;
 	//書き込むためのアドレスを取得
-	materialResorce->Map(0, nullptr, reinterpret_cast<void**>(&materialDate));
+	materialResorce->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	//今回は白を書き込む
-	materialDate->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	//Lightingを有効にする
-	materialDate->enableLighting = true;
+	materialData->enableLighting = true;
 	//初期化
-	materialDate->uvTransform = MakeIdentity4x4();
+	materialData->uvTransform = MakeIdentity4x4();
 	
 	//Sprite用のマテリアルリソースを作る
 	ID3D12Resource* materialResourceSprite = CreateBufferResoure(device, sizeof(Material));
 	//データを書き込む
-	Material* materialDateSprite = nullptr;
+	Material* materialDataSprite = nullptr;
 	//書き込むためのアドレスを取得
-	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDateSprite));
+	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
 	//今回は白を書き込む
-	materialDateSprite->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialDataSprite->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	//Lightingを無効
-	materialDateSprite->enableLighting = false;
+	materialDataSprite->enableLighting = false;
 	//初期化
-	materialDateSprite->uvTransform = MakeIdentity4x4();
+	materialDataSprite->uvTransform = MakeIdentity4x4();
 	
 	ID3D12Resource* directionalLightResource = CreateBufferResoure(device, sizeof(DirectionalLight));
 	// 頂点リソースにデータを書き込む
@@ -1434,7 +1507,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			
 			// ゲームの処理
-			transform.rotate.y += 0.03f;
+			//transform.rotate.y += 0.03f;
 			Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
@@ -1455,7 +1528,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Matrix4x4 uvTransformMatrix =
 				MakeAffineMatrix(uvTransformSprite.scale, uvTransformSprite.rotate, uvTransformSprite.translate);
 
-			materialDateSprite->uvTransform = uvTransformMatrix;
+			materialDataSprite->uvTransform = uvTransformMatrix;
 
 			//これから書き込むバックバッファのインデックスを取得 
 			UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
@@ -1499,7 +1572,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-
+			
 			//マテリアルCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(0, materialResorce->GetGPUVirtualAddress());
 			commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
@@ -1511,9 +1584,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			commandList->IASetIndexBuffer(&indexBufferView);//IBVを設定
 			//球の描画
 			//commandList->DrawInstanced(1536, 1, 0, 0);
-			commandList->DrawIndexedInstanced(1536, 1, 0, 0, 0);
-			
-			//CBufferの場所を設定
+			//commandList->DrawIndexedInstanced(1536, 1, 0, 0, 0);
+			commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+
+			/*/CBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
 			
 			//TransformationMatrixCBufferの場所を設定
@@ -1525,10 +1599,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//描画
 			//commandList->DrawInstanced(6, 1, 0, 0);
 			commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-			
+			*/
 
 			ImGui::Begin("Settings");
-			ImGui::SliderFloat3("color", &materialDate->color.x, 0.0f, 1.0f);
+			ImGui::SliderFloat3("color", &materialData->color.x, 0.0f, 1.0f);
 			//Sprite
 			ImGui::SliderFloat3("translationSprite", &transformSprite.translate.x, 0.0f, 1280.0f);
 			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
@@ -1541,6 +1615,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f,-10.0f,10.0f);
 			ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);
 
+
+			ImGui::DragFloat3("Sphere.Rotate", &transform.rotate.x, 0.01f, -10.0f, 10.0f);
 			ImGui::End();
 
 
