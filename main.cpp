@@ -97,10 +97,15 @@ struct Material {
 	Matrix4x4 uvTransform;
 };
 
-struct ModelData {
-	std::vector<VertexData>vertices;
+struct MaterialData {
+
+	std::string textureFilePath;
 };
 
+struct ModelData {
+	std::vector<VertexData>vertices;
+	MaterialData material;
+};
 
 struct TransformationMatrix {
 	Matrix4x4 WVP;
@@ -766,14 +771,15 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 		//頂点情報を読み込む
 		if (identifier == "v") {
 			Vector4  position = { 0.0f,0.0f,0.0f,0.0f };
-			position.z *= -1.0f;//位置の反転
 			s >> position.x >> position.y >> position.z;
+			position.z *= -1.0f; // 位置の反転
 			position.w = 1.0f;
 			positions.push_back(position);
 		}
 		else if (identifier == "vt") {
-			Vector2 texcoord;
+			Vector2 texcoord = {0.0f, 0.0f};
 			s >> texcoord.x >> texcoord.y;
+			texcoord.y = 1.0f - texcoord.y;
 			texcoords.push_back(texcoord);
 		}
 		else if (identifier == "vn") {
@@ -818,6 +824,41 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 
 	}
 	return modelData;
+}
+
+MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
+	//宣言
+	MaterialData materialData;//構築するMaterialData
+	ModelData modelData;
+	std::string line;//ファイルから読んだ1行を格納する
+	std::ifstream file(directoryPath + "/" + filename);//ファイルを開く
+	assert(file.is_open());//開けなかったら止める
+
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier; // 先頭の識別子を読む
+
+		//identifierに応じた処理
+		if (identifier == "map_Kd") {
+			std::string textureFilename;
+			s >> textureFilename;
+			//連結しているファイルパス
+			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+		}
+		else if (identifier == "mtllib") {
+			//materialTemplateLibraryファイルの名前を取得する
+			std::string materialFilename;
+			s >> materialFilename;
+
+			//基本的にobjファイルと同じ一階層にmtlは存在させるので、ディレクション名などファイル名を渡す
+			modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
+
+		}
+
+	}
+
+	return materialData;
 }
 
 // WIndowsアプリでのエントリーポイント(main関数)
@@ -1199,7 +1240,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	*/
 
 	//モデルの読み込み
-	ModelData modelData = LoadObjFile("resources", "plane.obj");
+	ModelData modelData = LoadObjFile("resources", "axis.obj");
+	modelData.material = LoadMaterialTemplateFile("resources", "plane.mtl");
 	//頂点リソースを作る
 	ID3D12Resource* vertexResource = CreateBufferResoure(device, sizeof(VertexData) * modelData.vertices.size());
 	//頂点バッファビューを作成する
@@ -1424,7 +1466,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	UploadTextureData(textureResource, mipImages);
 
 	//2枚目のTextrueを読んで転送する
-	DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
+	DirectX::ScratchImage mipImages2 = LoadTexture(modelData.material.textureFilePath);
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
 	ID3D12Resource* textureResource2 = CreateTextureResource(device, metadata2);
 	UploadTextureData(textureResource2, mipImages2);
