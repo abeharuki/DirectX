@@ -145,6 +145,15 @@ Matrix4x4 MakeIdentity4x4() {
 	return MakeIdentity4x4;
 };
 
+// 加算
+Vector4 Add(const Vector4& v1, const Vector4& v2) {
+	Vector4 add;
+	add.x = v1.x + v2.x;
+	add.y = v1.y + v2.y;
+	add.z = v1.z + v2.z;
+	return add;
+};
+
 
 //回転X
 Matrix4x4 MakeRotateXMatrix(float theta = 0) {
@@ -652,7 +661,7 @@ void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mip
 
 }
 
-void DrawSphere(VertexData* vertexData) {
+void DrawSphere(VertexData* vertexData,Vector4 f) {
 	const uint32_t kSubdivision = 10;//分割数
 	const float pi = 3.14f;//π
 	const float kLonEvery = 2.0f * pi / kSubdivision;//経度分割1つ分の角度(φd)
@@ -732,10 +741,15 @@ void DrawSphere(VertexData* vertexData) {
 			vertexData[start+5].normal.y = vertexData[start+5].position.y;
 			vertexData[start+5].normal.z = vertexData[start+5].position.z;
 			
+			
+			
 		}
 		
 	}
 	
+	
+	
+
 }
 
 ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename) {
@@ -1172,7 +1186,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	assert(SUCCEEDED(hr));
 	
 
-	//球
+	//球1
 	ID3D12Resource* vertexResource = CreateBufferResoure(device, sizeof(VertexData) * 3072);
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
@@ -1189,10 +1203,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	vertexResource->Map(0, nullptr,
 		reinterpret_cast<void**>(&vertexData));
 
-	DrawSphere(vertexData);
 	
 	
-	
+	// 球2
+	ID3D12Resource* vertexResource2 = CreateBufferResoure(device, sizeof(VertexData) * 3072);
+	// 頂点バッファビューを作成する
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView2{};
+	// リソースの先頭のアドレスから使う
+	vertexBufferView2.BufferLocation = vertexResource2->GetGPUVirtualAddress();
+	// 使用するリソースのサイズは頂点3つ分のサイズ
+	vertexBufferView2.SizeInBytes = sizeof(VertexData) * 3072;
+	// 1頂点あたりのサイズ
+	vertexBufferView2.StrideInBytes = sizeof(VertexData);
+	// 頂点リソースにデータを書き込む
+	VertexData* vertexData2 = nullptr;
+	// 書き込むためのアドレスを取得
+	vertexResource2->Map(0, nullptr, reinterpret_cast<void**>(&vertexData2));
+	DrawSphere(vertexData2, {0,0,0,0});
+
 
 	//Sprite用の頂点リソースを作る
 	ID3D12Resource* vertexResourceSprite = CreateBufferResoure(device, sizeof(VertexData) * 4);
@@ -1392,6 +1420,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 	bool useMonsterBall = true;
+
+	Vector4 f; 
+	int a = 1;
 	MSG msg{};
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -1425,6 +1456,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Matrix4x4 worldViewProjectionMatrix2 = Multiply(worldMatrix2, Multiply(viewMatrix, projecttionMatrix));
 			transformationMatrixDataSprite->WVP = worldViewProjectionMatrix2;
 			
+			f = {3, 0, 0, 0};
+
+			DrawSphere(vertexData, f);
+
 			//これから書き込むバックバッファのインデックスを取得 
 			UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
 			// TransitionBarrierの設定
@@ -1476,25 +1511,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			commandList->SetGraphicsRootDescriptorTable(2,useMonsterBall ? textureSrvHandleGPU2 :  textureSrvHandleGPU);
 			//wvp用のCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
+			
 			//球の描画
 			commandList->DrawInstanced(3072, 1, 0, 0);
 
 			commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 			commandList->SetGraphicsRootConstantBufferView( 1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
+			
+
+			
 			// 球の描画
 			commandList->DrawInstanced(3072, 1, 0, 0);
 
 			ImGui::Begin("Settings");
 			ImGui::SliderFloat3("color", &materialData->color.x, 0.0f, 1.0f);
-			//Ball
+			//太陽
 			ImGui::SliderFloat3("translationSprite", &transform.translate.x, -10.0f, 10.0f);
 			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 			ImGui::DragFloat3("Sphere.Rotate", &transform.rotate.x, 0.01f, -10.0f, 10.0f);
+
 			//LightLight
 			ImGui::SliderFloat3("LightColor", &directionalLightData->color.x, -1.0f,1.0f);
 			ImGui::SliderFloat3("LightDirecton", &directionalLightData->direction.x, -1.0f,1.0f);
 			ImGui::DragFloat("Intensity", &directionalLightData->intensity, 0.1f);
-			//UV
+
+			//惑星
 			ImGui::SliderFloat3("translationBall", &transformBall.translate.x, -10.0f, 10.0f);
 
 
@@ -1592,13 +1633,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	materialResourceSprite->Release();
 	directionalLightResource->Release();
 	transformationMatrixResourceSprite->Release();
-	vertexResource->Release();
+	vertexResource2->Release();
 	vertexResourceSprite->Release();
 	textureResource->Release();
 	depthStencilResource->Release();
 	dsvDescriptorHeap->Release();
 	textureResource2->Release();
-	
+	vertexResource2->Release();
+
 	// リソースリークチェック
 	IDXGIDebug1* debug;
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
