@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <stringapiset.h>
+
 
 class Utility {
 public:

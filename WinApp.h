@@ -8,6 +8,7 @@ public:
 	static const int kWindowWidth = 1280; // 横幅
 	static const int kWindowHeight = 720; // 縦幅
 	
+
 	static WinApp* GetInstance();
 
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);

@@ -2,10 +2,12 @@
 #include "StringUtility.h"
 #include "WinApp.h"
 #include <Windows.h>
-#include <cassert>
-#include <cstdint>
+
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#include <cassert>
+
+#include <cstdint>
 #include <wrl.h>
 #include <vector>
 
@@ -78,7 +80,7 @@ public: // メンバ関数
 private: // メンバ変数
 	// ウィンドウズアプリケーション管理
 	WinApp* winApp_;
-
+	
 	// Direct3D関連
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	Microsoft::WRL::ComPtr<ID3D12Device> device_;
@@ -94,12 +96,14 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	// DSV用のヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_;
+	
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
 	UINT64 fenceVal_ = 0;
 	HANDLE frameLatencyWaitableObject_;
-	std::chrono::steady_clock::time_point reference_;
 	int32_t refreshRate_ = 0;
 	Utility* utility_;
+	// RTVを2つ作るのでディスクリプタを2つ用意
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 
 private: // メンバ関数
 	DirectXCommon() = default;

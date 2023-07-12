@@ -1,9 +1,6 @@
 #include "StringUtility.h"
 #include <Windows.h>
-#include <cstdint>
 #include <format>
-#include <string>
-
 
 // string -> wstring
 std::wstring Utility::ConvertString(const std::string& str) {
@@ -41,4 +38,5 @@ std::string Utility::ConvertString(const std::wstring& str) {
 }
 
 void Utility::Log(const std::string& message) {
-	OutputDebugStringA(message.c_str()); }
+	OutputDebugStringA(message.c_str()); 
+}

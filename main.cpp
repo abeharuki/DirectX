@@ -1,7 +1,6 @@
 #include <Windows.h>
 #include <cstdint>
 #include <string>
-#include <format>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <cassert>
@@ -19,6 +18,9 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 #include "ResourceObject.h"
 #include <wrl.h>
 #include "Math.h"
+
+#include "WinApp.h"
+#include "DirectXCommon.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -80,7 +82,7 @@ struct DirectionalLight
 
 
 
-
+/*
 IDxcBlob* CompileShader(
 	// CompilerするShaderファイルへのパス
 	const std::wstring& filePath,
@@ -339,13 +341,13 @@ void DrawSphere(VertexData* vertexData) {
 			vertexData[start+2].texcoord = { u + 0.1f, v + 0.1f };
 
 
-			/*/ d 右上
+			// d 右上
 			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
 			vertexData[start + 3].position.y = sin(lat + kLatEvery);
 			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
 			vertexData[start + 3].position.w = 1.0f;
 			vertexData[start + 3].texcoord = {u + 0.1f, v};
-			*/
+			
 			//b 左上
 			vertexData[start+3].position.x = cos(lat + kLatEvery) * cos(lon);
 			vertexData[start+3].position.y = sin(lat + kLatEvery);
@@ -506,14 +508,22 @@ MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const st
 
 	return materialData;
 }
+*/
 
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-	
-	
+	WinApp* win = nullptr;
+	DirectXCommon* dxCommon = nullptr;
 
-	
+	// ゲームウィンドウの作成
+	win = WinApp::GetInstance();
+	win->CreateGameWindow();
 
+	// DirectX初期化処理
+	dxCommon = DirectXCommon::GetInstance();
+	dxCommon->Initialize(win);
+
+	/*
 
 	ID3D12Device* device = nullptr;
 
@@ -710,7 +720,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
 
 
-	/*/モデルの読み込み
+	/*
+	/モデルの読み込み
 	ModelData modelData = LoadObjFile("resources", "axis.obj");
 	modelData.material = LoadMaterialTemplateFile("resources", "plane.mtl");
 	//頂点リソースを作る
@@ -728,7 +739,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	*/
 
 	
-
+    /*
 	//Sprite用の頂点リソースを作る
 	ID3D12Resource* vertexResourceSprite = CreateBufferResoure(device, sizeof(VertexData) * 4);
 	// 頂点バッファビューを作成する
@@ -877,13 +888,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	UploadTextureData(textureResource2, mipImages2);
 
 	//objファイル
-	/*/2枚目のTextrueを読んで転送する
+	/*
+	/2枚目のTextrueを読んで転送する
 	DirectX::ScratchImage mipImages2 = LoadTexture(modelData.material.textureFilePath);
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
 	ID3D12Resource* textureResource2 = CreateTextureResource(device, metadata2);
 	UploadTextureData(textureResource2, mipImages2);
 	*/
-
+	/*
 	//metadataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
@@ -945,7 +957,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ResourceObject deptStencilResource =
 	    CreateDepthStencilTextureResource(device, kClientWidth, kClientHeight);
 	bool useMonsterBall = true;
-	
+	*/
+
 	MSG msg{};
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -956,7 +969,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&msg);
 		}
 		else {
-			
+			/*
 			ImGui_ImplDX12_NewFrame();
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
@@ -1076,41 +1089,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 			// TransitionBarrierを練る
 			commandList->ResourceBarrier(1, &barrier);
-			// コマンドリストの内容を確定させる。すべてのコマンドを積んでからcloseすること
-			hr = commandList->Close();
-			assert(SUCCEEDED(hr));
-
-
-			// GPUにコマンドの実行を行わせる
-			ID3D12CommandList* commandLists[] = { commandList };
-			commandQueue->ExecuteCommandLists(1, commandLists);
-			// GPUとOSに画像の交換を行うよう通知する
-			swapChain->Present(1, 0);
-			// Fenceの値を更新
-			fenceValue++;
-			// GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにsignalを送る
-			commandQueue->Signal(fence, fenceValue);
-			// Fenceの値が指定したSignal値にたどりついているか確認する
-			// GetCompletedvalueの初期値はFence作成時に渡した初期値
-			if (fence->GetCompletedValue() < fenceValue) {
-				// 指定したsignalにたどり着いていないので、たどり着くまでイベントを設定する
-				fence->SetEventOnCompletion(fenceValue, fenceEvent);
-				// イベントをまつ
-				WaitForSingleObject(fenceEvent, INFINITE);
-			}
-			// 次のフレーム用のコマンドリストを準備
-			hr = commandAllocator->Reset();
-			assert(SUCCEEDED(hr));
-			hr = commandList->Reset(commandAllocator, nullptr);
-			assert(SUCCEEDED(hr));
-
-
 			
+
+
+
+			*/
+			//描画開始
+			dxCommon->PreDraw();
+			//描画終了
+			dxCommon->PostDraw();
+            
 		}
 		
 	}
-
-
+	
+	/*
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
@@ -1166,9 +1159,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
 		debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
 		debug->Release();
+		
 	}
+	*/
+	//CoUninitialize();
 
-	CoUninitialize();
 	return 0;
 }
 

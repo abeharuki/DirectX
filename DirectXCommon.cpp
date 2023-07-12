@@ -1,5 +1,4 @@
 #include "DirectXCommon.h"
-#include "StringUtility.h"
 #include <format>
 
 
@@ -21,19 +20,23 @@ ID3D12DescriptorHeap* CreateDescriptorHeap(
 };
 
 
+DirectXCommon* DirectXCommon::GetInstance() {
+	static DirectXCommon instance;
+	return &instance;
+}
+
 void DirectXCommon::Initialize(WinApp* winApp) {
 	// nullptrチェック
 	assert(winApp);
 	
 	// sleepの分解能をあげておく
-	timeBeginPeriod(1);
-
+	//timeBeginPeriod(1);
+	/*
 	winApp_ = winApp;
-	reference_ = std::chrono::steady_clock::now();
 	rtvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 	srvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 	dsvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
-
+	*/
 	// DXGIデバイス初期化
 	InitializeDXGIDevice();
 
@@ -41,21 +44,103 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	InitializeCommand();
 
 	// スワップチェーンの生成
-	CreateSwapChain();
+	//CreateSwapChain();
 
 	// レンダーターゲット生成
-	CreateFinalRenderTargets();
+	//CreateFinalRenderTargets();
 
 	// 深度バッファ生成
-	CreateDepthBuffer();
+	//CreateDepthBuffer();
 
 	// フェンス生成
-	CreateFence();
+	//CreateFence();
 }
 
+void DirectXCommon::PreDraw() {
+	// これから書き込むバックバッファのインデックスを取得
+	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
+
+	/*
+	// TransitionBarrierの設定
+	D3D12_RESOURCE_BARRIER barrier{};
+	// 今回のバリアはTransition
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	// Noneにしておく
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	// バリアを張る対象のリソース。現在のバックバッファに対して行う
+	barrier.Transition.pResource = swapChainResources[backBufferIndex];
+	// 遷移前(現在)のResourceState
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	// 遷移後のResourceState
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	// TransitionBarrierを練る
+	commandList_->ResourceBarrier(1, &barrier);
 
 
+
+	// 描画用のDescriptorHeapの設定
+	ID3D12DescriptorHeap* descriptorHeaps[] = {srvHeap_.Get()};
+	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
+
+	// 描画先のRTVとDSVを設定する
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap_->GetCPUDescriptorHandleForHeapStart();
+	*/
+	// 描画先のRTVを設定する
+	commandList_->OMSetRenderTargets(
+	    1, &rtvHandles_[backBufferIndex], false, nullptr /* &dsvHandle*/);
+	// 指定した深度で画面全体をクリアする
+	// commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	
+	// 全画面クリア
+	ClearRenderTarget();
+
+}
+
+void DirectXCommon::PostDraw() {
+	HRESULT hr_ = S_FALSE;
+
+	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからcloseすること
+    commandList_->Close();
+	
+
+	// GPUにコマンドの実行を行わせる
+	ID3D12CommandList* commandLists[] = {commandList_.Get()};
+	commandQueue_->ExecuteCommandLists(1, commandLists);
+	// GPUとOSに画像の交換を行うよう通知する
+	swapChain_->Present(1, 0);
+	/*
+	// Fenceの値を更新
+	fenceValue++;
+	// GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにsignalを送る
+	commandQueue->Signal(fence_, fenceValue);
+	// Fenceの値が指定したSignal値にたどりついているか確認する
+	// GetCompletedvalueの初期値はFence作成時に渡した初期値
+	if (fence->GetCompletedValue() < fenceValue) {
+		// 指定したsignalにたどり着いていないので、たどり着くまでイベントを設定する
+		fence->SetEventOnCompletion(fenceValue, fenceEvent);
+		// イベントをまつ
+		WaitForSingleObject(fenceEvent, INFINITE);
+	}
+	*/
+	// 次のフレーム用のコマンドリストを準備
+	hr_ = commandAllocator_->Reset();
+	assert(SUCCEEDED(hr_));
+	hr_ = commandList_->Reset(commandAllocator_.Get(), nullptr);
+	assert(SUCCEEDED(hr_));
+}
+
+//指定した色で画面全体をクリア
 void DirectXCommon::ClearRenderTarget() {
+	HRESULT hr_ = S_FALSE;
+	// これから書き込むバックバッファのインデックスを取得
+	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
+
+	
+	// 指定した色で画面全体をクリアする
+	float clearColor[] = {0.1f, 0.25f, 0.5f, 1.0f};
+	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
+	hr_ = commandList_->Close();
+	assert(SUCCEEDED(hr_));
 	
 }
 
@@ -75,8 +160,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	// いい順にアダプタを頼む
 	for (UINT i = 0; dxgiFactory_->EnumAdapterByGpuPreference(
 	                     i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&useAdapter)) !=
-	                 DXGI_ERROR_NOT_FOUND;
-	     ++i) {
+	                 DXGI_ERROR_NOT_FOUND; ++i) {
 		// アダプタの情報を取得
 		DXGI_ADAPTER_DESC3 adapterDesc{};
 		hr_ = useAdapter->GetDesc3(&adapterDesc);
@@ -109,7 +193,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	// デバイスの生成がうまくいかなかったので起動できない
 	assert(device_ != nullptr);
 	utility_->Log("Complete create D3D12Device!!!\n");
-
+/*
 #ifdef _DEBUG
 	ID3D12InfoQueue* infoQueue = nullptr;
 	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
@@ -139,7 +223,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 		infoQueue->Release();
 	}
 #endif
-
+*/
 
 }
 
@@ -209,55 +293,20 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+
 	// ディスクリプタの先頭を取得する
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle =
 	    rtvHeap_->GetCPUDescriptorHandleForHeapStart();
-	// RTVを2つ作るのでディスクリプタを2つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+	
 	// まず1つ目を作る。１つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
-	rtvHandles[0] = rtvStartHandle;
-	device_->CreateRenderTargetView(swapChainResources[0], &rtvDesc, rtvHandles[0]);
+	rtvHandles_[0] = rtvStartHandle;
+	device_->CreateRenderTargetView(swapChainResources[0], &rtvDesc, rtvHandles_[0]);
 	// 2つ目のディスクリプタハンドルを得る(自力で)
-	rtvHandles[1].ptr = rtvHandles[0].ptr +
+	rtvHandles_[1].ptr = rtvHandles_[0].ptr +
 	                    device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	// 2つ目を作る
-	device_->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
+	device_->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles_[1]);
 
-
-	// これから書き込むバックバッファのインデックスを取得
-	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
-
-
-	// TransitionBarrierの設定
-	D3D12_RESOURCE_BARRIER barrier{};
-	// 今回のバリアはTransition
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	// Noneにしておく
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	barrier.Transition.pResource = swapChainResources[backBufferIndex];
-	// 遷移前(現在)のResourceState
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-	// 遷移後のResourceState
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	// TransitionBarrierを練る
-	commandList_->ResourceBarrier(1, &barrier);
-
-
-
-	// 描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = {srvHeap_.Get()};
-	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
-
-	// 描画先のRTVとDSVを設定する
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap_->GetCPUDescriptorHandleForHeapStart();
-	// 描画先のRTVを設定する
-	commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
-	// 指定した深度で画面全体をクリアする
-	commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-	// 指定した色で画面全体をクリアする
-	float clearColor[] = {0.1f, 0.25f, 0.5f, 1.0f};
-	commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 }
 
 // 深度バッファ
