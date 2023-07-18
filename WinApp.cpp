@@ -32,7 +32,7 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 void WinApp::CreateGameWindow(
     const wchar_t* title, int32_t clientWidth, int32_t clientHeight) {
 
-	//CoInitializeEx(0, COINIT_MULTITHREADED);
+	CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	
 	
@@ -58,7 +58,7 @@ void WinApp::CreateGameWindow(
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
 	// ウインドウの生成
-	HWND hwnd = CreateWindow(
+	hwnd_ = CreateWindow(
 	    wc.lpszClassName,
 		L"CG2",
 		WS_OVERLAPPEDWINDOW, 
@@ -81,5 +81,27 @@ void WinApp::CreateGameWindow(
 #endif
 
 	// ウインドウを表示する
-	ShowWindow(hwnd, SW_SHOW);
+	ShowWindow(hwnd_, SW_SHOW);
+}
+
+void WinApp::TerminateGameWindow() {
+	// ウィンドウクラスを登録解除
+	UnregisterClass(wndClass_.lpszClassName, wndClass_.hInstance);
+
+	// COM 終了
+	CoUninitialize();
+}
+
+bool WinApp::ProcessMessage() {
+	MSG msg{};
+	// Windowにメッセージが来てたら最優先で処理させる
+	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	if (msg.message != WM_QUIT) {
+        return true;
+	}
+	return false;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "StringUtility.h"
 #include "WinApp.h"
+#include "ResourceObject.h"
 #include <Windows.h>
 
 #include <d3d12.h>
@@ -10,9 +11,11 @@
 #include <cstdint>
 #include <wrl.h>
 #include <vector>
+#include <dxgidebug.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "dxguid.lib")
 
 /// <summary>
 /// DirectX汎用
@@ -28,7 +31,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(WinApp* winApp);
+	void Initialize(WinApp* winApp, int32_t backBufferWidth, int32_t backBufferHeight);
 
 	/// <summary>
 	/// 描画前処理
@@ -49,6 +52,9 @@ public: // メンバ関数
 	/// 深度バッファのクリア
 	/// </summary>
 	void ClearDepthBuffer();
+
+	//リソースリークチェック
+	void Debug();
 
 	/// <summary>
 	/// デバイスの取得
@@ -75,7 +81,7 @@ public: // メンバ関数
 	int32_t GetBackBufferHeight() const;
 
 	// バックバッファの数を取得
-	size_t GetBackBufferCount() const { return backBuffers_.size(); }
+	size_t GetBackBufferCount() const { return swapChainResources.size(); }
 
 private: // メンバ変数
 	// ウィンドウズアプリケーション管理
@@ -88,7 +94,7 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_;
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
-	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> backBuffers_;
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources;
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthBuffer_;
 	// SRV用のヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
@@ -96,9 +102,12 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
 	// DSV用のヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_;
-	
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-	UINT64 fenceVal_ = 0;
+	Microsoft::WRL::ComPtr <IDXGIDebug1> debug_;
+
+	uint64_t fenceVal_ = 0;
+	int32_t backBufferWidth_ = 0;
+	int32_t backBufferHeight_ = 0;
 	HANDLE frameLatencyWaitableObject_;
 	int32_t refreshRate_ = 0;
 	Utility* utility_;

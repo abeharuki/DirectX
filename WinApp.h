@@ -18,6 +18,10 @@ public:
 
 	HWND GetHwnd() const { return hwnd_; }
 
+	void TerminateGameWindow();
+
+	bool ProcessMessage();
+
 private: // メンバ関数
 	WinApp() = default;
 	~WinApp() = default;

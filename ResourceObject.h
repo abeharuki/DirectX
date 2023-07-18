@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d12.h>
 
+
 class ResourceObject {
 public:
 	ResourceObject(ID3D12Resource* resource)
@@ -14,6 +15,7 @@ public:
 
 	ID3D12Resource* Get() { return resource_; }
 
+	
 private:
 	ID3D12Resource* resource_;
 
