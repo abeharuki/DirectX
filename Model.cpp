@@ -245,7 +245,7 @@ void Model::InitializeGraphicsPipeline(){
 
 
 	mesh_->CreateBuffers(dxCommon_->GetDevice());
-
+	vbView_ = mesh_->GetVBView();
 	
 	// クライアント領域のサイズと一緒にして画面全体に表示
 	viewport.Width = WinApp::kWindowWidth;
@@ -272,7 +272,7 @@ void Model::PreDraw(ID3D12GraphicsCommandList* commandList) {
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	sCommandList_->SetGraphicsRootSignature(rootSignature_.Get());
 	sCommandList_->SetPipelineState(sPipelineState_.Get());
-	sCommandList_->IASetVertexBuffers(0, 1, &mesh_->GetVBView());
+	sCommandList_->IASetVertexBuffers(0, 1, &vbView_);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	sCommandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

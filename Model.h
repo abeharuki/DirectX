@@ -81,4 +81,6 @@ private:
 	Mesh* mesh_;
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
+	// 頂点バッファビュー
+	D3D12_VERTEX_BUFFER_VIEW vbView_ = {};
 };
