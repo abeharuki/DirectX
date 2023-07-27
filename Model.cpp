@@ -79,6 +79,7 @@ Model* Model::GetInstance() {
 
 void Model::Initializ(DirectXCommon* dxCommon) { 
 	dxCommon_ = dxCommon;
+	mesh_ = new Mesh;
 	InitializeGraphicsPipeline();
 }
 
