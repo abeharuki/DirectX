@@ -274,6 +274,10 @@ void Model::InitializeGraphicsPipeline(){
 	scissorRect.right = WinApp::kWindowWidth;
 	scissorRect.top = 0;
 	scissorRect.bottom = WinApp::kWindowHeight;
+
+
+
+	
 };
 
 void Model::PreDraw() { 
