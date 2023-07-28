@@ -235,7 +235,7 @@ void Model::InitializeGraphicsPipeline(){
 	// どのように画面に色を打ち込むの設定
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-	// DepthStencilの設定
+	//DepthStencilの設定
 	//graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 	//graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	// 実際に生成
@@ -264,8 +264,10 @@ void Model::InitializeGraphicsPipeline(){
 	scissorRect.bottom = WinApp::kWindowHeight;
 };
 
-void Model::PreDraw(ID3D12GraphicsCommandList* commandList) { 
-	sCommandList_ = commandList;
+void Model::PreDraw() { 
+	sCommandList_ = dxCommon_->GetCommandList();
+
+	
 	// コマンドを積む
 	sCommandList_->RSSetViewports(1, &viewport);
 	sCommandList_->RSSetScissorRects(1, &scissorRect);
@@ -275,6 +277,20 @@ void Model::PreDraw(ID3D12GraphicsCommandList* commandList) {
 	sCommandList_->IASetVertexBuffers(0, 1, &vbView_);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	sCommandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	
+
+	// マテリアルCBufferの場所を設定
+	sCommandList_->SetGraphicsRootConstantBufferView(0, materialResorce->GetGPUVirtualAddress());
+	sCommandList_->SetGraphicsRootConstantBufferView(
+	    3, directionalLightResource->GetGPUVirtualAddress());
+
+	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
+	sCommandList_->SetGraphicsRootDescriptorTable(
+	    2, useMonsterBall ? textureSrvHandleGPU2 : textureSrvHandleGPU);
+	// wvp用のCBufferの場所を設定
+	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
+	sCommandList_->IASetIndexBuffer(&indexBufferView); // IBVを設定
 
 	sCommandList_->DrawInstanced(3, 1, 0, 0);
 }

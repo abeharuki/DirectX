@@ -60,7 +60,7 @@ public:
 	/// 描画前処理
 	/// </summary>
 	/// <param name="commandList">描画コマンドリスト</param>
-	void PreDraw(ID3D12GraphicsCommandList* commandList);
+	void PreDraw();
 
 	
 	IDxcBlob* CompileShader(

@@ -41,7 +41,7 @@ void DirectXCommon::Initialize(WinApp* winApp, int32_t backBufferWidth, int32_t 
 	winApp_ = winApp;
 	//
 	//
-	//dsvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	
 	
 
 	// DXGIデバイス初期化
@@ -83,50 +83,37 @@ void DirectXCommon::PreDraw() {
 	// TransitionBarrierを練る
 	commandList_->ResourceBarrier(1, &barrier);
 
+	// 描画先のRTVとDSVを設定する
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap_->GetCPUDescriptorHandleForHeapStart();
 	
 	
 	// 描画用のDescriptorHeapの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = {srvHeap_.Get()};
 	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
-	/*
-	// 描画先のRTVとDSVを設定する
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap_->GetCPUDescriptorHandleForHeapStart();
-	*/
 	
 
 	// 描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(
 	    1, &rtvHandles_[backBufferIndex], false, nullptr /* &dsvHandle*/);
 	// 指定した深度で画面全体をクリアする
-	// commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	//commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	
+
 	// 全画面クリア
 	ClearRenderTarget();
-
-	
-	// 遷移前(現在)のResourceState
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	// 遷移後のResourceState
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-	// TransitionBarrierを練る
-	commandList_->ResourceBarrier(1, &barrier);
-
 }
 
 void DirectXCommon::PostDraw() {
 	HRESULT hr_ = S_FALSE;
 
-	
-
 	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからcloseすること
     commandList_->Close();
-	
 
 	// GPUにコマンドの実行を行わせる
 	ID3D12CommandList* commandLists[] = {commandList_.Get()};
 	commandQueue_->ExecuteCommandLists(1, commandLists);
 	// GPUとOSに画像の交換を行うよう通知する
-	swapChain_->Present(1, 0);
+	hr_ = swapChain_->Present(1, 0);
 	
 	// Fenceの値を更新
 	// GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにsignalを送る
@@ -282,7 +269,7 @@ void DirectXCommon::CreateSwapChain() {
 	    reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
 	assert(SUCCEEDED(hr_));
 
-	
+	dsvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 }
 
 //コマンド
@@ -370,7 +357,6 @@ void DirectXCommon::CreateFence() {
 //リソースチェック
 void DirectXCommon::Debug() {
 	
-		
 
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug_)))) {
 		debug_->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
