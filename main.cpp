@@ -1629,7 +1629,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//commandList->DrawIndexedInstanced(1536, 1, 0, 0, 0);
 			commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
-			/*/CBufferの場所を設定
+			//CBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
 			
 			//TransformationMatrixCBufferの場所を設定
@@ -1641,7 +1641,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//描画
 			//commandList->DrawInstanced(6, 1, 0, 0);
 			commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-			*/
+			
 
 			ImGui::Begin("Settings");
 			ImGui::SliderFloat3("color", &materialData->color.x, 0.0f, 1.0f);
