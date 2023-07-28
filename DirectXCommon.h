@@ -13,6 +13,7 @@
 #include <vector>
 #include <dxgidebug.h>
 
+
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -113,6 +114,7 @@ private: // メンバ変数
 	Utility* utility_;
 	// RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
+	D3D12_RESOURCE_BARRIER barrier{};
 
 private: // メンバ関数
 	DirectXCommon() = default;

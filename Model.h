@@ -83,4 +83,11 @@ private:
 	D3D12_RECT scissorRect{};
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView_ = {};
+	D3D12_INDEX_BUFFER_VIEW ibView_ = {};
+	// ライティング
+	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	// WVP用リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
+	//マテリアル用リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 };

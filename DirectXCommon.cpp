@@ -69,7 +69,7 @@ void DirectXCommon::PreDraw() {
 	srvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 	
 	// TransitionBarrierの設定
-	D3D12_RESOURCE_BARRIER barrier{};
+	
 	// 今回のバリアはTransition
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	// Noneにしておく
@@ -86,11 +86,6 @@ void DirectXCommon::PreDraw() {
 	// 描画先のRTVとDSVを設定する
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap_->GetCPUDescriptorHandleForHeapStart();
 	
-	
-	// 描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = {srvHeap_.Get()};
-	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
-	
 
 	// 描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(
@@ -101,11 +96,20 @@ void DirectXCommon::PreDraw() {
 
 	// 全画面クリア
 	ClearRenderTarget();
+
+	// 描画用のDescriptorHeapの設定
+	ID3D12DescriptorHeap* descriptorHeaps[] = {srvHeap_.Get()};
+	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
 }
 
 void DirectXCommon::PostDraw() {
 	HRESULT hr_ = S_FALSE;
 
+	// 今回はRenderTargetからPresentにする
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+	// TransitionBarrierを練る
+	commandList_->ResourceBarrier(1, &barrier);
 	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからcloseすること
     commandList_->Close();
 

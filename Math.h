@@ -28,6 +28,53 @@ struct Matrix4x4 final {
 	float m[4][4];
 };
 
+struct Transform {
+	Vector3 scale;
+	Vector3 rotate;
+	Vector3 translate;
+};
+
+struct VertexData {
+	Vector4 position;
+	Vector2 texcoord;
+	Vector3 normal;
+};
+
+struct Sphere {
+	Vector3 center; // 中心点
+	float radius;   // 半径
+};
+
+struct Material {
+	Vector4 color;
+	int32_t enableLighting;
+	float padding[3];
+	Matrix4x4 uvTransform;
+};
+
+struct MaterialData {
+
+	std::string textureFilePath;
+};
+/*
+struct ModelData {
+	std::vector<VertexData> vertices;
+	MaterialData material;
+};
+*/
+struct TransformationMatrix {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+};
+
+
+struct DirectionalLight {
+	Vector4 color;     // ライトの色
+	Vector3 direction; // ライトの向き
+	float intensity;   // 輝度
+};
+
+
 class Math {
 public:
 

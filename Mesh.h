@@ -77,11 +77,24 @@ public: // メンバ関数
 	/// <returns>頂点バッファ</returns>
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBView() const { return vbView_; }
 
+	
 	/// <summary>
 	/// インデックスバッファ取得
 	/// </summary>
 	/// <returns>インデックスバッファ</returns>
 	const D3D12_INDEX_BUFFER_VIEW& GetIBView() const { return ibView_; }
+
+
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetWVP() const { return wvpResouce_; }
+
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetMaterial() const { return materialResorce_; }
+	
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetLight() const {
+		return directionalLightResource_;
+	}
+
+
+
 
 	/// <summary>
 	/// 描画
@@ -140,7 +153,15 @@ private: // メンバ変数
 	// 頂点法線スムージング用データ
 	std::unordered_map<unsigned short, std::vector<unsigned short>> smoothData_;
 
+	//頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	
-	
+	//インデックス
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
+	//ライティング
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
+	//WVP用リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
+	//マテリアル用リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
+	Math* math_;
 };

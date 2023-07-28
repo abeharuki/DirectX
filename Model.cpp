@@ -245,8 +245,20 @@ void Model::InitializeGraphicsPipeline(){
 
 
 	mesh_->CreateBuffers(dxCommon_->GetDevice());
+	//バーテックス
 	vbView_ = mesh_->GetVBView();
-	
+	//インデックス
+	ibView_ = mesh_->GetIBView();
+	//WVP
+	wvpResouce_ = mesh_->GetWVP();
+	//マテリアル
+	materialResorce_ = mesh_->GetMaterial();
+
+	//ライティング
+	lightResource_ = mesh_->GetLight();
+
+
+
 	// クライアント領域のサイズと一緒にして画面全体に表示
 	viewport.Width = WinApp::kWindowWidth;
 	viewport.Height = WinApp::kWindowHeight;
@@ -278,19 +290,19 @@ void Model::PreDraw() {
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	sCommandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	
+	sCommandList_->DrawInstanced(3, 1, 0, 0);
 
 	// マテリアルCBufferの場所を設定
-	sCommandList_->SetGraphicsRootConstantBufferView(0, materialResorce->GetGPUVirtualAddress());
+	sCommandList_->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	sCommandList_->SetGraphicsRootConstantBufferView(
-	    3, directionalLightResource->GetGPUVirtualAddress());
+	    3, lightResource_->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
-	sCommandList_->SetGraphicsRootDescriptorTable(
-	    2, useMonsterBall ? textureSrvHandleGPU2 : textureSrvHandleGPU);
+	//sCommandList_->SetGraphicsRootDescriptorTable(
+	  //  2, useMonsterBall ? textureSrvHandleGPU2 : textureSrvHandleGPU);
 	// wvp用のCBufferの場所を設定
-	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
-	sCommandList_->IASetIndexBuffer(&indexBufferView); // IBVを設定
-
-	sCommandList_->DrawInstanced(3, 1, 0, 0);
+	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+	sCommandList_->IASetIndexBuffer(&ibView_); // IBVを設定
+	
+	
 }
