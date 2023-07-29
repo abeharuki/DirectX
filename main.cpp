@@ -1887,8 +1887,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				
 				commandList->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 			
+			} else {
+				objTransform.scale = {1, 1, 1};
+				objTransform.translate = {0, 0, 0};
+				objTransform.rotate = {0, 0, 0};
+				materialData2->color = {1,1,1};
 			}
-			
 
 			if (useObj2) {
 
@@ -1902,6 +1906,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				commandList->IASetVertexBuffers(0,1,&vertexBufferView2); // IBVを設定
 				// commandList->IASetIndexBuffer(&indexBufferView2); // IBVを設定
 				commandList->DrawInstanced(UINT(modelData2.vertices.size()), 1, 0, 0);
+			} else {
+				objTransform2.scale = {1, 1, 1};
+				objTransform2.translate = {0, 0, 0};
+				objTransform2.rotate = {0, 0, 0};
+				materialData3->color = {1,1,1};
 			}
 			
 			// 球の描画
@@ -1914,8 +1923,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				    1, wvpResouce->GetGPUVirtualAddress());
 				commandList->IASetVertexBuffers(0, 1, &vertexBufferView1);
 				commandList->DrawInstanced(1532, 1, 0, 0);
+			} else {
+				transform.scale = {1, 1, 1};
+				transform.translate = {0, 0, 0};
+				transform.rotate = {0, 0,0};
+				materialData4->color = {1,1,1};
 			}
-			
 
 
 			//CBufferの場所を設定
@@ -1934,6 +1947,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (useSprit) {
 				commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 			
+			} else {
+				transformSprite.scale = {1,1,1};
+				transformSprite.translate = {0,0,0};
+				transformSprite.rotate = {0,0,0};
+				uvTransformSprite.scale = {1,1,1};
+				uvTransformSprite.translate = {0, 0, 0};
+				uvTransformSprite.rotate = {0, 0, 0};
 			}
 			
 			
