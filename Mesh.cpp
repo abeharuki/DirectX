@@ -105,4 +105,8 @@ void Mesh::CreateBuffers(ID3D12Device* device) {
 	// 書き込むためのアドレスを取得
 	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 	
+	//デフォルト値
+	directionalLightData->color = { 1.0f,1.0f,1.0f,1.0f };
+	directionalLightData->direction = { 0.0f,-1.0f,0.0f };
+	directionalLightData->intensity = 1.0f;
 };

@@ -294,19 +294,25 @@ void Model::PreDraw() {
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	sCommandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	sCommandList_->DrawInstanced(3, 1, 0, 0);
-
 	// マテリアルCBufferの場所を設定
 	sCommandList_->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	sCommandList_->SetGraphicsRootConstantBufferView(
 	    3, lightResource_->GetGPUVirtualAddress());
+	// wvp用のCBufferの場所を設定
+	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+
+	//三角形の描画
+	sCommandList_->DrawInstanced(3, 1, 0, 0);
+
+
+
 
 	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
 	//sCommandList_->SetGraphicsRootDescriptorTable(
 	  //  2, useMonsterBall ? textureSrvHandleGPU2 : textureSrvHandleGPU);
-	// wvp用のCBufferの場所を設定
-	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
-	sCommandList_->IASetIndexBuffer(&ibView_); // IBVを設定
+
+	
+	//sCommandList_->IASetIndexBuffer(&ibView_); // IBVを設定
 	
 	
 }

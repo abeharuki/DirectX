@@ -79,6 +79,7 @@ private:
 	DirectXCommon* dxCommon_;
 	Utility* utility_;
 	Mesh* mesh_;
+	Math* math_;
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
 	// 頂点バッファビュー
