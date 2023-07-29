@@ -1989,7 +1989,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				 ImGui::DragFloat3("Rotate", &transform.rotate.x, 0.01f, -10.0f, 10.0f);
 				 ImGui::SliderFloat3("color", &materialData4->color.x, 0.0f, 1.0f);
 				 ImGui::Checkbox("useBall", &useBall);
-				 ImGui::Checkbox("useMonsterBall", &useMonsterBall2);
+				 ImGui::Checkbox("useMonsterBall", &useMonsterBall3);
 				 ImGui::TreePop();
 			 }
 
