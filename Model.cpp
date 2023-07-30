@@ -71,6 +71,25 @@ IDxcBlob* Model::CompileShader(
 	return shaderBlob;
 }
 
+// メタボールの中心座標と半径を指定して、円周上の頂点を生成する関数
+std::vector<Vertex>
+    GenerateCircleVertices(float centerX, float centerY, float radius, int numVertices) {
+	std::vector<Vertex> vertices;
+	const float PI = 3.14159265359f;
+	float angleIncrement = PI / numVertices;
+
+	for (int i = 0; i < numVertices; ++i) {
+		float angle = i * angleIncrement;
+		float x = centerX + radius * std::cos(angle);
+		float y = centerY + radius * std::sin(angle);
+		vertices.push_back({Vector3(x, y, 0.0f), Vector4(1.0f, 0.0f, 0.0f, 1.0f)});
+	}
+
+	return vertices;
+}
+
+
+
 //Textureデータの読み込み
 DirectX::ScratchImage Model::LoadTexture(const std::string& filePath) {
 	// テクスチャファイルを読み込んでプログラムを扱えるようにする
@@ -301,6 +320,17 @@ void Model::InitializeGraphicsPipeline(){
 	D3D12_BLEND_DESC blendDesc{};
 	// すべての色要素を書き込む
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.AlphaToCoverageEnable = FALSE;//アンチエイリアシング有無
+	blendDesc.IndependentBlendEnable = FALSE;//ブレンドステートを個別化するか有無
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;//ブレンディング有無
+	//ブレンディング係数の設定
+	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	
 
 	// RasiterzerStateの設定
 	D3D12_RASTERIZER_DESC rasterizerDesc{};
@@ -337,7 +367,8 @@ void Model::InitializeGraphicsPipeline(){
 	    vertexShaderBlob_->GetBufferPointer(), vertexShaderBlob_->GetBufferSize()}; // VertexShader
 	graphicsPipelineStateDesc.PS = {
 	    pixelShaderBlob_->GetBufferPointer(), pixelShaderBlob_->GetBufferSize()}; // PixelShader
-	graphicsPipelineStateDesc.BlendState = blendDesc;                           // BrendState
+	graphicsPipelineStateDesc.BlendState = blendDesc;              // BrendState
+
 	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;                 // RasterizerState
 	// 書き込むRTVの情報
 	graphicsPipelineStateDesc.NumRenderTargets = 1;
@@ -417,7 +448,7 @@ void Model::InitializeGraphicsPipeline(){
 	// 書き込むためのアドレスを取得
 	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	// 今回は白を書き込む
-	materialData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialData->color = Vector4(1.0f, 1.0f, 1.0f, 0.1f);
 	// Lightingを有効にする
 	materialData->enableLighting = false;
 	// 初期化
@@ -435,6 +466,42 @@ void Model::InitializeGraphicsPipeline(){
 	directionalLightData->color = {1.0f, 1.0f, 1.0f, 1.0f};
 	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
 	directionalLightData->intensity = 1.0f;
+
+
+
+
+	//メタボール
+	vbView2_ = mesh_->GetVBView2();
+
+	metaball_ = mesh_->GetMetaBall();
+	metaball_->Map(0, nullptr, reinterpret_cast<void**>(&metaballData));
+	 // メタボールの中心座標と半径を設定
+	float centerX = WinApp::kWindowWidth / 2.0f;
+	float centerY = WinApp::kWindowHeight / 2.0f;
+	float radius = 100.0f;
+
+	metaballData[0].position = {0.0f, 360.0f, 0.0f, 1.0f}; // 左下
+	metaballData[1].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 左上
+	metaballData[2].position = {640.0f, 360.0f, 0.0f, 1.0f}; // 右下
+	metaballData[3].position = {640.0f, 0.0f, 0.0f, 1.0f}; // 右上
+	
+
+	// データを書き込む
+	transformMetaBall_ = mesh_->GetTransformMetaBall();
+	// 書き込むためのアドレスを取得
+	transformMetaBall_->Map(
+	    0, nullptr, reinterpret_cast<void**>(&transformationmetaBallData));
+	// 単位行列に書き込んでいく
+	transformationmetaBallData->WVP = math_->MakeIdentity4x4();
+	transformationmetaBallData->World = math_->MakeIdentity4x4();
+
+
+
+
+
+
+
+
 
 	// クライアント領域のサイズと一緒にして画面全体に表示
 	viewport.Width = WinApp::kWindowWidth;
@@ -474,6 +541,20 @@ void Model::PreDraw() {
 	    math_->Multiply(worldMatrix, math_->Multiply(viewMatrix, projecttionMatrix));
 	wvpData->WVP = worldViewProjectionMatrix;
 	
+
+
+	//メタボール用
+	Matrix4x4 worldMatrixMB = math_->MakeAffineMatrix(
+	    metaBalltransform.scale, metaBalltransform.rotate, metaBalltransform.translate);
+	Matrix4x4 viewMatrixMB = math_->MakeIdentity4x4();
+	Matrix4x4 projecttionMatrixMB =
+	    math_->MakeOrthographicMatrix(0.0f,0.0f, float(1280) ,float(720), 0.0f, 100.0f);
+	// WVPMatrixを作る。同次クリップ空間
+	Matrix4x4 worldViewProjectionMatrixMB =
+	    math_->Multiply(worldMatrixMB, math_->Multiply(viewMatrixMB, projecttionMatrixMB));
+	*transformationmetaBallData = TransformationMatrix(worldViewProjectionMatrixMB, worldMatrixMB);
+
+
 	// コマンドを積む
 	sCommandList_->RSSetViewports(1, &viewport);
 	sCommandList_->RSSetScissorRects(1, &scissorRect);
@@ -498,6 +579,12 @@ void Model::PreDraw() {
 	sCommandList_->DrawIndexedInstanced(6, 1, 0, 0,0);
 
 
+
+	sCommandList_->IASetVertexBuffers(0, 1, &vbView2_);
+	sCommandList_->SetGraphicsRootConstantBufferView(1, transformMetaBall_->GetGPUVirtualAddress());
+	//メタボール
+	//sCommandList_->SetGraphicsRootConstantBufferView(0, metaball_->GetGPUVirtualAddress());
+	sCommandList_->DrawInstanced(6, 1, 0, 0);
 
 	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
 	//sCommandList_->SetGraphicsRootDescriptorTable(

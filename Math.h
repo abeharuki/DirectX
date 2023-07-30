@@ -2,6 +2,8 @@
 #include <cassert>
 #include <format>
 
+
+
 struct Vector2 final {
 	float x;
 	float y;
@@ -18,6 +20,11 @@ struct Vector4 final {
 	float y;
 	float z;
 	float w;
+};
+
+struct Vertex {
+	Vector3 position;
+	Vector4 color;
 };
 
 struct Matrix3x3 final {

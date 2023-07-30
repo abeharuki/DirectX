@@ -87,6 +87,7 @@ private:
 	D3D12_RECT scissorRect{};
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView_ = {};
+	D3D12_VERTEX_BUFFER_VIEW vbView2_ = {};
 	D3D12_INDEX_BUFFER_VIEW ibView_ = {};
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
@@ -96,11 +97,15 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
-
+	//メタボール
+	Microsoft::WRL::ComPtr<ID3D12Resource> metaball_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformMetaBall_;
 	VertexData* vertexData = nullptr;
 	TransformationMatrix* wvpData = nullptr;
 	DirectionalLight* directionalLightData = nullptr;
 	Material* materialData = nullptr;
+	VertexData* metaballData = nullptr;
+	TransformationMatrix* transformationmetaBallData = nullptr;
 	Transform transform{
 	    {1.0f, 1.0f, 1.0f},
         {0.0f, 0.0f, 0.0f},
@@ -112,6 +117,13 @@ private:
         {0.0f, 0.0f, 0.0f  },
         {0.0f, 0.0f, -10.0f}
     };
+
+	Transform metaBalltransform{
+	    {1.0f, 1.0f, 1.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f}
+    };
+
 
 	//Texture
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;

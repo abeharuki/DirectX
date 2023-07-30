@@ -76,7 +76,7 @@ public: // メンバ関数
 	/// </summary>
 	/// <returns>頂点バッファ</returns>
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBView() const { return vbView_; }
-
+	const D3D12_VERTEX_BUFFER_VIEW& GetVBView2() const { return vbView2_; }
 	
 	/// <summary>
 	/// インデックスバッファ取得
@@ -94,7 +94,12 @@ public: // メンバ関数
 		return directionalLightResource_;
 	}
 
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetMetaBall() const { return metaballResource_;
+	}
 
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetTransformMetaBall() const {
+		return transformationMetaBallResource_;
+	}
 
 	/// <summary>
 	/// 描画
@@ -144,6 +149,7 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexBuff_;
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView_ = {};
+	D3D12_VERTEX_BUFFER_VIEW vbView2_ = {};
 	// インデックスバッファビュー
 	D3D12_INDEX_BUFFER_VIEW ibView_ = {};
 	// 頂点データ配列
@@ -163,5 +169,9 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
+	//メタボール
+	Microsoft::WRL::ComPtr<ID3D12Resource> metaballResource_;
+	//メタボールtransform
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMetaBallResource_;
 	Math* math_;
 };
