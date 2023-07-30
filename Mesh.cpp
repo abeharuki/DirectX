@@ -31,28 +31,17 @@ ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes) {
 
 void Mesh::CreateBuffers(ID3D12Device* device) {
 
-	//三角形
-	vertexResource_ = CreateBufferResoure(device, sizeof(Vector4) * 3);
+	//四角形
+	vertexResource_ = CreateBufferResoure(device, sizeof(VertexData) * 4);
 	// 頂点バッファビューを作成する
-	
 	// リソースの先頭のアドレスから使う
 	vbView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vbView_.SizeInBytes = sizeof(Vector4) * 3;
+	vbView_.SizeInBytes = sizeof(VertexData) * 4;
 	// 1頂点あたりのサイズ
-	vbView_.StrideInBytes = sizeof(Vector4);
+	vbView_.StrideInBytes = sizeof(VertexData);
 
-	// 頂点リソースにデータを書き込む
-	Vector4* vertexData = nullptr;
-	// 書き込むためのアドレスを取得
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-
-	// 1枚目の三角形
-	vertexData[0] = {-0.5f, -0.5f, 0.0f, 1.0f}; // 左下
 	
-	vertexData[1] = {0.0f, 0.5f, 0.0f, 1.0f}; // 左上
-	
-	vertexData[2] = {0.5f, -0.5f, 0.0f, 1.0f}; // 右下
 
     
 
@@ -68,45 +57,23 @@ void Mesh::CreateBuffers(ID3D12Device* device) {
 	// データを書き込む
 	uint32_t* indexData = nullptr;
 	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	indexData[0] = 0;indexData[1] = 1;indexData[2] = 2;
+	indexData[3] = 1;indexData[4] = 3;indexData[5] = 2;
 
 
 	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	wvpResouce_ = CreateBufferResoure(device, sizeof(TransformationMatrix));
-	// データを書き込む
-	TransformationMatrix* wvpData = nullptr;
-	// 書き込むためのアドレスを取得
-	wvpResouce_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	// 単位行列を書き込む
-	wvpData->WVP = math_->MakeIdentity4x4();
-	wvpData->World = math_->MakeIdentity4x4();
+	
 
 
 
 	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResorce_ = CreateBufferResoure(device, sizeof(Material));
-	// マテリアルにデータを書き込む
-	Material* materialData = nullptr;
-	// 書き込むためのアドレスを取得
-	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	// 今回は白を書き込む
-	materialData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	// Lightingを有効にする
-	materialData->enableLighting = true;
-	// 初期化
-	materialData->uvTransform = math_->MakeIdentity4x4();
-
+	
 
 
 	//ライティング
 	directionalLightResource_ =
 	    CreateBufferResoure(device, sizeof(DirectionalLight));
-	// 頂点リソースにデータを書き込む
-	DirectionalLight* directionalLightData = nullptr;
-	// 書き込むためのアドレスを取得
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 	
-	//デフォルト値
-	directionalLightData->color = { 1.0f,1.0f,1.0f,1.0f };
-	directionalLightData->direction = { 0.0f,-1.0f,0.0f };
-	directionalLightData->intensity = 1.0f;
 };

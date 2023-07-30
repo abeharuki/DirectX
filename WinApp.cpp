@@ -1,6 +1,11 @@
 #include "WinApp.h"
 #include <string>
 #include <d3d12sdklayers.h>
+#include "externals/imgui/imgui.h"
+#include "externals/imgui/imgui_impl_dx12.h"
+#include "externals/imgui/imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT
+    ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPaeam);
 
 
 WinApp* WinApp::GetInstance() {
@@ -10,11 +15,11 @@ WinApp* WinApp::GetInstance() {
 
 // ウィンドウプロシージャ
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	/*
+	
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
 		return true;
 	}
-	*/
+	
 	// メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
 		// ウインドウが破棄された

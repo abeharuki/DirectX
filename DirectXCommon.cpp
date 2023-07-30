@@ -6,7 +6,7 @@
 using namespace Microsoft::WRL;
 
 
-ID3D12DescriptorHeap* CreateDescriptorHeap(
+ID3D12DescriptorHeap* DirectXCommon::CreateDescriptorHeap(
     ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
     bool shaderVisible) {
 	// ディスクリプタヒープの生成
@@ -39,6 +39,7 @@ void DirectXCommon::Initialize(WinApp* winApp, int32_t backBufferWidth, int32_t 
 	//timeBeginPeriod(1);
 	
 	winApp_ = winApp;
+	
 	//
 	//
 	
@@ -66,7 +67,7 @@ void DirectXCommon::Initialize(WinApp* winApp, int32_t backBufferWidth, int32_t 
 void DirectXCommon::PreDraw() {
 	// これから書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
-	srvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	
 	
 	// TransitionBarrierの設定
 	
@@ -304,11 +305,11 @@ void DirectXCommon::InitializeCommand() {
 	assert(SUCCEEDED(hr_));
 }
 
-//ディスクリプターヒープRTV
+//ディスクリプターヒープ
 void DirectXCommon::CreateFinalRenderTargets() {
 	HRESULT hr_ = S_FALSE;
 	rtvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
-
+	srvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 	
 	swapChainResources.resize(2);
 	// SwapChainからResourceを引っ張ってくる

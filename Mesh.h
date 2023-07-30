@@ -84,6 +84,7 @@ public: // メンバ関数
 	/// <returns>インデックスバッファ</returns>
 	const D3D12_INDEX_BUFFER_VIEW& GetIBView() const { return ibView_; }
 
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetVertex() const { return vertexResource_; }
 
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetWVP() const { return wvpResouce_; }
 
@@ -92,7 +93,6 @@ public: // メンバ関数
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetLight() const {
 		return directionalLightResource_;
 	}
-
 
 
 

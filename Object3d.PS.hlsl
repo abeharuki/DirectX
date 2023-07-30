@@ -27,10 +27,13 @@ struct PixelShaderOutput{
 };
 
 PixelShaderOutput main(VertexShaderOutput input) {
-	float4 transformedUV = mul(float32_t4(input.texcoord,0.0f,1.0f), gMaterial.uvTransform);
+	
+	float4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
 	float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
 	PixelShaderOutput output;
-
+	output.color = gMaterial.color;
+	
+	/*
 	if (gMaterial.enableLighting != 0) {
 		float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
 		float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
@@ -38,8 +41,9 @@ PixelShaderOutput main(VertexShaderOutput input) {
 	}
 	else {
 		output.color = gMaterial.color * textureColor;
+		//output.color = float32_t4(1.0, 1.0, 1.0, 1.0);
 	}
-	//output.color = float32_t4(1.0, 1.0, 1.0, 1.0);
+	*/
 	return output;
 
 }

@@ -1,5 +1,13 @@
 #include "Math.h"
 
+// 減算
+Vector3 Math::Subract(const Vector3& v1, const Vector3& v2) {
+	Vector3 subract;
+	subract.x = v1.x - v2.x;
+	subract.y = v1.y - v2.y;
+	subract.z = v1.z - v2.z;
+	return subract;
+};
 
 Matrix4x4 Math::MakeIdentity4x4() {
 	Matrix4x4 MakeIdentity4x4;
@@ -350,4 +358,10 @@ Matrix4x4 Math::Inverse(const Matrix4x4& m) {
 	                  B;
 
 	return Inverse;
+};
+
+// 長さ(ノルマ)
+float Math::Length(const Vector3& v) {
+	float length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	return length;
 };

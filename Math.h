@@ -78,6 +78,8 @@ struct DirectionalLight {
 class Math {
 public:
 
+	// 減算
+	Vector3 Subract(const Vector3& v1, const Vector3& v2);
 	
 	Matrix4x4 MakeIdentity4x4();
 
@@ -112,4 +114,6 @@ public:
 	// 逆行列
 	Matrix4x4 Inverse(const Matrix4x4& m);
 
+	// 長さ(ノルマ)
+	float Length(const Vector3& v);
 };

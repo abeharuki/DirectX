@@ -7,6 +7,8 @@
 
 #include <dxcapi.h>
 #include "DirectXCommon.h"
+#include "externals/DirectXTex/DirectXTex.h"
+#include "externals/DirectXTex/d3dx12.h"
 
 class Model {
 private: // 静的メンバ変数
@@ -80,15 +82,40 @@ private:
 	Utility* utility_;
 	Mesh* mesh_;
 	Math* math_;
+
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView_ = {};
 	D3D12_INDEX_BUFFER_VIEW ibView_ = {};
+	// 頂点
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	// ライティング
 	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
 	// WVP用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
+
+	VertexData* vertexData = nullptr;
+	TransformationMatrix* wvpData = nullptr;
+	DirectionalLight* directionalLightData = nullptr;
+	Material* materialData = nullptr;
+	Transform transform{
+	    {1.0f, 1.0f, 1.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f}
+    };
+
+	Transform cameraTransform{
+	    {1.0f, 1.0f, 1.0f  },
+        {0.0f, 0.0f, 0.0f  },
+        {0.0f, 0.0f, -10.0f}
+    };
+
+	//Texture
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+ private:
+	DirectX::ScratchImage LoadTexture(const std::string& filePath);
+	void LoadTexture();
 };
