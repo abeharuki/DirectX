@@ -275,6 +275,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win,1280,720);
 
+	//モデルの作成
 	model = Model::GetInstance();
 	model->Initializ(dxCommon);
 	
