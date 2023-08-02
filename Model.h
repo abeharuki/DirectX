@@ -97,9 +97,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
-	//メタボール
-	Microsoft::WRL::ComPtr<ID3D12Resource> metaball_;
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformMetaBall_;
+	
 	VertexData* vertexData = nullptr;
 	TransformationMatrix* wvpData = nullptr;
 	DirectionalLight* directionalLightData = nullptr;

@@ -71,23 +71,6 @@ IDxcBlob* Model::CompileShader(
 	return shaderBlob;
 }
 
-// メタボールの中心座標と半径を指定して、円周上の頂点を生成する関数
-std::vector<Vertex>
-    GenerateCircleVertices(float centerX, float centerY, float radius, int numVertices) {
-	std::vector<Vertex> vertices;
-	const float PI = 3.14159265359f;
-	float angleIncrement = PI / numVertices;
-
-	for (int i = 0; i < numVertices; ++i) {
-		float angle = i * angleIncrement;
-		float x = centerX + radius * std::cos(angle);
-		float y = centerY + radius * std::sin(angle);
-		vertices.push_back({Vector3(x, y, 0.0f), Vector4(1.0f, 0.0f, 0.0f, 1.0f)});
-	}
-
-	return vertices;
-}
-
 
 
 //Textureデータの読み込み
@@ -400,36 +383,21 @@ void Model::InitializeGraphicsPipeline(){
 
 	// 左下
 	vertexData[0].position = {-0.5f, -0.5f, 0.0f, 1.0f}; // 左下
-	
+	vertexData[0].texcoord = {0.0f, 1.0f};
 	// 上
-	vertexData[1].position = {-0.5f, 0.5f, 0.0f, 1.0f}; // 左上
-	
+	vertexData[1].position = {0.0f, 0.5f, 0.0f, 1.0f}; // 左上
+	vertexData[1].texcoord = {0.5f, 0.0f};
 	// 右下
 	vertexData[2].position = {0.5f, -0.5f, 0.0f, 1.0f}; // 右下
+	vertexData[2].texcoord = {1.0f, 1.0f};
 
-	vertexData[3].position = {0.5f, 0.5f, 0.0f, 1.0f}; // 右上
-
-	/*/ 左下
-	vertexData[0].position = {590.0f, 310.0f, 0.0f, 1.0f}; // 左下
-	//  上
-	vertexData[1].position = {590.0f, 410.0f, 0.0f, 1.0f}; // 左上
-	//  右下
-	vertexData[2].position = {690.0f, 310.0f, 0.0f, 1.0f}; // 右下
-	vertexData[3].position = {690.0f, 410.0f, 0.0f, 1.0f}; // 右上
-	*/
+	//vertexData[3].position = {0.5f, 0.5f, 0.0f, 1.0f}; // 右上
+	//vertexData[3].texcoord = {1.0f, 0.0f};
+	
 
 	//インデックス
 	ibView_ = mesh_->GetIBView();
-	/*
-	Vector3 center = {640.0f, 360.0f,0}; // 円の中心座標
-	float radius = 50.0f;                  // 円の半径
 	
-
-	float distance = math_->length(position - center);
-	float alpha = 1.0f - saturate(distance / radius);
-
-	output.color = Vector4(1.0f, 1.0f, 1.0f, alpha); // 円の色は白でアルファ値
-	*/
 
 	//WVP
 	wvpResouce_ = mesh_->GetWVP();
@@ -448,7 +416,7 @@ void Model::InitializeGraphicsPipeline(){
 	// 書き込むためのアドレスを取得
 	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	// 今回は白を書き込む
-	materialData->color = Vector4(1.0f, 1.0f, 1.0f, 0.1f);
+	materialData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	// Lightingを有効にする
 	materialData->enableLighting = false;
 	// 初期化
@@ -470,35 +438,7 @@ void Model::InitializeGraphicsPipeline(){
 
 
 
-	//メタボール
-	vbView2_ = mesh_->GetVBView2();
-
-	metaball_ = mesh_->GetMetaBall();
-	metaball_->Map(0, nullptr, reinterpret_cast<void**>(&metaballData));
-	 // メタボールの中心座標と半径を設定
-	float centerX = WinApp::kWindowWidth / 2.0f;
-	float centerY = WinApp::kWindowHeight / 2.0f;
-	float radius = 100.0f;
-
-	metaballData[0].position = {0.0f, 360.0f, 0.0f, 1.0f}; // 左下
-	metaballData[1].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 左上
-	metaballData[2].position = {640.0f, 360.0f, 0.0f, 1.0f}; // 右下
-	metaballData[3].position = {640.0f, 0.0f, 0.0f, 1.0f}; // 右上
 	
-
-	// データを書き込む
-	transformMetaBall_ = mesh_->GetTransformMetaBall();
-	// 書き込むためのアドレスを取得
-	transformMetaBall_->Map(
-	    0, nullptr, reinterpret_cast<void**>(&transformationmetaBallData));
-	// 単位行列に書き込んでいく
-	transformationmetaBallData->WVP = math_->MakeIdentity4x4();
-	transformationmetaBallData->World = math_->MakeIdentity4x4();
-
-
-
-
-
 
 
 
@@ -543,18 +483,6 @@ void Model::PreDraw() {
 	
 
 
-	//メタボール用
-	Matrix4x4 worldMatrixMB = math_->MakeAffineMatrix(
-	    metaBalltransform.scale, metaBalltransform.rotate, metaBalltransform.translate);
-	Matrix4x4 viewMatrixMB = math_->MakeIdentity4x4();
-	Matrix4x4 projecttionMatrixMB =
-	    math_->MakeOrthographicMatrix(0.0f,0.0f, float(1280) ,float(720), 0.0f, 100.0f);
-	// WVPMatrixを作る。同次クリップ空間
-	Matrix4x4 worldViewProjectionMatrixMB =
-	    math_->Multiply(worldMatrixMB, math_->Multiply(viewMatrixMB, projecttionMatrixMB));
-	*transformationmetaBallData = TransformationMatrix(worldViewProjectionMatrixMB, worldMatrixMB);
-
-
 	// コマンドを積む
 	sCommandList_->RSSetViewports(1, &viewport);
 	sCommandList_->RSSetScissorRects(1, &scissorRect);
@@ -573,24 +501,14 @@ void Model::PreDraw() {
 	sCommandList_->SetGraphicsRootDescriptorTable(2,textureSrvHandleGPU);
 	// wvp用のCBufferの場所を設定
 	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
-	sCommandList_->IASetIndexBuffer(&ibView_); // IBVを設定
-	//三角形の描画
-	//sCommandList_->DrawInstanced(6, 1, 0, 0);
-	sCommandList_->DrawIndexedInstanced(6, 1, 0, 0,0);
-
-
-
-	sCommandList_->IASetVertexBuffers(0, 1, &vbView2_);
-	sCommandList_->SetGraphicsRootConstantBufferView(1, transformMetaBall_->GetGPUVirtualAddress());
-	//メタボール
-	//sCommandList_->SetGraphicsRootConstantBufferView(0, metaball_->GetGPUVirtualAddress());
-	sCommandList_->DrawInstanced(6, 1, 0, 0);
-
-	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
-	//sCommandList_->SetGraphicsRootDescriptorTable(
-	  //  2, useMonsterBall ? textureSrvHandleGPU2 : textureSrvHandleGPU);
-
 	
+	//三角形の描画
+	sCommandList_->DrawInstanced(3, 1, 0, 0);
+	
+
+	//sCommandList_->IASetIndexBuffer(&ibView_); // IBVを設定
+	//sCommandList_->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
 	
 	
 	
