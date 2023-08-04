@@ -351,7 +351,6 @@ void Model::InitializeGraphicsPipeline(){
 	graphicsPipelineStateDesc.PS = {
 	    pixelShaderBlob_->GetBufferPointer(), pixelShaderBlob_->GetBufferSize()}; // PixelShader
 	graphicsPipelineStateDesc.BlendState = blendDesc;              // BrendState
-
 	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;                 // RasterizerState
 	// 書き込むRTVの情報
 	graphicsPipelineStateDesc.NumRenderTargets = 1;
@@ -434,12 +433,6 @@ void Model::InitializeGraphicsPipeline(){
 	directionalLightData->color = {1.0f, 1.0f, 1.0f, 1.0f};
 	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
 	directionalLightData->intensity = 1.0f;
-
-
-
-
-	
-
 
 
 
