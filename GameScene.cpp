@@ -20,7 +20,7 @@ void GameScene::Update() {}
 
 
 void GameScene::Draw() {
-
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 	// コマンドリストの取得
 	
 	

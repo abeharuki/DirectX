@@ -652,7 +652,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//描画開始
 			dxCommon->PreDraw();
 			
-			model->PreDraw();
+			model->PreDraw(dxCommon->GetCommandList());
 
 
 			// ImGui受付終了

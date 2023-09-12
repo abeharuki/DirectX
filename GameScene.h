@@ -35,6 +35,6 @@ public: // メンバ関数
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
-	Model* model = nullptr;
+	
 	WinApp* win = nullptr;
 };

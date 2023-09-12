@@ -457,8 +457,8 @@ void Model::InitializeGraphicsPipeline(){
 	
 };
 
-void Model::PreDraw() { 
-	sCommandList_ = dxCommon_->GetCommandList();
+void Model::PreDraw(ID3D12GraphicsCommandList* commandList) { 
+	sCommandList_ = commandList;
 
 	// ゲームの処理
 	//transform.rotate.y += 0.03f;
