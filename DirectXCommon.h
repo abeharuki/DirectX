@@ -86,6 +86,10 @@ public: // メンバ関数
 
 	ID3D12DescriptorHeap* GetSRV() const { return srvHeap_.Get(); }
 
+	ID3D12DescriptorHeap* GetRTV() const { return rtvHeap_.Get(); }
+
+	ID3D12DescriptorHeap* GetDSV() const { return dsvHeap_.Get(); }
+
 	ID3D12DescriptorHeap* CreateDescriptorHeap(
 	    ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
 	    bool shaderVisible);

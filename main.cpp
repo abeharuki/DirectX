@@ -16,6 +16,7 @@
 
 #include "WinApp.h"
 #include "DirectXCommon.h"
+#include "GameScene.h"
 #include "Model.h"
 #include "ImGuiManager.h"
 
@@ -266,7 +267,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinApp* win = nullptr;
 	DirectXCommon* dxCommon = nullptr;
 	Model* model = nullptr;
-	
+	GameScene* gameScene = nullptr;
+
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
 	win->CreateGameWindow();
@@ -526,19 +528,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	
 
-	//DSVの設定
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDdesc{};
-	dsvDdesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//Format。基本的にはResourceに合わせる
-	dsvDdesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;//2dTexture
-	//DSVHeapの先頭にDSVを作る
-	device->CreateDepthStencilView(depthStencilResource, &dsvDdesc, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	
 
 
-
-	ResourceObject deptStencilResource =
-	    CreateDepthStencilTextureResource(device, kClientWidth, kClientHeight);
+	
 	bool useMonsterBall = true;
 	*/
+
+    // ゲームシーンの初期化
+	//gameScene = new GameScene();
+	//gameScene->Initialize();
 
 	MSG msg{};
 	// ウインドウの×ボタンが押されるまでループ

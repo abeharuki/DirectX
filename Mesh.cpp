@@ -31,12 +31,12 @@ ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes) {
 void Mesh::CreateBuffers(ID3D12Device* device) {
 
 	//四角形
-	vertexResource_ = CreateBufferResoure(device, sizeof(VertexData) * 3);
+	vertexResource_ = CreateBufferResoure(device, sizeof(VertexData) * 6);
 	// 頂点バッファビューを作成する
 	// リソースの先頭のアドレスから使う
 	vbView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vbView_.SizeInBytes = sizeof(VertexData) * 3;
+	vbView_.SizeInBytes = sizeof(VertexData) * 6;
 	// 1頂点あたりのサイズ
 	vbView_.StrideInBytes = sizeof(VertexData);
 

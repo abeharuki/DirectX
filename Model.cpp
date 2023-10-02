@@ -145,44 +145,23 @@ void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mip
 	}
 }
 
-//深度情報を持ったTexture
-ID3D12Resource*
-    CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
-	// 生成するResourceの設定
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = width;                          // Textureの幅
-	resourceDesc.Height = height;                        // Textureの高さ
-	resourceDesc.MipLevels = 1;                          // mipmapの数
-	resourceDesc.DepthOrArraySize = 1;                   // 奥行き or 配列Textureの配列
-	resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // DepthStencilとして利用可能なフォーマット
-	resourceDesc.SampleDesc.Count = 1; // サンプリングカウント。1固定。
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D; // 2次元
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // DepthStencilとして使う通知
 
-	// 利用するHeapの設定
-	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT; // VRAM上に作る
-
-	// 深度値のクリア設定
-	D3D12_CLEAR_VALUE depthClearValue{};
-	depthClearValue.DepthStencil.Depth = 1.0f;              // 1.0f(最大値)クリア
-	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // フォーマット。Resourceと合わせる
-
-	// Resourceを生成する
-	ID3D12Resource* resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
-	    &heapProperties,                  // Heapの設定
-	    D3D12_HEAP_FLAG_NONE,             // Heapの特殊な設定。特になし。
-	    &resourceDesc,                    // Resourceの設定
-	    D3D12_RESOURCE_STATE_DEPTH_WRITE, // 深度値を書き込む状態にしておく
-	    &depthClearValue,                 // Clear最適値
-	    IID_PPV_ARGS(&resource));         // 作成するResourceポインタへのポインタ
+ID3D12DescriptorHeap* CreateDescriptorHeap(
+    ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
+    bool shaderVisible) {
+	// ディスクリプタヒープの生成
+	ID3D12DescriptorHeap* descriptorHeap = nullptr;
+	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
+	descriptorHeapDesc.Type = heapType;                 // レンダーターゲットビュー用
+	descriptorHeapDesc.NumDescriptors = numDescriptors; // ダブルバッファ用に二つ。多くても可
+	descriptorHeapDesc.Flags =
+	    shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
+	// ディスクリプタヒープが作れなかったので起動できない
 	assert(SUCCEEDED(hr));
-	return resource;
-}
 
-
-
+	return descriptorHeap;
+};
 
 
 Model* Model::GetInstance() {
@@ -332,7 +311,7 @@ void Model::InitializeGraphicsPipeline(){
 	assert(pixelShaderBlob_ != nullptr);
 
 
-	/*/ DepthStencilStateの設定
+	// DepthStencilStateの設定
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
 	// Depthの機能を有効化する
 	depthStencilDesc.DepthEnable = true;
@@ -340,7 +319,7 @@ void Model::InitializeGraphicsPipeline(){
 	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	// 比較関数はLessEqual。つまり、近ければ描画される
 	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	*/
+	
 
 	// PSO生成
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
@@ -361,8 +340,8 @@ void Model::InitializeGraphicsPipeline(){
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	//DepthStencilの設定
-	//graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
-	//graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
+	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	// 実際に生成
 	hr_ = dxCommon_->GetDevice()->CreateGraphicsPipelineState(
 	    &graphicsPipelineStateDesc, IID_PPV_ARGS(&sPipelineState_));
@@ -390,9 +369,14 @@ void Model::InitializeGraphicsPipeline(){
 	vertexData[2].position = {0.5f, -0.5f, 0.0f, 1.0f}; // 右下
 	vertexData[2].texcoord = {1.0f, 1.0f};
 
-	//vertexData[3].position = {0.5f, 0.5f, 0.0f, 1.0f}; // 右上
-	//vertexData[3].texcoord = {1.0f, 0.0f};
+	vertexData[3].position = {-0.5f, -0.5f, 0.5f, 1.0f}; // 左上
+	vertexData[3].texcoord = {0.0f, 1.0f};
 	
+	vertexData[4].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 上
+	vertexData[4].texcoord = {0.5f, 0.0f};
+
+	vertexData[5].position = {0.5f, -0.5f, -0.5f, 1.0f}; // 右下
+	vertexData[5].texcoord = {1.0f, 1.0f};
 
 	//インデックス
 	ibView_ = mesh_->GetIBView();
@@ -461,19 +445,28 @@ void Model::PreDraw(ID3D12GraphicsCommandList* commandList) {
 	sCommandList_ = commandList;
 
 	// ゲームの処理
-	//transform.rotate.y += 0.03f;
+	transform.rotate.y += 0.03f;
 	Matrix4x4 worldMatrix =
-	    math_->MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	Matrix4x4 cameraMatrix = math_->MakeAffineMatrix(
-	    cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-	Matrix4x4 viewMatrix = math_->Inverse(cameraMatrix);
+	    Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix(
+	     cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
+	Matrix4x4 viewMatrix = Math::Inverse(cameraMatrix);
 	Matrix4x4 projecttionMatrix =
-	    math_->MakePerspectiverFovMatrix(0.45f, float(1280) / float(720), 0.1f, 100.0f);
+	    Math::MakePerspectiverFovMatrix(0.45f, float(1280) / float(720), 0.1f, 100.0f);
 	// WVPMatrixを作る。同次クリップ空間
 	Matrix4x4 worldViewProjectionMatrix =
-	    math_->Multiply(worldMatrix, math_->Multiply(viewMatrix, projecttionMatrix));
+	    Math::Multiply(worldMatrix, Math::Multiply(viewMatrix, projecttionMatrix));
 	wvpData->WVP = worldViewProjectionMatrix;
 	
+	// 描画先のRTVとDSVを設定する
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle =
+	    dxCommon_->GetDSV()->GetCPUDescriptorHandleForHeapStart();
+	// 描画先のRTVを設定する
+	sCommandList_->OMSetRenderTargets(1, &dxCommon_->GetRTV()[backBufferIndex], false, &dsvHandle);
+
+	// 描画用のDescriptorHeapの設定
+	ID3D12DescriptorHeap* descriptorHeaps[] = {dxCommon_->GetSRV()};
+	sCommandList_->SetDescriptorHeaps(1, descriptorHeaps);
 
 
 	// コマンドを積む
@@ -496,7 +489,7 @@ void Model::PreDraw(ID3D12GraphicsCommandList* commandList) {
 	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
 	
 	//三角形の描画
-	sCommandList_->DrawInstanced(3, 1, 0, 0);
+	sCommandList_->DrawInstanced(6, 1, 0, 0);
 	
 
 	//sCommandList_->IASetIndexBuffer(&ibView_); // IBVを設定
@@ -537,4 +530,6 @@ void Model::LoadTexture() {
 	// SRVの作成
 	dxCommon_->GetDevice()->CreateShaderResourceView(
 	    textureResource, &srvDesc, textureSrvHandleCPU);
+
+	
 }
