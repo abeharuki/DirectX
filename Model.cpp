@@ -4,6 +4,8 @@
 
 #include "StringUtility.h"
 
+
+
 IDxcBlob* Model::CompileShader(
     // CompilerするShaderファイルへのパス
     const std::wstring& filePath,
@@ -399,7 +401,8 @@ void Model::InitializeGraphicsPipeline(){
 	// 書き込むためのアドレスを取得
 	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	// 今回は白を書き込む
-	materialData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialData->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
+	materialData->color.a = float(1.0f);
 	// Lightingを有効にする
 	materialData->enableLighting = false;
 	// 初期化

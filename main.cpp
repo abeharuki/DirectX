@@ -29,16 +29,7 @@
 
 
 
-
-
 /*
-
-
-
-
-
-
-
 
 
 
@@ -652,7 +643,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			dxCommon->PreDraw();
 			
 			model->PreDraw(dxCommon->GetCommandList());
-
+			
 
 			// ImGui受付終了
 			imguiManager->End();

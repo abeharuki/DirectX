@@ -1,4 +1,9 @@
 #include "object3d.hlsli"
+struct Color {
+	float32_t3 rgb;
+	float a;
+};
+
 struct Material
 {
 	float32_t4 color;
