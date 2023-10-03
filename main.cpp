@@ -90,8 +90,13 @@ struct Sphere
 
 };
 
+struct Color {
+	Vector3 rgb;
+	float a;
+};
+
 struct Material {
-	Vector4 color;
+	Color color;
 	int32_t enableLighting;
 	float padding[3];
 	Matrix4x4 uvTransform;
@@ -115,7 +120,7 @@ struct TransformationMatrix {
 
 struct DirectionalLight
 {
-	Vector4 color;//ライトの色
+	Color color;//ライトの色
 	Vector3 direction;//ライトの向き
 	float intensity;//輝度
 
@@ -1253,6 +1258,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	D3D12_BLEND_DESC blendDesc{};
 	// すべての色要素を書き込む
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.AlphaToCoverageEnable = FALSE;  // アンチエイリアシング有無
+	blendDesc.IndependentBlendEnable = FALSE; // ブレンドステートを個別化するか有無
+	blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+	// ブレンディング係数の設定
+	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 
 	// RasiterzerStateの設定
 	D3D12_RASTERIZER_DESC rasterizerDesc{};
@@ -1532,7 +1547,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//書き込むためのアドレスを取得
 	materialResorce->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	//今回は白を書き込む
-	materialData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialData->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
+	//ブレンド
+	materialData->color.a = float(1.0f);
 	//Lightingを有効にする
 	materialData->enableLighting = true;
 	//初期化
@@ -1546,7 +1563,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 書き込むためのアドレスを取得
 	materialResorce2->Map(0, nullptr, reinterpret_cast<void**>(&materialData2));
 	// 今回は白を書き込む
-	materialData2->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialData2->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
+	// ブレンド
+	materialData2->color.a = float(1.0f);
 	// Lightingを有効にする
 	materialData2->enableLighting = true;
 	// 初期化
@@ -1560,7 +1579,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 書き込むためのアドレスを取得
 	materialResorce3->Map(0, nullptr, reinterpret_cast<void**>(&materialData3));
 	// 今回は白を書き込む
-	materialData3->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialData3->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
+	// ブレンド
+	materialData3->color.a = float(1.0f);
 	// Lightingを有効にする
 	materialData3->enableLighting = true;
 	// 初期化
@@ -1574,7 +1595,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 書き込むためのアドレスを取得
 	materialResorce4->Map(0, nullptr, reinterpret_cast<void**>(&materialData4));
 	// 今回は白を書き込む
-	materialData4->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialData4->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
+	// ブレンド
+	materialData4->color.a = float(1.0f);
 	// Lightingを有効にする
 	materialData4->enableLighting = true;
 	// 初期化
@@ -1587,7 +1610,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
 	//今回は白を書き込む
-	materialDataSprite->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialDataSprite->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
+	materialDataSprite->color.a = float(1.0f);
 	//Lightingを無効
 	materialDataSprite->enableLighting = false;
 	//初期化
@@ -1891,7 +1915,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				objTransform.scale = {1, 1, 1};
 				objTransform.translate = {0, 0, 0};
 				objTransform.rotate = {0, 0, 0};
-				materialData2->color = {1,1,1};
+				materialData2->color = {1,1,1,1};
 			}
 
 			if (useObj2) {
@@ -1910,7 +1934,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				objTransform2.scale = {1, 1, 1};
 				objTransform2.translate = {0, 0, 0};
 				objTransform2.rotate = {0, 0, 0};
-				materialData3->color = {1,1,1};
+				materialData3->color = {1,1,1,1};
 			}
 			
 			// 球の描画
@@ -1927,7 +1951,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				transform.scale = {1, 1, 1};
 				transform.translate = {0, 0, 0};
 				transform.rotate = {0, 0,0};
-				materialData4->color = {1,1,1};
+				materialData4->color = {1,1,1,1};
 			}
 
 
@@ -1965,7 +1989,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				ImGui::DragFloat3("Scale", &objTransform.scale.x, 0.01f, -10.0f, 10.0f);
 				 ImGui::DragFloat3("Translation", &objTransform.translate.x, 0.01f, -10.0f, 10.0f);
 				 ImGui::DragFloat3("Rotate", &objTransform.rotate.x, 0.01f, -10.0f, 10.0f);
-				 ImGui::SliderFloat3("color", &materialData2->color.x, 0.0f, 1.0f);
+				 ImGui::SliderFloat3("color", &materialData2->color.rgb.x, 0.0f, 1.0f);
+				 ImGui::SliderFloat("blend", &materialData2->color.a, 0.0f, 1.0f);
 				 ImGui::Checkbox("useObj", &useObj);
 				 ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 				 ImGui::TreePop();
@@ -1976,7 +2001,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				 ImGui::DragFloat3("Scale", &objTransform2.scale.x, 0.01f, -10.0f, 10.0f);
 				 ImGui::DragFloat3("Translation", &objTransform2.translate.x, 0.01f, -10.0f, 10.0f);
 				 ImGui::DragFloat3("Rotate", &objTransform2.rotate.x, 0.01f, -10.0f, 10.0f);
-				 ImGui::SliderFloat3("color", &materialData3->color.x, 0.0f, 1.0f);
+				 ImGui::SliderFloat3("color", &materialData3->color.rgb.x, 0.0f, 1.0f);
+				 ImGui::SliderFloat("blend", &materialData3->color.a, 0.0f, 1.0f);
 				 ImGui::Checkbox("useObj", &useObj2);
 				 ImGui::Checkbox("useMonsterBall", &useMonsterBall2);
 				 ImGui::TreePop();
@@ -1987,7 +2013,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				 ImGui::DragFloat3("Scale", &transform.scale.x, 0.01f, -10.0f, 10.0f);
 				 ImGui::DragFloat3("Translation", &transform.translate.x, 0.01f, -10.0f, 10.0f);
 				 ImGui::DragFloat3("Rotate", &transform.rotate.x, 0.01f, -10.0f, 10.0f);
-				 ImGui::SliderFloat3("color", &materialData4->color.x, 0.0f, 1.0f);
+				 ImGui::SliderFloat3("color", &materialData4->color.rgb.x, 0.0f, 1.0f);
+				 ImGui::SliderFloat("blend", &materialData4->color.a, 0.0f, 1.0f);
 				 ImGui::Checkbox("useBall", &useBall);
 				 ImGui::Checkbox("useMonsterBall", &useMonsterBall3);
 				 ImGui::TreePop();
@@ -2008,7 +2035,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			 if (ImGui::TreeNode("Light")) {
 
 				 // LightLight
-				 ImGui::SliderFloat3("LightColor", &directionalLightData->color.x, -1.0f, 1.0f);
+				 ImGui::SliderFloat3("LightColor", &directionalLightData->color.rgb.x, -1.0f, 1.0f);
 				 ImGui::SliderFloat3("LightDirecton", &directionalLightData->direction.x, -1.0f, 1.0f);
 				 ImGui::DragFloat("Intensity", &directionalLightData->intensity, 0.1f);
 				 ImGui::TreePop();
