@@ -1,6 +1,7 @@
 #include "DirectXCommon.h"
 #include <format>
 #include "externals/DirectXTex/DirectXTex.h"
+#include "externals/DirectXTex/d3dx12.h"
 
 
 using namespace Microsoft::WRL;
@@ -86,17 +87,16 @@ void DirectXCommon::PreDraw() {
 
 	// 描画先のRTVとDSVを設定する
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap_->GetCPUDescriptorHandleForHeapStart();
-	
 
-	// 描画先のRTVを設定する
-	commandList_->OMSetRenderTargets(
-	    1, &rtvHandles_[backBufferIndex], false, nullptr /* &dsvHandle*/);
-	// 指定した深度で画面全体をクリアする
-	//commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	
+	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, &dsvHandle);
+
 	
 
 	// 全画面クリア
 	ClearRenderTarget();
+	// 深度バッファクリア
+	ClearDepthBuffer();
 
 	// 描画用のDescriptorHeapの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = {srvHeap_.Get()};
@@ -153,6 +153,14 @@ void DirectXCommon::ClearRenderTarget() {
 	//hr_ = commandList_->Close();
 	assert(SUCCEEDED(hr_));
 	
+}
+
+void DirectXCommon::ClearDepthBuffer() {
+	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvH =
+	    CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
+	// 深度バッファのクリア
+	commandList_->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 int32_t DirectXCommon::GetBackBufferWidth() const { return backBufferWidth_; }
@@ -378,7 +386,8 @@ ID3D12Resource*
 }
 
 // 深度バッファ
-void DirectXCommon::ClearDepthBuffer() {
+void DirectXCommon::CreateDepthBuffer() {
+
 	// DSV用のヒープでディスクリプタの数は1。DSVはShader内で触るものではないので、ShaderVisibleはfalse
 	dsvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 

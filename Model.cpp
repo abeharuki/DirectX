@@ -458,16 +458,12 @@ void Model::PreDraw(ID3D12GraphicsCommandList* commandList) {
 	    Math::Multiply(worldMatrix, Math::Multiply(viewMatrix, projecttionMatrix));
 	wvpData->WVP = worldViewProjectionMatrix;
 	
-	// 描画先のRTVとDSVを設定する
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle =
-	    dxCommon_->GetDSV()->GetCPUDescriptorHandleForHeapStart();
-	// 描画先のRTVを設定する
-	sCommandList_->OMSetRenderTargets(1, &dxCommon_->GetRTV()[backBufferIndex], false, &dsvHandle);
 
-	// 描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = {dxCommon_->GetSRV()};
-	sCommandList_->SetDescriptorHeaps(1, descriptorHeaps);
+	
 
+	
+
+	
 
 	// コマンドを積む
 	sCommandList_->RSSetViewports(1, &viewport);
