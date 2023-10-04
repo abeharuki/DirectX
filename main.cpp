@@ -126,6 +126,18 @@ struct DirectionalLight
 
 };
 
+enum BlendMode {
+	kNormal,   //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+	kAdd,      //!< 加算。Src * SrcA + Dest * 1
+	kSubtract, //!< 減算。Dest * 1 - Src * SrcA
+	kMultily,  //!< 乗算。Src * 0 + Dest * Src
+	
+	kCountOfBlendMode, //!< ブレンドモード数。指定はしない
+};
+
+BlendMode blendMode_ = kSubtract;
+BlendMode blend_;
+
 void Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
 }
@@ -1261,10 +1273,32 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	blendDesc.AlphaToCoverageEnable = FALSE;  // アンチエイリアシング有無
 	blendDesc.IndependentBlendEnable = FALSE; // ブレンドステートを個別化するか有無
 	blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+	
 	// ブレンディング係数の設定
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	switch (blendMode_) {
+	case kNormal:
+	default:
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		break;
+	case kAdd:
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+		break;
+	case kSubtract:
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+		break;
+	case kMultily:
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
+		break;
+	}
+	
 	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
@@ -1983,6 +2017,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			
 
 			ImGui::Begin("Settings");
+
+			if (ImGui::Combo(
+			        "Blend", (int*)&blendMode_, "kNormal\0kAdd\0kSubtract\0kMultily\0",
+			        kCountOfBlendMode)) {
+
+				switch (blend_) {
+				case kNormal:
+					blendMode_ = kNormal;
+					break;
+				case kAdd:
+					blendMode_ = kAdd;
+					break;
+				case kSubtract:
+					blendMode_ = kSubtract;
+					break;
+				case kMultily:
+					blendMode_ = kMultily;
+					break;
+				}
+				
+			}
+			
 
 			 if (ImGui::TreeNode("objct")) {
 				// objct
