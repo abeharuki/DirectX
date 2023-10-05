@@ -16,6 +16,9 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 #include <vector>
 #include <fstream>
 #include <sstream>
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -135,7 +138,7 @@ enum BlendMode {
 	kCountOfBlendMode, //!< ブレンドモード数。指定はしない
 };
 
-BlendMode blendMode_ = kSubtract;
+BlendMode blendMode_ = kNormal;
 BlendMode blend_;
 
 void Log(const std::string& message) {
@@ -675,8 +678,8 @@ void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mip
 }
 
 void DrawSphere(VertexData* vertexData, Vector4 f) {
-	const uint32_t kSubdivision = 10;                 // 分割数
-	const float pi = 3.14f;                           // π
+	const uint32_t kSubdivision = 16;                 // 分割数
+	const float pi = (float)M_PI;                           // π
 	const float kLonEvery = 2.0f * pi / kSubdivision; // 経度分割1つ分の角度(φd)
 	const float kLatEvery = pi / kSubdivision;        // 緯度分割1つ分の角度(θd)
 	float u;
@@ -690,43 +693,44 @@ void DrawSphere(VertexData* vertexData, Vector4 f) {
 			float lon = lonIndex * kLonEvery; // 現在の経度(φ)
 			u = float(lonIndex) / float(kSubdivision);
 			v = 1.0f - float(latIndex) / float(kSubdivision);
+			float uv = 1.0f / float(kSubdivision);
 			// a 左下
 			vertexData[start].position.x = cos(lat) * cos(lon);
 			vertexData[start].position.y = sin(lat);
 			vertexData[start].position.z = cos(lat) * sin(lon);
 			vertexData[start].position.w = 1.0f;
-			vertexData[start].texcoord = {u, v + 0.1f};
+			vertexData[start].texcoord = {u, v};
 			// b 左上
 			vertexData[start + 1].position.x = cos(lat + kLatEvery) * cos(lon);
 			vertexData[start + 1].position.y = sin(lat + kLatEvery);
 			vertexData[start + 1].position.z = cos(lat + kLatEvery) * sin(lon);
 			vertexData[start + 1].position.w = 1.0f;
-			vertexData[start + 1].texcoord = {u, v};
+			vertexData[start + 1].texcoord = {u, v - uv};
 			// c 右下
 			vertexData[start + 2].position.x = cos(lat) * cos(lon + kLonEvery);
 			vertexData[start + 2].position.y = sin(lat);
 			vertexData[start + 2].position.z = cos(lat) * sin(lon + kLonEvery);
 			vertexData[start + 2].position.w = 1.0f;
-			vertexData[start + 2].texcoord = {u + 0.1f, v + 0.1f};
+			vertexData[start + 2].texcoord = {u + uv, v };
 
 			// b 左上
-			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
 			vertexData[start + 3].position.y = sin(lat + kLatEvery);
-			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon);
+			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
 			vertexData[start + 3].position.w = 1.0f;
-			vertexData[start + 3].texcoord = {u, v};
+			vertexData[start + 3].texcoord = {u +uv, v-uv};
 			// d 右上
-			vertexData[start + 4].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
-			vertexData[start + 4].position.y = sin(lat + kLatEvery);
-			vertexData[start + 4].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
+			vertexData[start + 4].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData[start + 4].position.y = sin(lat);
+			vertexData[start + 4].position.z = cos(lat) * sin(lon + kLonEvery);
 			vertexData[start + 4].position.w = 1.0f;
-			vertexData[start + 4].texcoord = {u + 0.1f, v};
+			vertexData[start + 4].texcoord = {u + uv, v};
 			// c 右下
-			vertexData[start + 5].position.x = cos(lat) * cos(lon + kLonEvery);
-			vertexData[start + 5].position.y = sin(lat);
-			vertexData[start + 5].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData[start + 5].position.x = cos(lat+ kLatEvery) * cos(lon);
+			vertexData[start + 5].position.y = sin(lat+ kLatEvery);
+			vertexData[start + 5].position.z = cos(lat+ kLatEvery) * sin(lon);
 			vertexData[start + 5].position.w = 1.0f;
-			vertexData[start + 5].texcoord = {u + 0.1f, v + 0.1f};
+			vertexData[start + 5].texcoord = {u , v - uv};
 
 			vertexData[start].normal.x = vertexData[start].position.x;
 			vertexData[start].normal.y = vertexData[start].position.y;
@@ -754,7 +758,6 @@ void DrawSphere(VertexData* vertexData, Vector4 f) {
 		}
 	}
 }
-
 
 void DrawIndexSphere(VertexData* vertexData) {
 	const uint32_t kSubdivision = 10;//分割数
@@ -848,6 +851,16 @@ void DrawIndexSphere(VertexData* vertexData) {
 	}
 	
 }
+
+// 正規化
+Vector3 Normalize(const Vector3& v) {
+	Vector3 normalize;
+	float mag = 1.0f / (float)sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	normalize.x = v.x * mag;
+	normalize.y = v.y * mag;
+	normalize.z = v.z * mag;
+	return normalize;
+};
 
 ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename) {
 	//必要な変数の宣言
@@ -1473,10 +1486,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	    vertexData2, modelData2.vertices.data(),
 	    sizeof(VertexData) * modelData2.vertices.size()); // 頂点データをリソースにコピー
 	
-	
-	
-
-
 
 	//Sprite用の頂点リソースを作る
 	ID3D12Resource* vertexResourceSprite = CreateBufferResoure(device, sizeof(VertexData) * 4);
@@ -1496,12 +1505,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//1枚目の三角形
 	vertexDataSprite[0].position = { 0.0f,360.0f,0.0f,1.0f };//左下
 	vertexDataSprite[0].texcoord = { 0.0f,1.0f };
+	vertexDataSprite[0].normal = {0.0f,0.0f, -1.0f};
 	vertexDataSprite[1].position = { 0.0f,0.0f,0.0f,1.0f };//左上
 	vertexDataSprite[1].texcoord = { 0.0f,0.0f };
+	vertexDataSprite[1].normal = {0.0f, 0.0f, -1.0f};
 	vertexDataSprite[2].position = { 640.0f,360.0f,0.0f,1.0f };//右下
 	vertexDataSprite[2].texcoord = { 1.0f,1.0f };
+	vertexDataSprite[2].normal = {0.0f, 0.0f, -1.0f};
 	vertexDataSprite[3].position = { 640.0f,0.0f,0.0f,1.0f };//右上
 	vertexDataSprite[3].texcoord = { 1.0f,0.0f };
+	vertexDataSprite[3].normal = {0.0f, 0.0f, -1.0f};
 	
 	/*
 	//2枚目の三角形
@@ -1512,7 +1525,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	vertexDataSprite[5].position = { 640.0f,360.0f,0.0f,1.0f };//右下
 	vertexDataSprite[5].texcoord = { 1.0f,1.0f };
 	*/
-	vertexDataSprite[0].normal = { 0.0f,0.0f,-1.0f };
+	
 	
 	
 	//インデックスを使った四角形
@@ -1656,10 +1669,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectionalLight* directionalLightData = nullptr;
 	// 書き込むためのアドレスを取得
 	directionalLightResource->Map(0, nullptr,reinterpret_cast<void**>(&directionalLightData));
-
+	Vector3 Lightdirection = {0.0f, -1.0f, -1.0f};
 	//デフォルト値
 	directionalLightData->color = { 1.0f,1.0f,1.0f,1.0f };
-	directionalLightData->direction = { 0.0f,-1.0f,0.0f };
+	directionalLightData->direction = Normalize(Lightdirection);
 	directionalLightData->intensity = 1.0f;
 	
 	// ビューポート
@@ -1980,7 +1993,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				commandList->SetGraphicsRootConstantBufferView(
 				    1, wvpResouce->GetGPUVirtualAddress());
 				commandList->IASetVertexBuffers(0, 1, &vertexBufferView1);
-				commandList->DrawInstanced(1532, 1, 0, 0);
+				commandList->DrawInstanced(1536, 1, 0, 0);
 			} else {
 				transform.scale = {1, 1, 1};
 				transform.translate = {0, 0, 0};
@@ -2092,8 +2105,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				 // LightLight
 				 ImGui::SliderFloat3("LightColor", &directionalLightData->color.rgb.x, -1.0f, 1.0f);
-				 ImGui::SliderFloat3("LightDirecton", &directionalLightData->direction.x, -1.0f, 1.0f);
+				 ImGui::SliderFloat3("LightDirecton", &Lightdirection.x, -1.0f, 1.0f);
 				 ImGui::DragFloat("Intensity", &directionalLightData->intensity, 0.1f);
+				 directionalLightData->direction = Normalize(Lightdirection);
 				 ImGui::TreePop();
 			 }
 
