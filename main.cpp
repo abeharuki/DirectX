@@ -268,9 +268,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win,1280,720);
 
-	//モデルの作成
-	model = Model::GetInstance();
-	model->Initializ(dxCommon);
+	
 	
 	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win, dxCommon);
@@ -527,21 +525,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	*/
 
     // ゲームシーンの初期化
-	//gameScene = new GameScene();
-	//gameScene->Initialize();
+	gameScene = new GameScene();
+	gameScene->Initialize();
 
-	MSG msg{};
 	// ウインドウの×ボタンが押されるまでループ
-	while (msg.message != WM_QUIT) {
+	while (true) {
 		
-		// Windowにメッセージが来てたら最優先で処理させる
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-		else {
-		
-			/*
+		// メッセージ処理
+		if (win->ProcessMessage()) {break;}
+
+		/*
 			
 			Math* math_;
 			
@@ -635,24 +628,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 			*/
-			// ImGui受付開始
-			imguiManager->Begin();
+		// ImGui受付開始
+		imguiManager->Begin();
 
 
-			//描画開始
-			dxCommon->PreDraw();
-			
-			model->PreDraw(dxCommon->GetCommandList());
-			
+		//描画開始
+		dxCommon->PreDraw();
+		
+		//model->PreDraw(dxCommon->GetCommandList());
+		gameScene->Draw();
 
-			// ImGui受付終了
-			imguiManager->End();
-			// ImGui描画
-			imguiManager->Draw();
-			//描画終了
-			dxCommon->PostDraw();
-            
-		}
+		// ImGui受付終了
+		imguiManager->End();
+		// ImGui描画
+		imguiManager->Draw();
+		//描画終了
+		dxCommon->PostDraw();
 		
 	}
 	
@@ -711,7 +702,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 	//リソースリークチェック
 	//dxCommon->Debug();
-
+	//  DirectX終了処理
+	dxCommon->Finalize();
 	// ゲームウィンドウの破棄
 	win->TerminateGameWindow();
 

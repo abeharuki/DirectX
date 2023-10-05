@@ -18,17 +18,17 @@ private: // 静的メンバ変数
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
 	// コマンドリスト
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> sCommandList_;
+	static ID3D12GraphicsCommandList* sCommandList_;
 	// ルートシグネチャ
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	static Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 
 	
-	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_;
-	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	static Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_;
+	static Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_;
+	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	
 	
 
@@ -45,7 +45,7 @@ public:
 	/// <summary>
 	/// 静的初期化
 	/// </summary>
-    void StaticInitialize();
+	static void StaticInitialize();
 
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
@@ -62,7 +62,19 @@ public:
 	/// 描画前処理
 	/// </summary>
 	/// <param name="commandList">描画コマンドリスト</param>
-	void PreDraw(ID3D12GraphicsCommandList* commandList);
+	static void PreDraw(ID3D12GraphicsCommandList* commandList);
+
+	/// <summary>
+	/// 描画後処理
+	/// </summary>
+	static void PostDraw();
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="worldTransform">ワールドトランスフォーム</param>
+	/// <param name="viewProjection">ビュープロジェクション</param>
+	void Draw(/* const WorldTransform& worldTransform, const ViewProjection& viewProjection*/);
 
 	
 	IDxcBlob* CompileShader(
@@ -81,50 +93,36 @@ private:
 	DirectXCommon* dxCommon_;
 	Utility* utility_;
 	Mesh* mesh_;
-	Math* math_;
+	
 
-	D3D12_VIEWPORT viewport{};
-	D3D12_RECT scissorRect{};
+	static D3D12_VIEWPORT viewport;
+	static D3D12_RECT scissorRect;
 	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vbView_ = {};
-	D3D12_VERTEX_BUFFER_VIEW vbView2_ = {};
-	D3D12_INDEX_BUFFER_VIEW ibView_ = {};
+	static D3D12_VERTEX_BUFFER_VIEW vbView_;
+	static D3D12_INDEX_BUFFER_VIEW ibView_;
 	// 頂点
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	static Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	// ライティング
-	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
 	// WVP用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
+	static Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
 	//マテリアル用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
+	static Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 	
 	VertexData* vertexData = nullptr;
-	TransformationMatrix* wvpData = nullptr;
-	DirectionalLight* directionalLightData = nullptr;
+	static TransformationMatrix* wvpData;
 	Material* materialData = nullptr;
-	VertexData* metaballData = nullptr;
-	TransformationMatrix* transformationmetaBallData = nullptr;
-	Transform transform{
-	    {1.0f, 1.0f, 1.0f},
-        {0.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f}
-    };
+	DirectionalLight* directionalLightData = nullptr;
+	
+	static Transform transform;
 
-	Transform cameraTransform{
-	    {1.0f, 1.0f, 1.0f  },
-        {0.0f, 0.0f, 0.0f  },
-        {0.0f, 0.0f, -10.0f}
-    };
-
-	Transform metaBalltransform{
-	    {1.0f, 1.0f, 1.0f},
-        {0.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f}
-    };
+	static Transform cameraTransform;
+	
+	
 
 
 	//Texture
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	static D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
  private:
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	void LoadTexture();

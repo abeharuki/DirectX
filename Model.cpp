@@ -4,7 +4,41 @@
 
 #include "StringUtility.h"
 
-
+// コマンドリスト
+ID3D12GraphicsCommandList* Model::sCommandList_ = nullptr;
+// ルートシグネチャ
+Microsoft::WRL::ComPtr<ID3D12RootSignature> Model::rootSignature_;
+// パイプラインステートオブジェクト
+Microsoft::WRL::ComPtr<ID3D12PipelineState> Model::sPipelineState_;
+Microsoft::WRL::ComPtr<ID3DBlob> Model::signatureBlob_;
+Microsoft::WRL::ComPtr<ID3DBlob> Model::errorBlob_;
+Microsoft::WRL::ComPtr<IDxcBlob> Model::vertexShaderBlob_;
+Microsoft::WRL::ComPtr<IDxcBlob> Model::pixelShaderBlob_;
+D3D12_VIEWPORT Model::viewport{};
+D3D12_RECT Model::scissorRect{};
+// 頂点バッファビュー
+D3D12_VERTEX_BUFFER_VIEW Model::vbView_ = {};
+D3D12_INDEX_BUFFER_VIEW Model::ibView_ = {};
+// 頂点
+Microsoft::WRL::ComPtr<ID3D12Resource> Model::vertexResource_;
+// ライティング
+Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
+// WVP用リソース
+Microsoft::WRL::ComPtr<ID3D12Resource> Model::wvpResouce_;
+// マテリアル用リソース
+Microsoft::WRL::ComPtr<ID3D12Resource> Model::materialResorce_;
+TransformationMatrix* Model::wvpData;
+Transform Model::transform = {
+    {1.0f, 1.0f, 1.0f},
+    {0.0f, 0.0f, 0.0f},
+    {0.0f, 0.0f, 0.0f}
+};
+Transform Model::cameraTransform = {
+    {1.0f, 1.0f, 1.0f  },
+    {0.0f, 0.0f, 0.0f  },
+    {0.0f, 0.0f, -10.0f}
+};
+D3D12_GPU_DESCRIPTOR_HANDLE Model::textureSrvHandleGPU;
 
 IDxcBlob* Model::CompileShader(
     // CompilerするShaderファイルへのパス
@@ -72,7 +106,6 @@ IDxcBlob* Model::CompileShader(
 	// 実行用のバイナリを返却
 	return shaderBlob;
 }
-
 
 
 //Textureデータの読み込み
@@ -390,8 +423,8 @@ void Model::InitializeGraphicsPipeline(){
 	// 書き込むためのアドレスを取得
 	wvpResouce_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
-	wvpData->WVP = math_->MakeIdentity4x4();
-	wvpData->World = math_->MakeIdentity4x4();
+	wvpData->WVP = Math::MakeIdentity4x4();
+	wvpData->World = Math::MakeIdentity4x4();
 
 
 	//マテリアル
@@ -406,8 +439,8 @@ void Model::InitializeGraphicsPipeline(){
 	// Lightingを有効にする
 	materialData->enableLighting = false;
 	// 初期化
-	materialData->uvTransform = math_->MakeIdentity4x4();
-
+	materialData->uvTransform = Math::MakeIdentity4x4();
+	
 
 
 	//ライティング
@@ -444,6 +477,7 @@ void Model::InitializeGraphicsPipeline(){
 	
 };
 
+
 void Model::PreDraw(ID3D12GraphicsCommandList* commandList) { 
 	sCommandList_ = commandList;
 
@@ -462,34 +496,14 @@ void Model::PreDraw(ID3D12GraphicsCommandList* commandList) {
 	wvpData->WVP = worldViewProjectionMatrix;
 	
 
-	
-
-	
-
-	
-
 	// コマンドを積む
 	sCommandList_->RSSetViewports(1, &viewport);
 	sCommandList_->RSSetScissorRects(1, &scissorRect);
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	sCommandList_->SetGraphicsRootSignature(rootSignature_.Get());
 	sCommandList_->SetPipelineState(sPipelineState_.Get());
-	sCommandList_->IASetVertexBuffers(0, 1, &vbView_);
-	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	sCommandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// マテリアルCBufferの場所を設定
-	sCommandList_->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
-	sCommandList_->SetGraphicsRootConstantBufferView(
-	    3, lightResource_->GetGPUVirtualAddress());
-	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
-	sCommandList_->SetGraphicsRootDescriptorTable(2,textureSrvHandleGPU);
-	// wvp用のCBufferの場所を設定
-	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
-	
-	//三角形の描画
-	sCommandList_->DrawInstanced(6, 1, 0, 0);
-	
+
 
 	//sCommandList_->IASetIndexBuffer(&ibView_); // IBVを設定
 	//sCommandList_->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -497,6 +511,30 @@ void Model::PreDraw(ID3D12GraphicsCommandList* commandList) {
 	
 	
 	
+}
+
+void Model::PostDraw() {
+	// コマンドリストを解除
+	Model::sCommandList_ = nullptr;
+}
+
+void Model::Draw() {
+
+	sCommandList_->IASetVertexBuffers(0, 1, &vbView_);
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	sCommandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// マテリアルCBufferの場所を設定
+	sCommandList_->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	sCommandList_->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
+
+	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
+	sCommandList_->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	// wvp用のCBufferの場所を設定
+	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+
+	// 三角形の描画
+	sCommandList_->DrawInstanced(6, 1, 0, 0);
 }
 
 //画像の読み込み

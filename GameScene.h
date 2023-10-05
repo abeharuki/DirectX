@@ -1,5 +1,5 @@
 #pragma once
-
+#include "DirectXCommon.h"
 #include "Model.h"
 
 /// <summary>
@@ -35,6 +35,6 @@ public: // メンバ関数
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
-	
-	WinApp* win = nullptr;
+	// 3Dモデル
+	Model* model_ = nullptr;
 };

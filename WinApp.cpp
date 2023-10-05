@@ -105,7 +105,7 @@ bool WinApp::ProcessMessage() {
 		DispatchMessage(&msg);
 	}
 
-	if (msg.message != WM_QUIT) {
+	if (msg.message == WM_QUIT) {
         return true;
 	}
 	return false;
