@@ -1,6 +1,8 @@
 #pragma once
 #include "DirectXCommon.h"
 #include "Model.h"
+#include "Engine.h"
+#include "Sprite.h"
 
 /// <summary>
 /// ゲームシーン
@@ -34,7 +36,8 @@ public: // メンバ関数
 	void Draw();
 
 private: // メンバ変数
-	DirectXCommon* dxCommon_ = nullptr;
+	//DirectXCommon* dxCommon_ = nullptr;
 	// 3Dモデル
 	Model* model_ = nullptr;
+	Sprite* sprite_ = nullptr;
 };

@@ -50,10 +50,6 @@ void DirectXCommon::Initialize(WinApp* winApp, int32_t backBufferWidth, int32_t 
 	
 	winApp_ = winApp;
 	
-	//
-	//
-	
-	
 
 	// DXGIデバイス初期化
 	InitializeDXGIDevice();

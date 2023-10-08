@@ -8,6 +8,7 @@
 #include <dxcapi.h>
 #include "StringUtility.h"
 #include "DirectXCommon.h"
+#include "Mesh.h"
 
 class Sprite {
 public:
@@ -50,11 +51,16 @@ public: // 静的メンバ関数
 	    ID3D12Device* device, int window_width, int window_height);
 
 	/// <summary>
+	/// シングルトンインスタンスの取得
+	/// </summary>
+	/// <returns></returns>
+	static Sprite* GetInstance();
+
+	/// <summary>
 	/// 描画前処理
 	/// </summary>
 	/// <param name="cmdList">描画コマンドリスト</param>
-	static void
-	    PreDraw(ID3D12GraphicsCommandList* cmdList, BlendMode blendMode = BlendMode::kNormal);
+	static void PreDraw();
 
 	/// <summary>
 	/// 描画後処理
@@ -75,50 +81,53 @@ public: // 静的メンバ関数
 	    uint32_t textureHandle, Vector2 position, Vector4 color = {1, 1, 1, 1},
 	    Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false);
 
-	IDxcBlob* CompileShader(
-	    // CompilerするShaderファイルへのパス
-	    const std::wstring& filePath,
-	    // Compilerに使用するProfile
-	    const wchar_t* profile,
-	    // 初期化で生成したものを3つ
-	    IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler);
-
-
+	
 private: // 静的メンバ変数
 	// 頂点数
 	static const int kVertNum = 4;
-	// デバイス
-	static ID3D12Device* sDevice_;
+	
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
-	// コマンドリスト
-	static ID3D12GraphicsCommandList* sCommandList_;
+
 	// ルートシグネチャ
-	static Microsoft::WRL::ComPtr<ID3D12RootSignature> sRootSignature_;
+	static Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
-	static std::array<
+	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+
+	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	
+	/*static std::array<
 	    Microsoft::WRL::ComPtr<ID3D12PipelineState>, size_t(BlendMode::kCountOfBlendMode)>
-	    sPipelineStates_;
+	    sPipelineStates_;*/
 	// 射影行列
 	static Matrix4x4 sMatProjection_;
+
+	
 
 public: // メンバ関数
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	Sprite();
+	//Sprite();
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	Sprite(
+	/*Sprite(
 	    uint32_t textureHandle, Vector2 position, Vector2 size, Vector4 color, Vector2 anchorpoint,
-	    bool isFlipX, bool isFlipY);
+	    bool isFlipX, bool isFlipY);*/
+
+
+	/// <summary>
+	/// グラフィックスパイプラインの初期化
+	/// </summary>
+	void sPipeline();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	/// <returns>成否</returns>
-	bool Initialize();
+	void Initialize();
 
 	/// <summary>
 	/// テクスチャハンドルの設定
@@ -196,11 +205,38 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	
+
 private: // メンバ変数
-	Utility* utility_;
-	DirectXCommon* dxCommon_;
+	Mesh* mesh_;
+	VertexData* vertexDataSprite = nullptr;
+	uint32_t* indexDataSprite = nullptr;
+	static TransformationMatrix* wvpData;
+	static Material* materialDataSprite;
+	DirectionalLight* directionalLightData = nullptr;
+	TransformationMatrix* transformationMatrixDataSprite = nullptr;
 
+	static Transform uvTransformSprite;
+	static Transform transform;
+	static Transform cameraTransform;
 
+	static D3D12_VIEWPORT viewport;
+	static D3D12_RECT scissorRect;
+	// 頂点バッファビュー
+	static D3D12_VERTEX_BUFFER_VIEW vbView_;
+	static D3D12_INDEX_BUFFER_VIEW ibView_;
+	// 頂点
+	static Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	static Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
+	// ライティング
+	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	//座標
+	static Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_; 
+	// WVP用リソース
+	static Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
+	// マテリアル用リソース
+	static Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
+	
 	// 頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertBuff_;
 	// 定数バッファ
@@ -209,8 +245,6 @@ private: // メンバ変数
 	VertexPosUv* vertMap_ = nullptr;
 	// 定数バッファマップ
 	ConstBufferData* constMap_ = nullptr;
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vbView_{};
 	// テクスチャ番号
 	UINT textureHandle_ = 0;
 	// Z軸回りの回転角
@@ -236,9 +270,15 @@ private: // メンバ変数
 	// リソース設定
 	D3D12_RESOURCE_DESC resourceDesc_;
 
+	// Texture
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
 private: // メンバ関数
 	/// <summary>
 	/// 頂点データ転送
 	/// </summary>
 	void TransferVertices();
+
+	void CreateVertexResource();
+	void LoadTexture();
 };

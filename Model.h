@@ -23,10 +23,7 @@ private: // 静的メンバ変数
 	static Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
 	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
-
 	
-	static Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_;
-	static Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_;
 	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	
@@ -40,7 +37,7 @@ public:
 	static Model* GetInstance();
 
 	//初期化
-	void Initializ(DirectXCommon* dxCommon);
+	void Initialize(DirectXCommon* dxCommon);
 
 	/// <summary>
 	/// 静的初期化
@@ -50,13 +47,14 @@ public:
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
-	void InitializeGraphicsPipeline();
+	void sPipeline();
 
 	/// <summary>
 	/// 3Dモデル生成
 	/// </summary>
 	/// <returns></returns>
 	static Model* Create();
+	void CreateVertexResource();
 
 	/// <summary>
 	/// 描画前処理
@@ -77,14 +75,7 @@ public:
 	void Draw(/* const WorldTransform& worldTransform, const ViewProjection& viewProjection*/);
 
 	
-	IDxcBlob* CompileShader(
-	    // CompilerするShaderファイルへのパス
-	    const std::wstring& filePath,
-	    // Compilerに使用するProfile
-	    const wchar_t* profile,
-	    // 初期化で生成したものを3つ
-	    IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler);
-
+	
 	const D3D12_VIEWPORT& GetViewp() const { return viewport; }
 	const D3D12_RECT& GetScissor() const { return scissorRect; }
 
@@ -100,6 +91,7 @@ private:
 	// 頂点バッファビュー
 	static D3D12_VERTEX_BUFFER_VIEW vbView_;
 	static D3D12_INDEX_BUFFER_VIEW ibView_;
+
 	// 頂点
 	static Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	// ライティング
@@ -124,6 +116,6 @@ private:
 	//Texture
 	static D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
  private:
-	DirectX::ScratchImage LoadTexture(const std::string& filePath);
+	//DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	void LoadTexture();
 };

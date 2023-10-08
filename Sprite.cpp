@@ -1,186 +1,229 @@
 #include "Sprite.h"
+#include "GraphicsPipeline.h"
+#include "TextureManeger.h"
+#include "Engine.h"
 
-ID3D12Device* Sprite::sDevice_;
-// コマンドリスト
-ID3D12GraphicsCommandList* sCommandList_;
+
 // ルートシグネチャ
-Microsoft::WRL::ComPtr<ID3D12RootSignature> Sprite::sRootSignature_;
+Microsoft::WRL::ComPtr<ID3D12RootSignature> Sprite::rootSignature_;
 // パイプラインステートオブジェクト
-//std::array<Microsoft::WRL::ComPtr<ID3D12PipelineState>, size_t(Sprite::BlendMode::kCountOfBlendMode)>sPipelineStates_;
+Microsoft::WRL::ComPtr<ID3D12PipelineState> Sprite::sPipelineState_;
+Microsoft::WRL::ComPtr<IDxcBlob> Sprite::vertexShaderBlob_;
+Microsoft::WRL::ComPtr<IDxcBlob> Sprite::pixelShaderBlob_;
+D3D12_VIEWPORT Sprite::viewport{};
+D3D12_RECT Sprite::scissorRect{};
+// 頂点バッファビュー
+D3D12_VERTEX_BUFFER_VIEW Sprite::vbView_ = {};
+D3D12_INDEX_BUFFER_VIEW Sprite::ibView_ = {};
+// 頂点
+Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::vertexResource_;
+Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::indexResource_;
+// ライティング
+Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::lightResource_;
+// WVP用リソース
+Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::wvpResouce_;
+// マテリアル用リソース
+Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::materialResorce_;
+TransformationMatrix* Sprite::wvpData;
+Material* Sprite::materialDataSprite;
+Transform Sprite::transform = {
+    {1.0f, 1.0f, 1.0f},
+    {0.0f, 0.0f, 0.0f},
+    {0.0f, 0.0f, 0.0f}
+};
+Transform Sprite::cameraTransform = {
+    {1.0f, 1.0f, 1.0f  },
+    {0.0f, 0.0f, 0.0f  },
+    {0.0f, 0.0f, -10.0f}
+};
+Transform Sprite::uvTransformSprite{
+    {1.0f, 1.0f, 1.0f},
+    {0.0f, 0.0f, 0.0f},
+    {0.0f, 0.0f, 0.0f},
+};
 
-
-IDxcBlob* Sprite::CompileShader(
-    // CompilerするShaderファイルへのパス
-    const std::wstring& filePath,
-    // Compilerに使用するProfile
-    const wchar_t* profile,
-    // 初期化で生成したものを3つ
-    IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler) {
-	// これからシェーダーをコンパイルする旨をログに出す
-	utility_->Log(utility_->ConvertString(
-	    std::format(L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
-	// hlslファイルを読む
-	IDxcBlobEncoding* shaderSource = nullptr;
-	HRESULT hr = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
-	// 読めなかったら止める
-	assert(SUCCEEDED(hr));
-	// 読み込んだファイルの内容を設定する
-	DxcBuffer shaderSourceBuffer;
-	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
-	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
-	shaderSourceBuffer.Encoding = DXC_CP_UTF8;
-
-	LPCWSTR arguments[] = {
-	    filePath.c_str(), // コンパイル対象のhlslファイル名
-	    L"-E",
-	    L"main", // エントリーポイントの指定。基本的にmain以外にはしない
-	    L"-T",
-	    profile, // ShaderProfileの設定
-	    L"-Zi",
-	    L"-Qembed_debug", // デバッグ用の情報を埋め込む
-	    L"-Od",           // 最適化を外しておく
-	    L"-Zpr",          // メモリレイアウトは行優先
-	};
-	// 実際にShaderをコンパイルする
-	IDxcResult* shaderResult = nullptr;
-	hr = dxcCompiler->Compile(
-	    &shaderSourceBuffer,        // 読み込んだファイル
-	    arguments,                  // コンパイルオプション
-	    _countof(arguments),        // コンパイルオプションの数
-	    includeHandler,             // includeが含まれた諸々
-	    IID_PPV_ARGS(&shaderResult) // コンパイル結果
-	);
-	// コンパイルエラーではなくdxcが起動できないなど致命的な状況
-	assert(SUCCEEDED(hr));
-
-	// 警告・エラーが出てたらログに出して止める
-	IDxcBlobUtf8* shaderError = nullptr;
-	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
-	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
-		utility_->Log(shaderError->GetStringPointer());
-		// 警告・エラーダメ絶対
-		assert(false);
-	}
-
-	// コンパイル結果から実行用のバイナリ部分を取得
-	IDxcBlob* shaderBlob = nullptr;
-	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
-	assert(SUCCEEDED(hr));
-	// 成功したログを出す
-	utility_->Log(utility_->ConvertString(
-	    std::format(L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
-	// もう使わないリソースを解放
-	shaderSource->Release();
-	shaderResult->Release();
-	// 実行用のバイナリを返却
-	return shaderBlob;
+Sprite* Sprite::GetInstance() {
+	static Sprite instance;
+	return &instance;
 }
 
 
+void Sprite::Initialize() {
+	mesh_ = new Mesh;
+	sPipeline();
+}
 
-/*
-void Sprite::StaticInitialize(ID3D12Device* device, int window_width, int window_height){
-	HRESULT hr_ = S_FALSE;
-	// nullptrチェック
-	assert(device);
 
-	Sprite::sDevice_ = device;
-
-	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
-	descriptorRange[0].BaseShaderRegister = 0;                      // 0から始まる
-	descriptorRange[0].NumDescriptors = 1;                          // 数は1つ
-	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
-	descriptorRange[0].OffsetInDescriptorsFromTableStart =
-	    D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
-
-	// RootSignature作成
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-	// RootSignature作成. 複数設定できるので配列。
-	D3D12_ROOT_PARAMETER rootParameters[4] = {};
-	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
-
-	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;     // CBVを使う
-	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
-	rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
-
-	rootParameters[2].ParameterType =
-	    D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;                     // DescriptorTableを使う
-	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[2].DescriptorTable.pDescriptorRanges =
-	    descriptorRange; // Tableの中身の配列を指定
-	rootParameters[2].DescriptorTable.NumDescriptorRanges =
-	    _countof(descriptorRange); // Tableで利用する数
-
-	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
-	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[3].Descriptor.ShaderRegister = 1; // レジスタ番号1を使う
-
-	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
-	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
-
-	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
-	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;   // バイリニアフィルタ
-	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; // 0~1の範囲外をリピート
-	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; // 比較しない
-	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX; // ありったけMipmapを使う
-	staticSamplers[0].ShaderRegister = 0;         // レジスタ番号0を使う
-	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	descriptionRootSignature.pStaticSamplers = staticSamplers;
-	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
-
-	// シリアライズしてバイナリにする
-	hr_ = D3D12SerializeRootSignature(
-	    &descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
-	if (FAILED(hr_)) {
-		utility_->Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
-		assert(false);
-	}
-
-	// バイナリを元に生成
-	hr_ = dxCommon_->GetDevice()->CreateRootSignature(
-	    0, signatureBlob_->GetBufferPointer(), signatureBlob_->GetBufferSize(),
-	    IID_PPV_ARGS(&rootSignature_));
-	assert(SUCCEEDED(hr_));
-
-	// InputLayout
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
-	inputElementDescs[0].SemanticName = "POSITION";
-	inputElementDescs[0].SemanticIndex = 0;
-	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	inputElementDescs[1].SemanticName = "TEXCOORD";
-	inputElementDescs[1].SemanticIndex = 0;
-	inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	inputElementDescs[2].SemanticName = "NORMAL";
-	inputElementDescs[2].SemanticIndex = 0;
-	inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
-	inputLayoutDesc.pInputElementDescs = inputElementDescs;
-	inputLayoutDesc.NumElements = _countof(inputElementDescs);
-
+void Sprite::sPipeline(){
 	
+	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
+	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
 
-	
-	// Shaderをコンパイルする
-	vertexShaderBlob_ =
-	    CompileShader(L"Object3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
-	assert(vertexShaderBlob_ != nullptr);
+	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline();
 
-	pixelShaderBlob_ =
-	    CompileShader(L"Object3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
-	assert(pixelShaderBlob_ != nullptr);
+	// クライアント領域のサイズと一緒にして画面全体に表示
+	viewport.Width = WinApp::kWindowWidth;
+	viewport.Height = WinApp::kWindowHeight;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
+	// シザー矩形
+	// 基本的にビューポートと同じ矩形が構成されるようにする
+	scissorRect.left = 0;
+	scissorRect.right = WinApp::kWindowWidth;
+	scissorRect.top = 0;
+	scissorRect.bottom = WinApp::kWindowHeight;
 	
 	
-
+	
+	CreateVertexResource();
+	
+	LoadTexture();
 
 };
-*/
+
+
+
+void Sprite::PreDraw() {
+	// Sprite用のworldViewProjectionMatrixを作る
+	Matrix4x4 worldMatrixSprite = Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
+	Matrix4x4 projectionMatrixSprite = Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
+	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(worldMatrixSprite, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
+	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldMatrixSprite);
+			
+	//// UVTransform用の行列
+	//Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
+	//    uvTransformSprite.scale, uvTransformSprite.rotate, uvTransformSprite.translate);
+	//
+	//materialDataSprite->uvTransform = uvTransformMatrix;
+	
+	//  コマンドを積む
+	Engine::GetList()->RSSetViewports(1, &viewport);
+	Engine::GetList()->RSSetScissorRects(1, &scissorRect);
+	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
+	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
+	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
+
+	// Spriteをインデックス描画。
+	Engine::GetList()->IASetVertexBuffers(0, 1, &vbView_); // VBVを設定
+	Engine::GetList()->IASetIndexBuffer(&ibView_); // IBVを設定
+
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+};
+
+void Sprite::PostDraw(){};
+
+void Sprite::Draw() {
+	
+	// マテリアルCBufferの場所を設定
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
+
+	// TransformationMatrixCBufferの場所を設定
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+
+	
+	// 描画
+	// commandList->DrawInstanced(6, 1, 0, 0);
+	Engine::GetList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+	
+}
+
+
+void Sprite::CreateVertexResource() {
+
+	mesh_->CreateBuffers(Engine::GetDevice());
+	//バーテックス
+	vbView_ = mesh_->GetVBViewSprite();
+	// インデックス
+	ibView_ = mesh_->GetIBView();
+
+	vertexResource_ = mesh_->GetSprite();
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite));
+
+	// 1枚目の三角形
+	vertexDataSprite[0].position = {0.0f, 360.0f, 0.0f, 1.0f}; // 左下
+	vertexDataSprite[0].texcoord = {0.0f, 1.0f};
+	vertexDataSprite[1].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 左上
+	vertexDataSprite[1].texcoord = {0.0f, 0.0f};
+	vertexDataSprite[2].position = {640.0f, 360.0f, 0.0f, 1.0f}; // 右下
+	vertexDataSprite[2].texcoord = {1.0f, 1.0f};
+	vertexDataSprite[3].position = {640.0f, 0.0f, 0.0f, 1.0f}; // 右上
+	vertexDataSprite[3].texcoord = {1.0f, 0.0f};
+
+	vertexDataSprite[0].normal = {0.0f, 0.0f, -1.0f};
+
+	indexResource_ = mesh_->GetIndex();
+	// データを書き込む
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexDataSprite));
+	indexDataSprite[0] = 0;
+	indexDataSprite[1] = 1;
+	indexDataSprite[2] = 2;
+	indexDataSprite[3] = 1;
+	indexDataSprite[4] = 3;
+	indexDataSprite[5] = 2;
+
+
+	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
+	wvpResouce_ = mesh_->GetWVP();
+	// データを書き込む
+	// 書き込むためのアドレスを取得
+	wvpResouce_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	wvpData->WVP = Math::MakeIdentity4x4();
+	wvpData->World = Math::MakeIdentity4x4();
+
+	
+	// Sprite用のマテリアルリソースを作る
+	// マテリアル
+	materialResorce_ = mesh_->GetMaterial();
+	// データを書き込む
+	// 書き込むためのアドレスを取得
+	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
+	// 今回は白を書き込む
+	materialDataSprite->color = {1.0f, 1.0f, 1.0f, 1.0f};
+	// Lightingを無効
+	materialDataSprite->enableLighting = false;
+	// 初期化
+	materialDataSprite->uvTransform = Math::MakeIdentity4x4();
+
+}
+
+// 画像の読み込み
+void Sprite::LoadTexture() {
+
+	// Textureを読んで転送する
+	DirectX::ScratchImage mipImages = TextureManager::LoadTexture("resources/uvChecker.png");
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	ID3D12Resource* textureResource =
+	    TextureManager::CreateTextureResource(Engine::GetDevice(), metadata);
+	TextureManager::UploadTextureData(textureResource, mipImages);
+
+	// metadataを基にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+
+	// SRVを作成するDescriptorHeapの場所を決める
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU =
+	    Engine::GetSRV()->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleGPU = Engine::GetSRV()->GetGPUDescriptorHandleForHeapStart();
+
+	// 先頭はImGuiが使っているのでその次を使う
+	textureSrvHandleCPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
+	    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
+	    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	// SRVの作成
+	Engine::GetDevice()->CreateShaderResourceView(
+	    textureResource, &srvDesc, textureSrvHandleCPU);
+}

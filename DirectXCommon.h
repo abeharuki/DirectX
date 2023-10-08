@@ -66,7 +66,7 @@ public: // メンバ関数
 	/// デバイスの取得
 	/// </summary>
 	/// <returns>デバイス</returns>
-	static ID3D12Device* GetDevice()  { return device_.Get(); }
+	ID3D12Device* GetDevice() const { return device_.Get(); }
 
 	/// <summary>
 	/// 描画コマンドリストの取得
@@ -105,7 +105,7 @@ private: // メンバ変数
 	
 	// Direct3D関連
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
-	static Microsoft::WRL::ComPtr<ID3D12Device> device_;
+	Microsoft::WRL::ComPtr<ID3D12Device> device_;
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_;
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_;

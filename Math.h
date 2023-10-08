@@ -128,4 +128,6 @@ public:
 
 	// 長さ(ノルマ)
 	static float Length(const Vector3& v);
+
+
 };

@@ -66,6 +66,7 @@ public: // メンバ関数
 	void CalculateSmoothedVertexNormals();
 
 	
+	
 	/// <summary>
 	/// バッファの生成
 	/// </summary>
@@ -76,8 +77,8 @@ public: // メンバ関数
 	/// </summary>
 	/// <returns>頂点バッファ</returns>
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBView() const { return vbView_; }
-	const D3D12_VERTEX_BUFFER_VIEW& GetVBView2() const { return vbView2_; }
-	
+	const D3D12_VERTEX_BUFFER_VIEW& GetVBViewSprite() const { return vbViewSprite_; }
+
 	/// <summary>
 	/// インデックスバッファ取得
 	/// </summary>
@@ -85,6 +86,10 @@ public: // メンバ関数
 	const D3D12_INDEX_BUFFER_VIEW& GetIBView() const { return ibView_; }
 
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetVertex() const { return vertexResource_; }
+
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetIndex() const { return indexResource_; }
+
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetSprite() const { return vertexResourceSprite_; }
 
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetWVP() const { return wvpResouce_; }
 
@@ -94,11 +99,8 @@ public: // メンバ関数
 		return directionalLightResource_;
 	}
 
-	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetMetaBall() const { return metaballResource_;
-	}
-
-	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetTransformMetaBall() const {
-		return transformationMetaBallResource_;
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetTransformSprite() const {
+		return transformationMatrixResourceSprite_;
 	}
 
 	/// <summary>
@@ -134,7 +136,8 @@ public: // メンバ関数
 	/// <returns>インデックス配列</returns>
 	inline const std::vector<unsigned short>& GetIndices() { return indices_; }
 
-	
+private:	
+	ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes);
 
 private: // メンバ変数
 	// ウィンドウズアプリケーション管理
@@ -149,7 +152,8 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexBuff_;
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView_ = {};
-	D3D12_VERTEX_BUFFER_VIEW vbView2_ = {};
+	// 頂点バッファビューを作成する
+	D3D12_VERTEX_BUFFER_VIEW vbViewSprite_ = {};
 	// インデックスバッファビュー
 	D3D12_INDEX_BUFFER_VIEW ibView_ = {};
 	// 頂点データ配列
@@ -163,15 +167,17 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	//インデックス
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResourceSprite_;
+	// Sprite用の頂点リソースを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite_;
 	//ライティング
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource_;
 	//WVP用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
-	//メタボール
-	Microsoft::WRL::ComPtr<ID3D12Resource> metaballResource_;
-	//メタボールtransform
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMetaBallResource_;
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_; 
+
 	Math* math_;
 };
