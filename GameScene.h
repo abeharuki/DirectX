@@ -38,6 +38,16 @@ public: // メンバ関数
 private: // メンバ変数
 	//DirectXCommon* dxCommon_ = nullptr;
 	// 3Dモデル
-	Model* model_ = nullptr;
-	Sprite* sprite_ = nullptr;
+	std::unique_ptr<Model> model_;
+	std::unique_ptr<Model> model2_;
+
+
+	std::unique_ptr<Sprite> sprite_;
+	std::unique_ptr<Sprite> sprite2_;
+
+
+	Vector2 pos1 = {0, 0};
+	Vector2 pos2 = {0, 0};
+
+
 };

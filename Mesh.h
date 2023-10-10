@@ -77,7 +77,7 @@ public: // メンバ関数
 	/// </summary>
 	/// <returns>頂点バッファ</returns>
 	const D3D12_VERTEX_BUFFER_VIEW& GetVBView() const { return vbView_; }
-	const D3D12_VERTEX_BUFFER_VIEW& GetVBViewSprite() const { return vbViewSprite_; }
+	
 
 	/// <summary>
 	/// インデックスバッファ取得
@@ -136,8 +136,8 @@ public: // メンバ関数
 	/// <returns>インデックス配列</returns>
 	inline const std::vector<unsigned short>& GetIndices() { return indices_; }
 
-private:	
-	ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes);
+	
+	static ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes);
 
 private: // メンバ変数
 	// ウィンドウズアプリケーション管理

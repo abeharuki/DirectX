@@ -95,9 +95,7 @@ public: // メンバ関数
 
 	ID3D12DescriptorHeap* GetDSV() const { return dsvHeap_.Get(); }
 
-	ID3D12DescriptorHeap* CreateDescriptorHeap(
-	    ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
-	    bool shaderVisible);
+	
 
 private: // メンバ変数
 	// ウィンドウズアプリケーション管理
@@ -167,3 +165,7 @@ private: // メンバ関数
 	/// </summary>
 	void CreateFence();
 };
+
+ID3D12DescriptorHeap* CreateDescriptorHeap(
+    ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
+    bool shaderVisible);

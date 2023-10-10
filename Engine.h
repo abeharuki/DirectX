@@ -29,9 +29,8 @@ public:
 public:
 	static ID3D12Device* GetDevice();
 	static ID3D12GraphicsCommandList* GetList();
-	static ID3D12DescriptorHeap* GetSRV();
-	static ID3D12DescriptorHeap* GetRTV();
-	static ID3D12DescriptorHeap* GetDSV();
+	
+
 
 	
 };

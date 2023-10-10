@@ -46,7 +46,7 @@ void Mesh::CreateBuffers(ID3D12Device* device) {
 	directionalLightResource_ = CreateBufferResoure(device, sizeof(DirectionalLight));
 
 	// Sprite用の頂点リソースを作る
-	vertexResourceSprite_ = CreateBufferResoure(device, sizeof(VertexData) * 4);
+	//vertexResourceSprite_ = CreateBufferResoure(device, sizeof(VertexData) * 4);
 	
 	// 頂点バッファビューを作成する
 	// リソースの先頭のアドレスから使う
@@ -67,12 +67,7 @@ void Mesh::CreateBuffers(ID3D12Device* device) {
 	ibView_.Format = DXGI_FORMAT_R32_UINT;
 	
 
-	// リソースの先頭のアドレスから使う
-	vbViewSprite_.BufferLocation = vertexResourceSprite_->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vbViewSprite_.SizeInBytes = sizeof(VertexData) * 4;
-	// 1頂点あたりのサイズ
-	vbViewSprite_.StrideInBytes = sizeof(VertexData);
+
 
 	// インデックスを使った四角形
 	// インデックス用の頂点リソースを作る
@@ -86,8 +81,6 @@ void Mesh::CreateBuffers(ID3D12Device* device) {
 	//// インデックスはuint32_tとする
 	//indexBufferViewSprite.Format = DXGI_FORMAT_R32_UINT;
 	
-
-
 
 
 

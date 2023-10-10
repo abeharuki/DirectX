@@ -19,6 +19,8 @@ public:
 	/// </summary>
 	void Initialize();
 
+	//static uint32_t Load(const std::string& fileName);
+
 	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	static ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 	static void UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);

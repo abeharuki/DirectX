@@ -6,6 +6,7 @@
 #include "GraphicsPipeline.h"
 #include "Engine.h"
 #include "TextureManeger.h"
+#include "externals/imgui/imgui.h"
 
 // コマンドリスト
 ID3D12GraphicsCommandList* Model::sCommandList_ = nullptr;
@@ -86,12 +87,11 @@ void Model::sPipeline() {
 	
 };
 
-
 void Model::PreDraw(ID3D12GraphicsCommandList* commandList) { 
 	sCommandList_ = commandList;
 
 	// ゲームの処理
-	transform.rotate.y += 0.03f;
+	//transform.rotate.y += 0.03f;
 	Matrix4x4 worldMatrix =
 	    Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix(
@@ -137,13 +137,20 @@ void Model::Draw() {
 	sCommandList_->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	sCommandList_->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
+	Engine::GetList()->SetDescriptorHeaps(1, &SRVHeap);
 	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
-	sCommandList_->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	sCommandList_->SetGraphicsRootDescriptorTable(2, SRVHeap->GetGPUDescriptorHandleForHeapStart());
 	// wvp用のCBufferの場所を設定
 	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
 
 	// 三角形の描画
 	sCommandList_->DrawInstanced(6, 1, 0, 0);
+
+	ImGui::Begin("Settings");
+	ImGui::DragFloat3("Scale", &transform.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat3("Translation", &transform.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat3("Rotate", &transform.rotate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::End();
 }
 
 //頂点データの設定
@@ -233,16 +240,22 @@ void Model::LoadTexture() {
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
-	// SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU =
-	    Engine::GetSRV()->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU = Engine::GetSRV()->GetGPUDescriptorHandleForHeapStart();
+	//// SRVを作成するDescriptorHeapの場所を決める
+	//D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU =
+	//    Engine::GetSRV()->GetCPUDescriptorHandleForHeapStart();
+	//textureSrvHandleGPU = Engine::GetSRV()->GetGPUDescriptorHandleForHeapStart();
 
-	// 先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
-	    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
-	    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//// 先頭はImGuiが使っているのでその次を使う
+	//textureSrvHandleCPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
+	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//textureSrvHandleGPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
+	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	SRVHeap = CreateDescriptorHeap(Engine::GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 10, true);
+
+
+
+
 	// SRVの作成
-	Engine::GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
+	Engine::GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, SRVHeap->GetCPUDescriptorHandleForHeapStart());
 }

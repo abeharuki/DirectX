@@ -66,9 +66,11 @@ void Engine::EndFrame() {
 	// ImGui受付開始
 	imguiManager->Begin();
 
+
 	// 描画開始
 	dxCommon->PreDraw();
 
+	gameScene->Update();
 	gameScene->Draw();
 
 	// ImGui受付終了
@@ -83,8 +85,3 @@ ID3D12Device* Engine::GetDevice() { return dxCommon->GetDevice(); }
 
 ID3D12GraphicsCommandList* Engine::GetList() { return dxCommon->GetCommandList(); }
 
-ID3D12DescriptorHeap* Engine::GetSRV() { return dxCommon->GetSRV(); }
-
-ID3D12DescriptorHeap* Engine::GetRTV() { return dxCommon->GetRTV(); }
-
-ID3D12DescriptorHeap* Engine::GetDSV() { return dxCommon->GetDSV(); }

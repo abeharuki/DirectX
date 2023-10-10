@@ -9,7 +9,7 @@
 using namespace Microsoft::WRL;
 
 
-ID3D12DescriptorHeap* DirectXCommon::CreateDescriptorHeap(
+ID3D12DescriptorHeap* CreateDescriptorHeap(
     ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
     bool shaderVisible) {
 	// ディスクリプタヒープの生成
@@ -103,9 +103,7 @@ void DirectXCommon::PreDraw() {
 	// 深度バッファクリア
 	ClearDepthBuffer();
 
-	// 描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = {srvHeap_.Get()};
-	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
+	
 }
 
 void DirectXCommon::PostDraw() {

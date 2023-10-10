@@ -77,10 +77,7 @@ public: // 静的メンバ関数
 	/// <param name="isFlipX">左右反転</param>
 	/// <param name="isFlipY">上下反転</param>
 	/// <returns>生成されたスプライト</returns>
-	static Sprite* Create(
-	    uint32_t textureHandle, Vector2 position, Vector4 color = {1, 1, 1, 1},
-	    Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false);
-
+	
 	
 private: // 静的メンバ変数
 	// 頂点数
@@ -103,7 +100,7 @@ private: // 静的メンバ変数
 	// 射影行列
 	static Matrix4x4 sMatProjection_;
 
-	
+	ID3D12DescriptorHeap* SRVHeap = nullptr;
 
 public: // メンバ関数
 	/// <summary>
@@ -207,11 +204,16 @@ public: // メンバ関数
 
 	
 
+	void Create(
+	    const std::string& fileName, Vector2 position /* Vector4 color = {1, 1, 1, 1},
+	    Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false*/);
+
+
 private: // メンバ変数
-	Mesh* mesh_;
-	VertexData* vertexDataSprite = nullptr;
-	uint32_t* indexDataSprite = nullptr;
-	static TransformationMatrix* wvpData;
+	std::unique_ptr<Mesh> mesh_;
+	VertexData* vertexData = nullptr;
+	uint32_t* indexData = nullptr;
+	TransformationMatrix* wvpData;
 	static Material* materialDataSprite;
 	DirectionalLight* directionalLightData = nullptr;
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
@@ -270,8 +272,7 @@ private: // メンバ変数
 	// リソース設定
 	D3D12_RESOURCE_DESC resourceDesc_;
 
-	// Texture
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
 
 private: // メンバ関数
 	/// <summary>
@@ -280,5 +281,5 @@ private: // メンバ関数
 	void TransferVertices();
 
 	void CreateVertexResource();
-	void LoadTexture();
+	void LoadTexture(const std::string& fileName);
 };

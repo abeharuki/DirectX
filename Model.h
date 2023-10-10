@@ -53,7 +53,7 @@ public:
 	/// 3Dモデル生成
 	/// </summary>
 	/// <returns></returns>
-	static Model* Create();
+	void Create();
 	void CreateVertexResource();
 
 	/// <summary>
@@ -85,7 +85,7 @@ private:
 	Utility* utility_;
 	Mesh* mesh_;
 	
-
+	ID3D12DescriptorHeap* SRVHeap = nullptr;
 	static D3D12_VIEWPORT viewport;
 	static D3D12_RECT scissorRect;
 	// 頂点バッファビュー
