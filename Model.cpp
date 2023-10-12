@@ -16,20 +16,9 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> Model::rootSignature_;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> Model::sPipelineState_;
 Microsoft::WRL::ComPtr<IDxcBlob> Model::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Model::pixelShaderBlob_;
-D3D12_VIEWPORT Model::viewport{};
-D3D12_RECT Model::scissorRect{};
 // 頂点バッファビュー
-D3D12_VERTEX_BUFFER_VIEW Model::vbView_ = {};
 D3D12_INDEX_BUFFER_VIEW Model::ibView_ = {};
-// 頂点
-Microsoft::WRL::ComPtr<ID3D12Resource> Model::vertexResource_;
-// ライティング
-Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
-// WVP用リソース
-Microsoft::WRL::ComPtr<ID3D12Resource> Model::wvpResouce_;
-// マテリアル用リソース
-Microsoft::WRL::ComPtr<ID3D12Resource> Model::materialResorce_;
-TransformationMatrix* Model::wvpData;
+
 Transform Model::transform = {
     {1.0f, 1.0f, 1.0f},
     {0.0f, 0.0f, 0.0f},
@@ -40,20 +29,20 @@ Transform Model::cameraTransform = {
     {0.0f, 0.0f, 0.0f  },
     {0.0f, 0.0f, -10.0f}
 };
-D3D12_GPU_DESCRIPTOR_HANDLE Model::textureSrvHandleGPU;
 
 
-Model* Model::GetInstance() {
-	static Model instance;
-	return &instance;
 
-}
 
-void Model::Initialize(DirectXCommon* dxCommon) { 
-	dxCommon_ = dxCommon;
-	mesh_ = new Mesh;
+void Model::Initialize(
+    const std::string& directoryPath, const std::string& filename, const std::string& texturePath) { 
+	
+	LoadTexture(directoryPath,filename,texturePath);
+	CreateVertexResource();
 	sPipeline();
+	
+	
 }
+
 
 
 void Model::sPipeline() {
@@ -61,6 +50,7 @@ void Model::sPipeline() {
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
 	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
 
+	
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline();
 
@@ -80,37 +70,15 @@ void Model::sPipeline() {
 	scissorRect.top = 0;
 	scissorRect.bottom = WinApp::kWindowHeight;
 
-	CreateVertexResource();
 
-	LoadTexture();
 
 	
 };
 
-void Model::PreDraw(ID3D12GraphicsCommandList* commandList) { 
-	sCommandList_ = commandList;
-
-	// ゲームの処理
-	//transform.rotate.y += 0.03f;
-	Matrix4x4 worldMatrix =
-	    Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix(
-	     cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-	Matrix4x4 viewMatrix = Math::Inverse(cameraMatrix);
-	Matrix4x4 projecttionMatrix =
-	    Math::MakePerspectiverFovMatrix(0.45f, float(1280) / float(720), 0.1f, 100.0f);
-	// WVPMatrixを作る。同次クリップ空間
-	Matrix4x4 worldViewProjectionMatrix =
-	    Math::Multiply(worldMatrix, Math::Multiply(viewMatrix, projecttionMatrix));
-	wvpData->WVP = worldViewProjectionMatrix;
+void Model::PreDraw() { 
 	
 
-	// コマンドを積む
-	sCommandList_->RSSetViewports(1, &viewport);
-	sCommandList_->RSSetScissorRects(1, &scissorRect);
-	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	sCommandList_->SetGraphicsRootSignature(rootSignature_.Get());
-	sCommandList_->SetPipelineState(sPipelineState_.Get());
+	
 
 
 
@@ -123,72 +91,59 @@ void Model::PreDraw(ID3D12GraphicsCommandList* commandList) {
 }
 
 void Model::PostDraw() {
-	// コマンドリストを解除
-	Model::sCommandList_ = nullptr;
+	
 }
 
 void Model::Draw() {
 
-	sCommandList_->IASetVertexBuffers(0, 1, &vbView_);
+	
+	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
+	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
+	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
+
+	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	sCommandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// マテリアルCBufferの場所を設定
-	sCommandList_->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
-	sCommandList_->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	Engine::GetList()->SetDescriptorHeaps(1, &SRVHeap);
 	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
-	sCommandList_->SetGraphicsRootDescriptorTable(2, SRVHeap->GetGPUDescriptorHandleForHeapStart());
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, SRVHeap->GetGPUDescriptorHandleForHeapStart());
 	// wvp用のCBufferの場所を設定
-	sCommandList_->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
 
 	// 三角形の描画
-	sCommandList_->DrawInstanced(6, 1, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 
-	ImGui::Begin("Settings");
-	ImGui::DragFloat3("Scale", &transform.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat3("Translation", &transform.translate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat3("Rotate", &transform.rotate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::End();
+	
 }
 
 //頂点データの設定
 void Model::CreateVertexResource() {
-	mesh_->CreateBuffers(dxCommon_->GetDevice());
+	// モデルの読み込み 
+	// 頂点リソースを作る
+	vertexResource = Mesh::CreateBufferResoure(
+	    Engine::GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+	// 頂点バッファビューを作成する
+	
+	vertexBufferView.BufferLocation =
+	    vertexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
+	vertexBufferView.SizeInBytes = UINT(
+	    sizeof(VertexData) * modelData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
+	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
 
-	// バーテックス
-	vbView_ = mesh_->GetVBView();
-	vertexResource_ = mesh_->GetVertex();
 	// 頂点リソースにデータを書き込む
-	// 書き込むためのアドレスを取得
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-
-	// 左下
-	vertexData[0].position = {-0.5f, -0.5f, 0.0f, 1.0f}; // 左下
-	vertexData[0].texcoord = {0.0f, 1.0f};
-	// 上
-	vertexData[1].position = {0.0f, 0.5f, 0.0f, 1.0f}; // 左上
-	vertexData[1].texcoord = {0.5f, 0.0f};
-	// 右下
-	vertexData[2].position = {0.5f, -0.5f, 0.0f, 1.0f}; // 右下
-	vertexData[2].texcoord = {1.0f, 1.0f};
-
-	vertexData[3].position = {-0.5f, -0.5f, 0.5f, 1.0f}; // 左上
-	vertexData[3].texcoord = {0.0f, 1.0f};
-
-	vertexData[4].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 上
-	vertexData[4].texcoord = {0.5f, 0.0f};
-
-	vertexData[5].position = {0.5f, -0.5f, -0.5f, 1.0f}; // 右下
-	vertexData[5].texcoord = {1.0f, 1.0f};
-
-
-	// インデックス
-	//ibView_ = mesh_->GetIBView();
-
+	vertexResource->Map(
+	    0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
+	std::memcpy(
+	    vertexData, modelData.vertices.data(),
+	    sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
+	
 	// WVP
-	wvpResouce_ = mesh_->GetWVP();
+	wvpResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(TransformationMatrix));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResouce_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
@@ -197,7 +152,7 @@ void Model::CreateVertexResource() {
 	wvpData->World = Math::MakeIdentity4x4();
 
 	// マテリアル
-	materialResorce_ = mesh_->GetMaterial();
+	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(Material));
 
 	// マテリアルにデータを書き込む
 	// 書き込むためのアドレスを取得
@@ -211,7 +166,7 @@ void Model::CreateVertexResource() {
 	materialData->uvTransform = Math::MakeIdentity4x4();
 
 	// ライティング
-	lightResource_ = mesh_->GetLight();
+	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(DirectionalLight));
 	// 頂点リソースにデータを書き込む
 	// 書き込むためのアドレスを取得
 	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
@@ -225,9 +180,12 @@ void Model::CreateVertexResource() {
 };
 
 //画像の読み込み
-void Model::LoadTexture() {
+void Model::LoadTexture(
+    const std::string& directoryPath, const std::string& filename,const std::string& texturePath) {
+	modelData = LoadObjFile(directoryPath, filename);
+	
 	// Textureを読んで転送する
-	DirectX::ScratchImage mipImages = TextureManager::LoadTexture("resources/uvChecker.png");
+	DirectX::ScratchImage mipImages = TextureManager::LoadTexture(texturePath);
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	ID3D12Resource* textureResource =
 	    TextureManager::CreateTextureResource(Engine::GetDevice(), metadata);
@@ -254,8 +212,141 @@ void Model::LoadTexture() {
 	SRVHeap = CreateDescriptorHeap(Engine::GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 10, true);
 
 
-
-
 	// SRVの作成
 	Engine::GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, SRVHeap->GetCPUDescriptorHandleForHeapStart());
+	//textureSrvHandleGPU = GetGPUDescriptorHandle(SRVHeap.Get(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV), 0);
+}
+
+
+
+Model* Model::CreateModelFromObj(
+    const std::string& directoryPath, const std::string& filename, const std::string& texturePath) {
+	Model* model = new Model();
+	model->Initialize(directoryPath, filename, texturePath);
+	return model;
+}
+
+ModelData Model::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
+	// 必要な変数の宣言
+	ModelData modelData;            // 構築するModelData
+	std::vector<Vector4> positions; // 位置
+	std::vector<Vector3> normals;   // 法線
+	std::vector<Vector2> texcoords; // テクスチャ座標
+	std::string line;               // ファイルから選んだ１行を格納する
+
+	// ファイルを開く
+	std::ifstream file(directoryPath + "/" + filename);
+	assert(file.is_open()); // とりあえず開けなかったら止める
+
+	// ファイルを読み,ModelDataを構築
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier; // 先頭の識別子を読む
+
+		// identfierの応じた処理
+		// 頂点情報を読み込む
+		if (identifier == "v") {
+			Vector4 position = {0.0f, 0.0f, 0.0f, 0.0f};
+			s >> position.x >> position.y >> position.z;
+			position.z *= -1.0f; // 位置の反転
+			position.w = 1.0f;
+			positions.push_back(position);
+		} else if (identifier == "vt") {
+			Vector2 texcoord = {0.0f, 0.0f};
+			s >> texcoord.x >> texcoord.y;
+			texcoord.y = 1.0f - texcoord.y;
+			texcoords.push_back(texcoord);
+		} else if (identifier == "vn") {
+			Vector3 normal = {0.0f, 0.0f, 0.0f};
+			normal.z *= -1.0f; // 法線の反転
+			s >> normal.x >> normal.y >> normal.z;
+			normals.push_back(normal);
+		} else if (identifier == "f") {
+			VertexData triangle[3];
+			// 面は三角形減退。その他は未対応
+			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
+				std::string vertexDefinition;
+				s >> vertexDefinition;
+				// 頂点の要素へのIndexは[位置/UV/法線]で格納しているので、分解してIndexを取得する
+				std::istringstream v(vertexDefinition);
+				uint32_t elementIndices[3];
+				for (int32_t element = 0; element < 3; ++element) {
+					std::string index;
+					std::getline(v, index, '/'); // 区切りでインデックスを読んでく
+					elementIndices[element] = std::stoi(index);
+				}
+
+				// 要素へのIndexから、実際の要素の値を取得して、頂点を構築する
+				Vector4 position = positions[elementIndices[0] - 1];
+				Vector2 texcoord = texcoords[elementIndices[1] - 1];
+				Vector3 normal = normals[elementIndices[2] - 1];
+				// VertexData vertex = { position,texcoord,normal };
+				// modelData.vertices.push_back(vertex);
+				triangle[faceVertex] = {position, texcoord, normal};
+			}
+
+			modelData.vertices.push_back(triangle[2]);
+			modelData.vertices.push_back(triangle[1]);
+			modelData.vertices.push_back(triangle[0]);
+
+		} else if (identifier == "mtllib") {
+			// materialTemplateLibraryファイルの名前を取得
+			std::string materialFilname;
+			s >> materialFilname;
+			// 基本的にobjファイルと同一階層にmtlは存在させるから、ディレクトリ名とファイル名を渡す
+			modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilname);
+		}
+
+
+
+	}
+	return modelData;
+}
+
+MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
+	// 宣言
+	MaterialData materialData; // 構築するMaterialData
+	ModelData modelData;
+	std::string line; // ファイルから読んだ1行を格納する
+	std::ifstream file(directoryPath + "/" + filename); // ファイルを開く
+	assert(file.is_open());                             // 開けなかったら止める
+
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier; // 先頭の識別子を読む
+
+		// identifierに応じた処理
+		if (identifier == "map_Kd") {
+			std::string textureFilename;
+			s >> textureFilename;
+			// 連結しているファイルパス
+			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+		} else if (identifier == "mtllib") {
+			// materialTemplateLibraryファイルの名前を取得する
+			std::string materialFilename;
+			s >> materialFilename;
+
+			// 基本的にobjファイルと同じ一階層にmtlは存在させるので、ディレクション名などファイル名を渡す
+			modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
+		}
+	}
+
+	return materialData;
+}
+
+
+D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(
+    ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	handleCPU.ptr += (descriptorSize * index);
+	return handleCPU;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(
+    ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+	handleGPU.ptr += (descriptorSize * index);
+	return handleGPU;
 }

@@ -7,6 +7,7 @@
 #include <wrl.h>
 #include <dxcapi.h>
 #include "StringUtility.h"
+#include "WorldTransform.h"
 #include "DirectXCommon.h"
 #include "Mesh.h"
 
@@ -100,19 +101,11 @@ private: // 静的メンバ変数
 	// 射影行列
 	static Matrix4x4 sMatProjection_;
 
-	ID3D12DescriptorHeap* SRVHeap = nullptr;
+	
 
 public: // メンバ関数
 	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	//Sprite();
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	/*Sprite(
-	    uint32_t textureHandle, Vector2 position, Vector2 size, Vector4 color, Vector2 anchorpoint,
-	    bool isFlipX, bool isFlipY);*/
+	
 
 
 	/// <summary>
@@ -126,13 +119,6 @@ public: // メンバ関数
 	/// <returns>成否</returns>
 	void Initialize();
 
-	/// <summary>
-	/// テクスチャハンドルの設定
-	/// </summary>
-	/// <param name="textureHandle">テクスチャハンドル</param>
-	void SetTextureHandle(uint32_t textureHandle);
-
-	uint32_t GetTextureHandle() const { return textureHandle_; }
 
 	/// <summary>
 	/// 座標の設定
@@ -142,100 +128,47 @@ public: // メンバ関数
 
 	const Vector2& GetPosition() const { return position_; }
 
-	/// <summary>
-	/// 角度の設定
-	/// </summary>
-	/// <param name="rotation">角度</param>
-	void SetRotation(float rotation);
-
-	float GetRotation() const { return rotation_; }
-
-	/// <summary>
-	/// サイズの設定
-	/// </summary>
-	/// <param name="size">サイズ</param>
-	void SetSize(const Vector2& size);
-
-	const Vector2& GetSize() const { return size_; }
-
-	/// <summary>
-	/// アンカーポイントの設定
-	/// </summary>
-	/// <param name="anchorpoint">アンカーポイント</param>
-	void SetAnchorPoint(const Vector2& anchorpoint);
-
-	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
-
-	/// <summary>
-	/// 色の設定
-	/// </summary>
-	/// <param name="color">色</param>
-	void SetColor(const Vector4& color) { color_ = color; };
-
-	const Vector4& GetColor() const { return color_; }
-
-	/// <summary>
-	/// 左右反転の設定
-	/// </summary>
-	/// <param name="isFlipX">左右反転</param>
-	void SetIsFlipX(bool isFlipX);
-
-	bool GetIsFlipX() const { return isFlipX_; }
-
-	/// <summary>
-	/// 上下反転の設定
-	/// </summary>
-	/// <param name="isFlipX">上下反転</param>
-	void SetIsFlipY(bool isFlipY);
-
-	bool GetIsFlipY() const { return isFlipY_; }
-
-	/// <summary>
-	/// テクスチャ範囲設定
-	/// </summary>
-	/// <param name="texBase">テクスチャ左上座標</param>
-	/// <param name="texSize">テクスチャサイズ</param>
-	void SetTextureRect(const Vector2& texBase, const Vector2& texSize);
-
+	
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw(WorldTransform& worldTransform);
 
-	
 
 	void Create(
-	    const std::string& fileName, Vector2 position /* Vector4 color = {1, 1, 1, 1},
+	    const std::string& fileName /* Vector4 color = {1, 1, 1, 1},
 	    Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false*/);
 
 
 private: // メンバ変数
-	std::unique_ptr<Mesh> mesh_;
-	VertexData* vertexData = nullptr;
-	uint32_t* indexData = nullptr;
-	TransformationMatrix* wvpData;
-	static Material* materialDataSprite;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
+	VertexData* vertexData_;
+
+	
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
+	uint32_t* indexData_;
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
+	Matrix4x4* wvpData_;
+	
+	Material* materialDataSprite;
 	DirectionalLight* directionalLightData = nullptr;
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
 
 	static Transform uvTransformSprite;
-	static Transform transform;
-	static Transform cameraTransform;
 
-	static D3D12_VIEWPORT viewport;
-	static D3D12_RECT scissorRect;
+	D3D12_VIEWPORT viewport;
+	D3D12_RECT scissorRect;
 	// 頂点バッファビュー
-	static D3D12_VERTEX_BUFFER_VIEW vbView_;
-	static D3D12_INDEX_BUFFER_VIEW ibView_;
+	D3D12_VERTEX_BUFFER_VIEW vbView_;
+	D3D12_INDEX_BUFFER_VIEW ibView_;
 	// 頂点
-	static Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	static Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
+	
 	// ライティング
 	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
 	//座標
 	static Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_; 
-	// WVP用リソース
-	static Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
+
 	// マテリアル用リソース
 	static Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 	
@@ -259,20 +192,9 @@ private: // メンバ変数
 	Vector2 anchorPoint_ = {0, 0};
 	// ワールド行列
 	Matrix4x4 matWorld_{};
-	// 色
-	Vector4 color_ = {1, 1, 1, 1};
-	// 左右反転
-	bool isFlipX_ = false;
-	// 上下反転
-	bool isFlipY_ = false;
-	// テクスチャ始点
-	Vector2 texBase_ = {0, 0};
-	// テクスチャ幅、高さ
-	Vector2 texSize_ = {100.0f, 100.0f};
-	// リソース設定
-	D3D12_RESOURCE_DESC resourceDesc_;
-
-
+	
+	ID3D12DescriptorHeap* SRVHeap = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
 private: // メンバ関数
 	/// <summary>

@@ -8,31 +8,41 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {}
 
 void GameScene::Initialize() {
+
+	worldTransformBase_.Initialize();
+	worldTransformB_.Initialize();
+
 	// 3Dモデルの生成
 	// モデルの作成
-	model_ = std::make_unique<Model>();
-	model_->Initialize(DirectXCommon::GetInstance());
+	model_ = new Model;
+	model_ = Model::CreateModelFromObj("resources", "axis.obj", "resources/uvChecker.png");
 	
-	model2_ = std::make_unique<Model>();
-	model2_->Initialize(DirectXCommon::GetInstance());
+	
 	
 	
 	//Spriteの描画
 	
 	
 	sprite2_ = std::make_unique<Sprite>();
-	sprite2_->Create("resources/uvChecker.png", {0,100});
+	sprite2_->Create("resources/uvChecker.png");
 
 	sprite_ = std::make_unique<Sprite>();
-	sprite_->Create("resources/monsterBall.png", pos1);
+	sprite_->Create("resources/monsterBall.png");
+
+
 }
 
 void GameScene::Update() {
-
-	sprite_->SetPosition(pos1);
-	//sprite2_->SetPosition(pos2);
+	
+	
+	
+	worldTransformBase_.UpdateMatrix();
+	worldTransformB_.UpdateMatrix();
 
 	ImGui::Begin("Sprite");
+	ImGui::DragFloat3("Sprite1", &worldTransformBase_.translate.x, 1.0f, 0.0f, 1280.0f);
+	ImGui::DragFloat2("Sprite2", &worldTransformB_.translate.x, 1.0f, 0.0f, 1280.0f);
+
 	ImGui::DragFloat2("Sprite1", &pos1.x, 1.0f, 0.0f, 1280.0f);
 	ImGui::DragFloat2("Sprite2", &pos2.x, 1.0f, 0.0f, 1280.0f);
 	ImGui::End();
@@ -41,10 +51,9 @@ void GameScene::Update() {
 
 
 void GameScene::Draw() {
-	
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
-	Model::PreDraw(Engine::GetList());
+	Model::PreDraw();
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
@@ -63,10 +72,11 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
-
-	sprite_->Draw();
+	sprite2_->Draw(worldTransformBase_);
+	sprite_->Draw(worldTransformB_);
 	
-	sprite2_->Draw();
+	
+	
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

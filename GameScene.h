@@ -1,4 +1,5 @@
 #pragma once
+#include "WorldTransform.h"
 #include "DirectXCommon.h"
 #include "Model.h"
 #include "Engine.h"
@@ -36,11 +37,12 @@ public: // メンバ関数
 	void Draw();
 
 private: // メンバ変数
-	//DirectXCommon* dxCommon_ = nullptr;
+	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformB_;
 	// 3Dモデル
-	std::unique_ptr<Model> model_;
+	Model* model_;
 	std::unique_ptr<Model> model2_;
-
+	 
 
 	std::unique_ptr<Sprite> sprite_;
 	std::unique_ptr<Sprite> sprite2_;
@@ -49,5 +51,5 @@ private: // メンバ変数
 	Vector2 pos1 = {0, 0};
 	Vector2 pos2 = {0, 0};
 
-
+	int a = 0;
 };
