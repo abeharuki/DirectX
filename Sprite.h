@@ -101,7 +101,8 @@ private: // 静的メンバ変数
 	// 射影行列
 	static Matrix4x4 sMatProjection_;
 
-	
+	uint32_t textureWidth = 0;
+	uint32_t textureHeight = 0;
 
 public: // メンバ関数
 	/// <summary>
@@ -132,7 +133,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(WorldTransform& worldTransform);
+	void Draw(WorldTransform& worldTransform,Sprite* sprite);
 
 
 	void Create(

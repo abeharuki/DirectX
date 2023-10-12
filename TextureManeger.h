@@ -1,6 +1,10 @@
 #pragma once
 #include "StringUtility.h"
 #include "ResourceObject.h"
+#include "Math.h"
+#include "Engine.h"
+#include <cassert>
+#include <format>
 #include <wrl.h>
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
@@ -25,7 +29,10 @@ public:
 	static ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 	static void UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 	
-	
+	//objファイルの読み込み
+	static MaterialData LoadMaterialTemplateFile(const std::string& filename);
+	static ModelData LoadObjFile(const std::string& filename);
+
 private:
 	
 	Utility* utility_;

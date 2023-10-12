@@ -10,6 +10,7 @@
 #include "DirectXCommon.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
+#include "WorldTransform.h"
 
 class Model {
 private: // 静的メンバ変数
@@ -18,8 +19,7 @@ private: // 静的メンバ変数
 
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
-	// コマンドリスト
-	static ID3D12GraphicsCommandList* sCommandList_;
+	
 	// ルートシグネチャ
 	static Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
@@ -39,9 +39,7 @@ public:
 
 	//初期化
 	static void StaticInitialize();
-	void Initialize(
-	    const std::string& directoryPath, const std::string& filename,
-	    const std::string& texturePath);
+	void Initialize(const std::string& filename, const std::string& texturePath);
 
 	
 	/// <summary>
@@ -66,31 +64,27 @@ public:
 	static void PostDraw();
 
 	
-	void Draw(/* const WorldTransform& worldTransform, const ViewProjection& viewProjection*/);
+	void Draw(WorldTransform& worldTransform,Model* model /* const ViewProjection& viewProjection*/);
 
 	
 	
 	const D3D12_VIEWPORT& GetViewp() const { return viewport; }
 	const D3D12_RECT& GetScissor() const { return scissorRect; }
 
-	static Model* CreateModelFromObj(
-	    const std::string& directoryPath, const std::string& filename,
-	    const std::string& texturePath);
+	void CreateModelFromObj(const std::string& filename, const std::string& texturePath);
 	ModelData modelData_;
-	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
-	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	
 
 private:
 
 	std::unique_ptr<Mesh> mesh_;
 	
-	ID3D12DescriptorHeap* SRVHeap = nullptr;
+	Microsoft::WRL::ComPtr < ID3D12DescriptorHeap> SRVHeap;
 	D3D12_VIEWPORT viewport;
 	D3D12_RECT scissorRect;
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	static D3D12_INDEX_BUFFER_VIEW ibView_;
-
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	// ライティング
@@ -111,10 +105,9 @@ private:
 	static Transform cameraTransform;
 
 	//Texture
-	static D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
  private:
 	//DirectX::ScratchImage LoadTexture(const std::string& filePath);
-	 void LoadTexture(
-	     const std::string& directoryPath, const std::string& filename,
-	     const std::string& texturePath);
+	 void LoadTexture(const std::string& filename, const std::string& texturePath);
+	 D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 };

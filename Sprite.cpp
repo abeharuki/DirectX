@@ -37,6 +37,9 @@ void Sprite::Initialize() {
 
 void Sprite::Create(const std::string& fileName/* Vector4 color = {1, 1, 1, 1},
                     Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false */) {
+
+
+
 	LoadTexture(fileName);
 	CreateVertexResource();
 	sPipeline();
@@ -85,22 +88,19 @@ void Sprite::PreDraw() {
 
 void Sprite::PostDraw(){};
 
-void Sprite::Draw(WorldTransform& worldTransform) {
+void Sprite::Draw(WorldTransform& worldTransform, Sprite* sprite) {
 
 	
 	// Sprite用のworldViewProjectionMatrixを作る
-	Matrix4x4 worldMatrixSprite =
-	    Math::MakeAffineMatrix(worldTransform.scale, worldTransform.rotate, worldTransform.translate);
-	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
-	Matrix4x4 projectionMatrixSprite =
-	    Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
-	Matrix4x4 worldViewProjectionMatrixSprite =
-	    Math::Multiply(worldMatrixSprite, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
-	worldTransform.matWorld_ = worldViewProjectionMatrixSprite;
+	Matrix4x4 worldMatrixSprite = Math::MakeAffineMatrix(
+	    {worldTransform.scale.x * static_cast<float>(sprite->textureWidth),
+	     worldTransform.scale.y * static_cast<float>(sprite->textureHeight), 1.0f},
+	    {0.0f, 0.0f, worldTransform.rotate.z},
+	    {worldTransform.translate.x, worldTransform.translate.y, 0.5f});
 
 	//  コマンドを積む
-	Engine::GetList()->RSSetViewports(1, &viewport);
-	Engine::GetList()->RSSetScissorRects(1, &scissorRect);
+	Engine::GetList()->RSSetViewports(1, &sprite->viewport);
+	Engine::GetList()->RSSetScissorRects(1, &sprite->scissorRect);
 
 
 	//// UVTransform用の行列
@@ -118,18 +118,18 @@ void Sprite::Draw(WorldTransform& worldTransform) {
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
 
 	// Spriteをインデックス描画。
-	Engine::GetList()->IASetVertexBuffers(0, 1, &vbView_); // VBVを設定
-	Engine::GetList()->IASetIndexBuffer(&ibView_);         // IBVを設定
+	Engine::GetList()->IASetVertexBuffers(0, 1, &sprite->vbView_); // VBVを設定
+	Engine::GetList()->IASetIndexBuffer(&sprite->ibView_);         // IBVを設定
 
 	
 	// マテリアルCBufferの場所を設定
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
-	Engine::GetList()->SetDescriptorHeaps(1, &SRVHeap);
+	Engine::GetList()->SetDescriptorHeaps(1, &sprite->SRVHeap);
 	// TransformationMatrixCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootDescriptorTable(
-	    2, SRVHeap->GetGPUDescriptorHandleForHeapStart());
+	    2, sprite->SRVHeap->GetGPUDescriptorHandleForHeapStart());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
 	    1, worldTransform.constBuff_->GetGPUVirtualAddress());
 
