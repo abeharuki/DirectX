@@ -92,7 +92,7 @@ void Sprite::Draw(WorldTransform& worldTransform, Sprite* sprite) {
 
 	
 	// Sprite用のworldViewProjectionMatrixを作る
-	Matrix4x4 worldMatrixSprite = Math::MakeAffineMatrix(
+	worldTransform.matWorld_ = Math::MakeAffineMatrix(
 	    {worldTransform.scale.x * static_cast<float>(sprite->textureWidth),
 	     worldTransform.scale.y * static_cast<float>(sprite->textureHeight), 1.0f},
 	    {0.0f, 0.0f, worldTransform.rotate.z},

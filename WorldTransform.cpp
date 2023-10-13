@@ -2,8 +2,7 @@
 
 void WorldTransform::Initialize() {
 	matWorld_ = Math::MakeIdentity4x4();
-	constBuff_ =
-	    Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(ConstBufferDataWorldTransform));
+	constBuff_ =Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(ConstBufferDataWorldTransform));
 	// 書き込むためのアドレスを取得
 	constBuff_.Get()->Map(0, nullptr, reinterpret_cast<void**>(&constMap));
 	TransferMatrix();

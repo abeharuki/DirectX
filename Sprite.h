@@ -133,7 +133,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(WorldTransform& worldTransform,Sprite* sprite);
+	static void Draw(WorldTransform& worldTransform,Sprite* sprite);
 
 
 	void Create(

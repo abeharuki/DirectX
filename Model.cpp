@@ -32,7 +32,7 @@ Transform Model::cameraTransform = {
 
 
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
-	
+	modelData = TextureManager::LoadObjFile(filename);
 	LoadTexture(filename, texturePath);
 	CreateVertexResource();
 	sPipeline();
@@ -73,9 +73,43 @@ void Model::sPipeline() {
 	
 };
 
-
-
 void Model::Draw(WorldTransform& worldTransform, Model* model) {
+	// Sprite用のworldViewProjectionMatrixを作る
+	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
+	Matrix4x4 projectionMatrixSprite =
+	    Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
+	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
+	    worldTransform.matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
+	worldTransform.matWorld_ = worldViewProjectionMatrixSprite;
+
+	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
+	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
+	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
+
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Engine::GetList()->IASetVertexBuffers(0, 1, &model->vertexBufferView);
+
+	// マテリアルCBufferの場所を設定
+	// Engine::GetList()->SetGraphicsRootConstantBufferView(0,
+	// model->materialResorce_->GetGPUVirtualAddress());
+	// Engine::GetList()->SetGraphicsRootConstantBufferView(3,
+	// lightResource_->GetGPUVirtualAddress());
+
+	Engine::GetList()->SetDescriptorHeaps(1, model->SRVHeap.GetAddressOf());
+	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
+	Engine::GetList()->SetGraphicsRootDescriptorTable(
+	    2, model->SRVHeap->GetGPUDescriptorHandleForHeapStart());
+	// wvp用のCBufferの場所を設定
+	Engine::GetList()->SetGraphicsRootConstantBufferView(
+	    1, worldTransform.constBuff_->GetGPUVirtualAddress());
+
+	// 三角形の描画
+	Engine::GetList()->DrawInstanced(UINT(model->modelData_.vertices.size()), 1, 0, 0);
+}
+	
+
+void Model::Draw(WorldTransform& worldTransform) {
 
 	// Sprite用のworldViewProjectionMatrixを作る
 	Matrix4x4 worldMatrixSprite = Math::MakeAffineMatrix(
@@ -94,20 +128,20 @@ void Model::Draw(WorldTransform& worldTransform, Model* model) {
 
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Engine::GetList()->IASetVertexBuffers(0, 1, &model->vertexBufferView);
+	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	
 	// マテリアルCBufferの場所を設定
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(0, model->materialResorce_->GetGPUVirtualAddress());
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
-	Engine::GetList()->SetDescriptorHeaps(1, model->SRVHeap.GetAddressOf());
+	Engine::GetList()->SetDescriptorHeaps(1, SRVHeap.GetAddressOf());
 	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, model->SRVHeap->GetGPUDescriptorHandleForHeapStart());
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, SRVHeap->GetGPUDescriptorHandleForHeapStart());
 	// wvp用のCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(model->modelData_.vertices.size()), 1, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 
 	
 }
@@ -130,11 +164,11 @@ void Model::CreateVertexResource() {
 	// 頂点リソースにデータを書き込む
 	vertexResource->Map(
 	    0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
-	//std::memcpy( vertexData, modelData.vertices.data(),sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
-	std::copy(modelData.vertices.begin(), modelData.vertices.end(), vertexData);
+	std::memcpy( vertexData, modelData.vertices.data(),sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
+	//std::copy(modelData.vertices.begin(), modelData.vertices.end(), vertexData);
 
 	//	重要
-	vertexResource->Unmap(0, nullptr);
+	//vertexResource->Unmap(0, nullptr);
 
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(Material));
@@ -166,7 +200,6 @@ void Model::CreateVertexResource() {
 
 //画像の読み込み
 void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
-	modelData = TextureManager::LoadObjFile(filename);
 	
 	// Textureを読んで転送する
 	DirectX::ScratchImage mipImages = TextureManager::LoadTexture(texturePath);
@@ -205,12 +238,12 @@ void Model::LoadTexture(const std::string& filename, const std::string& textureP
 
 
 
-void Model::CreateModelFromObj(const std::string& filename, const std::string& texturePath) {
-	
-	LoadTexture(filename, texturePath);
-	CreateVertexResource();
-	sPipeline();
-	
+Model* Model::CreateModelFromObj(const std::string& filename, const std::string& texturePath) {
+	Model* model = new Model;
+	model->Initialize(filename, texturePath);
+	return model;
+
+
 }
 
 void Model::PreDraw() {}

@@ -21,6 +21,8 @@ public: // メンバ関数
 	/// </summary>
 	~GameScene();
 
+	static GameScene* GetInstance();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -42,7 +44,6 @@ private: // メンバ変数
 	WorldTransform worldTransformB_;
 	// 3Dモデル
 	std::unique_ptr<Model> model_;
-	std::unique_ptr<Model> model2_;
 	 
 
 	std::unique_ptr<Sprite> sprite_;

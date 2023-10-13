@@ -7,17 +7,20 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {}
 
+GameScene* GameScene::GetInstance() {
+	static GameScene instance;
+	return &instance;
+}
+
 void GameScene::Initialize() {
 
-	worldTransformBase_.Initialize();
-	worldTransformA_.Initialize();
-	worldTransformB_.Initialize();
+	
 
 	// 3Dモデルの生成
 	// モデルの作成
 	model_ = std::make_unique<Model>();
-	model_->CreateModelFromObj("resources/axis.obj","resources/uvChecker.png");
-	
+	model_->Initialize("resources/axis.obj", "resources/uvChecker.png");
+	//model_.reset(Model::CreateModelFromObj("resources/axis.obj","resources/uvChecker.png"));
 	
 	
 	
@@ -30,7 +33,9 @@ void GameScene::Initialize() {
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Create("resources/monsterBall.png");
 
-
+	worldTransformBase_.Initialize();
+	worldTransformA_.Initialize();
+	worldTransformB_.Initialize();
 }
 
 void GameScene::Update() {
@@ -38,7 +43,7 @@ void GameScene::Update() {
 	
 	
 	worldTransformBase_.UpdateMatrix();
-	worldTransformB_.UpdateMatrix();
+	
 
 	ImGui::Begin("OBJ");
 	ImGui::DragFloat3("OBJ", &worldTransformBase_.translate.x, 1.0f, -100.0f, 100.0f);
@@ -46,11 +51,11 @@ void GameScene::Update() {
 
 
 	ImGui::Begin("Sprite");
-	ImGui::DragFloat2("SA", &worldTransformA_.translate.x, 1.0f, 0.0f, 1280.0f);
+	ImGui::DragFloat3("SA", &worldTransformA_.translate.x, 1.0f, 0.0f, 1280.0f);
 	ImGui::DragFloat2("SAR", &worldTransformA_.rotate.x, 1.0f, 0.0f, 1280.0f);
 
-	ImGui::DragFloat2("SB", &worldTransformB_.translate.x, 1.0f, 0.0f, 1280.0f);
-	ImGui::DragFloat3("SBR", &worldTransformB_.rotate.x, 1.0f, 0.0f, 1280.0f);
+	ImGui::DragFloat3("SB", &worldTransformB_.translate.x, 1.0f, 0.0f, 1280.0f);
+	ImGui::DragFloat2("SBR", &worldTransformB_.rotate.x, 1.0f, 0.0f, 1280.0f);
 	ImGui::End();
 
 }
@@ -64,7 +69,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	model_->Draw(worldTransformBase_, model_.get());
+	model_->Draw(worldTransformBase_,model_.get());
 	
 
 	// 3Dオブジェクト描画後処理
@@ -79,9 +84,9 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	
-	sprite_->Draw(worldTransformA_, sprite_.get());
+	Sprite::Draw(worldTransformA_, sprite_.get());
 	
-	sprite2_->Draw(worldTransformB_, sprite2_.get());
+	//Sprite::Draw(worldTransformB_, sprite2_.get());
 	
 
 	// スプライト描画後処理

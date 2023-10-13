@@ -64,19 +64,19 @@ public:
 	static void PostDraw();
 
 	
-	void Draw(WorldTransform& worldTransform,Model* model /* const ViewProjection& viewProjection*/);
-
+	void Draw(WorldTransform& worldTransform/* const ViewProjection& viewProjection*/);
+	static void Draw(WorldTransform& worldTransform,Model*model /* const ViewProjection& viewProjection*/);
 	
 	
 	const D3D12_VIEWPORT& GetViewp() const { return viewport; }
 	const D3D12_RECT& GetScissor() const { return scissorRect; }
 
-	void CreateModelFromObj(const std::string& filename, const std::string& texturePath);
-	ModelData modelData_;
+	//static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath); 
+	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
 	
 
 private:
-
+	ModelData modelData_;
 	std::unique_ptr<Mesh> mesh_;
 	
 	Microsoft::WRL::ComPtr < ID3D12DescriptorHeap> SRVHeap;

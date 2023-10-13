@@ -40,7 +40,7 @@ void Engine::Initialize(const char* title, int width, int height) {
 	imguiManager->Initialize(win, dxCommon);
 
 	 // ゲームシーンの初期化
-	gameScene = new GameScene();
+	gameScene = GameScene::GetInstance();
 	gameScene->Initialize();
 	
 }
