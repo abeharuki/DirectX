@@ -2,10 +2,18 @@
 
 void WorldTransform::Initialize() {
 	matWorld_ = Math::MakeIdentity4x4();
-	constBuff_ =Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(ConstBufferDataWorldTransform));
-	// 書き込むためのアドレスを取得
-	constBuff_.Get()->Map(0, nullptr, reinterpret_cast<void**>(&constMap));
+	CreateConstBuffer();
+	Map();
 	TransferMatrix();
+}
+
+void WorldTransform::CreateConstBuffer() {
+	constBuff_ = Mesh::CreateBufferResoure(
+	    Engine::GetDevice().Get(), sizeof(ConstBufferDataWorldTransform));
+}
+
+void WorldTransform::Map() {
+	constBuff_.Get()->Map(0, nullptr, reinterpret_cast<void**>(&constMap));
 }
 
 void WorldTransform::TransferMatrix() { constMap->matWorld = matWorld_; }
@@ -20,7 +28,6 @@ void WorldTransform::UpdateMatrix() {
 
 	TransferMatrix();
 }
-
-Vector3 WorldTransform::GetWorldPos() const {
-	return Vector3(matWorld_.m[3][0], matWorld_.m[3][1], matWorld_.m[3][2]);
-};
+Vector3 WorldTransform::GetWorldPos() {
+	return {matWorld_.m[3][0], matWorld_.m[3][1], matWorld_.m[3][2]};
+}

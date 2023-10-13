@@ -81,7 +81,16 @@ void Engine::EndFrame() {
 	dxCommon->PostDraw();
 }
 
-ID3D12Device* Engine::GetDevice() { return dxCommon->GetDevice(); }
 
-ID3D12GraphicsCommandList* Engine::GetList() { return dxCommon->GetCommandList(); }
+Microsoft::WRL::ComPtr<ID3D12Device> Engine::GetDevice() { return dxCommon->GetDevice(); }
+
+Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> Engine::GetList() {
+	return dxCommon->GetCommandList();
+}
+
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Engine::GetSRV() { return dxCommon->GetSRV(); }
+
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Engine::GetRTV() { return dxCommon->GetRTV(); }
+
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Engine::GetDSV() { return dxCommon->GetDSV(); }
 

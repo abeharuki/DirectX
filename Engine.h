@@ -27,10 +27,15 @@ public:
 	static void EndFrame();
 
 public:
-	static ID3D12Device* GetDevice();
-	static ID3D12GraphicsCommandList* GetList();
+	static Microsoft::WRL::ComPtr<ID3D12Device> GetDevice();
+	static Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetList();
 	
-
+	// SRV用のヒープ
+	static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSRV();
+	 // RTV用のヒープ
+	static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetRTV();
+	 // DSV用のヒープ
+	static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDSV();
 
 	
 };

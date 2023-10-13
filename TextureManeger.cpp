@@ -11,10 +11,35 @@
 #include <sstream>
 
 
-
-
 #pragma comment(lib, "dxcompiler.lib")
 
+void TextureManager::Initialize()
+{
+	
+	descriptorSizeDSV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	descriptorSizeRTV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	descriptorSizeSRV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureIndex_ = -1;
+}
+
+
+TextureManager* TextureManager::GetInstance() {
+	static TextureManager instance;
+	return &instance;
+}
+
+uint32_t TextureManager::Load(const std::string& filePath) {
+	
+	textureIndex_++;
+	LoadTexture(filePath, textureIndex_);
+	return textureIndex_;
+}
+
+
+const D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetGPUHandle(uint32_t textureHandle) {
+	D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle = textureSrvHandleGPU_[textureHandle];
+	return GPUHandle;
+}
 
 // Textureデータの読み込み
 DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
@@ -34,6 +59,29 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 	// ミニマップ付きのデータを返す
 	return mipImages;
 };
+
+
+void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
+
+	DirectX::ScratchImage mipImage = LoadTexture(filePath);
+	const DirectX::TexMetadata& metadata = mipImage.GetMetadata();
+	textureResource[index] = CreateTextureResource(Engine::GetDevice().Get(), metadata);
+	UploadTextureData(textureResource[index].Get(), mipImage);
+	// metaDataを元にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+
+	// SRVを作成するDescripterHeapの場所を決める
+	textureSrvHandleGPU_[index] = GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index + 1); // direct_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
+	textureSrvHandleCPU_[index] =GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, index + 1);
+	// 先頭はIMGUIが使ってるからその次を使う
+	textureSrvHandleCPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	Engine::GetDevice()->CreateShaderResourceView(textureResource[index].Get(), &srvDesc, textureSrvHandleCPU_[index]);
+}
 
 // TextureResourceの作成
 ID3D12Resource* TextureManager::CreateTextureResource(
@@ -203,14 +251,18 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 
 
 
-TextureManager* TextureManager::GetInstance() {
-	static TextureManager instance;
-	return &instance;
+D3D12_CPU_DESCRIPTOR_HANDLE TextureManager::GetCPUDescriptorHandle(
+    ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	handleCPU.ptr += (descriptorSize * index);
+	return handleCPU;
 }
 
-void TextureManager::Initialize() {
-
+D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetGPUDescriptorHandle(
+    ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+	handleGPU.ptr += (descriptorSize * index);
+	return handleGPU;
 }
-
 
 

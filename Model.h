@@ -7,10 +7,12 @@
 #include <fstream>
 #include <sstream>
 #include <dxcapi.h>
-#include "DirectXCommon.h"
+#include "Engine.h"
+#include "TextureManeger.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "externals/DirectXTex/d3dx12.h"
 #include "WorldTransform.h"
+#include "ViewProjection.h"
 
 class Model {
 private: // 静的メンバ変数
@@ -64,7 +66,7 @@ public:
 	static void PostDraw();
 
 	
-	void Draw(WorldTransform& worldTransform/* const ViewProjection& viewProjection*/);
+	void Draw(WorldTransform& worldTransform,const ViewProjection& viewProjection);
 	static void Draw(WorldTransform& worldTransform,Model*model /* const ViewProjection& viewProjection*/);
 	
 	
@@ -76,10 +78,13 @@ public:
 	
 
 private:
+	TextureManager* textureManager_;
+	uint32_t texture_;
+
 	ModelData modelData_;
 	std::unique_ptr<Mesh> mesh_;
 	
-	Microsoft::WRL::ComPtr < ID3D12DescriptorHeap> SRVHeap;
+	
 	D3D12_VIEWPORT viewport;
 	D3D12_RECT scissorRect;
 	// 頂点バッファビュー

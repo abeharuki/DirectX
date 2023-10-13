@@ -3,6 +3,7 @@
 #include "TextureManeger.h"
 #include "Engine.h"
 #include "WorldTransform.h"
+#include "externals/imgui/imgui.h"
 
 
 // ルートシグネチャ
@@ -11,17 +12,9 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> Sprite::rootSignature_;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> Sprite::sPipelineState_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sprite::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sprite::pixelShaderBlob_;
-// ライティング
-Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::lightResource_;
-// マテリアル用リソース
-Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::materialResorce_;
 
 
-Transform Sprite::uvTransformSprite{
-    {1.0f, 1.0f, 1.0f},
-    {0.0f, 0.0f, 0.0f},
-    {0.0f, 0.0f, 0.0f},
-};
+
 
 Sprite* Sprite::GetInstance() {
 	static Sprite instance;
@@ -29,28 +22,20 @@ Sprite* Sprite::GetInstance() {
 }
 
 
-void Sprite::Initialize() {
-	
-	
-}
-
-
-void Sprite::Create(const std::string& fileName/* Vector4 color = {1, 1, 1, 1},
-                    Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false */) {
-
-
-
+void Sprite::Initialize(const std::string& fileName) {
 	LoadTexture(fileName);
 	CreateVertexResource();
 	sPipeline();
-	
-	
-
 }
 
-void Sprite::SetPosition(const Vector2& position) {
-	
+
+Sprite* Sprite::Create(const std::string& fileName/* Vector4 color = {1, 1, 1, 1},
+                    Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false */) {
+	Sprite* sprite = new Sprite;
+	sprite->Initialize(fileName);
+	return sprite;
 }
+
 
 void Sprite::sPipeline(){
 
@@ -88,19 +73,32 @@ void Sprite::PreDraw() {
 
 void Sprite::PostDraw(){};
 
-void Sprite::Draw(WorldTransform& worldTransform, Sprite* sprite) {
-
+void Sprite::Draw(WorldTransform& worldTransform) {
+	
+	
+	// transform.rotate.y += 0.03f;
+	
+	Transform cameraTransform{
+	    {1.0f, 1.0f, 1.0f  },
+        {0.0f, 0.0f, 0.0f  },
+        {0.0f, 0.0f, -10.0f}
+    };
 	
 	// Sprite用のworldViewProjectionMatrixを作る
 	worldTransform.matWorld_ = Math::MakeAffineMatrix(
-	    {worldTransform.scale.x * static_cast<float>(sprite->textureWidth),
-	     worldTransform.scale.y * static_cast<float>(sprite->textureHeight), 1.0f},
+	    {worldTransform.scale.x,worldTransform.scale.y, 1.0f},
 	    {0.0f, 0.0f, worldTransform.rotate.z},
 	    {worldTransform.translate.x, worldTransform.translate.y, 0.5f});
 
+	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
+	Matrix4x4 projectionMatrixSprite = Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
+	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
+	    worldTransform.matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
+	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldTransform.matWorld_);
+
 	//  コマンドを積む
-	Engine::GetList()->RSSetViewports(1, &sprite->viewport);
-	Engine::GetList()->RSSetScissorRects(1, &sprite->scissorRect);
+	Engine::GetList()->RSSetViewports(1, &viewport);
+	Engine::GetList()->RSSetScissorRects(1, &scissorRect);
 
 
 	//// UVTransform用の行列
@@ -118,20 +116,18 @@ void Sprite::Draw(WorldTransform& worldTransform, Sprite* sprite) {
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
 
 	// Spriteをインデックス描画。
-	Engine::GetList()->IASetVertexBuffers(0, 1, &sprite->vbView_); // VBVを設定
-	Engine::GetList()->IASetIndexBuffer(&sprite->ibView_);         // IBVを設定
+	Engine::GetList()->IASetVertexBuffers(0, 1, &vbView_); // VBVを設定
+	Engine::GetList()->IASetIndexBuffer(&ibView_);         // IBVを設定
 
 	
-	// マテリアルCBufferの場所を設定
-	//Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
-
-	Engine::GetList()->SetDescriptorHeaps(1, &sprite->SRVHeap);
+	Engine::GetList()->SetDescriptorHeaps(1, &SRVHeap);
 	// TransformationMatrixCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootDescriptorTable(
-	    2, sprite->SRVHeap->GetGPUDescriptorHandleForHeapStart());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(
-	    1, worldTransform.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootDescriptorTable( 2, SRVHeap->GetGPUDescriptorHandleForHeapStart());
+	// マテリアルCBufferの場所を設定
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
 
 	
 	// 描画
@@ -145,53 +141,54 @@ void Sprite::CreateVertexResource() {
 
 	
 	// バーテックス
-	/*vertexData [4] = {
+	/*VertexData vertexData[4] = {
 	    {{0.0f, 360.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
 	    {{0.0f, 0.0f, 0.0f, 1.0f},   {0.0f, 0.0f}},
 	    {{640.0f, 360.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-	    {{640.0f, 0.0f, 0.0f, 1.0f},   {1.0f, 1.0f}},
+	    {{640.0f, 0.0f, 0.0f, 1.0f},   {1.0f, 0.0f}},
 	};*/
 
-	//VertexData* vertexData = nullptr;
-	vertexResource_ = Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(VertexData) * 4);
+	/*VertexData vertex[4] = {
+	    {{-0.5f, 0.5f, 0.1f, 1.0f},  {0.0f, 0.0f}},
+	    {{0.5f, 0.5f, 0.1f, 1.0f},   {1.0f, 0.0f}},
+	    {{0.5f, -0.5f, 0.1f, 1.0f},  {1.0f, 1.0f}},
+	    {{-0.5f, -0.5f, 0.1f, 1.0f}, {0.0f, 1.0f}},
+	};*/
 
-	// リソースの先頭のアドレスから使う
+
+	//VertexData* vertexData = nullptr;
+	vertexResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData)*4);
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	
+
+	//  リソースの先頭のアドレスから使う
 	vbView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
 	vbView_.SizeInBytes = sizeof(VertexData) * 4;
 	// 1頂点あたりのサイズ
 	vbView_.StrideInBytes = sizeof(VertexData);
-
-
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	
+	
+
 	// 1枚目の三角形
-	vertexData_[0].position = {0.0f, 360.0f, 0.0f, 1.0f}; // 左下
+	vertexData_[0].position = {0.0f, 360.0f, 0.0f, 1.0f}; // 左下0
 	vertexData_[0].texcoord = {0.0f, 1.0f};
-	vertexData_[1].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 左上
+	vertexData_[1].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 左上1
 	vertexData_[1].texcoord = {0.0f, 0.0f};
-	vertexData_[2].position = {640.0f, 360.0f, 0.0f, 1.0f}; // 右下
+	vertexData_[2].position = {640.0f, 360.0f, 0.0f, 1.0f}; // 右下2
 	vertexData_[2].texcoord = {1.0f, 1.0f};
-	vertexData_[3].position = {640.0f, 0.0f, 0.0f, 1.0f}; // 右上
+	vertexData_[3].position = {640.0f, 0.0f, 0.0f, 1.0f}; // 右上3
 	vertexData_[3].texcoord = {1.0f, 0.0f};
 
-	//vertexDataSprite[0]->normal = {0.0f, 0.0f, -1.0f};
+	vertexData_[0].normal = {0.0f, 0.0f, -1.0f};
 	
-
+	//uint16_t indexData[6] = {0, 1, 2, 1, 3, 2};
 	
 	// インデックス
-	indexResource_ = Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(uint32_t) * 6);
+	indexResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t) * 6);
 	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
 	
-
-	indexData_[0] = {0};
-	indexData_[1] = {1};
-	indexData_[2] = {2};
-	indexData_[3] = {1};
-	indexData_[4] = {3};
-	indexData_[5] = {2};
-
-
+	
 	// 頂点バッファビューを作成する
 	// リソースの先頭アドレスから使う
 	ibView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
@@ -200,7 +197,22 @@ void Sprite::CreateVertexResource() {
 	// インデックスはuint32_tとする
 	ibView_.Format = DXGI_FORMAT_R32_UINT;
 
+    indexData_[0] = 0;
+	indexData_[1] = 1;
+	indexData_[2] = 2;
+	indexData_[3] = 1;
+	indexData_[4] = 3;
+	indexData_[5] = 2;
 	
+
+	
+	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
+	// データを書き込む
+	wvpData = nullptr;
+	// 書き込むためのアドレスを取得
+	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	wvpData->WVP = Math::MakeIdentity4x4();
 	
 	//// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	////TransformationMatrix wvpData;
@@ -211,19 +223,19 @@ void Sprite::CreateVertexResource() {
 	//// 単位行列を書き込む
 	//*wvpData_ = Math::MakeIdentity4x4();
 	
-	//
-	//// Sprite用のマテリアルリソースを作る
-	//// マテリアル
-	//materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(Material));
-	//// データを書き込む
-	//// 書き込むためのアドレスを取得
-	//materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
-	//// 今回は白を書き込む
-	//materialDataSprite->color = {1.0f, 1.0f, 1.0f, 1.0f};
-	//// Lightingを無効
-	//materialDataSprite->enableLighting = false;
-	//// 初期化
-	//materialDataSprite->uvTransform = Math::MakeIdentity4x4();
+	
+	// Sprite用のマテリアルリソースを作る
+	// マテリアル
+	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
+	// データを書き込む
+	// 書き込むためのアドレスを取得
+	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
+	// 今回は白を書き込む
+	materialDataSprite->color = {1.0f, 1.0f, 1.0f, 1.0f};
+	// Lightingを無効
+	materialDataSprite->enableLighting = false;
+	// 初期化
+	materialDataSprite->uvTransform = Math::MakeIdentity4x4();
 
 }
 
@@ -234,9 +246,16 @@ void Sprite::LoadTexture(const std::string& fileName) {
 	// Textureを読んで転送する
 	DirectX::ScratchImage mipImages = TextureManager::LoadTexture(fileName);
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	ID3D12Resource* textureResource =
-	    TextureManager::CreateTextureResource(Engine::GetDevice(), metadata);
-	TextureManager::UploadTextureData(textureResource, mipImages);
+	ID3D12Resource* resource =
+	    TextureManager::CreateTextureResource(Engine::GetDevice().Get(), metadata);
+	TextureManager::UploadTextureData(resource, mipImages);
+
+	
+	//	画像サイズの代入
+	textureWidth = static_cast<uint32_t>(metadata.width);
+	textureHeight = static_cast<uint32_t>(metadata.height);
+
+	SRVHeap = CreateDescriptorHeap(Engine::GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 10, true);
 
 	// metadataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -244,9 +263,6 @@ void Sprite::LoadTexture(const std::string& fileName) {
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
-	SRVHeap = CreateDescriptorHeap(Engine::GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 10, true);
-
 
 	// SRVを作成するDescriptorHeapの場所を決める
 	//D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
@@ -259,8 +275,7 @@ void Sprite::LoadTexture(const std::string& fileName) {
 	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	
 	// SRVの作成
-	Engine::GetDevice()->CreateShaderResourceView(
-	    textureResource, &srvDesc, SRVHeap->GetCPUDescriptorHandleForHeapStart());
+	Engine::GetDevice()->CreateShaderResourceView(resource, &srvDesc, SRVHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
 

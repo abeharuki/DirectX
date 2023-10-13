@@ -1,5 +1,6 @@
 #pragma once
 #include "WorldTransform.h"
+#include "ViewProjection.h"
 #include "DirectXCommon.h"
 #include "Model.h"
 #include "Engine.h"
@@ -39,6 +40,8 @@ public: // メンバ関数
 	void Draw();
 
 private: // メンバ変数
+	ViewProjection viewProjection_;
+
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformA_;
 	WorldTransform worldTransformB_;
@@ -46,8 +49,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> model_;
 	 
 
-	std::unique_ptr<Sprite> sprite_;
-	std::unique_ptr<Sprite> sprite2_;
+	Sprite* sprite_;
+	Sprite* sprite2_;
 
 	int a = 0;
 };

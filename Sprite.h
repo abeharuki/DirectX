@@ -118,7 +118,7 @@ public: // メンバ関数
 	/// 初期化
 	/// </summary>
 	/// <returns>成否</returns>
-	void Initialize();
+	void Initialize(const std::string& fileName);
 
 
 	/// <summary>
@@ -133,15 +133,22 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	static void Draw(WorldTransform& worldTransform,Sprite* sprite);
+	void Draw(WorldTransform& worldTransform);
 
 
-	void Create(
+	static Sprite* Create(
 	    const std::string& fileName /* Vector4 color = {1, 1, 1, 1},
 	    Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false*/);
 
 
 private: // メンバ変数
+	
+
+	ID3D12Resource* wvpResouce;
+	// データを書き込む
+	TransformationMatrix* wvpData;
+
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	VertexData* vertexData_;
 
@@ -149,14 +156,19 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	uint32_t* indexData_;
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;
-	Matrix4x4* wvpData_;
-	
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource[1] = {};
+	ID3D12DescriptorHeap* SRVHeap;
+
 	Material* materialDataSprite;
 	DirectionalLight* directionalLightData = nullptr;
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
 
-	static Transform uvTransformSprite;
+	/*Transform* uvTransformSprite{
+	    {1.0f, 1.0f, 1.0f},
+	    {0.0f, 0.0f, 0.0f},
+	    {0.0f, 0.0f, 0.0f},
+	};*/
+	
 
 	D3D12_VIEWPORT viewport;
 	D3D12_RECT scissorRect;
@@ -166,12 +178,12 @@ private: // メンバ変数
 	// 頂点
 	
 	// ライティング
-	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
 	//座標
-	static Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_; 
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_; 
 
 	// マテリアル用リソース
-	static Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 	
 	// 頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertBuff_;
@@ -194,7 +206,7 @@ private: // メンバ変数
 	// ワールド行列
 	Matrix4x4 matWorld_{};
 	
-	ID3D12DescriptorHeap* SRVHeap = nullptr;
+	
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
 private: // メンバ関数
