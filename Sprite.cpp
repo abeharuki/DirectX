@@ -139,22 +139,6 @@ void Sprite::Draw(WorldTransform& worldTransform) {
 
 void Sprite::CreateVertexResource() {
 
-	
-	// バーテックス
-	/*VertexData vertexData[4] = {
-	    {{0.0f, 360.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	    {{0.0f, 0.0f, 0.0f, 1.0f},   {0.0f, 0.0f}},
-	    {{640.0f, 360.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-	    {{640.0f, 0.0f, 0.0f, 1.0f},   {1.0f, 0.0f}},
-	};*/
-
-	/*VertexData vertex[4] = {
-	    {{-0.5f, 0.5f, 0.1f, 1.0f},  {0.0f, 0.0f}},
-	    {{0.5f, 0.5f, 0.1f, 1.0f},   {1.0f, 0.0f}},
-	    {{0.5f, -0.5f, 0.1f, 1.0f},  {1.0f, 1.0f}},
-	    {{-0.5f, -0.5f, 0.1f, 1.0f}, {0.0f, 1.0f}},
-	};*/
-
 
 	//VertexData* vertexData = nullptr;
 	vertexResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData)*4);
@@ -182,7 +166,6 @@ void Sprite::CreateVertexResource() {
 
 	vertexData_[0].normal = {0.0f, 0.0f, -1.0f};
 	
-	//uint16_t indexData[6] = {0, 1, 2, 1, 3, 2};
 	
 	// インデックス
 	indexResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t) * 6);
@@ -213,15 +196,6 @@ void Sprite::CreateVertexResource() {
 	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
 	wvpData->WVP = Math::MakeIdentity4x4();
-	
-	//// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	////TransformationMatrix wvpData;
-	//wvpResource_ = Mesh::CreateBufferResoure(Engine::GetDevice(), sizeof(TransformationMatrix));
-	//// データを書き込む
-	//// 書き込むためのアドレスを取得
-	//wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
-	//// 単位行列を書き込む
-	//*wvpData_ = Math::MakeIdentity4x4();
 	
 	
 	// Sprite用のマテリアルリソースを作る
@@ -264,15 +238,6 @@ void Sprite::LoadTexture(const std::string& fileName) {
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
-	// SRVを作成するDescriptorHeapの場所を決める
-	//D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
-	//textureSrvHandleGPU = SRVHeap->GetGPUDescriptorHandleForHeapStart();
-
-	//// 先頭はImGuiが使っているのでその次を使う
-	//textureSrvHandleCPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
-	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//textureSrvHandleGPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
-	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	
 	// SRVの作成
 	Engine::GetDevice()->CreateShaderResourceView(resource, &srvDesc, SRVHeap->GetCPUDescriptorHandleForHeapStart());

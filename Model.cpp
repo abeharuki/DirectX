@@ -15,19 +15,6 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState> Model::sPipelineState_;
 Microsoft::WRL::ComPtr<IDxcBlob> Model::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Model::pixelShaderBlob_;
 
-Transform Model::transform = {
-    {1.0f, 1.0f, 1.0f},
-    {0.0f, 0.0f, 0.0f},
-    {0.0f, 0.0f, 0.0f}
-};
-Transform Model::cameraTransform = {
-    {1.0f, 1.0f, 1.0f  },
-    {0.0f, 0.0f, 0.0f  },
-    {0.0f, 0.0f, -10.0f}
-};
-
-
-
 
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
 	textureManager_ = TextureManager::GetInstance();
@@ -109,6 +96,21 @@ void Model::sPipeline() {
 //	
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+	worldTransform.matWorld_ = Math::MakeAffineMatrix(
+	    {worldTransform.scale.x, worldTransform.scale.y, 1.0f},
+	    {0.0f, 0.0f, worldTransform.rotate.z},
+	    {worldTransform.translate.x, worldTransform.translate.y, 0.5f});
+
+	
+	
+	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
+	    worldTransform.matWorld_,
+	    Math::Multiply(viewProjection.matView, viewProjection.matProjection));
+	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldTransform.matWorld_);
+
+	//  コマンドを積む
+	Engine::GetList()->RSSetViewports(1, &viewport);
+	Engine::GetList()->RSSetScissorRects(1, &scissorRect);
 
 	
 
@@ -120,15 +122,15 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	
-	// マテリアルCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 
     // wvp用のCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
+	// マテリアルCBufferの場所を設定
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
 
 		// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
@@ -187,7 +189,13 @@ void Model::CreateVertexResource() {
 	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
 	directionalLightData->intensity = 1.0f;
 
-	
+	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
+	// データを書き込む
+	wvpData = nullptr;
+	// 書き込むためのアドレスを取得
+	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	wvpData->WVP = Math::MakeIdentity4x4();
 };
 
 //画像の読み込み

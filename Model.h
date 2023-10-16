@@ -82,8 +82,10 @@ private:
 	uint32_t texture_;
 
 	ModelData modelData_;
-	std::unique_ptr<Mesh> mesh_;
 	
+	ID3D12Resource* wvpResouce;
+	// データを書き込む
+	TransformationMatrix* wvpData;
 	
 	D3D12_VIEWPORT viewport;
 	D3D12_RECT scissorRect;
@@ -101,13 +103,10 @@ private:
 	
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
-	TransformationMatrix* wvpData;
 	Material* materialData = nullptr;
 	DirectionalLight* directionalLightData = nullptr;
 	
-	static Transform transform;
 
-	static Transform cameraTransform;
 
 	//Texture
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
