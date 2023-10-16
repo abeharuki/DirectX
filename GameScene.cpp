@@ -65,7 +65,7 @@ void GameScene::Update() {
 	ImGui::DragFloat3("SAT", &worldTransformA_.translate.x, 1.0f, 0.0f, 1280.0f);
 	ImGui::DragFloat2("SAR", &worldTransformA_.rotate.x, 1.0f, 0.0f, 1280.0f);
 
-	ImGui::DragFloat3("SAS", &worldTransformB_.scale.x, 1.0f, 0.0f, 1280.0f);
+	ImGui::DragFloat3("SBS", &worldTransformB_.scale.x, 1.0f, 0.0f, 1280.0f);
 	ImGui::DragFloat3("SBT", &worldTransformB_.translate.x, 1.0f, 0.0f, 1280.0f);
 	ImGui::DragFloat2("SBR", &worldTransformB_.rotate.x, 1.0f, 0.0f, 1280.0f);
 	ImGui::End();
