@@ -53,7 +53,6 @@ public:
 	/// 3Dモデル生成
 	/// </summary>
 	/// <returns></returns>
-	static Model* Create();
 	void CreateVertexResource();
 
 	/// <summary>
@@ -67,7 +66,6 @@ public:
 
 	
 	void Draw(WorldTransform& worldTransform,const ViewProjection& viewProjection);
-	static void Draw(WorldTransform& worldTransform,Model*model /* const ViewProjection& viewProjection*/);
 	
 	
 	const D3D12_VIEWPORT& GetViewp() const { return viewport; }
@@ -81,7 +79,6 @@ private:
 	TextureManager* textureManager_;
 	uint32_t texture_;
 
-	ModelData modelData_;
 	
 	ID3D12Resource* wvpResouce;
 	// データを書き込む
@@ -107,11 +104,11 @@ private:
 	DirectionalLight* directionalLightData = nullptr;
 	
 
-
+	
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> SRVHeap;
 	//Texture
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
  private:
 	//DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	 void LoadTexture(const std::string& filename, const std::string& texturePath);
-	 D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 };

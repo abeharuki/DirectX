@@ -145,7 +145,7 @@ MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& filenam
 	MaterialData materialData; // 構築するMaterialData
 	ModelData modelData;
 	std::string line;                              // ファイルから読んだ1行を格納する
-	std::ifstream file("./Resources/" + filename); // ファイルを開く
+	std::ifstream file("./resources/" + filename); // ファイルを開く
 	assert(file.is_open());                        // 開けなかったら止める
 
 	while (std::getline(file, line)) {
@@ -159,14 +159,14 @@ MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& filenam
 			s >> textureFilename;
 			// 連結しているファイルパス
 			materialData.textureFilePath = textureFilename;
-		} else if (identifier == "mtllib") {
-			// materialTemplateLibraryファイルの名前を取得する
-			std::string materialFilename;
-			s >> materialFilename;
+		} //else if (identifier == "mtllib") {
+		//	// materialTemplateLibraryファイルの名前を取得する
+		//	std::string materialFilename;
+		//	s >> materialFilename;
 
-			// 基本的にobjファイルと同じ一階層にmtlは存在させるので、ディレクション名などファイル名を渡す
-			modelData.material = LoadMaterialTemplateFile(materialFilename);
-		}
+		//	// 基本的にobjファイルと同じ一階層にmtlは存在させるので、ディレクション名などファイル名を渡す
+		//	modelData.material = LoadMaterialTemplateFile(materialFilename);
+		//}
 	}
 
 	return materialData;

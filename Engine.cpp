@@ -14,13 +14,14 @@
 #include "Model.h"
 #include "GameScene.h"
 #include "ImGuiManager.h"
-
+#include "KeyInput.h"
 
 WinApp* win = nullptr;
 DirectXCommon* dxCommon = nullptr;
 Model* model = nullptr;
 GameScene* gameScene = nullptr;
 ImGuiManager* imguiManager = nullptr;
+KeyInput* keyInput = nullptr;
 
 Engine* Engine::GetInstance() {
 	static Engine instance;
@@ -43,6 +44,10 @@ void Engine::Initialize(const char* title, int width, int height) {
 	gameScene = GameScene::GetInstance();
 	gameScene->Initialize();
 	
+	//	Inputの初期化処理
+	keyInput = KeyInput::GetInstance();
+	keyInput->Initialize();
+	//KeyInput::InputInitialize();
 }
 
 bool Engine::BeginFrame() { 
@@ -66,15 +71,20 @@ void Engine::EndFrame() {
 	// ImGui受付開始
 	imguiManager->Begin();
 
-
-	// 描画開始
-	dxCommon->PreDraw();
+	//	Input初期の更新
+	//KeyInput::Update();
+	keyInput->Update();
 
 	gameScene->Update();
-	gameScene->Draw();
 
 	// ImGui受付終了
 	imguiManager->End();
+
+	// 描画開始
+	dxCommon->PreDraw();
+	
+	gameScene->Draw();
+
 	// ImGui描画
 	imguiManager->Draw();
 	// 描画終了

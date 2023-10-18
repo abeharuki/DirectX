@@ -16,11 +16,13 @@ public:
 	void CreateGameWindow(
 	    const wchar_t* title = L"DirectXGame", int32_t clientWidth = kWindowWidth, int32_t clientHeight = kWindowHeight);
 
-	HWND GetHwnd() const { return hwnd_; }
-
 	void TerminateGameWindow();
 
 	bool ProcessMessage();
+
+public: // ゲッター
+	static const HWND GetHwnd() { return GetInstance()->hwnd_; };
+	static const WNDCLASS GetWc() { return GetInstance()->wc; };
 
 private: // メンバ関数
 	WinApp() = default;
@@ -31,6 +33,6 @@ private: // メンバ関数
 private: // メンバ変数
 	// Window関連
 	HWND hwnd_ = nullptr;   // ウィンドウハンドル
-	WNDCLASSEX wndClass_{}; // ウィンドウクラス
+	WNDCLASS wc{}; // ウィンドウクラス
 	
 };

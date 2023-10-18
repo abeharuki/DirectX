@@ -41,7 +41,7 @@ void WinApp::CreateGameWindow(
 
 	
 	
-	WNDCLASS wc{};
+     ;
 	// ウィンドウプロシージャ
 	wc.lpfnWndProc = (WNDPROC)WindowProc;
 	// ウインドウクラス名
@@ -91,7 +91,7 @@ void WinApp::CreateGameWindow(
 
 void WinApp::TerminateGameWindow() {
 	// ウィンドウクラスを登録解除
-	UnregisterClass(wndClass_.lpszClassName, wndClass_.hInstance);
+	UnregisterClass(wc.lpszClassName, wc.hInstance);
 
 	// COM 終了
 	CoUninitialize();

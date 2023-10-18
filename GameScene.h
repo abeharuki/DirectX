@@ -5,6 +5,8 @@
 #include "Model.h"
 #include "Engine.h"
 #include "Sprite.h"
+#include "KeyInput.h"
+#include "Skydome.h"
 
 /// <summary>
 /// ゲームシーン
@@ -42,15 +44,8 @@ public: // メンバ関数
 private: // メンバ変数
 	ViewProjection viewProjection_;
 
-	WorldTransform worldTransformBase_;
-	WorldTransform worldTransformA_;
-	WorldTransform worldTransformB_;
-	// 3Dモデル
-	std::unique_ptr<Model> model_;
-	 
-
-	Sprite* sprite_;
-	Sprite* sprite2_;
-
-	int a = 0;
+	// 天球
+	std::unique_ptr<Skydome> skydome_;
+	// 天球3Dモデル
+	std::unique_ptr<Model> modelSkydome_;
 };

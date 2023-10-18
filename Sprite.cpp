@@ -34,6 +34,7 @@ Sprite* Sprite::Create(const std::string& fileName/* Vector4 color = {1, 1, 1, 1
 	Sprite* sprite = new Sprite;
 	sprite->Initialize(fileName);
 	return sprite;
+
 }
 
 

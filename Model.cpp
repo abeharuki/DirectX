@@ -17,9 +17,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> Model::pixelShaderBlob_;
 
 
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
-	textureManager_ = TextureManager::GetInstance();
-	modelData = TextureManager::LoadObjFile(filename);
-	texture_ = textureManager_->Load(texturePath);
+	LoadTexture(filename, texturePath);
 	CreateVertexResource();
 	sPipeline();
 	
@@ -97,9 +95,9 @@ void Model::sPipeline() {
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 	worldTransform.matWorld_ = Math::MakeAffineMatrix(
-	    {worldTransform.scale.x, worldTransform.scale.y, 1.0f},
-	    {0.0f, 0.0f, worldTransform.rotate.z},
-	    {worldTransform.translate.x, worldTransform.translate.y, 0.5f});
+	    {worldTransform.scale.x, worldTransform.scale.y, worldTransform.scale.z},
+	    {worldTransform.rotate.x, worldTransform.rotate.y, worldTransform.rotate.z},
+	    {worldTransform.translate.x, worldTransform.translate.y, worldTransform.translate.z});
 
 	
 	
@@ -125,19 +123,18 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
-	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+
+	Engine::GetList()->SetDescriptorHeaps(1, SRVHeap.GetAddressOf());
+	Engine::GetList()->SetGraphicsRootDescriptorTable( 2, textureSrvHandleGPU);
 
     // wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
 
-		// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
 	
-
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
 	
 }
@@ -146,23 +143,21 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 void Model::CreateVertexResource() {
 	// モデルの読み込み 
 	// 頂点リソースを作る
-	vertexResource = Mesh::CreateBufferResoure(
-	    Engine::GetDevice().Get(), sizeof(VertexData) * modelData.vertices.size());
+	vertexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) * modelData.vertices.size());
+	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
+
 	// 頂点バッファビューを作成する
-	
 	vertexBufferView.BufferLocation =vertexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
-	vertexBufferView.SizeInBytes = UINT( sizeof(VertexData) * modelData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
+	vertexBufferView.SizeInBytes = UINT(
+	    sizeof(VertexData) * modelData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
 
-
-	// 頂点リソースにデータを書き込む
-	vertexResource->Map(
-	    0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
+	
 	std::memcpy( vertexData, modelData.vertices.data(),sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
 	//std::copy(modelData.vertices.begin(), modelData.vertices.end(), vertexData);
 
 	//	重要
-	//vertexResource->Unmap(0, nullptr);
+	
 
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
@@ -196,45 +191,8 @@ void Model::CreateVertexResource() {
 	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込む
 	wvpData->WVP = Math::MakeIdentity4x4();
+	wvpData->World = Math::MakeIdentity4x4();
 };
-
-//画像の読み込み
-//void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
-//	
-//	// Textureを読んで転送する
-//	DirectX::ScratchImage mipImages = TextureManager::LoadTexture(texturePath);
-//	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-//	textureResource =TextureManager::CreateTextureResource(Engine::GetDevice(), metadata);
-//	TextureManager::UploadTextureData(textureResource.Get(), mipImages);
-//
-//
-//	SRVHeap = CreateDescriptorHeap(Engine::GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 10, true);
-//
-//
-//	// metadataを基にSRVの設定
-//	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-//	srvDesc.Format = metadata.format;
-//	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-//	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-//	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-//
-//	//// SRVを作成するDescriptorHeapの場所を決める
-//	//D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU =
-//	//    Engine::GetSRV()->GetCPUDescriptorHandleForHeapStart();
-//	//textureSrvHandleGPU = Engine::GetSRV()->GetGPUDescriptorHandleForHeapStart();
-//
-//	//// 先頭はImGuiが使っているのでその次を使う
-//	//textureSrvHandleCPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
-//	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-//	//textureSrvHandleGPU.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
-//	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-//
-//	
-//
-//	// SRVの作成
-//	Engine::GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, SRVHeap->GetCPUDescriptorHandleForHeapStart());
-//	textureSrvHandleGPU = GetGPUDescriptorHandle(SRVHeap.Get(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV), 0);
-//}
 
 
 
@@ -242,6 +200,34 @@ Model* Model::CreateModelFromObj(const std::string& filename, const std::string&
 	Model* model = new Model;
 	model->Initialize(filename, texturePath);
 	return model;
+
+
+}
+
+void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
+	modelData = TextureManager::LoadObjFile(filename);
+
+	// Textureを読んで転送する
+	DirectX::ScratchImage mipImages = TextureManager::LoadTexture(texturePath);
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	ID3D12Resource* resource =
+	    TextureManager::CreateTextureResource(Engine::GetDevice().Get(), metadata);
+	TextureManager::UploadTextureData(resource, mipImages);
+
+
+	SRVHeap = CreateDescriptorHeap(
+	    Engine::GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 10, true);
+
+	// metadataを基にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+
+	// SRVの作成
+	Engine::GetDevice()->CreateShaderResourceView(resource, &srvDesc, SRVHeap->GetCPUDescriptorHandleForHeapStart());
+	textureSrvHandleGPU =  TextureManager::GetGPUDescriptorHandle(SRVHeap.Get(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV), 0);
 
 
 }

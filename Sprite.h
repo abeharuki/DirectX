@@ -156,9 +156,6 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	uint32_t* indexData_;
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource[1] = {};
-	ID3D12DescriptorHeap* SRVHeap;
-
 	Material* materialDataSprite;
 	DirectionalLight* directionalLightData = nullptr;
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
@@ -206,7 +203,7 @@ private: // メンバ変数
 	// ワールド行列
 	Matrix4x4 matWorld_{};
 	
-	
+	ID3D12DescriptorHeap* SRVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
 private: // メンバ関数
