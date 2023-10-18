@@ -10,7 +10,6 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include "ResourceObject.h"
 #include <wrl.h>
 #include "Math.h"
 

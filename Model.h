@@ -9,8 +9,8 @@
 #include <dxcapi.h>
 #include "Engine.h"
 #include "TextureManeger.h"
-#include "externals/DirectXTex/DirectXTex.h"
-#include "externals/DirectXTex/d3dx12.h"
+#include <DirectXTex.h>
+#include <d3dx12.h>
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 

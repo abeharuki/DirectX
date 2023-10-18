@@ -1,9 +1,9 @@
 #include "DirectXCommon.h"
 #include <format>
-#include "externals/DirectXTex/DirectXTex.h"
-#include "externals/DirectXTex/d3dx12.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
+#include <DirectXTex.h>
+#include <d3dx12.h>
+#include <imgui_impl_dx12.h>
+#include <imgui_impl_win32.h>
 
 
 
@@ -209,7 +209,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 		// ソフトウェアアダプタでなければ採用
 		if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE)) {
 			// 採用したアダプタの情報をログに出力。
-			utility_->Log(utility_->ConvertString(std::format(L"Use Adapater:{}\n", adapterDesc.Description)));
+			utility_->Log(utility_->ConvertString((L"Use Adapater:{}\n", adapterDesc.Description)));
 			break;
 		}
 		useAdapter = nullptr;
@@ -227,7 +227,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 		// 指定した機能レベルでデバイスが生成できたか確認
 		if (SUCCEEDED(hr)) {
 			// 生成できたのでログ出力を使ってループを抜ける
-			utility_->Log(std::format("FeatureLevel : {}\n", featureLevelStrings[i]));
+			utility_->Log(("FeatureLevel : {}\n", featureLevelStrings[i]));
 			break;
 		}
 	}

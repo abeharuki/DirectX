@@ -1,7 +1,6 @@
 #pragma once
 #include "StringUtility.h"
 #include "WinApp.h"
-#include "ResourceObject.h"
 #include <Windows.h>
 
 #include <d3d12.h>

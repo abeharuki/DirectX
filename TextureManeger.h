@@ -6,8 +6,8 @@
 #include <cassert>
 #include <format>
 #include <wrl.h>
-#include "externals/DirectXTex/DirectXTex.h"
-#include "externals/DirectXTex/d3dx12.h"
+#include <DirectXTex.h>
+#include <d3dx12.h>
 
 class TextureManager {
 public:

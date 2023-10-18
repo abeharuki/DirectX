@@ -3,7 +3,7 @@
 #include "TextureManeger.h"
 #include "Engine.h"
 #include "WorldTransform.h"
-#include "externals/imgui/imgui.h"
+#include <imgui.h>
 
 
 // ルートシグネチャ

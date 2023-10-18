@@ -4,13 +4,13 @@
 #include <cassert>
 
 //	DirextXtex
-#include "externals/DirectXTex/DirectXTex.h"
+#include <DirectXTex.h>
 
-#include "externals/DirectXTex/d3dx12.h"
+#include <d3dx12.h>
 #include <vector>
 
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
+#include <imgui_impl_dx12.h>
+#include <imgui_impl_win32.h>
 #include "Model.h"
 #include "GameScene.h"
 #include "ImGuiManager.h"
