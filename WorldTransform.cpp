@@ -19,8 +19,7 @@ void WorldTransform::Map() {
 void WorldTransform::TransferMatrix() { constMap->matWorld = matWorld_; }
 
 void WorldTransform::UpdateMatrix() {
-	Matrix4x4 AffineMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
-	matWorld_ = AffineMatrix;
+	matWorld_ = Math::MakeAffineMatrix(scale, rotate, translate);
 	// 親があれば親のワールド行列を掛ける
 	if (parent_) {
 		matWorld_ = Math::Multiply(matWorld_, parent_->matWorld_);
@@ -28,6 +27,7 @@ void WorldTransform::UpdateMatrix() {
 
 	TransferMatrix();
 }
+
 Vector3 WorldTransform::GetWorldPos() {
 	return {matWorld_.m[3][0], matWorld_.m[3][1], matWorld_.m[3][2]};
 }

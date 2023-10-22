@@ -88,6 +88,42 @@ bool KeyInput::ReleaseKey(uint8_t keynumber) {
 	return !KeyInput::GetInstance()->key[keynumber] && KeyInput::GetInstance()->oldKey[keynumber];
 }
 
+bool KeyInput::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const {
+	DWORD result;
+	result = XInputGetState(stickNo, &out);
+
+	if (result == ERROR_SUCCESS) {
+		SetJoyStickDeadZone(stickNo, out);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void KeyInput::SetJoyStickDeadZone(int32_t stickNo, XINPUT_STATE& out) const {
+	int LstickX = static_cast<int>(out.Gamepad.sThumbLX);
+	int LstickY = static_cast<int>(out.Gamepad.sThumbLY);
+	int RstickX = static_cast<int>(out.Gamepad.sThumbRX);
+	int RstickY = static_cast<int>(out.Gamepad.sThumbRY);
+	if (abs(LstickX) < DEADZONE) {
+		LstickX = 0;
+		out.Gamepad.sThumbLX = LstickX;
+	}
+	if (abs(LstickY) < DEADZONE) {
+		LstickY = 0;
+		out.Gamepad.sThumbLY = LstickY;
+	}
+	if (abs(RstickX) < DEADZONE) {
+		RstickX = 0;
+		out.Gamepad.sThumbRX = RstickX;
+	}
+	if (abs(RstickY) < DEADZONE) {
+		RstickY = 0;
+		out.Gamepad.sThumbRY = RstickY;
+	}
+}
+
+
 bool KeyInput::GetPadConnect() { return isConnectPad; }
 
 bool KeyInput::GetPadButton(UINT button) { return xInputState.Gamepad.wButtons == button; }

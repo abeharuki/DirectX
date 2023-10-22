@@ -50,6 +50,7 @@ private: // 変数
 	XINPUT_STATE xInputState = {};
 	XINPUT_STATE oldXInputState = {};
 	bool isConnectPad = false;
+	const int DEADZONE = 7849;
 
 public: // キー
 	// キーが押されているか
@@ -62,6 +63,12 @@ public: // キー
 	static bool ReleaseKey(uint8_t keynumber);
 
 public: // コントローラー
+	// joystateがつながっているかどうか
+	bool GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const;
+
+	// デッドゾーンの設定
+	void SetJoyStickDeadZone(int32_t stickNo, XINPUT_STATE& out) const;
+
 	// パッドに接続されてるか
 	bool GetPadConnect();
 

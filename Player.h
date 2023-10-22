@@ -41,6 +41,9 @@ public: // メンバ関数
 	void Draw(const ViewProjection& viewprojection) override;
 
 
+	void Move();
+
+
 	Vector3 GetWorldPosition();
 
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
@@ -49,10 +52,20 @@ public: // メンバ関数
 		viewProjection_ = viewProjection;
 	}
 
+	//落下
+	void IsFall();
+
+	//当たり判定
+	void OnCollision();
+	void OutCollision();
+
 private: // メンバ変数
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
-	// 3Dモデル
-	std::unique_ptr<Model> model_;
+	float upSpeed_;
+	float fallSpeed_;
+	bool jump_;
+	bool isHit_;
 
+	std::unique_ptr<KeyInput> input;
 };

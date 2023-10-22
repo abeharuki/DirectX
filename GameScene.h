@@ -7,6 +7,9 @@
 #include "Sprite.h"
 #include "KeyInput.h"
 #include "Skydome.h"
+#include "Player.h"
+#include "FollowCamera.h"
+#include "Ground.h"
 
 /// <summary>
 /// ゲームシーン
@@ -41,11 +44,28 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	// 当たり判定
+	void CheckAllCollision();
+	
 private: // メンバ変数
+	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
+
+	//player
+	std::unique_ptr<Player> player_;
+	std::unique_ptr<Model> modelPlayer_;
+
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
 	// 天球3Dモデル
 	std::unique_ptr<Model> modelSkydome_;
+	// 地面
+	std::unique_ptr<Ground> ground_;
+	// 地面3Dモデル
+	std::unique_ptr<Model> modelGround_;
+	// レールカメラ
+	std::unique_ptr<FollowCamera> followCamera_;
+
+	bool c = false;
 };

@@ -94,13 +94,18 @@ void Model::sPipeline() {
 //	
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
-	worldTransform.matWorld_ = Math::MakeAffineMatrix(
-	    {worldTransform.scale.x, worldTransform.scale.y, worldTransform.scale.z},
-	    {worldTransform.rotate.x, worldTransform.rotate.y, worldTransform.rotate.z},
-	    {worldTransform.translate.x, worldTransform.translate.y, worldTransform.translate.z});
+	/*--------- HLSLが用意できていないので応急措置---------*/
+	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
+	// データを書き込む
+	wvpData = nullptr;
+	// 書き込むためのアドレスを取得
+	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	wvpData->WVP = Math::MakeIdentity4x4();
+	wvpData->World = Math::MakeIdentity4x4();
+	
+	/*--------- HLSLが用意できていないので応急措置---------*/
 
-	
-	
 	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
 	    worldTransform.matWorld_,
 	    Math::Multiply(viewProjection.matView, viewProjection.matProjection));
@@ -131,6 +136,8 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 
 	
 	// 三角形の描画
@@ -184,14 +191,7 @@ void Model::CreateVertexResource() {
 	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
 	directionalLightData->intensity = 1.0f;
 
-	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
-	// データを書き込む
-	wvpData = nullptr;
-	// 書き込むためのアドレスを取得
-	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	// 単位行列を書き込む
-	wvpData->WVP = Math::MakeIdentity4x4();
-	wvpData->World = Math::MakeIdentity4x4();
+	
 };
 
 

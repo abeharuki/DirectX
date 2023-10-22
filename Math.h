@@ -5,6 +5,7 @@
 
 
 
+
 struct Vector2 final {
 	float x;
 	float y;
@@ -34,6 +35,11 @@ struct Matrix3x3 final {
 
 struct Matrix4x4 final {
 	float m[4][4];
+};
+
+struct AABB {
+	Vector3 min; // 最小点
+	Vector3 max; // 最大点
 };
 
 struct Transform {
@@ -91,9 +97,17 @@ struct DirectionalLight {
 class Math {
 public:
 
+	static Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
+
+	// 加算
+	static Vector3 Add(const Vector3& v1, const Vector3& v2);
+
+
 	// 減算
 	static Vector3 Subract(const Vector3& v1, const Vector3& v2);
 	
+	static Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix);
+
 	static Matrix4x4 MakeIdentity4x4();
 
 	// 回転X
@@ -130,5 +144,16 @@ public:
 	// 長さ(ノルマ)
 	static float Length(const Vector3& v);
 
+	// 線形補間
+	static Vector3 Lerp(const Vector3& p0, const Vector3& p1, float t);
 
+	// 最短角補間
+	static float LerpShortAngle(float a, float b, float t);
+
+	//四角形の当たり判定
+	static bool IsAABBCollision(
+	    const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
+	    const Vector3 size2);
+
+	
 };
