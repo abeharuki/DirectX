@@ -94,12 +94,14 @@ void Model::sPipeline() {
 //	
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
-	worldTransform.matWorld_ = Math::MakeAffineMatrix(
-	    {worldTransform.scale.x, worldTransform.scale.y, worldTransform.scale.z},
-	    {worldTransform.rotate.x, worldTransform.rotate.y, worldTransform.rotate.z},
-	    {worldTransform.translate.x, worldTransform.translate.y, worldTransform.translate.z});
-
-	
+	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
+	// データを書き込む
+	wvpData = nullptr;
+	// 書き込むためのアドレスを取得
+	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	wvpData->WVP = Math::MakeIdentity4x4();
+	wvpData->World = Math::MakeIdentity4x4();
 	
 	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
 	    worldTransform.matWorld_,
@@ -184,14 +186,7 @@ void Model::CreateVertexResource() {
 	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
 	directionalLightData->intensity = 1.0f;
 
-	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
-	// データを書き込む
-	wvpData = nullptr;
-	// 書き込むためのアドレスを取得
-	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	// 単位行列を書き込む
-	wvpData->WVP = Math::MakeIdentity4x4();
-	wvpData->World = Math::MakeIdentity4x4();
+	
 };
 
 
