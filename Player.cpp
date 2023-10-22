@@ -30,7 +30,12 @@ void Player::Draw(const ViewProjection& viewprojection){
 	models_[0]->Draw(worldTransform_, viewprojection);
 }
 
-Player::Player(){};
+Player::Player(){
+	upSpeed_ = 0.0f;
+	fallSpeed_ = 0.0f;
+	jump_ = false;
+	isHit_ = false;
+};
 Player::~Player(){};
 
 Vector3 Player::GetWorldPosition() {
