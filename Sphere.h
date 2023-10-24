@@ -14,36 +14,27 @@
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 
-class Model {
+class Sphere{
 private: // 静的メンバ変数
-	
-	
-
-	// デスクリプタサイズ
-	static UINT sDescriptorHandleIncrementSize_;
 	
 	// ルートシグネチャ
 	static Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
 	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
-	
+
 	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
-	
-	
 
 public:
 	/// <summary>
 	/// シングルトンインスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static Model* GetInstance();
+	static Sphere* GetInstance();
 
-	//初期化
-	static void StaticInitialize();
-	void Initialize(const std::string& filename, const std::string& texturePath);
+	// 初期化
+	void Initialize(const std::string& texturePath);
 
-	
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
@@ -54,31 +45,26 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	void CreateVertexResource();
+	void DrawSphere(VertexData* vertexData);
 
 	/// <summary>
 	/// 描画前処理
 	/// </summary>
 	/// <param name="commandList">描画コマンドリスト</param>
-	static void PreDraw();
 
-	
-	static void PostDraw();
-
-	
-	void Draw(WorldTransform& worldTransform,const ViewProjection& viewProjection);
-	
+	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
 	
 	const D3D12_VIEWPORT& GetViewp() const { return viewport; }
 	const D3D12_RECT& GetScissor() const { return scissorRect; }
 
-	//static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath); 
-	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
+	static Sphere* CreateSphere(const std::string& texturePath);
+
+public:
+	TextureManager* textureManager_;
+	uint32_t texture_;
+
 	
 
-private:
-	
-	
-	
 	D3D12_VIEWPORT viewport;
 	D3D12_RECT scissorRect;
 	// 頂点バッファビュー
@@ -90,7 +76,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
 	// WVP用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
-	//マテリアル用リソース
+	// マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 	// データを書き込む
 	TransformationMatrix* wvpData;
@@ -98,16 +84,11 @@ private:
 	ModelData modelData;
 	Material* materialData = nullptr;
 	DirectionalLight* directionalLightData = nullptr;
-	
-	TextureManager* textureManager_;
-	uint32_t texture_;
 
 	
- private:
-	//DirectX::ScratchImage LoadTexture(const std::string& filePath);
-	 void LoadTexture(const std::string& filename, const std::string& texturePath);
 
-	 // objファイルの読み込み
-	 MaterialData LoadMaterialTemplateFile(const std::string& filename);
-	 ModelData LoadObjFile(const std::string& filename);
+private:
+	// DirectX::ScratchImage LoadTexture(const std::string& filePath);
+	void LoadTexture(const std::string& texturePath);
 };
+

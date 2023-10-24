@@ -1,9 +1,5 @@
 #include "Sprite.h"
-#include "GraphicsPipeline.h"
-#include "TextureManeger.h"
-#include "Engine.h"
-#include "WorldTransform.h"
-#include <imgui.h>
+
 
 
 // ルートシグネチャ
@@ -76,8 +72,14 @@ void Sprite::PostDraw(){};
 
 void Sprite::Draw(WorldTransform& worldTransform) {
 	
+	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
+	// データを書き込む
+	wvpData = nullptr;
+	// 書き込むためのアドレスを取得
+	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	wvpData->WVP = Math::MakeIdentity4x4();
 	
-	// transform.rotate.y += 0.03f;
 	
 	Transform cameraTransform{
 	    {1.0f, 1.0f, 1.0f  },
@@ -85,11 +87,11 @@ void Sprite::Draw(WorldTransform& worldTransform) {
         {0.0f, 0.0f, -10.0f}
     };
 	
-	// Sprite用のworldViewProjectionMatrixを作る
-	worldTransform.matWorld_ = Math::MakeAffineMatrix(
-	    {worldTransform.scale.x,worldTransform.scale.y, 1.0f},
-	    {0.0f, 0.0f, worldTransform.rotate.z},
-	    {worldTransform.translate.x, worldTransform.translate.y, 0.5f});
+	//// Sprite用のworldViewProjectionMatrixを作る
+	//worldTransform.matWorld_ = Math::MakeAffineMatrix(
+	//    {worldTransform.scale.x,worldTransform.scale.y, 1.0f},
+	//    {0.0f, 0.0f, worldTransform.rotate.z},
+	//    {worldTransform.translate.x, worldTransform.translate.y, 0.5f});
 
 	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
 	Matrix4x4 projectionMatrixSprite = Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
@@ -123,9 +125,9 @@ void Sprite::Draw(WorldTransform& worldTransform) {
 	
 	
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
-	Engine::GetList()->SetDescriptorHeaps(1, &SRVHeap);
+	Engine::GetList()->SetDescriptorHeaps(1, &Engine::GetSRV());
 	// TransformationMatrixCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootDescriptorTable( 2, SRVHeap->GetGPUDescriptorHandleForHeapStart());
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
@@ -190,13 +192,7 @@ void Sprite::CreateVertexResource() {
 	
 
 	
-	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
-	// データを書き込む
-	wvpData = nullptr;
-	// 書き込むためのアドレスを取得
-	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	// 単位行列を書き込む
-	wvpData->WVP = Math::MakeIdentity4x4();
+	
 	
 	
 	// Sprite用のマテリアルリソースを作る
@@ -217,31 +213,8 @@ void Sprite::CreateVertexResource() {
 
 // 画像の読み込み
 void Sprite::LoadTexture(const std::string& fileName) {
-
-	// Textureを読んで転送する
-	DirectX::ScratchImage mipImages = TextureManager::LoadTexture(fileName);
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	ID3D12Resource* resource =
-	    TextureManager::CreateTextureResource(Engine::GetDevice().Get(), metadata);
-	TextureManager::UploadTextureData(resource, mipImages);
-
-	
-	//	画像サイズの代入
-	textureWidth = static_cast<uint32_t>(metadata.width);
-	textureHeight = static_cast<uint32_t>(metadata.height);
-
-	SRVHeap = CreateDescriptorHeap(Engine::GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 10, true);
-
-	// metadataを基にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
-	
-	// SRVの作成
-	Engine::GetDevice()->CreateShaderResourceView(resource, &srvDesc, SRVHeap->GetCPUDescriptorHandleForHeapStart());
+	textureManager_ = TextureManager::GetInstance();
+	texture_ = textureManager_->Load(fileName);
 }
 
 

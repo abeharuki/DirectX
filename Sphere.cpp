@@ -1,0 +1,237 @@
+#include "Sphere.h"
+#include <cassert>
+#include <format>
+#include "GraphicsPipeline.h"
+#include <imgui.h>
+
+
+// ルートシグネチャ
+Microsoft::WRL::ComPtr<ID3D12RootSignature> Sphere::rootSignature_;
+// パイプラインステートオブジェクト
+Microsoft::WRL::ComPtr<ID3D12PipelineState> Sphere::sPipelineState_;
+Microsoft::WRL::ComPtr<IDxcBlob> Sphere::vertexShaderBlob_;
+Microsoft::WRL::ComPtr<IDxcBlob> Sphere::pixelShaderBlob_;
+
+void Sphere::Initialize(const std::string& texturePath) {
+	LoadTexture(texturePath);
+	CreateVertexResource();
+	sPipeline();
+}
+
+
+void Sphere::sPipeline() {
+
+	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
+	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
+
+	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline();
+
+	// クライアント領域のサイズと一緒にして画面全体に表示
+	viewport.Width = WinApp::kWindowWidth;
+	viewport.Height = WinApp::kWindowHeight;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+
+	// シザー矩形
+
+	// 基本的にビューポートと同じ矩形が構成されるようにする
+	scissorRect.left = 0;
+	scissorRect.right = WinApp::kWindowWidth;
+	scissorRect.top = 0;
+	scissorRect.bottom = WinApp::kWindowHeight;
+};
+
+
+
+void Sphere::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+	wvpResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
+	// データを書き込む
+	wvpData = nullptr;
+	// 書き込むためのアドレスを取得
+	wvpResouce_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	wvpData->WVP = Math::MakeIdentity4x4();
+	wvpData->World = Math::MakeIdentity4x4();
+
+	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
+	    worldTransform.matWorld_,
+	    Math::Multiply(viewProjection.matView, viewProjection.matProjection));
+	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldTransform.matWorld_);
+
+	//  コマンドを積む
+	Engine::GetList()->RSSetViewports(1, &viewport);
+	Engine::GetList()->RSSetScissorRects(1, &scissorRect);
+
+	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
+	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
+	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
+
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+
+	// Engine::GetList()->SetGraphicsRootConstantBufferView(3,
+	// lightResource_->GetGPUVirtualAddress());
+
+	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+
+	// wvp用のCBufferの場所を設定
+	// マテリアルCBufferの場所を設定
+	Engine::GetList()->SetGraphicsRootConstantBufferView(
+	    0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+
+	// 三角形の描画
+	Engine::GetList()->DrawInstanced(1536, 1, 0, 0);
+}
+
+// 頂点データの設定
+void Sphere::CreateVertexResource() {
+	
+	
+	// モデルの読み込み
+	// 頂点リソースを作る
+	vertexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) * 1536);
+	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
+
+	// 頂点バッファビューを作成する
+	vertexBufferView.BufferLocation =vertexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
+	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * 1536); // 使用するリソースのサイズは頂点サイズ
+	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
+
+	DrawSphere(vertexData);
+	
+
+	
+
+	// マテリアル
+	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
+
+	// マテリアルにデータを書き込む
+	// 書き込むためのアドレスを取得
+	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
+	// 今回は白を書き込む
+	materialData->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
+	materialData->color.a = float(1.0f);
+	// Lightingを有効にする
+	materialData->enableLighting = false;
+	// 初期化
+	materialData->uvTransform = Math::MakeIdentity4x4();
+
+	// ライティング
+	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DirectionalLight));
+	// 頂点リソースにデータを書き込む
+	// 書き込むためのアドレスを取得
+	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+
+	// デフォルト値
+	directionalLightData->color = {1.0f, 1.0f, 1.0f, 1.0f};
+	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
+	directionalLightData->intensity = 1.0f;
+};
+
+
+Sphere* Sphere::CreateSphere(const std::string& texturePath) {
+	Sphere* sphere = new Sphere;
+	sphere->Initialize(texturePath);
+	return sphere;
+}
+
+void Sphere::LoadTexture(const std::string& texturePath) {
+	
+	textureManager_ = TextureManager::GetInstance();
+	texture_ = textureManager_->Load(texturePath);
+}
+
+
+void Sphere::DrawSphere(VertexData* vertexData) {
+	const uint32_t kSubdivision = 10;                 // 分割数
+	const float pi = 3.14f;                           // π
+	const float kLonEvery = 2.0f * pi / kSubdivision; // 経度分割1つ分の角度(φd)
+	const float kLatEvery = pi / kSubdivision;        // 緯度分割1つ分の角度(θd)
+	float u;
+	float v;
+	// 緯度の方向に分割-π/2~π/2
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -pi / 2.0f + kLatEvery * latIndex; // 現在の緯度(θ)
+		// 経度の方向に分割
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+			float lon = lonIndex * kLonEvery; // 現在の経度(φ)
+			u = float(lonIndex) / float(kSubdivision);
+			v = 1.0f - float(latIndex) / float(kSubdivision);
+			// a 左下
+			vertexData[start].position.x = cos(lat) * cos(lon);
+			vertexData[start].position.y = sin(lat);
+			vertexData[start].position.z = cos(lat) * sin(lon);
+			vertexData[start].position.w = 1.0f;
+			vertexData[start].texcoord = {u, v + 0.1f};
+			// b 左上
+			vertexData[start + 1].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData[start + 1].position.y = sin(lat + kLatEvery);
+			vertexData[start + 1].position.z = cos(lat + kLatEvery) * sin(lon);
+			vertexData[start + 1].position.w = 1.0f;
+			vertexData[start + 1].texcoord = {u, v};
+			// c 右下
+			vertexData[start + 2].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData[start + 2].position.y = sin(lat);
+			vertexData[start + 2].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData[start + 2].position.w = 1.0f;
+			vertexData[start + 2].texcoord = {u + 0.1f, v + 0.1f};
+
+			// d 右上
+			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
+			vertexData[start + 3].position.y = sin(lat + kLatEvery);
+			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
+			vertexData[start + 3].position.w = 1.0f;
+			vertexData[start + 3].texcoord = {u + 0.1f, v};
+
+			// b 左上
+			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData[start + 3].position.y = sin(lat + kLatEvery);
+			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon);
+			vertexData[start + 3].position.w = 1.0f;
+			vertexData[start + 3].texcoord = {u, v};
+			// d 右上
+			vertexData[start + 4].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
+			vertexData[start + 4].position.y = sin(lat + kLatEvery);
+			vertexData[start + 4].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
+			vertexData[start + 4].position.w = 1.0f;
+			vertexData[start + 4].texcoord = {u + 0.1f, v};
+			// c 右下
+			vertexData[start + 5].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData[start + 5].position.y = sin(lat);
+			vertexData[start + 5].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData[start + 5].position.w = 1.0f;
+			vertexData[start + 5].texcoord = {u + 0.1f, v + 0.1f};
+
+			vertexData[start].normal.x = vertexData[start].position.x;
+			vertexData[start].normal.y = vertexData[start].position.y;
+			vertexData[start].normal.z = vertexData[start].position.z;
+
+			vertexData[start + 1].normal.x = vertexData[start + 1].position.x;
+			vertexData[start + 1].normal.y = vertexData[start + 1].position.y;
+			vertexData[start + 1].normal.z = vertexData[start + 1].position.z;
+
+			vertexData[start + 2].normal.x = vertexData[start + 2].position.x;
+			vertexData[start + 2].normal.y = vertexData[start + 2].position.y;
+			vertexData[start + 2].normal.z = vertexData[start + 2].position.z;
+
+			vertexData[start + 3].normal.x = vertexData[start + 3].position.x;
+			vertexData[start + 3].normal.y = vertexData[start + 3].position.y;
+			vertexData[start + 3].normal.z = vertexData[start + 3].position.z;
+
+			vertexData[start + 4].normal.x = vertexData[start + 4].position.x;
+			vertexData[start + 4].normal.y = vertexData[start + 4].position.y;
+			vertexData[start + 4].normal.z = vertexData[start + 4].position.z;
+
+			vertexData[start + 5].normal.x = vertexData[start + 5].position.x;
+			vertexData[start + 5].normal.y = vertexData[start + 5].position.y;
+			vertexData[start + 5].normal.z = vertexData[start + 5].position.z;
+		}
+	}
+}

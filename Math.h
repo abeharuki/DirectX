@@ -48,7 +48,7 @@ struct VertexData {
 	Vector3 normal;
 };
 
-struct Sphere {
+struct sphere {
 	Vector3 center; // 中心点
 	float radius;   // 半径
 };

@@ -29,104 +29,6 @@
 
 
 
-/*
-
-void DrawSphere(VertexData* vertexData) {
-	const uint32_t kSubdivision = 10;//分割数
-	const float pi = 3.14f;//π
-	const float kLonEvery = 2.0f * pi / kSubdivision;//経度分割1つ分の角度(φd)
-	const float kLatEvery = pi / kSubdivision;//緯度分割1つ分の角度(θd)
-	float u; 
-	float v;
-	//緯度の方向に分割-π/2~π/2
-	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
-		float lat = -pi / 2.0f + kLatEvery * latIndex;//現在の緯度(θ)
-		//経度の方向に分割
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
-			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
-			float lon = lonIndex * kLonEvery;//現在の経度(φ)
-			u = float(lonIndex) / float(kSubdivision);
-			v = 1.0f - float(latIndex) / float(kSubdivision);
-			//a 左下
-			vertexData[start].position.x = cos(lat) * cos(lon);
-			vertexData[start].position.y = sin(lat);
-			vertexData[start].position.z = cos(lat) * sin(lon);
-			vertexData[start].position.w = 1.0f;
-			vertexData[start].texcoord = { u , v + 0.1f };
-			//b 左上
-			vertexData[start+1].position.x = cos(lat + kLatEvery) * cos(lon);
-			vertexData[start+1].position.y = sin(lat + kLatEvery);
-			vertexData[start+1].position.z = cos(lat + kLatEvery) * sin(lon);
-			vertexData[start+1].position.w = 1.0f;
-			vertexData[start+1].texcoord = { u, v };
-			//c 右下
-			vertexData[start+2].position.x = cos(lat) * cos(lon + kLonEvery);
-			vertexData[start+2].position.y = sin(lat);
-			vertexData[start+2].position.z = cos(lat) * sin(lon + kLonEvery);
-			vertexData[start+2].position.w = 1.0f;
-			vertexData[start+2].texcoord = { u + 0.1f, v + 0.1f };
-
-
-			// d 右上
-			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
-			vertexData[start + 3].position.y = sin(lat + kLatEvery);
-			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
-			vertexData[start + 3].position.w = 1.0f;
-			vertexData[start + 3].texcoord = {u + 0.1f, v};
-			
-			//b 左上
-			vertexData[start+3].position.x = cos(lat + kLatEvery) * cos(lon);
-			vertexData[start+3].position.y = sin(lat + kLatEvery);
-			vertexData[start+3].position.z = cos(lat + kLatEvery) * sin(lon);
-			vertexData[start+3].position.w = 1.0f;
-			vertexData[start+3].texcoord = { u, v };
-			//d 右上
-			vertexData[start+4].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
-			vertexData[start+4].position.y = sin(lat + kLatEvery);
-			vertexData[start+4].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
-			vertexData[start+4].position.w = 1.0f;
-			vertexData[start+4].texcoord =  { u + 0.1f, v  };
-			//c 右下
-			vertexData[start+5].position.x = cos(lat) * cos(lon + kLonEvery);
-			vertexData[start+5].position.y = sin(lat);
-			vertexData[start+5].position.z = cos(lat) * sin(lon + kLonEvery);
-			vertexData[start+5].position.w = 1.0f;
-			vertexData[start+5].texcoord =  { u + 0.1f, v + 0.1f };
-			
-			vertexData[start].normal.x = vertexData[start].position.x;
-			vertexData[start].normal.y = vertexData[start].position.y;
-			vertexData[start].normal.z = vertexData[start].position.z;
-
-			vertexData[start+1].normal.x = vertexData[start+1].position.x;
-			vertexData[start+1].normal.y = vertexData[start+1].position.y;
-			vertexData[start+1].normal.z = vertexData[start+1].position.z;
-
-			vertexData[start+2].normal.x = vertexData[start+2].position.x;
-			vertexData[start+2].normal.y = vertexData[start+2].position.y;
-			vertexData[start+2].normal.z = vertexData[start+2].position.z;
-
-			vertexData[start+3].normal.x = vertexData[start+3].position.x;
-			vertexData[start+3].normal.y = vertexData[start+3].position.y;
-			vertexData[start+3].normal.z = vertexData[start+3].position.z;
-			
-			vertexData[start+4].normal.x = vertexData[start+4].position.x;
-			vertexData[start+4].normal.y = vertexData[start+4].position.y;
-			vertexData[start+4].normal.z = vertexData[start+4].position.z;
-
-			vertexData[start+5].normal.x = vertexData[start+5].position.x;
-			vertexData[start+5].normal.y = vertexData[start+5].position.y;
-			vertexData[start+5].normal.z = vertexData[start+5].position.z;
-			
-		}
-		
-	}
-	
-}
-
-
-
-
-*/
 
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -156,23 +58,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 
 	//球
-	ID3D12Resource* vertexResource = CreateBufferResoure(device, sizeof(VertexData) * 1536);
-	// 頂点バッファビューを作成する
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 1536;
-	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
-
-	// 頂点リソースにデータを書き込む
-	VertexData* vertexData = nullptr;
-	// 書き込むためのアドレスを取得
-	vertexResource->Map(0, nullptr,
-		reinterpret_cast<void**>(&vertexData));
-
-	DrawSphere(vertexData);
+	
 	
 
 	// インデックスを使った球
@@ -326,14 +212,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			    math_->Multiply(worldMatrix, math_->Multiply(viewMatrix, projecttionMatrix));
 			wvpData->WVP = worldViewProjectionMatrix;
 
-			
-			
-
-			
 		
-
-		
-			
 			//マテリアルCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(0, materialResorce->GetGPUVirtualAddress());
 			commandList->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Math.h"
 #include <Windows.h>
 #include <d3d12.h>
@@ -10,6 +9,11 @@
 #include "WorldTransform.h"
 #include "DirectXCommon.h"
 #include "Mesh.h"
+#include "GraphicsPipeline.h"
+#include "TextureManeger.h"
+#include "Engine.h"
+#include "WorldTransform.h"
+#include <imgui.h>
 
 class Sprite {
 public:
@@ -68,16 +72,7 @@ public: // 静的メンバ関数
 	/// </summary>
 	static void PostDraw();
 
-	/// <summary>
-	/// スプライト生成
-	/// </summary>
-	/// <param name="texNumber">テクスチャハンドル</param>
-	/// <param name="position">座標</param>
-	/// <param name="color">色</param>
-	/// <param name="anchorpoint">アンカーポイント</param>
-	/// <param name="isFlipX">左右反転</param>
-	/// <param name="isFlipY">上下反転</param>
-	/// <returns>生成されたスプライト</returns>
+	
 	
 	
 private: // 静的メンバ変数
@@ -95,9 +90,7 @@ private: // 静的メンバ変数
 	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	
-	/*static std::array<
-	    Microsoft::WRL::ComPtr<ID3D12PipelineState>, size_t(BlendMode::kCountOfBlendMode)>
-	    sPipelineStates_;*/
+	
 	// 射影行列
 	static Matrix4x4 sMatProjection_;
 
@@ -105,10 +98,7 @@ private: // 静的メンバ変数
 	uint32_t textureHeight = 0;
 
 public: // メンバ関数
-	/// <summary>
 	
-
-
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
@@ -142,7 +132,9 @@ public: // メンバ関数
 
 
 private: // メンバ変数
-	
+	TextureManager* textureManager_;
+	uint32_t texture_;
+
 
 	ID3D12Resource* wvpResouce;
 	// データを書き込む
@@ -203,14 +195,13 @@ private: // メンバ変数
 	// ワールド行列
 	Matrix4x4 matWorld_{};
 	
-	ID3D12DescriptorHeap* SRVHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	
 
 private: // メンバ関数
 	/// <summary>
 	/// 頂点データ転送
 	/// </summary>
-	void TransferVertices();
+	
 
 	void CreateVertexResource();
 	void LoadTexture(const std::string& fileName);
