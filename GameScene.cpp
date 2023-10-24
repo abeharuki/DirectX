@@ -39,6 +39,12 @@ void GameScene::Initialize() {
 	modelGround_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/ground.png"));
 	ground_->Initialize(modelGround_.get());
 
+	// 床
+	floor_ = std::make_unique<MoveFloor>();
+	// 3Dモデルの生成
+	modelFloor_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/floor.png"));
+	floor_->Initialize(modelFloor_.get());
+
 	// レールカメラ
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
@@ -50,24 +56,34 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+	
+	floor_->Update();
+	
+	player_->Update();
+	
+	ground_->Update();
+	skydome_->Update();
+   
+	CheckAllCollision();
+
+	if (collision2_) {
+		
+	}
+	//player_->Relationship(floor_->GetWorldTransform());
+	
 	// 追従カメラの更新
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 
 	viewProjection_.TransferMatrix();
-
-	player_->Update();
-	skydome_->Update();
-	ground_->Update();
+	ImGui::Begin("scene");
 	
-   
-	CheckAllCollision();
-
-	ImGui::Begin("Player");
-	
-	ImGui::Text(" %d", c);
+	ImGui::Text(" collision1_%d", collision1_);
+	ImGui::Text(" collision2_%d", collision2_);
 	ImGui::End();
+
+	
 }
 
 
@@ -83,7 +99,8 @@ void GameScene::Draw() {
 	skydome_->Draw(viewProjection_);
 	// 地面
 	ground_->Draw(viewProjection_);
-
+	//床
+	floor_->Draw(viewProjection_);
 	//プレーヤー
 	player_->Draw(viewProjection_);
 	
@@ -118,9 +135,9 @@ void GameScene::CheckAllCollision() {
     // 自キャラ座標
 	posA = player_->GetWorldPosition();
   
-    // 自キャラと敵弾全ての当たり判定
+    // 自キャラと地面全ての当たり判定
     for (int i = 0; i < 2; i++) {
-        // 敵弾の座標
+        // 地面の座標
 		posB[i] = ground_->GetWorldPosition(i);
 		
 		if (Math::IsAABBCollision(
@@ -130,15 +147,43 @@ void GameScene::CheckAllCollision() {
 				player_->OnCollision();
 			}
           
-			c = true;
+			collision1_ = true;
 			break;
         }
         else {
-			c = false;
-            player_->OutCollision();
+			collision1_ = false;
+			if (!collision2_) {
+				player_->OutCollision();
+			}
+            
 			
         }
     }
+
+#pragma endregion
+
+#pragma region 自キャラと移動床の当たり判定
+	// 自キャラ座標
+	posA = player_->GetWorldPosition();
+
+	// 移動床の座標
+	posB[0] = floor_->GetWorldPosition();
+
+	if (Math::IsAABBCollision(
+	        posA, player_->GetWorldTransform().scale, posB[0],
+	        floor_->GetWorldTransform().scale)) {
+		// 自キャラの衝突時コールバックを呼び出す
+		player_->OnCollision();
+		player_->OnCollisionFloor();
+		
+		collision2_ = true;
+	} else {
+		collision2_ = false;
+		if (!collision1_) {
+			player_->OutCollisionFloor();
+		}
+		
+	}
 
 #pragma endregion
 }

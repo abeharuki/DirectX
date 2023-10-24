@@ -9,12 +9,38 @@
 struct Vector2 final {
 	float x;
 	float y;
+
 };
 
 struct Vector3 final {
 	float x;
 	float y;
 	float z;
+
+	Vector3& operator*=(float s) {
+		x *= s;
+		y *= s;
+		z *= s;
+		return *this;
+	}
+	Vector3& operator-=(Vector3& v) {
+		x -= v.x;
+		y -= v.y;
+		z -= v.z;
+		return *this;
+	}
+	Vector3& operator+=(Vector3& v) {
+		x += v.x;
+		y += v.y;
+		z += v.z;
+		return *this;
+	}
+	Vector3& operator/=(float s) {
+		x /= s;
+		y /= s;
+		z /= s;
+		return *this;
+	}
 };
 
 struct Vector4 final {
@@ -157,3 +183,4 @@ public:
 
 	
 };
+

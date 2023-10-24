@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "FollowCamera.h"
 #include "Ground.h"
+#include "MoveFloor.h"
 
 /// <summary>
 /// ゲームシーン
@@ -64,8 +65,13 @@ private: // メンバ変数
 	std::unique_ptr<Ground> ground_;
 	// 地面3Dモデル
 	std::unique_ptr<Model> modelGround_;
+	// 床
+	std::unique_ptr<MoveFloor> floor_;
+	// 床3Dモデル
+	std::unique_ptr<Model> modelFloor_;
 	// レールカメラ
 	std::unique_ptr<FollowCamera> followCamera_;
 
-	bool c = false;
+	bool collision1_ = false;
+	bool collision2_ = false;
 };

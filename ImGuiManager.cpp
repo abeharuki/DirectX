@@ -5,6 +5,7 @@
 #include "WinApp.h"
 
 #endif
+#include "Engine.h"
 
 
 
@@ -43,8 +44,8 @@ void ImGuiManager::Begin() {
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-
-	
+	//ID3D12DescriptorHeap* descriptorHeaps[] = {Engine::GetSRV().Get()};
+	//dxCommon_->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
 #endif
 }
 

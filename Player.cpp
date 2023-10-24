@@ -7,8 +7,8 @@ void Player::Initialize(const std::vector<Model*>& models) {
 
 	// 初期化
 	worldTransform_.Initialize();
-	
-
+	//worldTransformFloor_.Initialize();
+	worldtransform.Initialize();
 	
 }
 
@@ -16,13 +16,28 @@ void Player::Update(){
 
 	BaseCharacter::Update();
 	Move();
+	/*if (isHitFloor_) {
+ 		Relationship();
+		
+	}*/
 
 	worldTransform_.UpdateMatrix();
+	
 
 	ImGui::Begin("Player");
 	ImGui::DragFloat4("translation", &worldTransform_.translate.x, 0.01f);
+	ImGui::Text(" X%f Y%f Z%f", worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1],worldTransform_.matWorld_.m[3][2]);
 	ImGui::Text(" isHit%d", isHit_);
+	ImGui::Text(" isHitFloor%d", isHitFloor_);
 	ImGui::Text(" jump%d", jump_);
+	ImGui::End();
+
+		ImGui::Begin("Debug");
+	ImGui::DragFloat4("translation", &worldtransform.translate.x, 0.01f);
+	ImGui::Text(
+	    " X%f Y%f Z%f", worldtransform.matWorld_.m[3][0], worldtransform.matWorld_.m[3][1],
+	    worldtransform.matWorld_.m[3][2]);
+
 	ImGui::End();
 }
 
@@ -82,7 +97,7 @@ void Player::Move() {
 		worldTransform_.translate.y += upSpeed_;
 	}
 	
-	if (isHit_ ) {
+	if (isHit_ || isHitFloor_) {
 		fallSpeed_ = 0.0f;
 		upSpeed_ = 0.0f;
 		jump_ = false;
@@ -90,7 +105,9 @@ void Player::Move() {
 			worldTransform_.translate.y = 0;  
 		}
 
-	} else {
+	}
+
+	if (!isHit_ && !isHitFloor_) {
 		IsFall();
 	} 
 
@@ -102,6 +119,37 @@ void Player::Move() {
 
 }
 
+
+void Player::Relationship() {
+	// 階層アニメーション
+	WorldTransform worldtransform_;
+	worldTransform_.matWorld_ = Math::Multiply(
+	    Math::MakeAffineMatrix(
+	        worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate),
+	    Math::MakeAffineMatrix(
+	        {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},
+	        {worldTransformFloor_.translate.x, worldTransform_.translate.y,
+	         worldTransformFloor_.translate.z}));
+	
+	
+}
+
+void Player::Relationship(const WorldTransform& worldTransformFloor) {
+	// 階層アニメーション
+	
+	
+	worldTransform_.matWorld_ = Math::Multiply(
+	    Math::MakeAffineMatrix(
+	        worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate),
+	    Math::MakeAffineMatrix(
+	        {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},
+	        {worldTransformFloor.translate.x, worldTransform_.translate.y,worldTransformFloor.translate.z}));
+	//worldTransform_.TransferMatrix();
+	//worldtransform.matWorld_ = worldTransform_.matWorld_;
+	//worldTransform_.translate = worldtransform.translate;
+}
+
+
 void Player::IsFall() {
 
 	fallSpeed_ -= 0.01f;
@@ -112,3 +160,7 @@ void Player::IsFall() {
 void Player::OnCollision() {isHit_ = true;}
 
 void Player::OutCollision() { isHit_ = false; }
+
+void Player::OnCollisionFloor() { isHitFloor_ = true; }
+
+void Player::OutCollisionFloor() { isHitFloor_ = false; }
