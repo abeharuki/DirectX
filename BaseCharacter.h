@@ -10,7 +10,7 @@ public:
 
 	virtual void Update();
 
-	virtual void Draw(const ViewProjection& viewprojection);
+	virtual void Draw(const ViewProjection& viewprojection, bool light);
 
 	const WorldTransform& GetWorldTransform() { return worldtransform_; }
 

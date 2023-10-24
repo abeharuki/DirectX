@@ -214,6 +214,7 @@ void Sprite::CreateVertexResource() {
 // 画像の読み込み
 void Sprite::LoadTexture(const std::string& fileName) {
 	textureManager_ = TextureManager::GetInstance();
+	textureManager_->Initialize();
 	texture_ = textureManager_->Load(fileName);
 }
 

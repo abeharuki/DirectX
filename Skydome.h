@@ -19,7 +19,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(const ViewProjection& viewprojection);
+	void Draw(const ViewProjection& viewprojection, bool light);
 
 private:
 	WorldTransform worldTransform_;

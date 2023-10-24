@@ -30,7 +30,9 @@ private: // 静的メンバ変数
 	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	
-	
+	// ライティング
+	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	static DirectionalLight* directionalLightData;
 
 public:
 	/// <summary>
@@ -59,13 +61,14 @@ public:
 	/// 描画前処理
 	/// </summary>
 	/// <param name="commandList">描画コマンドリスト</param>
-	static void PreDraw();
+	//光の色　向き　明るさ
+	static void LightDraw(Vector4 color, Vector3 direction, float intensity);
 
 	
 	static void PostDraw();
 
 	
-	void Draw(WorldTransform& worldTransform,const ViewProjection& viewProjection);
+	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 	
 	
 	const D3D12_VIEWPORT& GetViewp() const { return viewport; }
@@ -74,6 +77,7 @@ public:
 	//static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath); 
 	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
 	
+	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 
 private:
 	
@@ -86,8 +90,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
-	// ライティング
-	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	
 	// WVP用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
 	//マテリアル用リソース
@@ -97,7 +100,7 @@ private:
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
 	Material* materialData = nullptr;
-	DirectionalLight* directionalLightData = nullptr;
+	
 	
 	TextureManager* textureManager_;
 	uint32_t texture_;

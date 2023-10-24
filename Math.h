@@ -90,6 +90,8 @@ struct DirectionalLight {
 
 class Math {
 public:
+	// 正規化
+	static Vector3 Normalize(const Vector3& v);
 
 	// 減算
 	static Vector3 Subract(const Vector3& v1, const Vector3& v2);

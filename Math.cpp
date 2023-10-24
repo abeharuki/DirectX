@@ -1,5 +1,15 @@
 #include "Math.h"
 
+// 正規化
+Vector3 Math::Normalize(const Vector3& v) {
+	Vector3 normalize;
+	float mag = 1.0f / (float)sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	normalize.x = v.x * mag;
+	normalize.y = v.y * mag;
+	normalize.z = v.z * mag;
+	return normalize;
+};
+
 // 減算
 Vector3 Math::Subract(const Vector3& v1, const Vector3& v2) {
 	Vector3 subract;

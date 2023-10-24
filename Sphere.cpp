@@ -3,6 +3,7 @@
 #include <format>
 #include "GraphicsPipeline.h"
 #include <imgui.h>
+#include "Model.h"
 
 
 // ルートシグネチャ
@@ -46,7 +47,8 @@ void Sphere::sPipeline() {
 
 
 
-void Sphere::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+void Sphere::Draw(
+    WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light) {
 	wvpResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	wvpData = nullptr;
@@ -60,6 +62,9 @@ void Sphere::Draw(WorldTransform& worldTransform, const ViewProjection& viewProj
 	    worldTransform.matWorld_,
 	    Math::Multiply(viewProjection.matView, viewProjection.matProjection));
 	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldTransform.matWorld_);
+
+	// ライティング有効化
+	materialData->enableLighting = light;
 
 	//  コマンドを積む
 	Engine::GetList()->RSSetViewports(1, &viewport);
@@ -81,9 +86,9 @@ void Sphere::Draw(WorldTransform& worldTransform, const ViewProjection& viewProj
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootConstantBufferView(
-	    0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(3, Model::GetLightRsurce()->GetGPUVirtualAddress());
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(1536, 1, 0, 0);
@@ -122,16 +127,16 @@ void Sphere::CreateVertexResource() {
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 
-	// ライティング
-	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DirectionalLight));
-	// 頂点リソースにデータを書き込む
-	// 書き込むためのアドレスを取得
-	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+	//// ライティング
+	//lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DirectionalLight));
+	//// 頂点リソースにデータを書き込む
+	//// 書き込むためのアドレスを取得
+	//lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 
-	// デフォルト値
-	directionalLightData->color = {1.0f, 1.0f, 1.0f, 1.0f};
-	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
-	directionalLightData->intensity = 1.0f;
+	//// デフォルト値
+	//directionalLightData->color = {1.0f, 1.0f, 1.0f, 1.0f};
+	//directionalLightData->direction = {0.0f, -1.0f, 0.0f};
+	//directionalLightData->intensity = 1.0f;
 };
 
 
@@ -144,6 +149,7 @@ Sphere* Sphere::CreateSphere(const std::string& texturePath) {
 void Sphere::LoadTexture(const std::string& texturePath) {
 	
 	textureManager_ = TextureManager::GetInstance();
+	textureManager_->Initialize();
 	texture_ = textureManager_->Load(texturePath);
 }
 

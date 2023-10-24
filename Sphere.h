@@ -52,7 +52,7 @@ public:
 	/// </summary>
 	/// <param name="commandList">描画コマンドリスト</param>
 
-	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
+	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 	
 	const D3D12_VIEWPORT& GetViewp() const { return viewport; }
 	const D3D12_RECT& GetScissor() const { return scissorRect; }

@@ -13,8 +13,8 @@ void Player::Update(){
 	BaseCharacter::Update();
 }
 
-void Player::Draw(const ViewProjection& viewprojection){
-	models_[0]->Draw(worldTransform_, viewprojection);
+void Player::Draw(const ViewProjection& viewprojection, bool light) {
+	models_[0]->Draw(worldTransform_, viewprojection,light);
 }
 
 Vector3 Player::GetWorldPosition() {

@@ -20,6 +20,6 @@ void Skydome::Update() {
 /// <summary>
 /// 描画
 /// </summary>
-void Skydome::Draw(const ViewProjection& viewprojection) {
-	model_->Draw(worldTransform_, viewprojection);
+void Skydome::Draw(const ViewProjection& viewprojection, bool light) {
+	model_->Draw(worldTransform_, viewprojection,light);
 };

@@ -8,9 +8,9 @@ void BaseCharacter::Initialize(const std::vector<Model*>& models) {
 
 void BaseCharacter::Update() { worldtransform_.UpdateMatrix(); }
 
-void BaseCharacter::Draw(const ViewProjection& viewprojection) {
+void BaseCharacter::Draw(const ViewProjection& viewprojection, bool light) {
 	// モデル描画
 	for (Model* model : models_) {
-		model->Draw(worldtransform_, viewprojection);
+		model->Draw(worldtransform_, viewprojection,light);
 	}
 }

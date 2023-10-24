@@ -14,7 +14,8 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> Model::rootSignature_;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> Model::sPipelineState_;
 Microsoft::WRL::ComPtr<IDxcBlob> Model::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Model::pixelShaderBlob_;
-
+Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
+DirectionalLight* Model::directionalLightData;
 
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
 	
@@ -59,7 +60,7 @@ void Model::sPipeline() {
 };
 
 
-void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection ,bool light) {
 	wvpResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
 	// データを書き込む
 	wvpData = nullptr;
@@ -73,6 +74,9 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	    worldTransform.matWorld_,
 	    Math::Multiply(viewProjection.matView, viewProjection.matProjection));
 	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldTransform.matWorld_);
+
+	//ライティング有効化
+	materialData->enableLighting = light;
 
 	//  コマンドを積む
 	Engine::GetList()->RSSetViewports(1, &viewport);
@@ -89,7 +93,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	
 	
-	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
+	//
 
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
@@ -99,8 +103,8 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
-	
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
@@ -122,9 +126,7 @@ void Model::CreateVertexResource() {
 
 	
 	std::memcpy( vertexData, modelData.vertices.data(),sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
-	//std::copy(modelData.vertices.begin(), modelData.vertices.end(), vertexData);
-
-	//	重要
+	
 	
 
 	// マテリアル
@@ -168,6 +170,7 @@ Model* Model::CreateModelFromObj(const std::string& filename, const std::string&
 void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
 	modelData = TextureManager::LoadObjFile(filename);
 	textureManager_ = TextureManager::GetInstance();
+	textureManager_->Initialize();
 	texture_ = textureManager_->Load(texturePath);
 	
 }
@@ -177,7 +180,7 @@ MaterialData Model::LoadMaterialTemplateFile(const std::string& filename) {
 	MaterialData materialData; // 構築するMaterialData
 	ModelData modelData;
 	std::string line;                              // ファイルから読んだ1行を格納する
-	std::ifstream file("./resources/" +filename); // ファイルを開く
+	std::ifstream file("./" +filename); // ファイルを開く
 	assert(file.is_open());                        // 開けなかったら止める
 
 	while (std::getline(file, line)) {
@@ -272,9 +275,13 @@ ModelData Model::LoadObjFile(const std::string& filename) {
 	return modelData;
 }
 
-
-
-void Model::PreDraw() {}
+void Model::LightDraw(Vector4 color, Vector3 direction, float intensity) {
+	
+	directionalLightData->color = color;
+	directionalLightData->direction = Math::Normalize(direction);
+	directionalLightData->intensity = intensity;
+	
+}
 
 void Model::PostDraw() {}
 
