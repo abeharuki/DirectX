@@ -29,7 +29,7 @@ public:
 	//void Move();
 
 	//// ワールド座標
-	//Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition();
 	//// ローカル座標
 	//Vector3 GetLocalPosition();
 

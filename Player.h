@@ -47,6 +47,10 @@ public: // メンバ関数
 	Vector3 GetWorldPosition();
 	//ローカル座標
 	Vector3 GetLocalPosition();
+
+	// セットPos
+	void SetPosition(Vector3 Pos);
+	
 	
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 

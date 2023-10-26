@@ -52,7 +52,6 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
-
 Vector3 Player::GetLocalPosition() {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
@@ -62,6 +61,8 @@ Vector3 Player::GetLocalPosition() {
 	worldPos.z = worldTransform_.translate.z;
 	return worldPos;
 }
+
+void Player::SetPosition(Vector3 Pos) { worldTransform_.translate = Pos; }
 
 void Player::Move() {
 

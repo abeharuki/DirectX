@@ -28,7 +28,7 @@ void GameScene::Initialize() {
 	player_->Initialize(playerModels);
 
 	//敵
-	modelEnemy_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/ball.png"));
+	modelEnemy_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/enemy.png"));
 	enemy_ = std::make_unique<Enemy>();
 	std::vector<Model*> enemyModels = {modelEnemy_.get()};
 	enemy_->Initialize(enemyModels);
@@ -191,6 +191,22 @@ void GameScene::CheckAllCollision() {
 		if (!collision1_) {
 			player_->OutCollisionFloor();
 		}
+		
+	}
+
+#pragma endregion
+
+	#pragma region 自キャラと移動床の当たり判定
+	// 自キャラ座標
+	posA = player_->GetWorldPosition();
+
+	// 移動床の座標
+	posB[0] = enemy_->GetWorldPosition();
+
+	if (Math::IsAABBCollision(
+	        posA, player_->GetWorldTransform().scale, posB[0], enemy_->GetWorldTransform().scale)) {
+		// 自キャラの衝突時コールバックを呼び出す
+		player_->SetPosition({0.0f, 0.0f, 0.0f});
 		
 	}
 

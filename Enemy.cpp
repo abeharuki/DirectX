@@ -25,3 +25,9 @@ void Enemy::Update() {
 void Enemy::Draw(const ViewProjection& viewprojection) {
 	models_[0]->Draw(worldtransformBase_, viewprojection);
 }
+
+Vector3 Enemy::GetWorldPosition() { 
+	Vector3 WorldPos; 
+	WorldPos = worldtransformBase_.GetWorldPos();
+	return WorldPos;
+}
