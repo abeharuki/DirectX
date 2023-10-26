@@ -182,6 +182,37 @@ Matrix4x4 Math::Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return multiply;
 };
 
+Matrix4x4 Math::MakeRotateXYZMatrix(const Vector3& rotate) {
+	// 回転
+	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
+	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
+	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
+	Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
+
+	return rotateXYZMatrix;
+}
+// 平行移動
+Matrix4x4 Math::MakeTranselateMatrix(const Vector3& translate) {
+	Matrix4x4 MakeTranslateMatrix;
+	MakeTranslateMatrix.m[0][0] = 1;
+	MakeTranslateMatrix.m[0][1] = 0;
+	MakeTranslateMatrix.m[0][2] = 0;
+	MakeTranslateMatrix.m[0][3] = 0;
+	MakeTranslateMatrix.m[1][0] = 0;
+	MakeTranslateMatrix.m[1][1] = 1;
+	MakeTranslateMatrix.m[1][2] = 0;
+	MakeTranslateMatrix.m[1][3] = 0;
+	MakeTranslateMatrix.m[2][0] = 0;
+	MakeTranslateMatrix.m[2][1] = 0;
+	MakeTranslateMatrix.m[2][2] = 1;
+	MakeTranslateMatrix.m[2][3] = 0;
+	MakeTranslateMatrix.m[3][0] = translate.x;
+	MakeTranslateMatrix.m[3][1] = translate.y;
+	MakeTranslateMatrix.m[3][2] = translate.z;
+	MakeTranslateMatrix.m[3][3] = 1;
+	return MakeTranslateMatrix;
+};
+
 // アフィン変換
 Matrix4x4
     Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {

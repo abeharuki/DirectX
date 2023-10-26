@@ -7,8 +7,6 @@ void Player::Initialize(const std::vector<Model*>& models) {
 
 	// 初期化
 	worldTransform_.Initialize();
-	//worldTransformFloor_.Initialize();
-	worldtransform.Initialize();
 	
 }
 
@@ -16,14 +14,10 @@ void Player::Update(){
 
 	BaseCharacter::Update();
 	Move();
-	/*if (isHitFloor_) {
- 		Relationship();
-		
-	}*/
+	
 
 	worldTransform_.UpdateMatrix();
 	
-
 	ImGui::Begin("Player");
 	ImGui::DragFloat4("translation", &worldTransform_.translate.x, 0.01f);
 	ImGui::Text(" X%f Y%f Z%f", worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1],worldTransform_.matWorld_.m[3][2]);
@@ -32,13 +26,7 @@ void Player::Update(){
 	ImGui::Text(" jump%d", jump_);
 	ImGui::End();
 
-		ImGui::Begin("Debug");
-	ImGui::DragFloat4("translation", &worldtransform.translate.x, 0.01f);
-	ImGui::Text(
-	    " X%f Y%f Z%f", worldtransform.matWorld_.m[3][0], worldtransform.matWorld_.m[3][1],
-	    worldtransform.matWorld_.m[3][2]);
-
-	ImGui::End();
+	
 }
 
 void Player::Draw(const ViewProjection& viewprojection){
@@ -50,6 +38,7 @@ Player::Player(){
 	fallSpeed_ = 0.0f;
 	jump_ = false;
 	isHit_ = false;
+	isHitFloor_ = false;
 };
 Player::~Player(){};
 
@@ -63,6 +52,16 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
+
+Vector3 Player::GetLocalPosition() {
+	// ワールド座標を入れる関数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransform_.translate.x;
+	worldPos.y = worldTransform_.translate.y;
+	worldPos.z = worldTransform_.translate.z;
+	return worldPos;
+}
 
 void Player::Move() {
 
@@ -120,35 +119,51 @@ void Player::Move() {
 }
 
 
-void Player::Relationship() {
-	// 階層アニメーション
-	WorldTransform worldtransform_;
-	worldTransform_.matWorld_ = Math::Multiply(
-	    Math::MakeAffineMatrix(
-	        worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate),
-	    Math::MakeAffineMatrix(
-	        {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},
-	        {worldTransformFloor_.translate.x, worldTransform_.translate.y,
-	         worldTransformFloor_.translate.z}));
-	
-	
-}
-
 void Player::Relationship(const WorldTransform& worldTransformFloor) {
-	// 階層アニメーション
+
+	if (!worldTransform_.parent_) {
+
+		// 移動床のワールド座標
+		Vector3 objectWorldPos = {
+		    worldTransformFloor.matWorld_.m[3][0], worldTransformFloor.matWorld_.m[3][1],
+		    worldTransformFloor.matWorld_.m[3][2]};
+
+
+
+		// プレイヤーローカル座標
+		Matrix4x4 localPos =
+		    Math::Multiply(Math::Inverse(worldTransformFloor.matWorld_), worldTransform_.matWorld_);
+
+		Vector3 playerLocalPos = {localPos.m[3][0], localPos.m[3][1]+1.0f, localPos.m[3][2]};
+
+		
+		
+		//ローカル座標系に入れる
+		//worldTransform_.matWorld_ = localPos;
+		worldTransform_.translate = playerLocalPos;
+
+		Setparent(&worldTransformFloor);
+
+		ImGui::Begin("P");
+		
+		
+		ImGui::End();
+	}
 	
-	
-	worldTransform_.matWorld_ = Math::Multiply(
-	    Math::MakeAffineMatrix(
-	        worldTransform_.scale, worldTransform_.rotate, worldTransform_.translate),
-	    Math::MakeAffineMatrix(
-	        {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},
-	        {worldTransformFloor.translate.x, worldTransform_.translate.y,worldTransformFloor.translate.z}));
-	//worldTransform_.TransferMatrix();
-	//worldtransform.matWorld_ = worldTransform_.matWorld_;
-	//worldTransform_.translate = worldtransform.translate;
 }
 
+void Player::Setparent(const WorldTransform* parent) { 
+	worldTransform_.parent_ = parent; 
+	
+
+};
+
+void Player::DeleteParent() {
+	if (worldTransform_.parent_) {
+		worldTransform_.translate = worldTransform_.GetWorldPos();
+		worldTransform_.parent_ = nullptr;
+	}
+}
 
 void Player::IsFall() {
 

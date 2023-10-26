@@ -43,9 +43,11 @@ public: // メンバ関数
 
 	void Move();
 
-
+	//ワールド座標
 	Vector3 GetWorldPosition();
-
+	//ローカル座標
+	Vector3 GetLocalPosition();
+	
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 	void SetViewProjection(const ViewProjection& viewProjection) {
@@ -57,8 +59,10 @@ public: // メンバ関数
 		worldTransformFloor_ = worldTransform;
 	}
 
+	void Setparent(const WorldTransform* parent);
+	void DeleteParent();
+
 	//階層構造
-	void Relationship();
 	void Relationship(const WorldTransform& worldTransformFloor);
 
 	//落下
@@ -72,7 +76,6 @@ public: // メンバ関数
 	void OutCollisionFloor();
 
 private: // メンバ変数
-	WorldTransform worldtransform;
 	WorldTransform worldTransform_;
 	WorldTransform worldTransformFloor_;
 	ViewProjection viewProjection_;

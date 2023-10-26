@@ -21,11 +21,17 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = {0.0f, 0.0f, -5.0f};
 
+	//プレイヤー
 	modelPlayer_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/ball.png"));
 	player_ = std::make_unique<Player>();
 	std::vector<Model*> playerModels = {modelPlayer_.get()};
 	player_->Initialize(playerModels);
 
+	//敵
+	modelEnemy_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/ball.png"));
+	enemy_ = std::make_unique<Enemy>();
+	std::vector<Model*> enemyModels = {modelEnemy_.get()};
+	enemy_->Initialize(enemyModels);
 
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
@@ -52,7 +58,7 @@ void GameScene::Initialize() {
 	followCamera_->SetTarget(&player_->GetWorldTransform());
 
 	// 自キャラの生成と初期化処理
-	player_->SetViewProjection(followCamera_.get()->GetViewProjection());
+	player_->SetViewProjection(followCamera_->GetViewProjection());
 }
 
 void GameScene::Update() {
@@ -60,24 +66,24 @@ void GameScene::Update() {
 	floor_->Update();
 	
 	player_->Update();
-	
+	enemy_->Update();
 	ground_->Update();
 	skydome_->Update();
-   
+	
 	CheckAllCollision();
-
-	if (collision2_) {
-		
-	}
-	//player_->Relationship(floor_->GetWorldTransform());
 	
 	// 追従カメラの更新
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-
 	viewProjection_.TransferMatrix();
+	
 	ImGui::Begin("scene");
+	
+	ImGui::DragFloat4("translation", &worldTransform_.translate.x, 0.01f);
+	ImGui::Text(
+	    " X%f Y%f Z%f", viewProjection_.matView.m[3][0], viewProjection_.matView.m[3][1],
+	    viewProjection_.matView.m[3][2]);
 	
 	ImGui::Text(" collision1_%d", collision1_);
 	ImGui::Text(" collision2_%d", collision2_);
@@ -95,6 +101,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
 	// 天球
 	skydome_->Draw(viewProjection_);
 	// 地面
@@ -103,8 +110,8 @@ void GameScene::Draw() {
 	floor_->Draw(viewProjection_);
 	//プレーヤー
 	player_->Draw(viewProjection_);
-	
-
+	//敵
+	enemy_->Draw(viewProjection_);
 	
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -175,9 +182,11 @@ void GameScene::CheckAllCollision() {
 		// 自キャラの衝突時コールバックを呼び出す
 		player_->OnCollision();
 		player_->OnCollisionFloor();
-		
+
+		player_->Relationship(floor_->GetWorldTransform());
 		collision2_ = true;
 	} else {
+		player_->DeleteParent();
 		collision2_ = false;
 		if (!collision1_) {
 			player_->OutCollisionFloor();

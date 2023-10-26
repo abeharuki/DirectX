@@ -6,7 +6,8 @@ void MoveFloor::Initialize(Model* model) {
 	model_.reset(model);
 	worldTransform_.Initialize();
 	worldTransform_.translate = {0.0f, -1.0f, 50.0f};
-	worldTransform_.scale = {7.0f, 0.2f, 7.0f};
+	//worldTransform_.scale = {7.0f, 0.2f, 7.0f};
+	worldTransform_.scale = {1.0f, 1.0f, 1.0f};
 	speed_ = 0.3f;
 }
 
@@ -42,9 +43,9 @@ Vector3 MoveFloor::GetWorldPosition() {
 
 void MoveFloor::Move() {
 
-	if (worldTransform_.translate.z < 18.0) {
+	if (worldTransform_.translate.z < 12.0) {
 		speed_ = 0.3f;
-	}else if (worldTransform_.translate.z > 82.0) {
+	}else if (worldTransform_.translate.z > 88.0) {
 		speed_ = -0.3f;
 	}
 	worldTransform_.translate.z += speed_;

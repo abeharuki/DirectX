@@ -27,6 +27,9 @@ public:
 	// 追従対象からのオフセット計算
 	Vector3 calculateOffset() const;
 
+	Vector3 GetTargetWordPos();
+
+
 private:
 	ViewProjection viewProjection_;
 	const WorldTransform* target_ = nullptr;

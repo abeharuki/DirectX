@@ -8,6 +8,7 @@
 #include "KeyInput.h"
 #include "Skydome.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "FollowCamera.h"
 #include "Ground.h"
 #include "MoveFloor.h"
@@ -49,6 +50,7 @@ public: // メンバ関数
 	void CheckAllCollision();
 	
 private: // メンバ変数
+
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
@@ -56,6 +58,9 @@ private: // メンバ変数
 	std::unique_ptr<Player> player_;
 	std::unique_ptr<Model> modelPlayer_;
 
+	// Enemy
+	std::unique_ptr<Enemy> enemy_;
+	std::unique_ptr<Model> modelEnemy_;
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
