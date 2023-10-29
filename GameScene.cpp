@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 	//スフィア
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
-	colorPlane = {1.0f, 1.0f, 1.0f, 0.0f};
+	colorPlane = {1.0f, 1.0f, 1.0f, 1.0f};
 	blendMode_ = BlendMode::kNormal;
 }
 
@@ -79,7 +79,7 @@ void GameScene::Update() {
 	if (ImGui::TreeNode("plane")) {
 		ImGui::SliderFloat4("Color", &colorPlane.x, -1.0f, 1.0f);
 		if (ImGui::BeginCombo("BlendMode", EnumToString(blendMode_))) {
-			if (ImGui::Selectable("kCountOfBlendMode", blendMode_ == BlendMode::kNone)) {
+			if (ImGui::Selectable("kNone", blendMode_ == BlendMode::kNone)) {
 				blendMode_ = BlendMode::kNone;
 				
 			}

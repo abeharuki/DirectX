@@ -98,7 +98,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), instanceCount, 0, 0);
 
 	
 }

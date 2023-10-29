@@ -114,7 +114,7 @@ private:
 	TextureManager* textureManager_;
 	uint32_t texture_;
 
-	
+	uint16_t instanceCount = 10;
  private:
 	//DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	 void LoadTexture(const std::string& filename, const std::string& texturePath);
