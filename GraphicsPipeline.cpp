@@ -45,8 +45,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 		D3D12_BLEND_DESC blendDesc{};
 		// すべての色要素を書き込む
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-		//blendDesc.AlphaToCoverageEnable = FALSE; // アンチエイリアシング有無
-		//blendDesc.IndependentBlendEnable = FALSE; // ブレンドステートを個別化するか有無
+		blendDesc.AlphaToCoverageEnable = FALSE; // アンチエイリアシング有無
+		blendDesc.IndependentBlendEnable = FALSE; // ブレンドステートを個別化するか有無
 		
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;

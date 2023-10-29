@@ -42,7 +42,7 @@ void GameScene::Initialize() {
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 	colorPlane = {1.0f, 1.0f, 1.0f, 0.0f};
-	blendMode_ = BlendMode::kNone;
+	blendMode_ = BlendMode::kNormal;
 }
 
 void GameScene::Update() {
@@ -74,7 +74,7 @@ void GameScene::Update() {
 	modelplane_->SetColor(colorPlane);
 	modelplane_->SetBlendMode(blendMode_);
 	
-	//sphere_->SetBlendMode(BlendMode::kCountOfBlendMode);
+	
 	ImGui::Begin("Setting");
 	if (ImGui::TreeNode("plane")) {
 		ImGui::SliderFloat4("Color", &colorPlane.x, -1.0f, 1.0f);
@@ -123,13 +123,12 @@ void GameScene::Draw() {
 	/// </summary>
 	// 天球
 	skydome_->Draw(viewProjection_,false);
-	//modelplane_->Draw(worldTransformp_, viewProjection_,true);
+	// sphere_->Draw(worldTransform_, viewProjection_,true);
 	//フェンス
-	for (int i = 0; i < 2; i++) {
-		modelFence_[i]->Draw(worldTransformFence_[i], viewProjection_, false);
-	}
+	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
+	//板ポリ
+	modelplane_->Draw(worldTransformp_, viewProjection_, false);
 	
-	//sphere_->Draw(worldTransform_, viewProjection_,true);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
