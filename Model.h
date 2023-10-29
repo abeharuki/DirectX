@@ -13,9 +13,10 @@
 #include <d3dx12.h>
 #include "WorldTransform.h"
 #include "ViewProjection.h"
+#include "GraphicsPipeline.h"
 
 class Model {
-private: // 静的メンバ変数
+public: // 静的メンバ変数
 	
 	
 
@@ -23,16 +24,18 @@ private: // 静的メンバ変数
 	static UINT sDescriptorHandleIncrementSize_;
 	
 	// ルートシグネチャ
-	static Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
-	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 	
-	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	
 	// ライティング
 	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
 	static DirectionalLight* directionalLightData;
+
+	BlendMode blendMode_ = BlendMode::kNormal;
 
 public:
 	/// <summary>
@@ -79,6 +82,12 @@ public:
 	
 	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 
+	//色とアルファ値
+	void SetColor(Vector4 color);
+
+	//ブレンドモード
+	void SetBlendMode(BlendMode blendMode);
+
 private:
 	
 	
@@ -105,7 +114,7 @@ private:
 	TextureManager* textureManager_;
 	uint32_t texture_;
 
-	
+	uint16_t instanceCount = 10;
  private:
 	//DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	 void LoadTexture(const std::string& filename, const std::string& texturePath);
@@ -113,4 +122,6 @@ private:
 	 // objファイルの読み込み
 	 MaterialData LoadMaterialTemplateFile(const std::string& filename);
 	 ModelData LoadObjFile(const std::string& filename);
+
+	
 };

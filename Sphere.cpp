@@ -1,15 +1,10 @@
 #include "Sphere.h"
 #include <cassert>
 #include <format>
-#include "GraphicsPipeline.h"
 #include <imgui.h>
 #include "Model.h"
 
 
-// ルートシグネチャ
-Microsoft::WRL::ComPtr<ID3D12RootSignature> Sphere::rootSignature_;
-// パイプラインステートオブジェクト
-Microsoft::WRL::ComPtr<ID3D12PipelineState> Sphere::sPipelineState_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::pixelShaderBlob_;
 
@@ -26,7 +21,7 @@ void Sphere::sPipeline() {
 	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
 
 	// クライアント領域のサイズと一緒にして画面全体に表示
 	viewport.Width = WinApp::kWindowWidth;
@@ -139,6 +134,12 @@ void Sphere::CreateVertexResource() {
 	//directionalLightData->intensity = 1.0f;
 };
 
+void Sphere::SetColor(Vector4 color) {
+	materialData->color.rgb = {color.x, color.y, color.z};
+	materialData->color.a = color.w;
+}
+
+void Sphere::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 
 Sphere* Sphere::CreateSphere(const std::string& texturePath) {
 	Sphere* sphere = new Sphere;

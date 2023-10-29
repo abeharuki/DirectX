@@ -7,6 +7,15 @@
 #include "externals/DirectXTex/d3dx12.h"
 #include "DirectXCommon.h"
 
+enum class BlendMode {
+	kNone,
+	kNormal,   //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
+	kAdd,      //!< 加算。Src * SrcA + Dest * 1
+	kSubtract, //!< 減算。Dest * 1 - Src * SrcA
+	kMultily,  //!< 乗算。Src * 0 + Dest * Src
+
+	kCountOfBlendMode, //!< ブレンドモード数。指定はしない
+};
 
 
 class GraphicsPipeline {
@@ -17,7 +26,7 @@ public:
 public:
 	
 
-	static ID3D12DescriptorHeap* SRVHeap;
+	
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 	// パイプラインステートオブジェクト
@@ -30,7 +39,9 @@ public:
 
 public:
 	//	GraphicsPipelineの生成
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateGraphicsPipeline();
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateGraphicsPipeline(BlendMode blendMode_);
+	// ParticleGraphicsPipelineの生成
+	//Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleGraphicsPipeline(BlendMode blendMode_);
 
 	//	RootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateRootSignature();

@@ -2,10 +2,6 @@
 
 
 
-// ルートシグネチャ
-Microsoft::WRL::ComPtr<ID3D12RootSignature> Sprite::rootSignature_;
-// パイプラインステートオブジェクト
-Microsoft::WRL::ComPtr<ID3D12PipelineState> Sprite::sPipelineState_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sprite::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sprite::pixelShaderBlob_;
 
@@ -42,7 +38,7 @@ void Sprite::sPipeline(){
 
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
 
 	// クライアント領域のサイズと一緒にして画面全体に表示
 	viewport.Width = WinApp::kWindowWidth;
@@ -219,3 +215,9 @@ void Sprite::LoadTexture(const std::string& fileName) {
 }
 
 
+void Sprite::SetColor(Vector4 color) {
+	materialDataSprite->color.rgb = {color.x, color.y, color.z};
+	materialDataSprite->color.a = color.w;
+}
+
+void Sprite::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }

@@ -52,7 +52,7 @@ private: // メンバ変数
 	ViewProjection viewProjection_;
 	WorldTransform worldTransform_;
 	WorldTransform worldTransformp_;
-
+	WorldTransform worldTransformFence_[2];
 	//球
 	std::unique_ptr<Sphere> sphere_;
 
@@ -60,6 +60,25 @@ private: // メンバ変数
 	std::unique_ptr<Skydome> skydome_;
 	// 天球3Dモデル
 	std::unique_ptr<Model> modelSkydome_;
-
+	//板ポリ
 	std::unique_ptr<Model> modelplane_;
+	//フェンス
+	std::unique_ptr<Model> modelFence_[2];
+
+	Vector4 colorPlane;
+	BlendMode blendMode_;
+	const char* EnumToString(BlendMode value) {
+		switch (value) {
+		case BlendMode::kNone:
+			return "kNone"; 
+		case BlendMode::kNormal:
+			return "kNormal";
+		case BlendMode::kAdd:
+			return "kAdd";
+		case BlendMode::kSubtract:
+			return "kSubtract";
+		default:
+			return "Unknown";
+		}
+	}
 };

@@ -14,20 +14,9 @@
 #include "Engine.h"
 #include "WorldTransform.h"
 #include <imgui.h>
+#include "GraphicsPipeline.h"
 
 class Sprite {
-public:
-	enum class BlendMode {
-		kNone,     //!< ブレンドなし
-		kNormal,   //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
-		kAdd,      //!< 加算。Src * SrcA + Dest * 1
-		kSubtract, //!< 減算。Dest * 1 - Src * SrcA
-		kMultily,  //!< 乗算。Src * 0 + Dest * Src
-		kScreen,   //!< スクリーン。Src * (1 - Dest) + Dest * 1
-
-		kCountOfBlendMode, //!< ブレンドモード数。指定はしない
-	};
-
 public: // サブクラス
 	/// <summary>
 	/// 頂点データ構造体
@@ -74,8 +63,12 @@ public: // 静的メンバ関数
 
 	
 	
-	
-private: // 静的メンバ変数
+	void SetColor(Vector4 color);
+
+	// ブレンドモード
+	void SetBlendMode(BlendMode blendMode);
+
+public: // 静的メンバ変数
 	// 頂点数
 	static const int kVertNum = 4;
 	
@@ -83,9 +76,9 @@ private: // 静的メンバ変数
 	static UINT sDescriptorHandleIncrementSize_;
 
 	// ルートシグネチャ
-	static Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
-	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 
 	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
@@ -96,6 +89,9 @@ private: // 静的メンバ変数
 
 	uint32_t textureWidth = 0;
 	uint32_t textureHeight = 0;
+
+
+	BlendMode blendMode_ = BlendMode::kNormal;
 
 public: // メンバ関数
 	

@@ -3,17 +3,10 @@
 #include <format>
 
 #include "StringUtility.h"
-#include "GraphicsPipeline.h"
+
 #include <imgui.h>
 
 
-
-// ルートシグネチャ
-Microsoft::WRL::ComPtr<ID3D12RootSignature> Model::rootSignature_;
-// パイプラインステートオブジェクト
-Microsoft::WRL::ComPtr<ID3D12PipelineState> Model::sPipelineState_;
-Microsoft::WRL::ComPtr<IDxcBlob> Model::vertexShaderBlob_;
-Microsoft::WRL::ComPtr<IDxcBlob> Model::pixelShaderBlob_;
 Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
 DirectionalLight* Model::directionalLightData;
 
@@ -32,11 +25,10 @@ void Model::sPipeline() {
 	
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
 	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
-
 	
 	
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
 
 	// クライアント領域のサイズと一緒にして画面全体に表示
 	viewport.Width = WinApp::kWindowWidth;
@@ -106,7 +98,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), instanceCount, 0, 0);
 
 	
 }
@@ -157,7 +149,15 @@ void Model::CreateVertexResource() {
 	
 };
 
+void Model::SetColor(Vector4 color) {
+	materialData->color.rgb = {color.x, color.y, color.z};
+	materialData->color.a = color.w;
+}
 
+void Model::SetBlendMode(BlendMode blendMode) { 
+	blendMode_ = blendMode; 
+
+}
 
 Model* Model::CreateModelFromObj(const std::string& filename, const std::string& texturePath) {
 	Model* model = new Model;
