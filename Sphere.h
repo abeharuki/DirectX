@@ -13,17 +13,19 @@
 #include <d3dx12.h>
 #include "WorldTransform.h"
 #include "ViewProjection.h"
+#include "GraphicsPipeline.h"
 
 class Sphere{
-private: // 静的メンバ変数
-	
+ // 静的メンバ変数
+public:
 	// ルートシグネチャ
-	static Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
-	static Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 
 	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	BlendMode blendMode_ = BlendMode::kNormal;
 
 public:
 	/// <summary>
@@ -59,7 +61,11 @@ public:
 
 	static Sphere* CreateSphere(const std::string& texturePath);
 
-public:
+	void SetColor(Vector4 color);
+	// ブレンドモード
+	void SetBlendMode(BlendMode blendMode);
+
+private:
 	TextureManager* textureManager_;
 	uint32_t texture_;
 
