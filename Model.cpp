@@ -1,9 +1,6 @@
 #include "Model.h"
 #include <cassert>
 #include <format>
-
-#include "StringUtility.h"
-
 #include <imgui.h>
 
 
@@ -30,21 +27,7 @@ void Model::sPipeline() {
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
 
-	// クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = WinApp::kWindowWidth;
-	viewport.Height = WinApp::kWindowHeight;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-	// シザー矩形
-
-	// 基本的にビューポートと同じ矩形が構成されるようにする
-	scissorRect.left = 0;
-	scissorRect.right = WinApp::kWindowWidth;
-	scissorRect.top = 0;
-	scissorRect.bottom = WinApp::kWindowHeight;
+	
 
 
 
@@ -62,18 +45,15 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	wvpData->WVP = Math::MakeIdentity4x4();
 	wvpData->World = Math::MakeIdentity4x4();
 	
-	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
+	Matrix4x4 worldViewProjectionMatrix = Math::Multiply(
 	    worldTransform.matWorld_,
 	    Math::Multiply(viewProjection.matView, viewProjection.matProjection));
-	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldTransform.matWorld_);
+	*wvpData = TransformationMatrix(worldViewProjectionMatrix, worldTransform.matWorld_);
 
 	//ライティング有効化
 	materialData->enableLighting = light;
 
-	//  コマンドを積む
-	Engine::GetList()->RSSetViewports(1, &viewport);
-	Engine::GetList()->RSSetScissorRects(1, &scissorRect);
-
+	
 	
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
@@ -85,8 +65,6 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	
 	
-	//
-
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
@@ -98,7 +76,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), instanceCount, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
 	
 }

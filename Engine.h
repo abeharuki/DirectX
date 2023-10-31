@@ -26,6 +26,11 @@ public:
 
 	static void EndFrame();
 
+	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(
+	    ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
+	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(
+	    ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
+
 public:
 	static Microsoft::WRL::ComPtr<ID3D12Device> GetDevice();
 	static Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetList();

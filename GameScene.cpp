@@ -22,6 +22,9 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = {0.0f, 0.0f, -5.0f};
 
+	worldTransform_.translate.x = {1.0f};
+	worldTransform_.translate.z = {-2.0f};
+	worldTransform_.scale = {0.5f, 0.5f, 0.5f};
 	for (int i = 0; i < 2; i++) {
 		worldTransformFence_[i].Initialize();
 		modelFence_[i].reset(
@@ -41,6 +44,14 @@ void GameScene::Initialize() {
 	//スフィア
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
+
+	particle_.reset(Particle::Create("resources/uvChecker.png",10));
+
+
+	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
+
+	
+
 	colorPlane = {1.0f, 1.0f, 1.0f, 1.0f};
 	blendMode_ = BlendMode::kNormal;
 }
@@ -64,7 +75,7 @@ void GameScene::Update() {
 		colorPlane.w -= 0.01f;
 	}
 
-	
+	worldTransform_.rotate.y += 0.02f;
 	
 	worldTransform_.UpdateMatrix();
 	worldTransformp_.UpdateMatrix();
@@ -108,7 +119,25 @@ void GameScene::Update() {
 		
 		ImGui::TreePop();
 	}
+	if (ImGui::TreeNode("Sphere")) {
+		
+		;
+		ImGui::SliderFloat3("Sprite", &worldTransform_.translate.x, -1.0f, 10.0f);
 
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Sprite")) {
+		// LightLight
+		ImGui::SliderFloat3("UVTransform.scale", &uvTransform_.scale.x, -1.0f, 1.0f);
+		ImGui::SliderFloat3("UVTransform.translate", &uvTransform_.translate.x, -1.0f, 1.0f);
+		ImGui::SliderFloat3("Sprite", &worldTransform_.scale.x, -1.0f, 10.0f);
+		
+
+		ImGui::TreePop();
+	}
+
+	
 	ImGui::End();
 }
 
@@ -123,12 +152,13 @@ void GameScene::Draw() {
 	/// </summary>
 	// 天球
 	skydome_->Draw(viewProjection_,false);
-	// sphere_->Draw(worldTransform_, viewProjection_,true);
+	//sphere_->Draw(worldTransform_, viewProjection_,true);
 	//フェンス
 	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
 	//板ポリ
-	modelplane_->Draw(worldTransformp_, viewProjection_, false);
-	
+	//modelplane_->Draw(worldTransformp_, viewProjection_, false);
+	//パーティクル
+	particle_->Draw(worldTransformp_, viewProjection_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -141,7 +171,7 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	
-	//sprite_->Draw(worldTransformA_);
+	//sprite_->Draw(worldTransform_,uvTransform_);
 	
 	//sprite2_->Draw(worldTransformB_);
 	

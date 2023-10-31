@@ -17,6 +17,11 @@ enum class BlendMode {
 	kCountOfBlendMode, //!< ブレンドモード数。指定はしない
 };
 
+enum class Pipeline {
+	kNormal,   
+	kParticle,      
+	
+};
 
 class GraphicsPipeline {
 public:
@@ -29,27 +34,39 @@ public:
 	
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> particleRootSignature_ = nullptr;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> particlesPipelineState_ = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_ = nullptr;
+
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_ = nullptr;
+
+	Microsoft::WRL::ComPtr<IDxcBlob> particleVertexShaderBlob_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcBlob> particlePixelShaderBlob_ = nullptr;
 
 public:
 	//	GraphicsPipelineの生成
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateGraphicsPipeline(BlendMode blendMode_);
-	// ParticleGraphicsPipelineの生成
-	//Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleGraphicsPipeline(BlendMode blendMode_);
-
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleGraphicsPipeline(BlendMode blendMode_);
+	
 	//	RootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateRootSignature();
+	// ParticleRootSignatureの生成
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateParticleRootSignature();
+
 	//	vertexshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateVSShader();
 	//	pixelshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreatePSShader();
 
+	//	ParticleVertexshaderの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreateParticleVSShader();
+	//	ParticlePixelshaderの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreateParticlePSShader();
 
 	static IDxcBlob* CompileShader(
 	    // CompilerするShaderファイルへのパス
