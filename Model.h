@@ -74,8 +74,6 @@ public:
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 	
 	
-	const D3D12_VIEWPORT& GetViewp() const { return viewport; }
-	const D3D12_RECT& GetScissor() const { return scissorRect; }
 
 	//static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath); 
 	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
@@ -92,8 +90,7 @@ private:
 	
 	
 	
-	D3D12_VIEWPORT viewport;
-	D3D12_RECT scissorRect;
+	
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;

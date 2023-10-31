@@ -40,20 +40,7 @@ void Sprite::sPipeline(){
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
 
-	// クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = WinApp::kWindowWidth;
-	viewport.Height = WinApp::kWindowHeight;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-	// シザー矩形
-	// 基本的にビューポートと同じ矩形が構成されるようにする
-	scissorRect.left = 0;
-	scissorRect.right = WinApp::kWindowWidth;
-	scissorRect.top = 0;
-	scissorRect.bottom = WinApp::kWindowHeight;
+	
 	
 
 };
@@ -66,7 +53,7 @@ void Sprite::PreDraw() {
 
 void Sprite::PostDraw(){};
 
-void Sprite::Draw(WorldTransform& worldTransform) {
+void Sprite::Draw(WorldTransform& worldTransform,Transform& uvTransform ) {
 	
 	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
 	// データを書き込む
@@ -83,11 +70,7 @@ void Sprite::Draw(WorldTransform& worldTransform) {
         {0.0f, 0.0f, -10.0f}
     };
 	
-	//// Sprite用のworldViewProjectionMatrixを作る
-	//worldTransform.matWorld_ = Math::MakeAffineMatrix(
-	//    {worldTransform.scale.x,worldTransform.scale.y, 1.0f},
-	//    {0.0f, 0.0f, worldTransform.rotate.z},
-	//    {worldTransform.translate.x, worldTransform.translate.y, 0.5f});
+	
 
 	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
 	Matrix4x4 projectionMatrixSprite = Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
@@ -95,16 +78,18 @@ void Sprite::Draw(WorldTransform& worldTransform) {
 	    worldTransform.matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
 	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldTransform.matWorld_);
 
-	//  コマンドを積む
-	Engine::GetList()->RSSetViewports(1, &viewport);
-	Engine::GetList()->RSSetScissorRects(1, &scissorRect);
+	
 
-
-	//// UVTransform用の行列
-	// Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
-	//     uvTransformSprite.scale, uvTransformSprite.rotate, uvTransformSprite.translate);
-	//
-	// materialDataSprite->uvTransform = uvTransformMatrix;
+	// UVTransform用の行列
+	Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
+	    {
+	        uvTransform.scale.x+1,
+	        uvTransform.scale.y+1,
+	        uvTransform.scale.z+1,
+	    },
+	    uvTransform.rotate, uvTransform.translate);
+	
+	 materialDataSprite->uvTransform = uvTransformMatrix;
 
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -121,7 +106,7 @@ void Sprite::Draw(WorldTransform& worldTransform) {
 	
 	
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
-	Engine::GetList()->SetDescriptorHeaps(1, &Engine::GetSRV());
+	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	// TransformationMatrixCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
 	// マテリアルCBufferの場所を設定
@@ -158,9 +143,9 @@ void Sprite::CreateVertexResource() {
 	vertexData_[0].texcoord = {0.0f, 1.0f};
 	vertexData_[1].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 左上1
 	vertexData_[1].texcoord = {0.0f, 0.0f};
-	vertexData_[2].position = {640.0f, 360.0f, 0.0f, 1.0f}; // 右下2
+	vertexData_[2].position = {360.0f, 360.0f, 0.0f, 1.0f}; // 右下2
 	vertexData_[2].texcoord = {1.0f, 1.0f};
-	vertexData_[3].position = {640.0f, 0.0f, 0.0f, 1.0f}; // 右上3
+	vertexData_[3].position = {360.0f, 0.0f, 0.0f, 1.0f}; // 右上3
 	vertexData_[3].texcoord = {1.0f, 0.0f};
 
 	vertexData_[0].normal = {0.0f, 0.0f, -1.0f};

@@ -119,7 +119,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(WorldTransform& worldTransform);
+	void Draw(WorldTransform& worldTransform, Transform& uvTransform);
 
 
 	static Sprite* Create(
@@ -132,7 +132,7 @@ private: // メンバ変数
 	uint32_t texture_;
 
 
-	ID3D12Resource* wvpResouce;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce;
 	// データを書き込む
 	TransformationMatrix* wvpData;
 
@@ -155,8 +155,7 @@ private: // メンバ変数
 	};*/
 	
 
-	D3D12_VIEWPORT viewport;
-	D3D12_RECT scissorRect;
+	
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView_;
 	D3D12_INDEX_BUFFER_VIEW ibView_;

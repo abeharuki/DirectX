@@ -8,6 +8,7 @@
 #include "KeyInput.h"
 #include "Skydome.h"
 #include "Sphere.h"
+#include "Particle.h"
 
 /// <summary>
 /// ゲームシーン
@@ -64,7 +65,12 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelplane_;
 	//フェンス
 	std::unique_ptr<Model> modelFence_[2];
+	//板ポリ
+	std::unique_ptr<Particle> particle_;
 
+	std::unique_ptr<Sprite> sprite_;
+
+	Transform uvTransform_;
 	Vector4 colorPlane;
 	BlendMode blendMode_;
 	const char* EnumToString(BlendMode value) {

@@ -23,21 +23,7 @@ void Sphere::sPipeline() {
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
 
-	// クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = WinApp::kWindowWidth;
-	viewport.Height = WinApp::kWindowHeight;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-	// シザー矩形
-
-	// 基本的にビューポートと同じ矩形が構成されるようにする
-	scissorRect.left = 0;
-	scissorRect.right = WinApp::kWindowWidth;
-	scissorRect.top = 0;
-	scissorRect.bottom = WinApp::kWindowHeight;
+	
 };
 
 
@@ -61,9 +47,7 @@ void Sphere::Draw(
 	// ライティング有効化
 	materialData->enableLighting = light;
 
-	//  コマンドを積む
-	Engine::GetList()->RSSetViewports(1, &viewport);
-	Engine::GetList()->RSSetScissorRects(1, &scissorRect);
+	
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
@@ -86,7 +70,7 @@ void Sphere::Draw(
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, Model::GetLightRsurce()->GetGPUVirtualAddress());
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(1536, 1, 0, 0);
+	Engine::GetList()->DrawInstanced(vertexIndex, 1, 0, 0);
 }
 
 // 頂点データの設定
@@ -95,15 +79,15 @@ void Sphere::CreateVertexResource() {
 	
 	// モデルの読み込み
 	// 頂点リソースを作る
-	vertexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) * 1536);
+	vertexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) * vertexIndex);
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
 
 	// 頂点バッファビューを作成する
 	vertexBufferView.BufferLocation =vertexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
-	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * 1536); // 使用するリソースのサイズは頂点サイズ
+	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * vertexIndex); // 使用するリソースのサイズは頂点サイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
 
-	DrawSphere(vertexData);
+	DrawSphere(vertexData, kSubdivision);
 	
 
 	
@@ -155,9 +139,9 @@ void Sphere::LoadTexture(const std::string& texturePath) {
 }
 
 
-void Sphere::DrawSphere(VertexData* vertexData) {
-	const uint32_t kSubdivision = 10;                 // 分割数
-	const float pi = 3.14f;                           // π
+void Sphere::DrawSphere(VertexData* vertexData, const uint32_t kSubdivision_) {
+	const uint32_t kSubdivision = kSubdivision_; // 分割数
+	const float pi = 3.1415f;                     // π
 	const float kLonEvery = 2.0f * pi / kSubdivision; // 経度分割1つ分の角度(φd)
 	const float kLatEvery = pi / kSubdivision;        // 緯度分割1つ分の角度(θd)
 	float u;
@@ -171,50 +155,44 @@ void Sphere::DrawSphere(VertexData* vertexData) {
 			float lon = lonIndex * kLonEvery; // 現在の経度(φ)
 			u = float(lonIndex) / float(kSubdivision);
 			v = 1.0f - float(latIndex) / float(kSubdivision);
+			float uv = 1.0f / float(kSubdivision);
 			// a 左下
 			vertexData[start].position.x = cos(lat) * cos(lon);
 			vertexData[start].position.y = sin(lat);
 			vertexData[start].position.z = cos(lat) * sin(lon);
 			vertexData[start].position.w = 1.0f;
-			vertexData[start].texcoord = {u, v + 0.1f};
+			vertexData[start].texcoord = {u, v};
 			// b 左上
 			vertexData[start + 1].position.x = cos(lat + kLatEvery) * cos(lon);
 			vertexData[start + 1].position.y = sin(lat + kLatEvery);
 			vertexData[start + 1].position.z = cos(lat + kLatEvery) * sin(lon);
 			vertexData[start + 1].position.w = 1.0f;
-			vertexData[start + 1].texcoord = {u, v};
+			vertexData[start + 1].texcoord = {u, v - uv};
 			// c 右下
 			vertexData[start + 2].position.x = cos(lat) * cos(lon + kLonEvery);
 			vertexData[start + 2].position.y = sin(lat);
 			vertexData[start + 2].position.z = cos(lat) * sin(lon + kLonEvery);
 			vertexData[start + 2].position.w = 1.0f;
-			vertexData[start + 2].texcoord = {u + 0.1f, v + 0.1f};
+			vertexData[start + 2].texcoord = {u + uv, v};
 
-			// d 右上
+			// b 左上
 			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
 			vertexData[start + 3].position.y = sin(lat + kLatEvery);
 			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
 			vertexData[start + 3].position.w = 1.0f;
-			vertexData[start + 3].texcoord = {u + 0.1f, v};
-
-			// b 左上
-			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon);
-			vertexData[start + 3].position.y = sin(lat + kLatEvery);
-			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon);
-			vertexData[start + 3].position.w = 1.0f;
-			vertexData[start + 3].texcoord = {u, v};
+			vertexData[start + 3].texcoord = {u + uv, v - uv};
 			// d 右上
-			vertexData[start + 4].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
-			vertexData[start + 4].position.y = sin(lat + kLatEvery);
-			vertexData[start + 4].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
+			vertexData[start + 4].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData[start + 4].position.y = sin(lat);
+			vertexData[start + 4].position.z = cos(lat) * sin(lon + kLonEvery);
 			vertexData[start + 4].position.w = 1.0f;
-			vertexData[start + 4].texcoord = {u + 0.1f, v};
+			vertexData[start + 4].texcoord = {u + uv, v};
 			// c 右下
-			vertexData[start + 5].position.x = cos(lat) * cos(lon + kLonEvery);
-			vertexData[start + 5].position.y = sin(lat);
-			vertexData[start + 5].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData[start + 5].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData[start + 5].position.y = sin(lat + kLatEvery);
+			vertexData[start + 5].position.z = cos(lat + kLatEvery) * sin(lon);
 			vertexData[start + 5].position.w = 1.0f;
-			vertexData[start + 5].texcoord = {u + 0.1f, v + 0.1f};
+			vertexData[start + 5].texcoord = {u, v - uv};
 
 			vertexData[start].normal.x = vertexData[start].position.x;
 			vertexData[start].normal.y = vertexData[start].position.y;

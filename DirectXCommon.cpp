@@ -37,6 +37,7 @@ void DirectXCommon::Finalize() {
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
 }
 
 
@@ -101,12 +102,29 @@ void DirectXCommon::PreDraw() {
 	
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, &dsvHandle);
 
-	
+	// クライアント領域のサイズと一緒にして画面全体に表示
+	viewport.Width = WinApp::kWindowWidth;
+	viewport.Height = WinApp::kWindowHeight;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+
+	// シザー矩形
+
+	// 基本的にビューポートと同じ矩形が構成されるようにする
+	scissorRect.left = 0;
+	scissorRect.right = WinApp::kWindowWidth;
+	scissorRect.top = 0;
+	scissorRect.bottom = WinApp::kWindowHeight;
 
 	// 全画面クリア
 	ClearRenderTarget();
 	// 深度バッファクリア
 	ClearDepthBuffer();
+	//  コマンドを積む
+	commandList_->RSSetViewports(1, &viewport);
+	commandList_->RSSetScissorRects(1, &scissorRect);
 
 	
 }
@@ -209,7 +227,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 		// ソフトウェアアダプタでなければ採用
 		if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE)) {
 			// 採用したアダプタの情報をログに出力。
-			utility_->Log(utility_->ConvertString((L"Use Adapater:{}\n", adapterDesc.Description)));
+			Utility::Log(Utility::ConvertString((L"Use Adapater:{}\n", adapterDesc.Description)));
 			break;
 		}
 		useAdapter = nullptr;
@@ -227,13 +245,13 @@ void DirectXCommon::InitializeDXGIDevice() {
 		// 指定した機能レベルでデバイスが生成できたか確認
 		if (SUCCEEDED(hr)) {
 			// 生成できたのでログ出力を使ってループを抜ける
-			utility_->Log(("FeatureLevel : {}\n", featureLevelStrings[i]));
+			Utility::Log(("FeatureLevel : {}\n", featureLevelStrings[i]));
 			break;
 		}
 	}
 	// デバイスの生成がうまくいかなかったので起動できない
 	assert(device_ != nullptr);
-	utility_->Log("Complete create D3D12Device!!!\n");
+	Utility::Log("Complete create D3D12Device!!!\n");
 
 #ifdef _DEBUG
 	ID3D12InfoQueue* infoQueue = nullptr;

@@ -47,8 +47,7 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	void CreateVertexResource();
-	void DrawSphere(VertexData* vertexData);
-
+	void DrawSphere(VertexData* vertexData, uint32_t vertexIndex);
 	/// <summary>
 	/// 描画前処理
 	/// </summary>
@@ -56,8 +55,7 @@ public:
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 	
-	const D3D12_VIEWPORT& GetViewp() const { return viewport; }
-	const D3D12_RECT& GetScissor() const { return scissorRect; }
+	
 
 	static Sphere* CreateSphere(const std::string& texturePath);
 
@@ -71,8 +69,6 @@ private:
 
 	
 
-	D3D12_VIEWPORT viewport;
-	D3D12_RECT scissorRect;
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
@@ -91,7 +87,8 @@ private:
 	Material* materialData = nullptr;
 	DirectionalLight* directionalLightData = nullptr;
 
-	
+	const uint32_t kSubdivision = 64;
+	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 
 private:
 	// DirectX::ScratchImage LoadTexture(const std::string& filePath);

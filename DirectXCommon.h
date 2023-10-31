@@ -123,7 +123,8 @@ private: // メンバ変数
 	int32_t backBufferHeight_ = 0;
 	HANDLE frameLatencyWaitableObject_;
 	int32_t refreshRate_ = 0;
-	Utility* utility_;
+	D3D12_VIEWPORT viewport;
+	D3D12_RECT scissorRect;
 	// RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 	D3D12_RESOURCE_BARRIER barrier{};

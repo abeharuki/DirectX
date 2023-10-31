@@ -1,14 +1,12 @@
 #include "Particle.hlsli"
 
-ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b0);
-ConstantBuffer<ViewProjectionMatrix> gViewProjectionMatrix : register(b1);
+StructuredBuffer<TransformationMatrix> gTransformationMatrices : register(t0);
+StructuredBuffer<ViewProjectionMatrix> gViewProjectionMatrix : register(t1);
 
-VertexShaderOutput main(VertexShaderInput input) {
+VertexShaderOutput main(VertexShaderInput input,uint32_t instanceId : SV_InstanceID) {
 	VertexShaderOutput output;
-	float32_t4x4 WorldViewProjection =
-	    mul(gViewProjectionMatrix.view, gViewProjectionMatrix.projection);
+	output.position = mul(input.position, gTransformationMatrices[instanceId].WVP);
 	output.texcoord = input.texcoord;
-	output.position = mul(input.position, gTransformationMatrix.WVP);
-	output.normal = normalize(mul(input.normal, (float32_t3x3)gTransformationMatrix.World));
+	output.normal = normalize(mul(input.normal, (float32_t3x3)gTransformationMatrices[instanceId].World));
 	return output;
 }
