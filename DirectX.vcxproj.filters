@@ -76,6 +76,18 @@
     <Filter Include="ヘッダー ファイル\Application\scene">
       <UniqueIdentifier>{be2ab43f-9598-4389-874f-3af816f02a59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Application\objects">
+      <UniqueIdentifier>{293eca02-fb9b-4ebb-ac01-3a5a3f37adde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\base\GraphicsPipline">
+      <UniqueIdentifier>{7624a601-10d0-491d-a547-ffa56301bf03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\objects">
+      <UniqueIdentifier>{3a88b2f9-2e1b-488f-9664-73d44a4bbcd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\base\GraphicsPipline">
+      <UniqueIdentifier>{1f877550-1574-4ed8-b1d9-b9ac3ee9ca57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -102,76 +114,79 @@
     <ClCompile Include="externals\imgui\imgui_impl_win32.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
+    <ClCompile Include="Engine\3d\Model.cpp">
       <Filter>ソース ファイル\Engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
+    <ClCompile Include="Engine\Engine.cpp">
       <Filter>ソース ファイル\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="ImGuiManager.cpp">
+    <ClCompile Include="Engine\Maneger\ImGuiManager.cpp">
       <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXCommon.cpp">
+    <ClCompile Include="Engine\base\DirectXCommon.cpp">
       <Filter>ソース ファイル\Engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPipeline.cpp">
-      <Filter>ソース ファイル\Engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="KeyInput.cpp">
+    <ClCompile Include="Engine\Maneger\Input\KeyInput.cpp">
       <Filter>ソース ファイル\Engine\Manager\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
+    <ClCompile Include="Engine\2d\Sprite.cpp">
       <Filter>ソース ファイル\Engine\2d</Filter>
     </ClCompile>
-    <ClCompile Include="TextureManeger.cpp">
+    <ClCompile Include="Engine\Maneger\TextureManeger.cpp">
       <Filter>ソース ファイル\Engine\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="WinApp.cpp">
+    <ClCompile Include="Engine\base\WinApp.cpp">
       <Filter>ソース ファイル\Engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="WorldTransform.cpp">
+    <ClCompile Include="Engine\3d\WorldTransform.cpp">
       <Filter>ソース ファイル\Engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="ViewProjection.cpp">
-      <Filter>ソース ファイル\Engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
+    <ClCompile Include="Engine\3d\Mesh.cpp">
       <Filter>ソース ファイル\Engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="GameScene.cpp">
+    <ClCompile Include="application\scene\GameScene.cpp">
       <Filter>ソース ファイル\Application\scene</Filter>
     </ClCompile>
-    <ClCompile Include="StringUtility.cpp">
-      <Filter>ソース ファイル\Engine\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Math.cpp">
+    <ClCompile Include="Engine\math\Math.cpp">
       <Filter>ソース ファイル\Engine\math</Filter>
     </ClCompile>
-    <ClCompile Include="BaseCharacter.cpp">
+    <ClCompile Include="application\base\BaseCharacter.cpp">
       <Filter>ソース ファイル\Application\base</Filter>
     </ClCompile>
-    <ClCompile Include="FollowCamera.cpp">
+    <ClCompile Include="application\base\FollowCamera.cpp">
       <Filter>ソース ファイル\Application\base</Filter>
     </ClCompile>
-    <ClCompile Include="Skydome.cpp">
+    <ClCompile Include="application\base\Skydome.cpp">
       <Filter>ソース ファイル\Application\base</Filter>
     </ClCompile>
-    <ClCompile Include="Ground.cpp">
+    <ClCompile Include="application\base\Ground.cpp">
       <Filter>ソース ファイル\Application\base</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>ソース ファイル\Application</Filter>
+    <ClCompile Include="application\objects\Enemy.cpp">
+      <Filter>ソース ファイル\Application\objects</Filter>
     </ClCompile>
-    <ClCompile Include="MoveFloor.cpp">
-      <Filter>ソース ファイル\Application</Filter>
+    <ClCompile Include="application\objects\MoveFloor.cpp">
+      <Filter>ソース ファイル\Application\objects</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>ソース ファイル\Application</Filter>
+    <ClCompile Include="application\objects\Player.cpp">
+      <Filter>ソース ファイル\Application\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\GraphicsPipeline\GraphicsPipeline.cpp">
+      <Filter>ソース ファイル\Engine\base\GraphicsPipline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\ViewProjection.cpp">
+      <Filter>ソース ファイル\Engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Maneger\StringUtility.cpp">
+      <Filter>ソース ファイル\Engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\Sphere.cpp">
+      <Filter>ソース ファイル\Engine\3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Object3d.VS.hlsl" />
-    <FxCompile Include="Object3d.PS.hlsl" />
+    <FxCompile Include="Engine\Shader\Object3d.VS.hlsl" />
+    <FxCompile Include="Engine\Shader\Object3d.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -198,71 +213,74 @@
     <ClInclude Include="externals\imgui\imgui_impl_win32.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
+    <ClInclude Include="Engine\Engine.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXCommon.h">
+    <ClInclude Include="Engine\base\DirectXCommon.h">
       <Filter>ヘッダー ファイル\Engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuiManager.h">
+    <ClInclude Include="Engine\Maneger\ImGuiManager.h">
       <Filter>ヘッダー ファイル\Engine\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="KeyInput.h">
+    <ClInclude Include="Engine\Maneger\Input\KeyInput.h">
       <Filter>ヘッダー ファイル\Engine\Manager\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
+    <ClInclude Include="Engine\2d\Sprite.h">
       <Filter>ヘッダー ファイル\Engine\2d</Filter>
     </ClInclude>
-    <ClInclude Include="WinApp.h">
+    <ClInclude Include="Engine\base\WinApp.h">
       <Filter>ヘッダー ファイル\Engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="TextureManeger.h">
+    <ClInclude Include="Engine\Maneger\TextureManeger.h">
       <Filter>ヘッダー ファイル\Engine\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
+    <ClInclude Include="Engine\3d\Model.h">
       <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
+    <ClInclude Include="Engine\3d\Mesh.h">
       <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="Math.h">
+    <ClInclude Include="Engine\math\Math.h">
       <Filter>ヘッダー ファイル\Engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="StringUtility.h">
-      <Filter>ヘッダー ファイル\Engine\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ViewProjection.h">
+    <ClInclude Include="Engine\3d\ViewProjection.h">
       <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="WorldTransform.h">
+    <ClInclude Include="Engine\3d\WorldTransform.h">
       <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="BaseCharacter.h">
+    <ClInclude Include="application\base\BaseCharacter.h">
       <Filter>ヘッダー ファイル\Application\base</Filter>
     </ClInclude>
-    <ClInclude Include="FollowCamera.h">
+    <ClInclude Include="application\base\FollowCamera.h">
       <Filter>ヘッダー ファイル\Application\base</Filter>
     </ClInclude>
-    <ClInclude Include="GameScene.h">
+    <ClInclude Include="application\scene\GameScene.h">
       <Filter>ヘッダー ファイル\Application\scene</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPipeline.h">
+    <ClInclude Include="application\base\Ground.h">
+      <Filter>ヘッダー ファイル\Application\base</Filter>
+    </ClInclude>
+    <ClInclude Include="application\base\Skydome.h">
+      <Filter>ヘッダー ファイル\Application\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Maneger\StringUtility.h">
       <Filter>ヘッダー ファイル\Engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>ヘッダー ファイル\Application</Filter>
+    <ClInclude Include="application\objects\Enemy.h">
+      <Filter>ヘッダー ファイル\Application\objects</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>ヘッダー ファイル\Application</Filter>
+    <ClInclude Include="application\objects\MoveFloor.h">
+      <Filter>ヘッダー ファイル\Application\objects</Filter>
     </ClInclude>
-    <ClInclude Include="Ground.h">
-      <Filter>ヘッダー ファイル\Application\base</Filter>
+    <ClInclude Include="application\objects\Player.h">
+      <Filter>ヘッダー ファイル\Application\objects</Filter>
     </ClInclude>
-    <ClInclude Include="Skydome.h">
-      <Filter>ヘッダー ファイル\Application\base</Filter>
+    <ClInclude Include="Engine\3d\Sphere.h">
+      <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="MoveFloor.h">
-      <Filter>ヘッダー ファイル\Application</Filter>
+    <ClInclude Include="Engine\base\GraphicsPipeline\GraphicsPipeline.h">
+      <Filter>ヘッダー ファイル\Engine\base\GraphicsPipline</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -271,6 +289,6 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Object3d.hlsli" />
+    <None Include="Engine\Shader\Object3d.hlsli" />
   </ItemGroup>
 </Project>

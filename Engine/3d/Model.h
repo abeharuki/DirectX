@@ -1,5 +1,5 @@
 #pragma once
-#include <wrl.h>
+
 #include <d3d12.h>
 #include <memory>
 #include "StringUtility.h"
@@ -13,7 +13,7 @@
 #include <d3dx12.h>
 #include "WorldTransform.h"
 #include "ViewProjection.h"
-
+#include <wrl.h>
 class Model {
 private: // 静的メンバ変数
 	
