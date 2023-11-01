@@ -485,7 +485,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateVSShader() {
 		    return GraphicsPipeline::GetInstance()->vertexShaderBlob_;
 	    }
 	    GraphicsPipeline::GetInstance()->vertexShaderBlob_ =
-	        CompileShader(L"Object3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	        CompileShader(L"resources/hlsl/Object3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	    assert(vertexShaderBlob_ != nullptr);
 	    return GraphicsPipeline::GetInstance()->vertexShaderBlob_;
 }
@@ -511,7 +511,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePSShader() {
 		    return GraphicsPipeline::GetInstance()->pixelShaderBlob_;
 	    }
 	    GraphicsPipeline::GetInstance()->pixelShaderBlob_ =
-	        CompileShader(L"Object3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	        CompileShader(L"resources/hlsl/Object3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	    assert(pixelShaderBlob_ != nullptr);
 
 	    return GraphicsPipeline::GetInstance()->pixelShaderBlob_;
@@ -539,7 +539,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateParticleVSShader() {
 		    return GraphicsPipeline::GetInstance()->particleVertexShaderBlob_;
 	    }
 	    GraphicsPipeline::GetInstance()->particleVertexShaderBlob_ =
-	        CompileShader(L"Particle.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	        CompileShader(L"resources/hlsl/Particle.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	    assert(particleVertexShaderBlob_ != nullptr);
 	    return GraphicsPipeline::GetInstance()->particleVertexShaderBlob_;
 }
@@ -565,7 +565,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateParticlePSShader() {
 		    return GraphicsPipeline::GetInstance()->particlePixelShaderBlob_;
 	    }
 	    GraphicsPipeline::GetInstance()->particlePixelShaderBlob_ =
-	        CompileShader(L"Particle.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	        CompileShader(L"resources/hlsl/Particle.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	    assert(particlePixelShaderBlob_ != nullptr);
 
 	    return GraphicsPipeline::GetInstance()->particlePixelShaderBlob_;

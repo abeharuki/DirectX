@@ -2,6 +2,9 @@
 #include <cassert>
 #include <format>
 
+std::random_device seedGenerator;
+std::mt19937 randomEngine(seedGenerator());
+
 void Particle::Initialize(const std::string& filename, uint32_t Count) {
 	instanceCount = Count;
 	transforms[Count];
@@ -20,20 +23,23 @@ void Particle::sPipeline() {
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
 };
 
+void Particle::Update() { for (uint32_t i = 0; i < instanceCount; ++i){} }
+
 void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 	
 
 	for (uint32_t i = 0; i < instanceCount; ++i) {
-		transforms[i].scale = worldTransform.scale;
-		transforms[i].rotate = worldTransform.rotate;
-		transforms[i].translate = {
-		    i * 0.1f,i * 0.1f,
-		    i * 0.1f};
+		transforms[i].transform.scale = worldTransform.scale;
+		transforms[i].transform.rotate = worldTransform.rotate;
+		transforms[i].transform.translate = {
+		    (i * 0.1f + worldTransform.translate.x), 
+			(i * 0.1f + worldTransform.translate.y),
+		    (i * 0.1f + worldTransform.translate.z)};
 	}
 
 	for (uint32_t i = 0; i < instanceCount; ++i) {
 		Matrix4x4 worldMatrix = Math::MakeAffineMatrix(
-		    transforms[i].scale, transforms[i].rotate, transforms[i].translate);
+		    transforms[i].transform.scale, transforms[i].transform.rotate, transforms[i].transform.translate);
 		Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(worldMatrix,Math::Multiply(viewProjection.matView, viewProjection.matProjection));
 		instancingData[i].WVP = worldViewProjectionMatrixSprite;
 		instancingData[i].World = worldMatrix;
@@ -108,7 +114,7 @@ void Particle::CreateVertexResource() {
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 	
-
+	
 	
 };
 

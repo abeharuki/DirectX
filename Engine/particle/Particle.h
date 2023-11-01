@@ -15,6 +15,7 @@
 #include <memory>
 #include <sstream>
 #include <wrl.h>
+#include <random>
 
 class Particle {
 public: // 静的メンバ変数
@@ -24,7 +25,7 @@ public: // 静的メンバ変数
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState>sPipelineState_;
 
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
@@ -42,10 +43,12 @@ public:
 	
 	void Initialize(const std::string& filename, uint32_t Count);
 
+	void Update();
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
 	void sPipeline();
+
 
 	/// <summary>
 	/// 3Dモデル生成
@@ -100,8 +103,10 @@ private:
 	uint32_t texture_;
 
     uint32_t instanceCount = 1;
-	Transform transforms[1];
+	ParticleM transforms[1];
 
+	const float kDeltaTime = 1.0f / 60.0f;
+	Vector3 velo[1];
 
 	uint32_t descriptorSizeSRV;
 

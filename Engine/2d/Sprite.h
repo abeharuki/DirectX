@@ -1,5 +1,5 @@
 #pragma once
-#include "Math.h"
+#include "math.h"
 #include <Windows.h>
 #include <d3d12.h>
 #include <string>

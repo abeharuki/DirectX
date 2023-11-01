@@ -3,8 +3,8 @@
 #include "StringUtility.h"
 
 #include <dxcapi.h>
-#include "externals/DirectXTex/DirectXTex.h"
-#include "externals/DirectXTex/d3dx12.h"
+#include <DirectXTex.h>
+#include <d3dx12.h>
 #include "DirectXCommon.h"
 
 enum class BlendMode {

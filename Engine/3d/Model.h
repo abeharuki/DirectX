@@ -89,8 +89,6 @@ public:
 private:
 	
 	
-	
-	
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
@@ -117,8 +115,5 @@ private:
 	 void LoadTexture(const std::string& filename, const std::string& texturePath);
 
 	 // objファイルの読み込み
-	 MaterialData LoadMaterialTemplateFile(const std::string& filename);
-	 ModelData LoadObjFile(const std::string& filename);
-
 	
 };

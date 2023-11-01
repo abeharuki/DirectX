@@ -1,4 +1,24 @@
-#include "Math.h"
+#include "math.h"
+
+// 加算
+Vector3 Math::Add(const Vector3& v1, const Vector3& v2) {
+	Vector3 add;
+	add.x = v1.x + v2.x;
+	add.y = v1.y + v2.y;
+	add.z = v1.z + v2.z;
+	return add;
+};
+
+
+// スカラー倍
+Vector3 Math::Multiply(float scalar, const Vector3& v) {
+	Vector3 multiply;
+	multiply.x = v.x * scalar;
+	multiply.y = v.y * scalar;
+	multiply.z = v.z * scalar;
+	return multiply;
+};
+
 
 // 正規化
 Vector3 Math::Normalize(const Vector3& v) {
@@ -18,6 +38,51 @@ Vector3 Math::Subract(const Vector3& v1, const Vector3& v2) {
 	subract.z = v1.z - v2.z;
 	return subract;
 };
+
+// 加算
+Matrix4x4 Math::Add(const Matrix4x4& m1, const Matrix4x4& m2) {
+	Matrix4x4 add;
+	add.m[0][0] = m1.m[0][0] + m2.m[0][0];
+	add.m[0][1] = m1.m[0][1] + m2.m[0][1];
+	add.m[0][2] = m1.m[0][2] + m2.m[0][2];
+	add.m[0][3] = m1.m[0][3] + m2.m[0][3];
+	add.m[1][0] = m1.m[1][0] + m2.m[1][0];
+	add.m[1][1] = m1.m[1][1] + m2.m[1][1];
+	add.m[1][2] = m1.m[1][2] + m2.m[1][2];
+	add.m[1][3] = m1.m[1][3] + m2.m[1][3];
+	add.m[2][0] = m1.m[2][0] + m2.m[2][0];
+	add.m[2][1] = m1.m[2][1] + m2.m[2][1];
+	add.m[2][2] = m1.m[2][2] + m2.m[2][2];
+	add.m[2][3] = m1.m[2][3] + m2.m[2][3];
+	add.m[3][0] = m1.m[3][0] + m2.m[3][0];
+	add.m[3][1] = m1.m[3][1] + m2.m[3][1];
+	add.m[3][2] = m1.m[3][2] + m2.m[3][2];
+	add.m[3][3] = m1.m[3][3] + m2.m[3][3];
+	return add;
+};
+
+// 減算
+Matrix4x4 Math::Subract(const Matrix4x4& m1, const Matrix4x4& m2) {
+	Matrix4x4 subract;
+	subract.m[0][0] = m1.m[0][0] - m2.m[0][0];
+	subract.m[0][1] = m1.m[0][1] - m2.m[0][1];
+	subract.m[0][2] = m1.m[0][2] - m2.m[0][2];
+	subract.m[0][3] = m1.m[0][3] - m2.m[0][3];
+	subract.m[1][0] = m1.m[1][0] - m2.m[1][0];
+	subract.m[1][1] = m1.m[1][1] - m2.m[1][1];
+	subract.m[1][2] = m1.m[1][2] - m2.m[1][2];
+	subract.m[1][3] = m1.m[1][3] - m2.m[1][3];
+	subract.m[2][0] = m1.m[2][0] - m2.m[2][0];
+	subract.m[2][1] = m1.m[2][1] - m2.m[2][1];
+	subract.m[2][2] = m1.m[2][2] - m2.m[2][2];
+	subract.m[2][3] = m1.m[2][3] - m2.m[2][3];
+	subract.m[3][0] = m1.m[3][0] - m2.m[3][0];
+	subract.m[3][1] = m1.m[3][1] - m2.m[3][1];
+	subract.m[3][2] = m1.m[3][2] - m2.m[3][2];
+	subract.m[3][3] = m1.m[3][3] - m2.m[3][3];
+	return subract;
+};
+
 
 Matrix4x4 Math::MakeIdentity4x4() {
 	Matrix4x4 MakeIdentity4x4;
@@ -375,3 +440,6 @@ float Math::Length(const Vector3& v) {
 	float length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 	return length;
 };
+
+
+
