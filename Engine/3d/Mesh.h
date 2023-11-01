@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include <wrl.h>
-#include "Math.h"
+#include "Math/math.h"
 #include "WinApp.h"
 
 class Mesh {
@@ -179,5 +179,5 @@ private: // メンバ変数
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_; 
 
-	Math* math_;
+	
 };

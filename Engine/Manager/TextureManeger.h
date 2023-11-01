@@ -1,6 +1,6 @@
 #pragma once
 #include "StringUtility.h"
-#include "math.h"
+#include "Math/math.h"
 #include "Engine.h"
 #include <cassert>
 #include <format>

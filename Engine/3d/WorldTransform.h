@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine.h"
-#include "math.h"
+#include "Math/math.h"
 #include "Mesh.h"
 
 struct ConstBufferDataWorldTransform {
