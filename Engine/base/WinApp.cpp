@@ -36,7 +36,7 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 
 void WinApp::CreateGameWindow(
-    const char* title, int32_t clientWidth, int32_t clientHeight) {
+    const wchar_t* title, int32_t clientWidth, int32_t clientHeight) {
 
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
