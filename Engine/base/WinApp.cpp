@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include <imgui_impl_dx12.h>
 #include <imgui_impl_win32.h>
+
 extern IMGUI_IMPL_API LRESULT
     ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPaeam);
 
@@ -35,13 +36,13 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 
 void WinApp::CreateGameWindow(
-    const wchar_t* title, int32_t clientWidth, int32_t clientHeight) {
+    const char* title, int32_t clientWidth, int32_t clientHeight) {
 
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	
 	
-     ;
+     
 	// ウィンドウプロシージャ
 	wc.lpfnWndProc = (WNDPROC)WindowProc;
 	// ウインドウクラス名
@@ -65,7 +66,7 @@ void WinApp::CreateGameWindow(
 	// ウインドウの生成
 	hwnd_ = CreateWindow(
 	    wc.lpszClassName,
-		L"CG2",
+		"CG2",
 		WS_OVERLAPPEDWINDOW, 
 		CW_USEDEFAULT, 
 		CW_USEDEFAULT,

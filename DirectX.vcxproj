@@ -43,7 +43,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(IncludePath)</IncludePath>
@@ -56,7 +56,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\base\GraphicsPipeline;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Maneger;$(ProjectDir)Engine\math;$(ProjectDir)Engine\Shader;$(ProjectDir)Engine\Maneger\Input;$(ProjectDir)application\base;$(ProjectDir)application\objects;$(ProjectDir)application\scene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\base\GraphicsPipeline;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Maneger;$(ProjectDir)Engine\Shader;$(ProjectDir)Engine\Maneger\Input;$(ProjectDir)application\base;$(ProjectDir)application\objects;$(ProjectDir)application\scene</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -100,7 +100,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\base\BaseCharacter.cpp" />
-    <ClCompile Include="Engine\3d\Sphere.cpp" />
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="application\objects\Enemy.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
@@ -118,7 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Maneger\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Maneger\Input\KeyInput.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\math\Math.cpp" />
+    <ClCompile Include="Engine\math\MyMath.cpp" />
     <ClCompile Include="Engine\3d\Mesh.cpp" />
     <ClCompile Include="Engine\3d\Model.cpp" />
     <ClCompile Include="application\objects\MoveFloor.cpp" />
@@ -147,7 +146,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\base\BaseCharacter.h" />
-    <ClInclude Include="Engine\3d\Sphere.h" />
     <ClInclude Include="Engine\base\DirectXCommon.h" />
     <ClInclude Include="application\objects\Enemy.h" />
     <ClInclude Include="Engine\Engine.h" />
@@ -165,7 +163,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\base\Ground.h" />
     <ClInclude Include="Engine\Maneger\ImGuiManager.h" />
     <ClInclude Include="Engine\Maneger\Input\KeyInput.h" />
-    <ClInclude Include="Engine\math\Math.h" />
+    <ClInclude Include="Engine\math\MyMath.h" />
     <ClInclude Include="Engine\3d\Mesh.h" />
     <ClInclude Include="Engine\3d\Model.h" />
     <ClInclude Include="application\objects\MoveFloor.h" />

@@ -188,22 +188,22 @@ public:
 	
 };
 
-inline Vector3 operator-(const Vector3& v) { return {-v.x, -v.y, -v.z}; }
-inline Vector3 operator+(const Vector3& v1, const Vector3& v2) {
-	return {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
-}
-
-inline Vector3 operator-(const Vector3& v1, const Vector3& v2) {
-	return {v1.x - v2.x, v1.y - v2.y, v1.z - v2.z};
-}
-
-inline Vector3 operator*(const Vector3& v, float s) { return {v.x * s, v.y * s, v.z * s}; }
-inline Vector3 operator*(float s, const Vector3& v) { return {s * v.x, s * v.y, s * v.z}; }
-
-inline Vector3 operator*(const Vector3& v, const Matrix4x4& m) {
-	return {
-	    v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + m.m[3][0],
-	    v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + m.m[3][1],
-	    v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + m.m[3][2]};
-}
-
+//inline Vector3 operator-(const Vector3& v) { return {-v.x, -v.y, -v.z}; }
+//inline Vector3 operator+(const Vector3& v1, const Vector3& v2) {
+//	return {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
+//}
+//
+//inline Vector3 operator-(const Vector3& v1, const Vector3& v2) {
+//	return {v1.x - v2.x, v1.y - v2.y, v1.z - v2.z};
+//}
+//
+//inline Vector3 operator*(const Vector3& v, float s) { return {v.x * s, v.y * s, v.z * s}; }
+//inline Vector3 operator*(float s, const Vector3& v) { return {s * v.x, s * v.y, s * v.z}; }
+//
+//inline Vector3 operator*(const Vector3& v, const Matrix4x4& m) {
+//	return {
+//	    v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + m.m[3][0],
+//	    v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + m.m[3][1],
+//	    v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + m.m[3][2]};
+//}
+//

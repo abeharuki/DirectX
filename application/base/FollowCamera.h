@@ -1,5 +1,5 @@
 #pragma once
-#include "Math.h"
+#include "math.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <imgui.h>

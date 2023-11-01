@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Math.h"
+#include "math/MyMath.h"
 #include <Windows.h>
 #include <d3d12.h>
 #include <string>

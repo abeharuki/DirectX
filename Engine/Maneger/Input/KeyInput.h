@@ -6,7 +6,7 @@
 #include <Xinput.h>
 #include <cstdint>
 #include <wrl.h>
-#include "Math.h"
+#include "math/MyMath.h"
 using namespace Microsoft::WRL;
 
 #pragma comment(lib, "dinput8.lib")

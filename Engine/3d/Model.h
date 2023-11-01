@@ -14,6 +14,7 @@
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include <wrl.h>
+#include "math.h"
 class Model {
 private: // 静的メンバ変数
 	

@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include <wrl.h>
-#include "Math.h"
+#include "math/MyMath.h"
 #include "WinApp.h"
 
 class Mesh {

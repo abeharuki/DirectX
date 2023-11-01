@@ -14,7 +14,7 @@ public:
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	void CreateGameWindow(
-	    const wchar_t* title = L"DirectXGame", int32_t clientWidth = kWindowWidth, int32_t clientHeight = kWindowHeight);
+	    const char* title = "DirectXGame", int32_t clientWidth = kWindowWidth, int32_t clientHeight = kWindowHeight);
 
 	void TerminateGameWindow();
 
