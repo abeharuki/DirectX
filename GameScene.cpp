@@ -30,7 +30,7 @@ void GameScene::Initialize() {
 		modelFence_[i].reset(
 		    Model::CreateModelFromObj("resources/fence/fence.obj", "resources/fence/fence.png"));
 	}
-
+	
 	//板ポリ
 	modelplane_.reset(
 	    Model::CreateModelFromObj("resources/plane.obj", "resources/uvChecker.png"));
@@ -51,12 +51,14 @@ void GameScene::Initialize() {
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
 
 	
-
+	particle = false;
 	colorPlane = {1.0f, 1.0f, 1.0f, 1.0f};
-	blendMode_ = BlendMode::kNormal;
+	blendMode_ = BlendMode::kNone;
+	
 }
 
 void GameScene::Update() {
+
 	if (KeyInput::GetKey(DIK_W)) {
 		worldTransformp_.translate.z += 0.1f;
 	} else if (KeyInput::GetKey(DIK_S)) {
@@ -75,15 +77,18 @@ void GameScene::Update() {
 		colorPlane.w -= 0.01f;
 	}
 
-	worldTransform_.rotate.y += 0.02f;
+	if (particle) {
+		//particle_->Update();
+	}
 	
+
+	worldTransform_.rotate.y += 0.02f;
 	worldTransform_.UpdateMatrix();
 	worldTransformp_.UpdateMatrix();
 	viewProjection_.UpdateMatrix();
 	skydome_->Update();
 
 	modelplane_->SetColor(colorPlane);
-	modelplane_->SetBlendMode(blendMode_);
 	
 	
 	ImGui::Begin("Setting");
@@ -110,15 +115,7 @@ void GameScene::Update() {
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNode("Light")) {
-		// LightLight
-		ImGui::SliderFloat3("LightColor", &color_.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("LightDirecton", &direction_.x, -1.0f, 1.0f);
-		ImGui::DragFloat("Intensity", &intensity_, 0.1f);
-		
-		
-		ImGui::TreePop();
-	}
+	
 	if (ImGui::TreeNode("Sphere")) {
 		
 		;
@@ -136,9 +133,22 @@ void GameScene::Update() {
 
 		ImGui::TreePop();
 	}
+	if (ImGui::TreeNode("Particle")) {
+		// LightLight
+		ImGui::Checkbox("move", &particle);
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Light")) {
+		// LightLight
+		ImGui::SliderFloat3("LightColor", &color_.x, -1.0f, 1.0f);
+		ImGui::SliderFloat3("LightDirecton", &direction_.x, -1.0f, 1.0f);
+		ImGui::DragFloat("Intensity", &intensity_, 0.1f);
 
+		ImGui::TreePop();
+	}
 	
 	ImGui::End();
+	modelplane_->SetBlendMode(blendMode_);
 }
 
 
@@ -156,7 +166,7 @@ void GameScene::Draw() {
 	//フェンス
 	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
 	//板ポリ
-	//modelplane_->Draw(worldTransformp_, viewProjection_, false);
+	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
 	//パーティクル
 	particle_->Draw(worldTransformp_, viewProjection_);
 	// 3Dオブジェクト描画後処理
