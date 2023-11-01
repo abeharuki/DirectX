@@ -66,7 +66,7 @@ void WinApp::CreateGameWindow(
 	// ウインドウの生成
 	hwnd_ = CreateWindow(
 	    wc.lpszClassName,
-		"CG2",
+		L"CG2",
 		WS_OVERLAPPEDWINDOW, 
 		CW_USEDEFAULT, 
 		CW_USEDEFAULT,

@@ -11,7 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <wrl.h>
-#include "Math.h"
+#include "math/MyMath.h"
 
 #include "WinApp.h"
 #include "DirectXCommon.h"

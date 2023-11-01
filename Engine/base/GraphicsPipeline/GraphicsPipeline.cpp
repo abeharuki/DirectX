@@ -1,6 +1,6 @@
 #include "GraphicsPipeline.h"
-#include "Model.h"
 #include "Engine.h"
+#include <format>
 
 
 
@@ -225,7 +225,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateVSShader() {
 		    return GraphicsPipeline::GetInstance()->vertexShaderBlob_;
 	    }
 	    GraphicsPipeline::GetInstance()->vertexShaderBlob_ =
-	        CompileShader(L"Object3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	        CompileShader(L"Engine/Shader/Object3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	    assert(vertexShaderBlob_ != nullptr);
 	    return GraphicsPipeline::GetInstance()->vertexShaderBlob_;
 }
@@ -251,7 +251,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePSShader() {
 		    return GraphicsPipeline::GetInstance()->pixelShaderBlob_;
 	    }
 	    GraphicsPipeline::GetInstance()->pixelShaderBlob_ =
-	        CompileShader(L"Object3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	        CompileShader(L"Engine/Shader/Object3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	    assert(pixelShaderBlob_ != nullptr);
 
 	    return GraphicsPipeline::GetInstance()->pixelShaderBlob_;
