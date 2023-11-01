@@ -1,4 +1,4 @@
-#include "Math.h"
+#include "math.h"
 
 // 加算
 Vector3 Math::Add(const Vector3& v1, const Vector3& v2) {
