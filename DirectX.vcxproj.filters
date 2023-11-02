@@ -88,6 +88,12 @@
     <Filter Include="ヘッダー ファイル\Engine\base\GraphicsPipline">
       <UniqueIdentifier>{1f877550-1574-4ed8-b1d9-b9ac3ee9ca57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Application\GlobalVariables">
+      <UniqueIdentifier>{77c1612d-9947-4606-b582-41f58b044d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\GlobalVariables">
+      <UniqueIdentifier>{6a45f899-d741-4e97-be54-afbbc5f225d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -179,6 +185,9 @@
     </ClCompile>
     <ClCompile Include="Engine\Maneger\StringUtility.cpp">
       <Filter>ソース ファイル\Engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="application\GlobalVariables\GlobalVariables.cpp">
+      <Filter>ソース ファイル\Application\GlobalVariables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -275,6 +284,9 @@
     </ClInclude>
     <ClInclude Include="Engine\base\GraphicsPipeline\GraphicsPipeline.h">
       <Filter>ヘッダー ファイル\Engine\base\GraphicsPipline</Filter>
+    </ClInclude>
+    <ClInclude Include="application\GlobalVariables\GlobalVariables.h">
+      <Filter>ヘッダー ファイル\Application\GlobalVariables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

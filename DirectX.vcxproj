@@ -44,10 +44,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui</IncludePath>
+    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;;$(SolutionDir)externals\nlohmann</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(IncludePath);$(SolutionDir)externals\nlohmann</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -57,7 +57,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\base\GraphicsPipeline;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Maneger;$(ProjectDir)Engine\Shader;$(ProjectDir)application\base;$(ProjectDir)application\objects;$(ProjectDir)application\scene;$(ProjectDir)Engine\Maneger\Input</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\base\GraphicsPipeline;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Maneger;$(ProjectDir)Engine\Shader;$(ProjectDir)application\base;$(ProjectDir)application\objects;$(ProjectDir)application\scene;$(ProjectDir)Engine\Maneger\Input;$(ProjectDir)application\GlobalVariables</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -83,7 +83,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\base\GraphicsPipeline;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Maneger;$(ProjectDir)Engine\Shader;$(ProjectDir)application\base;$(ProjectDir)application\objects;$(ProjectDir)application\scene;$(ProjectDir)Engine\Maneger\Input</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\base\GraphicsPipeline;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Maneger;$(ProjectDir)Engine\Shader;$(ProjectDir)application\base;$(ProjectDir)application\objects;$(ProjectDir)application\scene;$(ProjectDir)Engine\Maneger\Input;$(ProjectDir)application\GlobalVariables</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,6 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\base\Ground.cpp" />
     <ClCompile Include="Engine\Maneger\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Maneger\Input\KeyInput.cpp" />
+    <ClCompile Include="application\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\math\MyMath.cpp" />
     <ClCompile Include="Engine\3d\Mesh.cpp" />
@@ -176,6 +177,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\ViewProjection.h" />
     <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="Engine\3d\WorldTransform.h" />
+    <ClInclude Include="application\GlobalVariables\GlobalVariables.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

@@ -128,6 +128,7 @@ public:
 	// 加算
 	static Vector3 Add(const Vector3& v1, const Vector3& v2);
 
+	static Vector3 Multiply(float scalar, const Vector3& v);
 
 	// 減算
 	static Vector3 Subract(const Vector3& v1, const Vector3& v2);

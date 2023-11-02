@@ -7,6 +7,9 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "BaseCharacter.h"
+#include <GlobalVariables.h>
+#include <optional>
+
 
 /// <summary>
 /// ゲームシーン
@@ -40,8 +43,14 @@ public: // メンバ関数
 	/// </summary>
 	void Draw(const ViewProjection& viewprojection) override;
 
+	void joyMove();
 
 	void Move();
+
+	void DashUpdate();
+
+	// 調整項目の適用
+	void ApplyGlobalVariables();
 
 	//ワールド座標
 	Vector3 GetWorldPosition();
@@ -88,6 +97,32 @@ private: // メンバ変数
 	bool jump_;
 	bool isHit_;
 	bool isHitFloor_;
-
+	float dashTimer = 60;
+	// 目標の角度
+	float destinationAngleY_ = 0.0f;
 	std::unique_ptr<KeyInput> input;
+
+
+
+	// 振る舞い
+	enum class Behavior {
+		kRoot,   // 通常状態
+		kAttack, // 攻撃中
+		kDash,   // ダッシュ
+		kDead,   // 死亡
+	};
+
+	Behavior behavior_ = Behavior::kRoot;
+	// 次の振る舞いリクエスト
+	std::optional<Behavior> behaviorRequest_ = std::nullopt;
+	// ダッシュ用ワーク
+	struct WorkDash {
+		// ダッシュ用媒介変数
+		uint32_t dashParameter_ = 0;
+	};
+	WorkDash workDash_;
+	// 移動速度
+	float kDashSpeed = 1.0f;
+	// ダッシュの時間
+	const uint32_t behaviorDashTime = 15;
 };

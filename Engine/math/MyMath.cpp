@@ -37,6 +37,15 @@ Vector3 Math::Subract(const Vector3& v1, const Vector3& v2) {
 	return subract;
 };
 
+// スカラー倍
+Vector3 Math::Multiply(float scalar, const Vector3& v) {
+	Vector3 multiply;
+	multiply.x = v.x * scalar;
+	multiply.y = v.y * scalar;
+	multiply.z = v.z * scalar;
+	return multiply;
+};
+
 Vector3 Math::TransformNormal(const Vector3& vector, const Matrix4x4& matrix) {
 	Vector3 result;
 	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0];

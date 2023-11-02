@@ -15,6 +15,7 @@
 #include "GameScene.h"
 #include "ImGuiManager.h"
 #include "KeyInput.h"
+#include "GlobalVariables.h"
 
 WinApp* win = nullptr;
 DirectXCommon* dxCommon = nullptr;
@@ -70,6 +71,7 @@ void Engine::Finalize() {
 void Engine::EndFrame() {
 	// ImGui受付開始
 	imguiManager->Begin();
+	GlobalVariables::GetInstance()->Updeat();
 
 	//	Input初期の更新
 	//KeyInput::Update();
@@ -85,6 +87,7 @@ void Engine::EndFrame() {
 	
 	gameScene->Draw();
 
+	
 	// ImGui描画
 	imguiManager->Draw();
 	// 描画終了
