@@ -7,7 +7,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	BaseCharacter::Initialize(models);
 
 	// 初期化
-	worldTransform_.Initialize();
+	worldTransformBase_.Initialize();
 #ifdef _DEBUG
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Player";
@@ -28,11 +28,22 @@ void Player::Update(){
 	Move();
 	
 
-	worldTransform_.UpdateMatrix();
+
+	/*----------落下処理----------*/
+	
+	if (!isHit_ && !isHitFloor_) {
+		IsFall();
+	}
+
+	if (worldTransformBase_.translate.y < -150) {
+		fallSpeed_ = 0.0f;
+		worldTransformBase_.translate = {0.0f, 0.0f, 0.0f};
+	}
+	worldTransformBase_.UpdateMatrix();
 	
 	ImGui::Begin("P");
-	ImGui::DragFloat4("translation", &worldTransform_.translate.x, 0.01f);
-	ImGui::Text(" X%f Y%f Z%f", worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1],worldTransform_.matWorld_.m[3][2]);
+	ImGui::DragFloat4("translation", &worldTransformBase_.translate.x, 0.01f);
+	ImGui::Text(" X%f Y%f Z%f", worldTransformBase_.matWorld_.m[3][0], worldTransformBase_.matWorld_.m[3][1],worldTransformBase_.matWorld_.m[3][2]);
 	ImGui::Text(" isHit%d", isHit_);
 	ImGui::Text(" isHitFloor%d", isHitFloor_);
 	ImGui::Text(" jump%d", jump_);
@@ -42,7 +53,7 @@ void Player::Update(){
 }
 
 void Player::Draw(const ViewProjection& viewprojection){
-	models_[0]->Draw(worldTransform_, viewprojection);
+	models_[0]->Draw(worldTransformBase_, viewprojection);
 }
 
 Player::Player(){
@@ -58,9 +69,9 @@ Vector3 Player::GetWorldPosition() {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransform_.matWorld_.m[3][0];
-	worldPos.y = worldTransform_.matWorld_.m[3][1];
-	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	worldPos.x = worldTransformBase_.matWorld_.m[3][0];
+	worldPos.y = worldTransformBase_.matWorld_.m[3][1];
+	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
 	return worldPos;
 }
 
@@ -68,13 +79,13 @@ Vector3 Player::GetLocalPosition() {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransform_.translate.x;
-	worldPos.y = worldTransform_.translate.y;
-	worldPos.z = worldTransform_.translate.z;
+	worldPos.x = worldTransformBase_.translate.x;
+	worldPos.y = worldTransformBase_.translate.y;
+	worldPos.z = worldTransformBase_.translate.z;
 	return worldPos;
 }
 
-void Player::SetPosition(Vector3 Pos) { worldTransform_.translate = Pos; }
+void Player::SetPosition(Vector3 Pos) { worldTransformBase_.translate = Pos; }
 
 void Player::joyMove() {
 	// ゲームパッドの状態を得る変数(XINPUT)
@@ -107,13 +118,13 @@ void Player::joyMove() {
 
 			if (isMove) {
 				
-				worldTransform_.translate =
-				    Math::Add(worldTransform_.translate, move);
+				worldTransformBase_.translate =
+				    Math::Add(worldTransformBase_.translate, move);
 				destinationAngleY_ = std::atan2(move.x, move.z);
 			}
 
-			worldTransform_.rotate.y =
-			    Math::LerpShortAngle(worldTransform_.rotate.y, destinationAngleY_, 0.2f);
+			worldTransformBase_.rotate.y =
+			    Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 	}
 
 		
@@ -131,52 +142,47 @@ void Player::Move() {
 
 	/*----------移動処理----------*/
 	if (KeyInput::GetKey(DIK_D)) {
-		worldTransform_.translate.x += 0.5f;
+		worldTransformBase_.translate.x += 0.5f;
 
 	}else if (KeyInput::GetKey(DIK_A)) {
-		worldTransform_.translate.x -= 0.5f;
+		worldTransformBase_.translate.x -= 0.5f;
 	}
 	if (KeyInput::GetKey(DIK_W)) {
-		worldTransform_.translate.z += 0.5f;
+		worldTransformBase_.translate.z += 0.5f;
 
 	} else if (KeyInput::GetKey(DIK_S)) {
-		worldTransform_.translate.z -= 0.5f;
+		worldTransformBase_.translate.z -= 0.5f;
 	}
 
 	if (KeyInput::GetKey(DIK_UPARROW)) {
-		worldTransform_.translate.y += 0.3f;
+		worldTransformBase_.translate.y += 0.3f;
 
 	} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
-		worldTransform_.translate.y -= 0.3f;
+		worldTransformBase_.translate.y -= 0.3f;
 	}
 
-	/*----------ジャンプ処理 & 落下処理----------*/
+	/*----------ジャンプ処理----------*/
 	if (KeyInput::GetKey(DIK_SPACE) && !jump_) {
 		
 		upSpeed_ = 1.0f;
 		jump_ = true;
 	}
 	if (jump_) {
-		worldTransform_.translate.y += upSpeed_;
+		worldTransformBase_.translate.y += upSpeed_;
 	}
 	
 	if (isHit_ || isHitFloor_) {
 		fallSpeed_ = 0.0f;
 		upSpeed_ = 0.0f;
 		jump_ = false;
-		if (worldTransform_.translate.y < 0) {
-			worldTransform_.translate.y = 0;  
+		if (worldTransformBase_.translate.y < 0) {
+			worldTransformBase_.translate.y = 0;  
 		}
 
 	}
 
-	if (!isHit_ && !isHitFloor_) {
-		IsFall();
-	} 
-
-	if (worldTransform_.translate.y < -150) {
-		fallSpeed_ = 0.0f;
-		worldTransform_.translate = {0.0f, 0.0f, 0.0f};
+	if (KeyInput::GetKey(DIK_0)) {
+		DashUpdate();
 	}
 	
 
@@ -187,8 +193,8 @@ void Player::DashUpdate() {
 	
 	Vector3 velocity = {0, 0, kDashSpeed};
 
-	velocity = Math::TransformNormal(velocity, worldTransform_.matWorld_);
-	worldTransform_.translate = Math::Add(worldTransform_.translate, velocity);
+	velocity = Math::TransformNormal(velocity, worldTransformBase_.matWorld_);
+	worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity);
 
 	
 
@@ -200,7 +206,7 @@ void Player::DashUpdate() {
 
 void Player::Relationship(const WorldTransform& worldTransformFloor) {
 
-	if (!worldTransform_.parent_) {
+	if (!worldTransformBase_.parent_) {
 
 		// 移動床のワールド座標
 		Vector3 objectWorldPos = {
@@ -211,7 +217,7 @@ void Player::Relationship(const WorldTransform& worldTransformFloor) {
 
 		// プレイヤーローカル座標
 		Matrix4x4 localPos =
-		    Math::Multiply(Math::Inverse(worldTransformFloor.matWorld_), worldTransform_.matWorld_);
+		    Math::Multiply(Math::Inverse(worldTransformFloor.matWorld_), worldTransformBase_.matWorld_);
 
 		Vector3 playerLocalPos = {localPos.m[3][0], localPos.m[3][1]+1.0f, localPos.m[3][2]};
 
@@ -219,7 +225,7 @@ void Player::Relationship(const WorldTransform& worldTransformFloor) {
 		
 		//ローカル座標系に入れる
 		//worldTransform_.matWorld_ = localPos;
-		worldTransform_.translate = playerLocalPos;
+		worldTransformBase_.translate = playerLocalPos;
 
 		Setparent(&worldTransformFloor);
 
@@ -232,15 +238,15 @@ void Player::Relationship(const WorldTransform& worldTransformFloor) {
 }
 
 void Player::Setparent(const WorldTransform* parent) { 
-	worldTransform_.parent_ = parent; 
+	worldTransformBase_.parent_ = parent; 
 	
 
 };
 
 void Player::DeleteParent() {
-	if (worldTransform_.parent_) {
-		worldTransform_.translate = worldTransform_.GetWorldPos();
-		worldTransform_.parent_ = nullptr;
+	if (worldTransformBase_.parent_) {
+		worldTransformBase_.translate = worldTransformBase_.GetWorldPos();
+		worldTransformBase_.parent_ = nullptr;
 	}
 }
 
@@ -248,7 +254,7 @@ void Player::IsFall() {
 
 	fallSpeed_ -= 0.01f;
 	upSpeed_ += fallSpeed_;
-	worldTransform_.translate.y += upSpeed_;
+	worldTransformBase_.translate.y += upSpeed_;
 }
 
 void Player::OnCollision() {isHit_ = true;}

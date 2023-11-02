@@ -1,4 +1,5 @@
 #include "FollowCamera.h"
+#include <GlobalVariables.h>
 
 
 
@@ -6,6 +7,15 @@ void FollowCamera::Initialize() {
 
 	utility_ = std::make_unique<Utility>();
 	viewProjection_.Initialize();
+#ifdef _DEBUG
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "FollowCamera";
+	// グループを追加
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+
+	globalVariables->AddItem(groupName, "delayAmount", delayAmount_);
+	
+#endif
 }
 
 void FollowCamera::Update() {
@@ -33,7 +43,7 @@ void FollowCamera::Update() {
 	// 追従対象がいれば
 	if (target_) {
 		// 追従座標の補間
-		interTarget_ = Math::Lerp(interTarget_, GetTargetWordPos(), 0.2f);
+		interTarget_ = Math::Lerp(interTarget_, GetTargetWordPos(), delayAmount_);
 	}
 	// 追跡対象からカメラまでのオフセット
 	Vector3 offset = calculateOffset();
@@ -43,6 +53,7 @@ void FollowCamera::Update() {
 
 	// ビュー行列の更新
 	viewProjection_.UpdateMatrix();
+	ApplyGlobalVariables();
 }
 
 Vector3 FollowCamera::calculateOffset() const {
@@ -86,4 +97,15 @@ Vector3 FollowCamera::GetTargetWordPos() {
 	result.y = target_->matWorld_.m[3][1];
 	result.z = target_->matWorld_.m[3][2];
 	return result;
+}
+
+void FollowCamera::ApplyGlobalVariables() {
+#ifdef _DEBUG
+
+	GlobalVariables* globalVaribles = GlobalVariables::GetInstance();
+	const char* groupName = "FollowCamera";
+	delayAmount_ = globalVaribles->GetFloatValue(groupName, "delayAmount");
+	
+
+#endif
 }

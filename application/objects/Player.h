@@ -61,7 +61,7 @@ public: // メンバ関数
 	void SetPosition(Vector3 Pos);
 	
 	
-	const WorldTransform& GetWorldTransform() { return worldTransform_; }
+	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
@@ -89,7 +89,7 @@ public: // メンバ関数
 	void OutCollisionFloor();
 
 private: // メンバ変数
-	WorldTransform worldTransform_;
+	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformFloor_;
 	ViewProjection viewProjection_;
 	float upSpeed_;

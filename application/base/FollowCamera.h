@@ -29,6 +29,8 @@ public:
 
 	Vector3 GetTargetWordPos();
 
+	// 調整項目の適用
+	void ApplyGlobalVariables();
 
 private:
 	ViewProjection viewProjection_;
@@ -44,4 +46,6 @@ private:
 	// 目標角度
 	float destinationAngleY_ = 0.0f;
 	float destinationAngleX_ = 0.0f;
+	//遅延量
+	float delayAmount_ = 0.2f;
 };

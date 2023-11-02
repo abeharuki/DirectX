@@ -123,7 +123,7 @@ void GlobalVariables::Updeat() {
 			// float型の値を保持していれば
 			else if (std::holds_alternative<float>(item)) {
 				float* ptr = std::get_if<float>(&item);
-				ImGui::SliderFloat(itemName.c_str(), ptr, 0, 100);
+				ImGui::DragFloat(itemName.c_str(), ptr, 0.0f, 100.0f);
 			}
 			// Vector3型の値を保持していれば
 			else if (std::holds_alternative<Vector3>(item)) {
