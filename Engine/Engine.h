@@ -9,17 +9,8 @@ class Engine {
 public:
 	static Engine* GetInstance();
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	/// <param name="title">ウィンドウのタイトル</param>
-	/// <param name="width">横幅</param>
-	/// <param name="height">縦幅</param>
 	static void Initialize(const char* title, int width, int height);
-
-	/// <summary>
-	/// 後始末
-	/// </summary>
+	
 	static void Finalize();
 
 	static bool BeginFrame();
