@@ -57,6 +57,7 @@ private: // メンバ変数
 	//player
 	std::unique_ptr<Player> player_;
 	std::unique_ptr<Model> modelPlayer_;
+	std::unique_ptr<Model> modelHammer_;
 
 	// Enemy
 	std::unique_ptr<Enemy> enemy_;

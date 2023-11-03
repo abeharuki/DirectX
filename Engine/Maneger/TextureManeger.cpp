@@ -9,7 +9,7 @@
 #include <wrl.h>
 #include <fstream>
 #include <sstream>
-
+#include <filesystem>
 
 #pragma comment(lib, "dxcompiler.lib")
 
@@ -145,8 +145,10 @@ MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& filenam
 	MaterialData materialData; // 構築するMaterialData
 	ModelData modelData;
 	std::string line;                              // ファイルから読んだ1行を格納する
-	std::ifstream file("./resources/" + filename); // ファイルを開く
+	std::ifstream file(filename); // ファイルを開く
 	assert(file.is_open());                        // 開けなかったら止める
+	std::filesystem::path ps = std::filesystem::path(filename);
+	std::string directryPath = ps.parent_path().string();
 
 	while (std::getline(file, line)) {
 		std::string identifier;
@@ -158,15 +160,8 @@ MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& filenam
 			std::string textureFilename;
 			s >> textureFilename;
 			// 連結しているファイルパス
-			materialData.textureFilePath = textureFilename;
-		} //else if (identifier == "mtllib") {
-		//	// materialTemplateLibraryファイルの名前を取得する
-		//	std::string materialFilename;
-		//	s >> materialFilename;
-
-		//	// 基本的にobjファイルと同じ一階層にmtlは存在させるので、ディレクション名などファイル名を渡す
-		//	modelData.material = LoadMaterialTemplateFile(materialFilename);
-		//}
+			materialData.textureFilePath = directryPath + "/" + textureFilename;
+		} 
 	}
 
 	return materialData;
@@ -186,6 +181,8 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 	std::ifstream file(filename);
 	assert(file.is_open()); // とりあえず開けなかったら止める
 
+	std::filesystem::path ps = std::filesystem::path(filename);
+	std::string directryPath = ps.parent_path().string();
 	// ファイルを読み,ModelDataを構築
 	while (std::getline(file, line)) {
 		std::string identifier;
@@ -242,6 +239,8 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 			// materialTemplateLibraryファイルの名前を取得
 			std::string materialFilname;
 			s >> materialFilname;
+			materialFilname = directryPath + "/" + materialFilname;
+
 			// 基本的にobjファイルと同一階層にmtlは存在させるから、ディレクトリ名とファイル名を渡す
 			modelData.material = LoadMaterialTemplateFile(materialFilname);
 		}

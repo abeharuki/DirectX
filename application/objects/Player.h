@@ -47,7 +47,11 @@ public: // メンバ関数
 
 	void Move();
 
-	void DashUpdate();
+	void AttackInitialize();
+	void AttackUpdata();
+
+	void DashInitialize();
+	void DashUpdata();
 
 	// 調整項目の適用
 	void ApplyGlobalVariables();
@@ -63,7 +67,7 @@ public: // メンバ関数
 	
 	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
-	void SetViewProjection(const ViewProjection& viewProjection) {
+	void SetViewProjection(const ViewProjection viewProjection) {
 		viewProjection_ = viewProjection;
 	}
 
@@ -77,6 +81,8 @@ public: // メンバ関数
 
 	//階層構造
 	void Relationship(const WorldTransform& worldTransformFloor);
+	// パーツ親子関係
+	void Relationship();
 
 	//落下
 	void IsFall();
@@ -90,6 +96,7 @@ public: // メンバ関数
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformFloor_;
 	ViewProjection viewProjection_;
 	float upSpeed_;
@@ -125,4 +132,10 @@ private: // メンバ変数
 	float kDashSpeed = 1.0f;
 	// ダッシュの時間
 	const uint32_t behaviorDashTime = 15;
+
+	// 攻撃フラグ
+	bool attack = false;
+	float attackSpeed = -0.1f;
+	float attackTime = 1.0f;
+	float changeTime = 1.0f;
 };

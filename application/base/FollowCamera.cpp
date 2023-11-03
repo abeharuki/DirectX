@@ -43,7 +43,8 @@ void FollowCamera::Update() {
 	// 追従対象がいれば
 	if (target_) {
 		// 追従座標の補間
-		interTarget_ = Math::Lerp(interTarget_, GetTargetWordPos(), delayAmount_);
+		interTarget_ =
+		    Math::Lerp(interTarget_, GetTargetWordPos(), delayAmount_);
 	}
 	// 追跡対象からカメラまでのオフセット
 	Vector3 offset = calculateOffset();

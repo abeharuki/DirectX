@@ -23,8 +23,9 @@ void GameScene::Initialize() {
 
 	//プレイヤー
 	modelPlayer_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/ball.png"));
+	modelHammer_.reset(Model::CreateModelFromObj("resources/hammer/hammer.obj", "resources/hammer/hammer.png"));
 	player_ = std::make_unique<Player>();
-	std::vector<Model*> playerModels = {modelPlayer_.get()};
+	std::vector<Model*> playerModels = {modelPlayer_.get(), modelHammer_.get()};
 	player_->Initialize(playerModels);
 
 	//敵

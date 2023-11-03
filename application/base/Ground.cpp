@@ -7,7 +7,7 @@ void Ground::Initialize(Model* model) {
 	for (int i = 0; i < 2; i++) {
 		worldTransform_[i].Initialize();
 		worldTransform_[i].translate.y = -11;
-		worldTransform_[i].scale = {10, 10, 10};
+		worldTransform_[i].scale = {100, 10, 30};
 	}
 	
 	worldTransform_[1].translate.z = 100;
