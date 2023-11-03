@@ -37,6 +37,7 @@ void DirectXCommon::Finalize() {
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+	srvHeap_.Reset();
 }
 
 

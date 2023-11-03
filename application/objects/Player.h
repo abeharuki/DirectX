@@ -47,6 +47,8 @@ public: // メンバ関数
 
 	void Move();
 
+	void Jump();
+
 	void AttackInitialize();
 	void AttackUpdata();
 
@@ -67,7 +69,7 @@ public: // メンバ関数
 	
 	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
-	void SetViewProjection(const ViewProjection viewProjection) {
+	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
 	}
 
@@ -98,7 +100,7 @@ private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformFloor_;
-	ViewProjection viewProjection_;
+	const ViewProjection* viewProjection_;
 	float upSpeed_;
 	float fallSpeed_;
 	bool jump_;

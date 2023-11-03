@@ -69,13 +69,12 @@ void Engine::Finalize() {
 }
 
 void Engine::EndFrame() {
+	
+	//	Input初期の更新
+	keyInput->Update();
 	// ImGui受付開始
 	imguiManager->Begin();
 	GlobalVariables::GetInstance()->Updeat();
-
-	//	Input初期の更新
-	//KeyInput::Update();
-	keyInput->Update();
 
 	gameScene->Update();
 
@@ -92,6 +91,7 @@ void Engine::EndFrame() {
 	imguiManager->Draw();
 	// 描画終了
 	dxCommon->PostDraw();
+	
 }
 
 

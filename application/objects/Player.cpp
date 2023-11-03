@@ -161,10 +161,10 @@ void Player::joyMove() {
 			move = Math::Multiply(kCharacterSpeed, move);
 
 			Matrix4x4 rotateMatrix = Math::Multiply(
-			    Math::MakeRotateXMatrix(viewProjection_.rotation_.x),
+			    Math::MakeRotateXMatrix(viewProjection_->rotation_.x),
 			    Math::Multiply(
-			        Math::MakeRotateYMatrix(viewProjection_.rotation_.y),
-			        Math::MakeRotateZMatrix(viewProjection_.rotation_.z)));
+			        Math::MakeRotateYMatrix(viewProjection_->rotation_.y),
+			        Math::MakeRotateZMatrix(viewProjection_->rotation_.z)));
 			// move = utility_->Normalize(move);
 			move = Math::TransformNormal(move, rotateMatrix);
 
@@ -179,7 +179,13 @@ void Player::joyMove() {
 			    Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 	}
 
-		// 攻撃
+	//ジャンプ
+	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A && !jump_) {
+		    upSpeed_ = 0.6f;
+		    jump_ = true;
+	}
+	Jump();
+	// 攻撃
 	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
 		    behaviorRequest_ = Behavior::kAttack;
 	}
@@ -214,25 +220,11 @@ void Player::Move() {
 		worldTransformBase_.translate.y -= 0.3f;
 	}
 
-	/*----------ジャンプ処理----------*/
 	if (KeyInput::GetKey(DIK_SPACE) && !jump_) {
-		
-		upSpeed_ = 1.0f;
+		upSpeed_ = 0.6f;
 		jump_ = true;
 	}
-	if (jump_) {
-		worldTransformBase_.translate.y += upSpeed_;
-	}
-	
-	if (isHit_ || isHitFloor_) {
-		fallSpeed_ = 0.0f;
-		upSpeed_ = 0.0f;
-		jump_ = false;
-		if (worldTransformBase_.translate.y < 0) {
-			worldTransformBase_.translate.y = 0;  
-		}
-
-	}
+	Jump();
 
 	if (KeyInput::GetKey(DIK_0)) {
 		behaviorRequest_ = Behavior::kAttack;
@@ -242,6 +234,23 @@ void Player::Move() {
 		behaviorRequest_ = Behavior::kDash;
 	}
 
+}
+
+void Player::Jump() {
+	/*----------ジャンプ処理----------*/
+	
+	if (jump_) {
+		worldTransformBase_.translate.y += upSpeed_;
+	}
+
+	if (isHit_ || isHitFloor_) {
+		fallSpeed_ = 0.0f;
+		upSpeed_ = 0.0f;
+		jump_ = false;
+		if (worldTransformBase_.translate.y < 0) {
+			    worldTransformBase_.translate.y = 0;
+		}
+	}
 }
 
 // 攻撃初期化
@@ -255,7 +264,6 @@ void Player::AttackInitialize() {
 	attackTime = 1.0f;
 	changeTime = 1.0f;
 }
-
 void Player::AttackUpdata() {
 	worldTransformHammer_.rotate.x += attackSpeed;
 

@@ -59,7 +59,7 @@ void GameScene::Initialize() {
 	followCamera_->SetTarget(&player_->GetWorldTransform());
 
 	// 自キャラの生成と初期化処理
-	player_->SetViewProjection(followCamera_->GetViewProjection());
+	player_->SetViewProjection(&followCamera_->GetViewProjection());
 }
 
 void GameScene::Update() {
@@ -72,11 +72,12 @@ void GameScene::Update() {
 	skydome_->Update();
 	
 	CheckAllCollision();
-	
+	viewProjection_.UpdateMatrix();
 	// 追従カメラの更新
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+	
 	viewProjection_.TransferMatrix();
 	
 	ImGui::Begin("scene");
