@@ -6,7 +6,7 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <cassert>
-
+#include <chrono>
 #include <cstdint>
 #include <wrl.h>
 #include <vector>
@@ -129,6 +129,8 @@ private: // メンバ変数
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 	D3D12_RESOURCE_BARRIER barrier{};
 
+	std::chrono::steady_clock::time_point reference_;
+
 private: // メンバ関数
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
@@ -164,6 +166,10 @@ private: // メンバ関数
 	/// フェンス生成
 	/// </summary>
 	void CreateFence();
+
+	void InitializeFixFPS();
+	void UpdateFixFPS();
+
 };
 
 ID3D12DescriptorHeap* CreateDescriptorHeap(
