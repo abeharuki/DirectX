@@ -72,14 +72,13 @@ void GameScene::Update() {
 	skydome_->Update();
 	
 	CheckAllCollision();
-	viewProjection_.UpdateMatrix();
+	
 	// 追従カメラの更新
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-	
 	viewProjection_.TransferMatrix();
-	
+
 	ImGui::Begin("scene");
 	
 	ImGui::DragFloat4("translation", &worldTransform_.translate.x, 0.01f);

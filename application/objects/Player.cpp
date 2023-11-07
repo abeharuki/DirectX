@@ -201,16 +201,16 @@ void Player::Move() {
 
 	/*----------移動処理----------*/
 	if (KeyInput::GetKey(DIK_D)) {
-		worldTransformBase_.translate.x += 0.5f;
+		worldTransformBase_.translate.x += 0.3f;
 
 	}else if (KeyInput::GetKey(DIK_A)) {
-		worldTransformBase_.translate.x -= 0.5f;
+		worldTransformBase_.translate.x -= 0.3f;
 	}
 	if (KeyInput::GetKey(DIK_W)) {
-		worldTransformBase_.translate.z += 0.5f;
+		worldTransformBase_.translate.z += 0.3f;
 
 	} else if (KeyInput::GetKey(DIK_S)) {
-		worldTransformBase_.translate.z -= 0.5f;
+		worldTransformBase_.translate.z -= 0.3f;
 	}
 
 	if (KeyInput::GetKey(DIK_UPARROW)) {
