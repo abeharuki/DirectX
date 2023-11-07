@@ -1,12 +1,5 @@
 #include "WinApp.h"
 #include <string>
-#include <d3d12sdklayers.h>
-#include <imgui.h>
-#include <imgui_impl_dx12.h>
-#include <imgui_impl_win32.h>
-
-extern IMGUI_IMPL_API LRESULT
-    ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPaeam);
 
 
 WinApp* WinApp::GetInstance() {
@@ -77,7 +70,7 @@ void WinApp::CreateGameWindow(
 		nullptr);
 
 #ifdef _DEBUG
-	ID3D12Debug1* debugController = nullptr;
+	debugController = nullptr;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
 		// デバッグレイヤーを有効化する
 		debugController->EnableDebugLayer();

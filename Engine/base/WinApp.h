@@ -1,6 +1,13 @@
 #pragma once
 #include <Windows.h>
 #include <cstdint>
+#include <d3d12sdklayers.h>
+#include <imgui.h>
+#include <imgui_impl_dx12.h>
+#include <imgui_impl_win32.h>
+#include<wrl.h>
+extern IMGUI_IMPL_API LRESULT
+    ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPaeam);
 
 class WinApp {
 public:
@@ -32,6 +39,7 @@ private: // メンバ関数
 
 private: // メンバ変数
 	// Window関連
+	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController;
 	HWND hwnd_ = nullptr;   // ウィンドウハンドル
 	WNDCLASS wc{}; // ウィンドウクラス
 	

@@ -35,10 +35,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int32_t windowHeight = 720;
 	Engine::Initialize("自作エンジン", windowWidth, windowHeight);
 
-	
-	
-
-   
 	// ウインドウの×ボタンが押されるまでループ
 	while (true) {
 		
@@ -53,7 +49,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 	
 	//リソースリークチェック
-	//dxCommon->Debug();
 	Engine::Finalize();
 	
 
