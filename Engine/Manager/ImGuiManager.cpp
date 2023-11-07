@@ -73,3 +73,9 @@ void ImGuiManager::Draw() {
 
 #endif
 }
+
+void ImGuiManager::Finalize() {
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+}

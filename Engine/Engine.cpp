@@ -63,9 +63,12 @@ bool Engine::BeginFrame() {
 
 void Engine::Finalize() {
 
-	dxCommon->Debug();
+	delete gameScene;
+	gameScene = nullptr;
+	
 	//  DirectX終了処理
 	dxCommon->Finalize();
+	dxCommon->Debug();
 	dxCommon = nullptr;
 	// ゲームウィンドウの破棄
 	win->TerminateGameWindow();
