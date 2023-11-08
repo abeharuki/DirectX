@@ -2,7 +2,7 @@
 #include <cassert>
 #include <format>
 #include <vector>
-
+#include <assert.h>
 
 
 
@@ -66,6 +66,12 @@ struct Matrix4x4 final {
 struct AABB {
 	Vector3 min; // 最小点
 	Vector3 max; // 最大点
+};
+
+struct OBB {
+	Vector3 center;
+	Vector3 orientation[3];
+	Vector3 size;
 };
 
 struct Transform {

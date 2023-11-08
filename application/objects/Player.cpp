@@ -1,4 +1,5 @@
 #include "Player.h"
+
 #include <imgui.h>
 
 
@@ -9,6 +10,10 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformHammer_.Initialize();
+	worldTransformWW_.Initialize();
+
+	worldTransformWW_.scale = {0.8f, 0.8f, 0.8f};
+	worldTransformWW_.translate.y = 4.3f;
 #ifdef _DEBUG
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Player";
@@ -49,7 +54,7 @@ void Player::Update(){
 		behaviorRequest_ = std::nullopt;
 	}
 
-	
+	BaseCharacter::Update();
 
 	switch (behavior_) {
 	case Behavior::kRoot:
@@ -70,8 +75,6 @@ void Player::Update(){
 		break;
 	}
 
-	BaseCharacter::Update();
-	Move();
 	
 	Relationship();
 
@@ -87,6 +90,8 @@ void Player::Update(){
 	}
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHammer_.TransferMatrix();
+	worldTransformWW_.TransferMatrix();
+
 	ImGui::Begin("Player");
 	ImGui::DragFloat4("translation", &worldTransformBase_.translate.x, 0.01f);
 	ImGui::Text(" X%f Y%f Z%f", worldTransformBase_.matWorld_.m[3][0], worldTransformBase_.matWorld_.m[3][1],worldTransformBase_.matWorld_.m[3][2]);
@@ -94,8 +99,12 @@ void Player::Update(){
 	ImGui::Text(" isHitFloor%d", isHitFloor_);
 	ImGui::Text(" jump%d", jump_);
 	ImGui::End();
+
 	ImGui::Begin("Hammer");
-	ImGui::DragFloat4("translation", &worldTransformHammer_.rotate.x, 0.01f);
+	ImGui::Text(" X%f Y%f Z%f", worldTransformHammer_.matWorld_.m[3][0], worldTransformHammer_.matWorld_.m[3][1],worldTransformHammer_.matWorld_.m[3][2]);
+	ImGui::DragFloat4("translation", &worldTransformHammer_.translate.x, 0.01f);
+	ImGui::DragFloat4("rotate", &worldTransformHammer_.rotate.x, 0.01f);
+	ImGui::Text("%d", attack);
 	ImGui::End();
 	ApplyGlobalVariables();
 }
@@ -104,6 +113,7 @@ void Player::Draw(const ViewProjection& viewprojection){
 	models_[0]->Draw(worldTransformBase_, viewprojection);
 	if (behavior_ == Behavior::kAttack) {
 		models_[1]->Draw(worldTransformHammer_, viewprojection);
+	
 	}
 	
 }
@@ -134,6 +144,16 @@ Vector3 Player::GetLocalPosition() {
 	worldPos.x = worldTransformBase_.translate.x;
 	worldPos.y = worldTransformBase_.translate.y;
 	worldPos.z = worldTransformBase_.translate.z;
+	return worldPos;
+}
+
+Vector3 Player::GetHammerWorldPos() {
+	// ワールド座標を入れる関数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransformWW_.matWorld_.m[3][0];
+	worldPos.y = worldTransformWW_.matWorld_.m[3][1];
+	worldPos.z = worldTransformWW_.matWorld_.m[3][2];
 	return worldPos;
 }
 
@@ -225,12 +245,12 @@ void Player::Move() {
 		jump_ = true;
 	}
 	Jump();
-
-	if (KeyInput::GetKey(DIK_0)) {
+	//攻撃
+	if (KeyInput::PushKey(DIK_0)) {
 		behaviorRequest_ = Behavior::kAttack;
 	}
-	
-	if (KeyInput::GetKey(DIK_9)) {
+	//ダッシュ
+	if (KeyInput::PushKey(DIK_9)) {
 		behaviorRequest_ = Behavior::kDash;
 	}
 
@@ -260,7 +280,7 @@ void Player::AttackInitialize() {
 	
 	// アタックスピード
 	attackSpeed = -0.1f;
-	attack = false;
+	
 	attackTime = 1.0f;
 	changeTime = 1.0f;
 }
@@ -279,6 +299,7 @@ void Player::AttackUpdata() {
 			
 
 		} else {
+			attack = false;
 			behaviorRequest_ = Behavior::kRoot;
 		}
 
@@ -375,6 +396,11 @@ void Player::Relationship() {
 	    Math::Multiply(Math::MakeAffineMatrix(
 	        worldTransformHammer_.scale, worldTransformHammer_.rotate, worldTransformHammer_.translate),
 	    worldTransformBase_.matWorld_);
+
+	worldTransformWW_.matWorld_ = Math::Multiply(
+	    Math::MakeAffineMatrix(
+	        worldTransformWW_.scale, worldTransformWW_.rotate, worldTransformWW_.translate),
+	    worldTransformHammer_.matWorld_);
 }
 
 void Player::ApplyGlobalVariables() {

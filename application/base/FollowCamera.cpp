@@ -2,10 +2,8 @@
 #include <GlobalVariables.h>
 
 
-
 void FollowCamera::Initialize() {
 
-	utility_ = std::make_unique<Utility>();
 	viewProjection_.Initialize();
 #ifdef _DEBUG
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
@@ -28,17 +26,17 @@ void FollowCamera::Update() {
 		float kCharacterSpeed = 0.05f;
 
 		destinationAngleY_ += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kCharacterSpeed;
-		destinationAngleX_ += (float)joyState.Gamepad.sThumbRY / SHRT_MAX * kCharacterSpeed / 5;
+		destinationAngleX_ -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * kCharacterSpeed / 5;
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
 			destinationAngleY_ = target_->rotate.y;
 			destinationAngleX_ = target_->rotate.x;
 		}
 	}
 
-	/*viewProjection_.rotation_.y =
+	viewProjection_.rotation_.y =
 	    Math::LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 0.1f);
 	viewProjection_.rotation_.x =
-	    Math::LerpShortAngle(viewProjection_.rotation_.x, destinationAngleX_, 0.1f);*/
+	    Math::LerpShortAngle(viewProjection_.rotation_.x, destinationAngleX_, 0.1f);
 
 	// 追従対象がいれば
 	if (target_) {
@@ -50,13 +48,8 @@ void FollowCamera::Update() {
 	Vector3 offset = calculateOffset();
 
 	// 座標をコピーしてオフセット分ずらす
-	
 	viewProjection_.translation_ = Math::Add(interTarget_, offset);
-	if (KeyInput::GetKey(DIK_RIGHTARROW)) {
-		viewProjection_.rotation_.y += 0.1f;
-	} else if (KeyInput::GetKey(DIK_LEFTARROW)) {
-		viewProjection_.rotation_.y -= 0.1f;
-	}
+	
 	// ビュー行列の更新
 	viewProjection_.UpdateMatrix();
 	ApplyGlobalVariables();

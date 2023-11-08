@@ -35,8 +35,14 @@ public:
 
 	const WorldTransform& GetWorldTransform() { return worldtransformBase_; }
 
+	void OnCollision() { isHit_ = true; }
+	bool IsDead() { return isDead_; }
+
 private:
 	WorldTransform worldtransformBase_;
+
+	bool isHit_;
+	bool isDead_;
 
 };
 

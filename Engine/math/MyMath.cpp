@@ -90,12 +90,12 @@ Matrix4x4 Math::MakeRotateXMatrix(float theta) {
 	MakeRotateMatrix.m[0][2] = 0;
 	MakeRotateMatrix.m[0][3] = 0;
 	MakeRotateMatrix.m[1][0] = 0;
-	MakeRotateMatrix.m[1][1] = std::cos(theta);
-	MakeRotateMatrix.m[1][2] = std::sin(theta);
+	MakeRotateMatrix.m[1][1] = (float)cos(theta);
+	MakeRotateMatrix.m[1][2] = (float)sin(theta);
 	MakeRotateMatrix.m[1][3] = 0;
 	MakeRotateMatrix.m[2][0] = 0;
-	MakeRotateMatrix.m[2][1] = -std::sin(theta);
-	MakeRotateMatrix.m[2][2] = std::cos(theta);
+	MakeRotateMatrix.m[2][1] = (float)-sin(theta);
+	MakeRotateMatrix.m[2][2] = (float)cos(theta);
 	MakeRotateMatrix.m[2][3] = 0;
 	MakeRotateMatrix.m[3][0] = 0;
 	MakeRotateMatrix.m[3][1] = 0;
@@ -103,22 +103,20 @@ Matrix4x4 Math::MakeRotateXMatrix(float theta) {
 	MakeRotateMatrix.m[3][3] = 1;
 	return MakeRotateMatrix;
 }
-
 // Y
 Matrix4x4 Math::MakeRotateYMatrix(float theta) {
 	Matrix4x4 MakeRotateMatrix;
-	MakeRotateMatrix.m[0][0] = std::cos(theta);
+	MakeRotateMatrix.m[0][0] = (float)cos(theta);
 	MakeRotateMatrix.m[0][1] = 0;
-	MakeRotateMatrix.m[0][2] = -std::sin(theta);
+	MakeRotateMatrix.m[0][2] = (float)-sin(theta);
 	MakeRotateMatrix.m[0][3] = 0;
 	MakeRotateMatrix.m[1][0] = 0;
 	MakeRotateMatrix.m[1][1] = 1;
 	MakeRotateMatrix.m[1][2] = 0;
 	MakeRotateMatrix.m[1][3] = 0;
-	MakeRotateMatrix.m[2][0] = std::sin(theta);
-	;
+	MakeRotateMatrix.m[2][0] = (float)sin(theta);
 	MakeRotateMatrix.m[2][1] = 0;
-	MakeRotateMatrix.m[2][2] = std::cos(theta);
+	MakeRotateMatrix.m[2][2] = (float)cos(theta);
 	MakeRotateMatrix.m[2][3] = 0;
 	MakeRotateMatrix.m[3][0] = 0;
 	MakeRotateMatrix.m[3][1] = 0;
@@ -130,12 +128,12 @@ Matrix4x4 Math::MakeRotateYMatrix(float theta) {
 // Z
 Matrix4x4 Math::MakeRotateZMatrix(float theta) {
 	Matrix4x4 MakeRotateMatrix;
-	MakeRotateMatrix.m[0][0] = std::cos(theta);
-	MakeRotateMatrix.m[0][1] = std::sin(theta);
+	MakeRotateMatrix.m[0][0] = (float)cos(theta);
+	MakeRotateMatrix.m[0][1] = (float)sin(theta);
 	MakeRotateMatrix.m[0][2] = 0;
 	MakeRotateMatrix.m[0][3] = 0;
-	MakeRotateMatrix.m[1][0] = -std::sin(theta);
-	MakeRotateMatrix.m[1][1] = std::cos(theta);
+	MakeRotateMatrix.m[1][0] = (float)-sin(theta);
+	MakeRotateMatrix.m[1][1] = (float)cos(theta);
 	MakeRotateMatrix.m[1][2] = 0;
 	MakeRotateMatrix.m[1][3] = 0;
 	MakeRotateMatrix.m[2][0] = 0;
@@ -191,6 +189,7 @@ Matrix4x4 Math::Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return multiply;
 };
 
+
 Matrix4x4 Math::MakeRotateXYZMatrix(const Vector3& rotate) {
 	// 回転
 	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
@@ -223,8 +222,8 @@ Matrix4x4 Math::MakeTranselateMatrix(const Vector3& translate) {
 };
 
 // アフィン変換
-Matrix4x4
-    Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
+Matrix4x4 Math::MakeAffineMatrix(
+    const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	// 回転
 	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
 	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);

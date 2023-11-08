@@ -38,9 +38,6 @@ private:
 
 	KeyInput* input_ = nullptr;
 
-	// 数学関数
-	std::unique_ptr<Utility> utility_;
-
 	// 追跡対象の残像座標
 	Vector3 interTarget_ = {};
 	// 目標角度

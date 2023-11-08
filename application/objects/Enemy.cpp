@@ -8,12 +8,17 @@ void Enemy::Initialize(const std::vector<Model*>& models) {
 	// 初期化
 	worldtransformBase_.Initialize();
 	worldtransformBase_.translate = {0.0f, 0.0f, 100.0f};
+
+	isHit_ = false;
+	isDead_ = false;
 }
 
 void Enemy::Update() {
 
 	BaseCharacter::Update();
-	
+	if (isHit_) {
+		isDead_ = true;
+	}
 
 	worldtransformBase_.UpdateMatrix();
 
@@ -23,7 +28,10 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw(const ViewProjection& viewprojection) {
-	models_[0]->Draw(worldtransformBase_, viewprojection);
+	if (!isDead_) {
+		models_[0]->Draw(worldtransformBase_, viewprojection);
+	}
+	
 }
 
 Vector3 Enemy::GetWorldPosition() { 
@@ -31,3 +39,4 @@ Vector3 Enemy::GetWorldPosition() {
 	WorldPos = worldtransformBase_.GetWorldPos();
 	return WorldPos;
 }
+

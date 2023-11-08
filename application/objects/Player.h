@@ -63,10 +63,12 @@ public: // メンバ関数
 	//ローカル座標
 	Vector3 GetLocalPosition();
 
+	Vector3 GetHammerWorldPos();
+
 	// セットPos
 	void SetPosition(Vector3 Pos);
 	
-	
+	const WorldTransform& GetHammerWorldTransform() { return worldTransformWW_; }
 	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
 	void SetViewProjection(const ViewProjection* viewProjection) {
@@ -89,6 +91,9 @@ public: // メンバ関数
 	//落下
 	void IsFall();
 
+	//攻撃フラグ
+	bool IsAttack() { return attack; }
+
 	//当たり判定
 	void OnCollision();
 	void OutCollision();
@@ -100,6 +105,7 @@ private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformFloor_;
+	WorldTransform worldTransformWW_;
 	const ViewProjection* viewProjection_;
 	float upSpeed_;
 	float fallSpeed_;
@@ -109,9 +115,7 @@ private: // メンバ変数
 	float dashTimer = 60;
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
-	std::unique_ptr<KeyInput> input;
-
-
+	
 
 	// 振る舞い
 	enum class Behavior {

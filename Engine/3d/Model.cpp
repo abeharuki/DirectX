@@ -57,41 +57,6 @@ void Model::sPipeline() {
 	
 };
 
-//void Model::Draw(WorldTransform& worldTransform, Model* model) {
-//	// Sprite用のworldViewProjectionMatrixを作る
-//	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
-//	Matrix4x4 projectionMatrixSprite =
-//	    Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
-//	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
-//	    worldTransform.matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
-//	worldTransform.matWorld_ = worldViewProjectionMatrixSprite;
-//
-//	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
-//	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
-//	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
-//
-//	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-//	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//	Engine::GetList()->IASetVertexBuffers(0, 1, &model->vertexBufferView);
-//
-//	// マテリアルCBufferの場所を設定
-//	// Engine::GetList()->SetGraphicsRootConstantBufferView(0,
-//	// model->materialResorce_->GetGPUVirtualAddress());
-//	// Engine::GetList()->SetGraphicsRootConstantBufferView(3,
-//	// lightResource_->GetGPUVirtualAddress());
-//
-//	Engine::GetList()->SetDescriptorHeaps(1, model->SRVHeap.GetAddressOf());
-//	// SRVのDescriptorTableの先頭の設定。2はrootParameter[2]である
-//	Engine::GetList()->SetGraphicsRootDescriptorTable(
-//	    2, model->SRVHeap->GetGPUDescriptorHandleForHeapStart());
-//	// wvp用のCBufferの場所を設定
-//	Engine::GetList()->SetGraphicsRootConstantBufferView(
-//	    1, worldTransform.constBuff_->GetGPUVirtualAddress());
-//
-//	// 三角形の描画
-//	Engine::GetList()->DrawInstanced(UINT(model->modelData_.vertices.size()), 1, 0, 0);
-//}
-//	
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 	/*--------- HLSLが用意できていないので応急措置---------*/
