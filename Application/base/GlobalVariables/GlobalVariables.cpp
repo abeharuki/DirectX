@@ -316,7 +316,7 @@ int32_t GlobalVariables::GetIntValue(const std::string& groupName, const std::st
 	return std::get<int32_t>(group[key]);
 }
 
-float GlobalVariables::GetFloatIntValue(const std::string& groupName, const std::string& key) {
+float GlobalVariables::GetFloatValue(const std::string& groupName, const std::string& key) {
 	// グループを検索
 	std::map<std::string, Group>::iterator itGroup = datas_.find(groupName);
 	// 未登録チェック

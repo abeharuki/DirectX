@@ -51,7 +51,7 @@ public:
 
 	// 値の取得
 	int32_t GetIntValue(const std::string& groupName, const std::string& key);
-	float GetFloatIntValue(const std::string& groupName, const std::string& key);
+	float GetFloatValue(const std::string& groupName, const std::string& key);
 	Vector3 GetVecter3Value(const std::string& groupName, const std::string& key);
 
 private:
