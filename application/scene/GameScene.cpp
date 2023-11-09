@@ -22,7 +22,7 @@ void GameScene::Initialize() {
 	viewProjection_.translation_ = {0.0f, 0.0f, -5.0f};
 
 	//プレイヤー
-	modelPlayer_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/ball.png"));
+	modelPlayer_.reset(Model::CreateModelFromObj("resources/player/float_Head.obj", "resources/player/tex.png"));
 	modelHammer_.reset(Model::CreateModelFromObj("resources/hammer/hammer.obj", "resources/hammer/hammer.png"));
 	player_ = std::make_unique<Player>();
 	std::vector<Model*> playerModels = {modelPlayer_.get(), modelHammer_.get()};
