@@ -29,10 +29,10 @@ Engine* Engine::GetInstance() {
 	return &instance;
 }
 
-void Engine::Initialize(const char* title, int width, int height) {
+void Engine::Initialize(const wchar_t* title, int width, int height) {
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
-	win->CreateGameWindow();
+	win->CreateGameWindow(title,width,height);
 
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();

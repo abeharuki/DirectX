@@ -15,7 +15,7 @@ public:
 	/// <param name="title">ウィンドウのタイトル</param>
 	/// <param name="width">横幅</param>
 	/// <param name="height">縦幅</param>
-	static void Initialize(const char* title, int width, int height);
+	static void Initialize(const wchar_t* title, int width, int height);
 
 	/// <summary>
 	/// 後始末

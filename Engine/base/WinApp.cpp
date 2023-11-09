@@ -34,8 +34,7 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 
 
-void WinApp::CreateGameWindow(
-    const wchar_t* title, int32_t clientWidth, int32_t clientHeight) {
+void WinApp::CreateGameWindow(const wchar_t* title, int32_t clientWidth, int32_t clientHeight) {
 
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
@@ -65,7 +64,7 @@ void WinApp::CreateGameWindow(
 	// ウインドウの生成
 	hwnd_ = CreateWindow(
 	    wc.lpszClassName,
-		L"CG2",
+		title,
 		WS_OVERLAPPEDWINDOW, 
 		CW_USEDEFAULT, 
 		CW_USEDEFAULT,

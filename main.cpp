@@ -37,7 +37,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int32_t windowWidth = 1280;
 	int32_t windowHeight = 720;
-	Engine::Initialize("自作エンジン", windowWidth, windowHeight);
+	Engine::Initialize(L"自作エンジン", windowWidth, windowHeight);
 
 
 	// ウインドウの×ボタンが押されるまでループ
