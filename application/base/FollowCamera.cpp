@@ -33,6 +33,18 @@ void FollowCamera::Update() {
 		}
 	}
 
+	if (KeyInput::GetKey(DIK_UPARROW)) {
+		destinationAngleX_ -= 0.1f;
+	} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
+		destinationAngleX_ += 0.1f;
+	}
+
+	if (KeyInput::GetKey(DIK_LEFTARROW)) {
+		destinationAngleY_ -= 0.1f;
+	} else if (KeyInput::GetKey(DIK_RIGHTARROW)) {
+		destinationAngleY_ += 0.1f;
+	}
+
 	viewProjection_.rotation_.y =
 	    Math::LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 0.1f);
 	viewProjection_.rotation_.x =
@@ -108,3 +120,4 @@ void FollowCamera::ApplyGlobalVariables() {
 
 #endif
 }
+

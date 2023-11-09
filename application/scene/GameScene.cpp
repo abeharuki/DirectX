@@ -53,22 +53,19 @@ void GameScene::Initialize() {
 	floor_->Initialize(modelFloor_.get());
 
 	// レールカメラ
-	//followCamera_ = std::make_unique<FollowCamera>();
-	//followCamera_->Initialize();
-	//// 自キャラのワールドトランスフォームを追従カメラにセット
-	//followCamera_->SetTarget(&player_->GetWorldTransform());
-
-	//// 自キャラの生成と初期化処理
-	//player_->SetViewProjection(&followCamera_->GetViewProjection());
-
-	target_ = &player_->GetWorldTransform();
+	followCamera_ = std::make_unique<FollowCamera>();
+	followCamera_->Initialize();
+	// 自キャラのワールドトランスフォームを追従カメラにセット
+	followCamera_->SetTarget(&player_->GetWorldTransform());
 
 	// 自キャラの生成と初期化処理
-	player_->SetViewProjection(&viewProjection_);
+	player_->SetViewProjection(&followCamera_->GetViewProjection());
+
 }
 
 void GameScene::Update() {
 	
+
 	floor_->Update();
 	
 	player_->Update();
@@ -79,47 +76,11 @@ void GameScene::Update() {
 	CheckAllCollision();
 	
 	// 追従カメラの更新
-	/*followCamera_->Update();
+	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-	viewProjection_.TransferMatrix();*/
-
-
-	// ゲームパッドの状態を得る変数(XINPUT)
-	XINPUT_STATE joyState;
-
-	// ジョイスティックの状態取得
-	if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
-		// 回転速度
-		float kCharacterSpeed = 0.05f;
-
-		destinationAngleY_ += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kCharacterSpeed;
-		destinationAngleX_ -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * kCharacterSpeed / 5;
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
-			destinationAngleY_ = target_->rotate.y;
-			destinationAngleX_ = target_->rotate.x;
-		}
-	}
-
-	viewProjection_.rotation_.y =
-	    Math::LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 0.1f);
-	viewProjection_.rotation_.x =
-	    Math::LerpShortAngle(viewProjection_.rotation_.x, destinationAngleX_, 0.1f);
-
-	// 追従対象がいれば
-	if (target_) {
-		// 追従座標の補間
-		interTarget_ = Math::Lerp(interTarget_, target_->translate, delayAmount_);
-	}
-	// 追跡対象からカメラまでのオフセット
-	Vector3 offset = calculateOffset();
-
-	// 座標をコピーしてオフセット分ずらす
-	viewProjection_.translation_ = Math::Add(interTarget_, offset);
-
-	// ビュー行列の更新
-	viewProjection_.UpdateMatrix();
 	viewProjection_.TransferMatrix();
+	
 
 	ImGui::Begin("scene");
 	
@@ -180,23 +141,6 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 #pragma endregion
 }
-
-
-Vector3 GameScene::calculateOffset() const {
-	// 追従対象からのオフセット
-	Vector3 offset = {0.0f, 4.0f, -15.0f};
-
-	Matrix4x4 rotateMatrix = Math::Multiply(
-	    Math::MakeRotateXMatrix(viewProjection_.rotation_.x),
-	    Math::Multiply(
-	        Math::MakeRotateYMatrix(viewProjection_.rotation_.y),
-	        Math::MakeRotateZMatrix(viewProjection_.rotation_.z)));
-
-	offset = Math::TransformNormal(offset, rotateMatrix);
-
-	return offset;
-}
-
 
 void GameScene::CheckAllCollision() {
     // 判定対象AとBの座標
@@ -270,7 +214,7 @@ void GameScene::CheckAllCollision() {
 	if (Math::IsAABBCollision(
 	        posA, player_->GetWorldTransform().scale, posB[0], enemy_->GetWorldTransform().scale)) {
 		// 自キャラの衝突時コールバックを呼び出す
-		if (enemy_->IsDead()) {
+		if (!enemy_->IsDead()) {
 			player_->SetPosition({0.0f, 0.0f, 0.0f});
 		}
 		

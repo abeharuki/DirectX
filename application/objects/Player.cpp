@@ -77,7 +77,7 @@ void Player::Update(){
 
 	
 	Relationship();
-
+	
 	/*----------落下処理----------*/
 	
 	if (!isHit_ && !isHitFloor_) {
@@ -112,10 +112,10 @@ void Player::Update(){
 void Player::Draw(const ViewProjection& viewprojection){
 	models_[0]->Draw(worldTransformBase_, viewprojection);
 	if (behavior_ == Behavior::kAttack) {
-		models_[1]->Draw(worldTransformHammer_, viewprojection);
+		
 	
 	}
-	
+	models_[1]->Draw(worldTransformHammer_, viewprojection);
 }
 
 Player::Player(){
@@ -218,27 +218,57 @@ void Player::joyMove() {
 }
 
 void Player::Move() {
-
+	const float value = 0.7f;
+	bool isMove_ = false;
 	/*----------移動処理----------*/
-	if (KeyInput::GetKey(DIK_D)) {
-		worldTransformBase_.translate.x += 0.3f;
+	float kCharacterSpeed = 0.3f;
+	// 移動量
+	Vector3 move = {0.0f, 0.0f, 0.0f};
 
-	}else if (KeyInput::GetKey(DIK_A)) {
-		worldTransformBase_.translate.x -= 0.3f;
+	// 左右移動
+	if (KeyInput::GetKey(DIK_A)) {
+		    move.x = -1;
+
+	} else if (KeyInput::GetKey(DIK_D)) {
+		    move.x = 1;
 	}
-	if (KeyInput::GetKey(DIK_W)) {
-		worldTransformBase_.translate.z += 0.3f;
 
-	} else if (KeyInput::GetKey(DIK_S)) {
-		worldTransformBase_.translate.z -= 0.3f;
+	
+
+	// 上下移動
+	if (KeyInput::GetKey(DIK_S)) {
+		    move.z = -1;
+
+	} else if (KeyInput::GetKey(DIK_W)) {
+		    move.z = 1;
 	}
 
-	if (KeyInput::GetKey(DIK_UPARROW)) {
-		worldTransformBase_.translate.y += 0.3f;
-
-	} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
-		worldTransformBase_.translate.y -= 0.3f;
+	if (KeyInput::GetKey(DIK_W) || KeyInput::GetKey(DIK_A) || KeyInput::GetKey(DIK_S) ||
+	    KeyInput::GetKey(DIK_D)) {
+		    isMove_ = true;
+		    move = Math::Normalize(move);
+		    move = Math::Multiply(kCharacterSpeed, move);
 	}
+
+	//
+	Matrix4x4 rotateMatrix = Math::Multiply(
+	    Math::MakeRotateXMatrix(viewProjection_->rotation_.x),
+	    Math::Multiply(
+	        Math::MakeRotateYMatrix(viewProjection_->rotation_.y),
+	        Math::MakeRotateZMatrix(viewProjection_->rotation_.z)));
+
+	move = Math::TransformNormal(move, rotateMatrix);
+
+	if (isMove_) {
+	   // 平行移動
+	   worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, move);
+	   destinationAngleY_ = std::atan2(move.x, move.z);
+	}
+	
+	// 回転
+	worldTransformBase_.rotate.y =
+	    Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+
 
 	if (KeyInput::GetKey(DIK_SPACE) && !jump_) {
 		upSpeed_ = 0.6f;
@@ -413,3 +443,4 @@ void Player::ApplyGlobalVariables() {
 	
 #endif
 }
+

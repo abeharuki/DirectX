@@ -49,8 +49,7 @@ public: // メンバ関数
 	// 当たり判定
 	void CheckAllCollision();
 	
-	// 追従対象からのオフセット計算
-	Vector3 calculateOffset() const;
+	
 
 private: // メンバ変数
 
@@ -85,12 +84,5 @@ private: // メンバ変数
 	bool collision2_ = false;
 
 
-	// 追跡対象の残像座標
-	Vector3 interTarget_ = {};
-	const WorldTransform* target_ = nullptr;
-	// 目標角度
-	float destinationAngleY_ = 0.0f;
-	float destinationAngleX_ = 0.0f;
-	// 遅延量
-	float delayAmount_ = 0.2f;
+	
 };

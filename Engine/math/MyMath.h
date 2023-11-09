@@ -141,6 +141,9 @@ public:
 	
 	static Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix);
 
+		// 正規化
+	static Vector3 Normalize(const Vector3& v);
+
 	static Matrix4x4 MakeIdentity4x4();
 
 	// 回転X
