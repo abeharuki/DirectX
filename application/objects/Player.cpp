@@ -9,9 +9,12 @@ void Player::Initialize(const std::vector<Model*>& models) {
 
 	// 初期化
 	worldTransformBase_.Initialize();
+	worldTransformHead_.Initialize();
 	worldTransformHammer_.Initialize();
 	worldTransformWW_.Initialize();
 
+	worldTransformHead_.rotate.y = 3.160f;
+	worldTransformHead_.translate.y = -1.1f;
 	worldTransformWW_.scale = {0.8f, 0.8f, 0.8f};
 	worldTransformWW_.translate.y = 4.3f;
 #ifdef _DEBUG
@@ -89,11 +92,12 @@ void Player::Update(){
 		worldTransformBase_.translate = {0.0f, 0.0f, 0.0f};
 	}
 	worldTransformBase_.UpdateMatrix();
+	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
 	worldTransformWW_.TransferMatrix();
 
 	ImGui::Begin("Player");
-	ImGui::DragFloat4("translation", &worldTransformBase_.translate.x, 0.01f);
+	ImGui::DragFloat4("translation", &worldTransformHead_.translate.x, 0.01f);
 	ImGui::Text(" X%f Y%f Z%f", worldTransformBase_.matWorld_.m[3][0], worldTransformBase_.matWorld_.m[3][1],worldTransformBase_.matWorld_.m[3][2]);
 	ImGui::Text(" isHit%d", isHit_);
 	ImGui::Text(" isHitFloor%d", isHitFloor_);
@@ -110,12 +114,11 @@ void Player::Update(){
 }
 
 void Player::Draw(const ViewProjection& viewprojection){
-	models_[0]->Draw(worldTransformBase_, viewprojection);
+	models_[0]->Draw(worldTransformHead_, viewprojection);
 	if (behavior_ == Behavior::kAttack) {
-		
-	
+		models_[1]->Draw(worldTransformHammer_, viewprojection);
 	}
-	models_[1]->Draw(worldTransformHammer_, viewprojection);
+	
 }
 
 Player::Player(){
@@ -276,11 +279,11 @@ void Player::Move() {
 	}
 	Jump();
 	//攻撃
-	if (KeyInput::PushKey(DIK_0)) {
+	if (KeyInput::PushKey(DIK_O)) {
 		behaviorRequest_ = Behavior::kAttack;
 	}
 	//ダッシュ
-	if (KeyInput::PushKey(DIK_9)) {
+	if (KeyInput::PushKey(DIK_P)) {
 		behaviorRequest_ = Behavior::kDash;
 	}
 
@@ -422,6 +425,14 @@ void Player::OnCollisionFloor() { isHitFloor_ = true; }
 void Player::OutCollisionFloor() { isHitFloor_ = false; }
 
 void Player::Relationship() {
+
+	worldTransformHead_.matWorld_ = Math::Multiply(
+	    Math::MakeAffineMatrix(
+	        worldTransformHead_.scale, worldTransformHead_.rotate,
+	        worldTransformHead_.translate),
+	    worldTransformBase_.matWorld_);
+
+
 	worldTransformHammer_.matWorld_ =
 	    Math::Multiply(Math::MakeAffineMatrix(
 	        worldTransformHammer_.scale, worldTransformHammer_.rotate, worldTransformHammer_.translate),

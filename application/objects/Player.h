@@ -103,6 +103,7 @@ public: // メンバ関数
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformFloor_;
 	WorldTransform worldTransformWW_;
