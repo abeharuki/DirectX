@@ -39,6 +39,16 @@ Vector3 Math::Subract(const Vector3& v1, const Vector3& v2) {
 	return subract;
 };
 
+Vector3 Math::TransformNormal(const Vector3& vector, const Matrix4x4& matrix) {
+	Vector3 result;
+	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0];
+	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1];
+	result.z = vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2];
+
+	return result;
+};
+
+
 // 加算
 Matrix4x4 Math::Add(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 add;
@@ -449,5 +459,57 @@ float Math::Length(const Vector3& v) {
 	return length;
 };
 
+
+
+// 線形補間
+Vector3 Math::Lerp(const Vector3& p0, const Vector3& p1, float t) {
+	return {
+	    (1.0f - t) * p0.x + t * p1.x,
+	    (1.0f - t) * p0.y + t * p1.y,
+	    (1.0f - t) * p0.z + t * p1.z,
+	};
+}
+
+// 最短角度補間
+float Math::LerpShortAngle(float a, float b, float t) {
+	float Lerp = 0.0f;
+	float Pi = 3.1415f;
+	// 角度差分を求める
+	float diff = b - a;
+
+	if (Pi < diff) {
+		Lerp = std::fmod(diff - 2.0f * Pi, 2.0f * Pi);
+	} else if (-Pi > diff) {
+		Lerp = std::fmod(diff + 2.0f * Pi, 2.0f * Pi);
+	} else {
+		Lerp = diff;
+	}
+
+	return a + Lerp * t;
+}
+
+// 四角形の当たり判定
+bool Math::IsAABBCollision(
+    const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
+    const Vector3 size2) {
+	bool collision = false;
+	AABB a, b;
+	a = {
+	    {translate1.x - size1.x, translate1.y - size1.y, translate1.z - size1.z},
+	    {translate1.x + size1.x, translate1.y + size1.y, translate1.z + size1.z}
+    };
+
+	b = {
+	    {translate2.x - size2.x, translate2.y - size2.y, translate2.z - size2.z},
+	    {translate2.x + size2.x, translate2.y + size2.y, translate2.z + size2.z}
+    };
+	if ((a.min.x <= b.max.x && a.max.x >= b.min.x) && (a.min.y <= b.max.y && a.max.y >= b.min.y) &&
+	    (a.min.z <= b.max.z && a.max.z >= b.min.z)) {
+
+		collision = true;
+	}
+
+	return collision;
+}
 
 

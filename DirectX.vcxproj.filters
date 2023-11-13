@@ -94,11 +94,11 @@
     <Filter Include="ヘッダー ファイル\Engine\particle">
       <UniqueIdentifier>{8311d542-1425-47b8-b028-3efbcf665cce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Application\GlobalVariables">
-      <UniqueIdentifier>{b4b1a66c-600f-4397-860a-a3845ebb8931}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Application\base\GlobalVariables">
       <UniqueIdentifier>{3b1305d6-6c15-4276-a617-41b0ce433e04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\base\GlobalVariables">
+      <UniqueIdentifier>{b4b1a66c-600f-4397-860a-a3845ebb8931}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -189,6 +189,9 @@
     <ClCompile Include="Application\base\GlobalVariables\GlobalVariables.cpp">
       <Filter>ソース ファイル\Application\base\GlobalVariables</Filter>
     </ClCompile>
+    <ClCompile Include="Application\base\camera\followCamera.cpp">
+      <Filter>ソース ファイル\Application\base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\hlsl\Object3d.VS.hlsl" />
@@ -261,12 +264,6 @@
     <ClInclude Include="Engine\3d\Model.h">
       <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="Application\base\Skydome.h">
-      <Filter>ヘッダー ファイル\Application\objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Player.h">
-      <Filter>ヘッダー ファイル\Application\base</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\3d\Sphere.h">
       <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
@@ -286,7 +283,16 @@
       <Filter>ヘッダー ファイル\math</Filter>
     </ClInclude>
     <ClInclude Include="Application\base\GlobalVariables\GlobalVariables.h">
-      <Filter>ヘッダー ファイル\Application\GlobalVariables</Filter>
+      <Filter>ヘッダー ファイル\Application\base\GlobalVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\base\Skydome.h">
+      <Filter>ヘッダー ファイル\Application\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Player.h">
+      <Filter>ヘッダー ファイル\Application\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\base\camera\followCamera.h">
+      <Filter>ヘッダー ファイル\Application\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
