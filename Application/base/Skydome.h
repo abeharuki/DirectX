@@ -23,5 +23,5 @@ public:
 
 private:
 	WorldTransform worldTransform_;
-	std::unique_ptr<Model> model_;
+	Model* model_;
 };
