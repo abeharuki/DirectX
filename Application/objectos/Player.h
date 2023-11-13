@@ -43,16 +43,14 @@ public: // メンバ関数
 
 	Vector3 GetWorldPosition();
 
-	const WorldTransform& GetWorldTransform() { return worldTransform_; }
+	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
 
 private: // メンバ変数
-	WorldTransform worldTransform_;
+	WorldTransform worldTransformBase_;
 	ViewProjection viewProjection_;
-	// 3Dモデル
-	std::unique_ptr<Model> model_;
-
+	
 };

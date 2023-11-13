@@ -6,10 +6,7 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() { 
-	
-
-}
+GameScene::~GameScene() {}
 
 GameScene* GameScene::GetInstance() {
 	static GameScene instance;
@@ -38,14 +35,14 @@ void GameScene::Initialize() {
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
 	// 3Dモデルの生成
-	modelSkydome_.reset(
-	    Model::CreateModelFromObj("resources/skydome.obj", "resources/skydome/sky.png"));
+	modelSkydome_.reset(Model::CreateModelFromObj("resources/skydome.obj", "resources/skydome/sky.png"));
 	skydome_->Initialize(modelSkydome_.get());
+
 	//スフィア
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 
-	particle_.reset(Particle::Create("resources/uvChecker.png",10));
+	//particle_.reset(Particle::Create("resources/uvChecker.png",10));
 
 
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
@@ -81,6 +78,9 @@ void GameScene::Update() {
 		//particle_->Update();
 	}
 	
+	if (KeyInput::PushKey(DIK_P)) {
+		sceneNo_ = CLEAR;
+	}
 
 	worldTransform_.rotate.y += 0.02f;
 	worldTransform_.UpdateMatrix();
@@ -168,7 +168,7 @@ void GameScene::Draw() {
 	//板ポリ
 	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
 	//パーティクル
-	particle_->Draw(worldTransformp_, viewProjection_);
+	//particle_->Draw(worldTransformp_, viewProjection_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

@@ -3,7 +3,7 @@
 
 void Skydome::Initialize(Model* model) {
 	assert(model);
-	model_.reset(model);
+	model_ = model;
 
 	worldTransform_.Initialize();
 }

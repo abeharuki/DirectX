@@ -103,7 +103,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\base\BaseCharacter.cpp" />
     <ClCompile Include="Application\base\camera\followCamera.cpp" />
     <ClCompile Include="Application\base\Skydome.cpp" />
+    <ClCompile Include="Application\scene\ClearScene.cpp" />
     <ClCompile Include="Application\scene\GameScene.cpp" />
+    <ClCompile Include="Application\scene\TitleScene.cpp" />
     <ClCompile Include="Engine\2d\Sprite.cpp" />
     <ClCompile Include="Engine\3d\Mesh.cpp" />
     <ClCompile Include="Engine\3d\Model.cpp" />
@@ -113,6 +115,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="Engine\base\WinApp.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
+    <ClCompile Include="Engine\Manager\IScene.cpp" />
+    <ClCompile Include="Engine\Manager\SceneManager.cpp" />
     <ClCompile Include="Engine\Math\math.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
@@ -161,7 +165,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\base\BaseCharacter.h" />
     <ClInclude Include="Application\base\camera\followCamera.h" />
     <ClInclude Include="Application\base\Skydome.h" />
+    <ClInclude Include="Application\scene\ClearScene.h" />
     <ClInclude Include="Application\scene\GameScene.h" />
+    <ClInclude Include="Application\scene\TitleScene.h" />
     <ClInclude Include="Engine\2d\Sprite.h" />
     <ClInclude Include="Engine\3d\Mesh.h" />
     <ClInclude Include="Engine\3d\Model.h" />
@@ -171,6 +177,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\base\DirectXCommon.h" />
     <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="Engine\Engine.h" />
+    <ClInclude Include="Engine\Manager\IScene.h" />
+    <ClInclude Include="Engine\Manager\SceneManager.h" />
     <ClInclude Include="Engine\Math\math.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />

@@ -22,7 +22,9 @@ public:
 	/// </summary>
 	static void Finalize();
 
-	static bool BeginFrame();
+	static bool ProcessMessage();
+
+	static void BeginFrame();
 
 	static void EndFrame();
 

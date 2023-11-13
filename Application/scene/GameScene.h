@@ -1,47 +1,29 @@
 #pragma once
+#include "IScene.h"
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include "DirectXCommon.h"
 #include "Model.h"
 #include "Engine.h"
 #include "Sprite.h"
-#include "KeyInput.h"
 #include "Skydome.h"
 #include "Sphere.h"
 #include "Particle.h"
 
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
-class GameScene {
-
+class GameScene : public IScene {
 public: // メンバ関数
-	/// <summary>
-	/// コンストクラタ
-	/// </summary>
+	void Initialize() override;
+	void Update() override;
+	void Draw() override;
+	
 	GameScene();
-
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
 	~GameScene();
 
 	static GameScene* GetInstance();
-
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize();
-
-	/// <summary>
-	/// 毎フレーム処理
-	/// </summary>
-	void Update();
-
-	/// <summary>
-	/// 描画
-	/// </summary>
-	void Draw();
 
 private://基本変数
 	//光の数値
