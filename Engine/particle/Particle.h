@@ -103,10 +103,10 @@ private:
 	uint32_t texture_;
 
     uint32_t instanceCount = 1;
-	ParticleM transforms[1];
+	ParticleM transforms[10];
 
 	const float kDeltaTime = 1.0f / 60.0f;
-	Vector3 velo[1];
+	
 
 	uint32_t descriptorSizeSRV;
 

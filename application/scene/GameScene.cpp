@@ -42,7 +42,7 @@ void GameScene::Initialize() {
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 
-	//particle_.reset(Particle::Create("resources/particle/circle.png",10));
+	particle_.reset(Particle::Create("resources/particle/circle.png",10));
 
 
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
@@ -75,7 +75,7 @@ void GameScene::Update() {
 	}
 
 	if (particle) {
-		//particle_->Update();
+		particle_->Update();
 	}
 	
 	if (KeyInput::PushKey(DIK_P)) {
@@ -157,9 +157,6 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	Model::LightDraw(color_,direction_, intensity_);
 
-	/// <summary>
-	/// ここに3Dオブジェクトの描画処理を追加できる
-	/// </summary>
 	// 天球
 	skydome_->Draw(viewProjection_,false);
 	//sphere_->Draw(worldTransform_, viewProjection_,true);
@@ -168,7 +165,7 @@ void GameScene::Draw() {
 	//板ポリ
 	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
 	//パーティクル
-	//particle_->Draw(worldTransformp_, viewProjection_);
+	particle_->Draw(worldTransformp_, viewProjection_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -177,10 +174,7 @@ void GameScene::Draw() {
 	// 前景スプライト描画前処理
 	Sprite::PreDraw();
 	
-	/// <summary>
-	/// ここに前景スプライトの描画処理を追加できる
-	/// </summary>
-	
+
 	//sprite_->Draw(worldTransform_,uvTransform_);
 	
 	//sprite2_->Draw(worldTransformB_);

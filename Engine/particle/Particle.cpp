@@ -23,7 +23,11 @@ void Particle::sPipeline() {
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
 };
 
-void Particle::Update() { for (uint32_t i = 0; i < instanceCount; ++i){} }
+void Particle::Update() { 
+	for (uint32_t i = 0; i < instanceCount; ++i){
+		transforms[i].transform.translate += transforms[i].velocity* kDeltaTime;
+	} 
+}
 
 void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 	
@@ -31,10 +35,7 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 	for (uint32_t i = 0; i < instanceCount; ++i) {
 		transforms[i].transform.scale = worldTransform.scale;
 		transforms[i].transform.rotate = worldTransform.rotate;
-		transforms[i].transform.translate = {
-		    (i * 0.1f + worldTransform.translate.x), 
-			(i * 0.1f + worldTransform.translate.y),
-		    (i * 0.1f + worldTransform.translate.z)};
+		transforms[i].transform.translate = transforms[i].transform.translate + worldTransform.translate;
 	}
 
 	for (uint32_t i = 0; i < instanceCount; ++i) {
@@ -114,7 +115,12 @@ void Particle::CreateVertexResource() {
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 	
-	
+	for (uint32_t i = 0; i < instanceCount; ++i) {
+		transforms[i].transform.scale = {1.0f,1.0f,1.0f};
+		transforms[i].transform.rotate = {0.0f,0.0f,0.0f};
+		transforms[i].transform.translate = {(i * 0.1f ), (i * 0.1f),(i * 0.1f )};
+		transforms[i].velocity = {0.0f, 1.0f, 0.0f};
+	}
 	
 };
 

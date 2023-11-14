@@ -394,7 +394,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateParticleRoot
 	        D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
 	    // RootSignature作成. 複数設定できるので配列。
-	    D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	    D3D12_ROOT_PARAMETER rootParameters[5] = {};
 	    rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
 	    rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	    rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
@@ -415,11 +415,15 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateParticleRoot
 	    rootParameters[2].DescriptorTable.NumDescriptorRanges =
 	        _countof(descriptorRange); // Tableで利用する数
 
-	   
-	    // viewProjection
+		 // worldTransform
 	    rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;     // CBVを使う
 	    rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // vertexShaderで使う
 	    rootParameters[3].Descriptor.ShaderRegister = 0; // レジスタ番号を1にバインド
+	   
+	    // viewProjection
+	    rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;     // CBVを使う
+	    rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // vertexShaderで使う
+	    rootParameters[4].Descriptor.ShaderRegister = 1; // レジスタ番号を1にバインド
 
 	    // RootSignature作成
 	    D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
