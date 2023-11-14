@@ -42,7 +42,7 @@ void GameScene::Initialize() {
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 
-	//particle_.reset(Particle::Create("resources/uvChecker.png",10));
+	//particle_.reset(Particle::Create("resources/particle/circle.png",10));
 
 
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
