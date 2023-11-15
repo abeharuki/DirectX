@@ -45,9 +45,11 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 	uint32_t numInstance = 0;
 	if (particle) {
 		for (uint32_t i = 0; i < instanceCount; ++i) {
-			
+			float alph = 1.0f - (particles[i].currentTime / particles[i].lifeTime);
 			if (particles[i].lifeTime <= particles[i].currentTime) {
-				//continue;
+				std::random_device seedGenerator;
+				std::mt19937 randomEngine(seedGenerator());
+				particles[i] = MakeNewParticle(randomEngine);
 			}
 
 			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(
@@ -61,8 +63,8 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 			instancingData[numInstance].WVP = worldViewProjectionMatrixSprite;
 			instancingData[numInstance].World = worldMatrix;
 			instancingData[numInstance].color = particles[i].color;
-			float alph = 1.0f - (particles[i].currentTime / particles[i].lifeTime);
-			instancingData[numInstance].color.z = alph;
+			
+			instancingData[numInstance].color.w = alph;
 			++numInstance;
 		}
 	}
@@ -95,7 +97,7 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 		ImGui::TreePop();
 	 }
 
-	ImGui::SliderFloat4("color", &instancingData[0].color.z, -1.0f, 1.0f);
+	
 		
 	ImGui::End();
 }
@@ -201,7 +203,7 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine) {
 	Particle_ particle;
 	particle.transform.scale = {1.0f, 1.0f, 1.0f};
 	particle.transform.rotate = {0.0f, 0.0f, 0.0f};
-	particle.transform.translate = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
+	particle.transform.translate = { 0.0f, 0.0f, 0.0f}; //{distribution(randomEngine), distribution(randomEngine),//distribution(randomEngine)};
 	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
 	particle.color = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),1.0f};
 	particle.lifeTime = distTime(randomEngine);

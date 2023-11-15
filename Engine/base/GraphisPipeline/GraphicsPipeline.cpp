@@ -272,7 +272,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 		// Depthの機能を有効化する
 		depthStencilDesc.DepthEnable = true;
 		// 書き込みします
-		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 		// 比較関数はLessEqual。つまり、近ければ描画される
 		depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 

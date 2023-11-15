@@ -70,17 +70,17 @@ void Engine::BeginFrame() {
 	
 }
 
-void Engine::Finalize() {
-
-	delete keyInput;
-	keyInput = nullptr;
+void Engine::Finalize(){
+	
+	
 	dxCommon->Debug();
+
 	//  DirectX終了処理
 	dxCommon->Finalize();
-	dxCommon = nullptr;
+	
 	// ゲームウィンドウの破棄
 	win->TerminateGameWindow();
-	win = nullptr;
+	
 }
 
 void Engine::EndFrame() {

@@ -75,7 +75,7 @@ public:
 	
 	
 
-	//static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath); 
+	
 	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
 	
 	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
@@ -111,8 +111,8 @@ private:
 
 	uint16_t instanceCount = 10;
  private:
-	//DirectX::ScratchImage LoadTexture(const std::string& filePath);
-	 void LoadTexture(const std::string& filename, const std::string& texturePath);
+	
+	void LoadTexture(const std::string& filename, const std::string& texturePath);
 
 	 // objファイルの読み込み
 	

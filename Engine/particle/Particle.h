@@ -25,12 +25,12 @@ public: // 静的メンバ変数
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
-	Microsoft::WRL::ComPtr<ID3D12PipelineState>sPipelineState_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-	BlendMode blendMode_ = BlendMode::kNone;
+	BlendMode blendMode_ = BlendMode::kAdd;
 
 public:
 	/// <summary>
