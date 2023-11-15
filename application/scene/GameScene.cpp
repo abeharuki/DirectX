@@ -17,7 +17,7 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransformp_.Initialize();
 	viewProjection_.Initialize();
-	viewProjection_.translation_ = {0.0f, 0.0f, -5.0f};
+	viewProjection_.translation_ = {0.0f, 2.0f, -10.0f};
 
 	worldTransform_.translate.x = {1.0f};
 	worldTransform_.translate.z = {-2.0f};
@@ -133,11 +133,11 @@ void GameScene::Update() {
 
 		ImGui::TreePop();
 	}
-	if (ImGui::TreeNode("Particle")) {
-		// LightLight
-		ImGui::Checkbox("move", &particle);
-		ImGui::TreePop();
-	}
+	//if (ImGui::TreeNode("Particle")) {
+	//	// LightLight
+	//	ImGui::Checkbox("move", &particle);
+	//	ImGui::TreePop();
+	//}
 	if (ImGui::TreeNode("Light")) {
 		// LightLight
 		ImGui::SliderFloat3("LightColor", &color_.x, -1.0f, 1.0f);

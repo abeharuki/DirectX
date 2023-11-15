@@ -66,12 +66,14 @@ public:
 	// texturePath);
 	static Particle* Create(const std::string& filename,uint32_t Count);
 
+	Particle_ MakeNewParticle(std::mt19937& randomEngine);
 	
 	// 色とアルファ値
 	void SetColor(Vector4 color);
 
 	// ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
+
 
 private:
 	
@@ -95,7 +97,7 @@ private:
 
 	
 	// データを書き込む
-	TransformationMatrix* instancingData;
+	ParticleForGPU* instancingData;
 	ModelData modelData;
 	Material* materialData = nullptr;
 
@@ -103,10 +105,12 @@ private:
 	uint32_t texture_;
 
     uint32_t instanceCount = 1;
-	ParticleM transforms[10];
+	Particle_ particles[10];
 
 	const float kDeltaTime = 1.0f / 60.0f;
 	
+	
+	bool particle;
 
 	uint32_t descriptorSizeSRV;
 
