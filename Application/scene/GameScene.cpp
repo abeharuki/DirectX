@@ -89,7 +89,7 @@ void GameScene::Update() {
 	skydome_->Update();
 
 	modelplane_->SetColor(colorPlane);
-	
+	//particle_->SetColor(particleColor);
 	
 	ImGui::Begin("Setting");
 	if (ImGui::TreeNode("plane")) {
@@ -133,11 +133,11 @@ void GameScene::Update() {
 
 		ImGui::TreePop();
 	}
-	//if (ImGui::TreeNode("Particle")) {
-	//	// LightLight
-	//	ImGui::Checkbox("move", &particle);
-	//	ImGui::TreePop();
-	//}
+	if (ImGui::TreeNode("Particle")) {
+		// LightLight
+		ImGui::SliderFloat4("Color", &particleColor.x, -1.0f, 1.0f);
+		ImGui::TreePop();
+	}
 	if (ImGui::TreeNode("Light")) {
 		// LightLight
 		ImGui::SliderFloat3("LightColor", &color_.x, -1.0f, 1.0f);
@@ -161,7 +161,7 @@ void GameScene::Draw() {
 	skydome_->Draw(viewProjection_,false);
 	//sphere_->Draw(worldTransform_, viewProjection_,true);
 	//フェンス
-	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
+	//modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
 	//板ポリ
 	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
 	//パーティクル
