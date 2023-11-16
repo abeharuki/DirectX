@@ -42,7 +42,7 @@ void GameScene::Initialize() {
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 
-	particle_.reset(Particle::Create("resources/particle/circle.png",10));
+	particle_.reset(Particle::Create("resources/particle/circle.png",num));
 
 
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
@@ -74,10 +74,14 @@ void GameScene::Update() {
 		colorPlane.w -= 0.01f;
 	}
 
+	particle_->SetSpeed(float(num));
+	
 	if (particle) {
 		particle_->Update();
+		particle_->LoopParticles();
 	}
 	
+
 	if (KeyInput::PushKey(DIK_P)) {
 		sceneNo_ = CLEAR;
 	}
@@ -88,8 +92,9 @@ void GameScene::Update() {
 	viewProjection_.UpdateMatrix();
 	skydome_->Update();
 
+
 	modelplane_->SetColor(colorPlane);
-	//particle_->SetColor(particleColor);
+	
 	
 	ImGui::Begin("Setting");
 	if (ImGui::TreeNode("plane")) {
@@ -134,8 +139,8 @@ void GameScene::Update() {
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Particle")) {
-		// LightLight
-		ImGui::SliderFloat4("Color", &particleColor.x, -1.0f, 1.0f);
+		ImGui::Checkbox("move", &particle);
+		ImGui::SliderInt("speed", &num, 0, 100);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Light")) {
@@ -158,7 +163,7 @@ void GameScene::Draw() {
 	Model::LightDraw(color_,direction_, intensity_);
 
 	// 天球
-	skydome_->Draw(viewProjection_,false);
+	//skydome_->Draw(viewProjection_,false);
 	//sphere_->Draw(worldTransform_, viewProjection_,true);
 	//フェンス
 	//modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
