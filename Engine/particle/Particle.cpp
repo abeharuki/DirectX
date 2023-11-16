@@ -1,13 +1,11 @@
 #include "Particle.h"
 #include <cassert>
 #include <format>
-
-std::random_device seedGenerator;
-std::mt19937 randomEngine(seedGenerator());
+#include "ImGuiManager.h"
 
 void Particle::Initialize(const std::string& filename, uint32_t Count) {
 	instanceCount = Count;
-	transforms[Count];
+	particles[Count];
 	LoadTexture(filename);
 	CreateVertexResource();
 	sPipeline();
@@ -23,28 +21,60 @@ void Particle::sPipeline() {
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
 };
 
-void Particle::Update() { for (uint32_t i = 0; i < instanceCount; ++i){} }
+void Particle::Update() { particle = true; }
+
+void Particle::LoopParticles() { 
+	
+	loop_ = true;
+	for (uint32_t i = 0; i < instanceCount; ++i) {
+		if (particles[i].lifeTime <= particles[i].currentTime) {
+			std::random_device seedGenerator;
+			std::mt19937 randomEngine(seedGenerator());
+			particles[i] = MakeNewParticle(randomEngine);
+		}
+	}
+	
+}
+
+
 
 void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 	
 
 	for (uint32_t i = 0; i < instanceCount; ++i) {
-		transforms[i].transform.scale = worldTransform.scale;
-		transforms[i].transform.rotate = worldTransform.rotate;
-		transforms[i].transform.translate = {
-		    (i * 0.1f + worldTransform.translate.x), 
-			(i * 0.1f + worldTransform.translate.y),
-		    (i * 0.1f + worldTransform.translate.z)};
+		particles[i].transform.scale = worldTransform.scale;
+		particles[i].transform.rotate = worldTransform.rotate;
+		particles[i].transform.translate = particles[i].transform.translate + worldTransform.translate;
+		
 	}
+	uint32_t numInstance = 0;
+	if (particle) {
+		for (uint32_t i = 0; i < instanceCount; ++i) {
+			float alph = 1.0f - (particles[i].currentTime / particles[i].lifeTime);
+			if (!loop_) {
+				if (particles[i].lifeTime <= particles[i].currentTime) {
+					continue;
+				}
+			}
+			
 
-	for (uint32_t i = 0; i < instanceCount; ++i) {
-		Matrix4x4 worldMatrix = Math::MakeAffineMatrix(
-		    transforms[i].transform.scale, transforms[i].transform.rotate, transforms[i].transform.translate);
-		Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(worldMatrix,Math::Multiply(viewProjection.matView, viewProjection.matProjection));
-		instancingData[i].WVP = worldViewProjectionMatrixSprite;
-		instancingData[i].World = worldMatrix;
+			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(
+			    particles[i].transform.scale, particles[i].transform.rotate,
+			    particles[i].transform.translate);
+			Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
+			    worldMatrix, Math::Multiply(viewProjection.matView, viewProjection.matProjection));
+			particles[i].transform.translate += particles[i].velocity * kDeltaTime;
+			particles[i].currentTime += kDeltaTime;
 
+			instancingData[numInstance].WVP = worldViewProjectionMatrixSprite;
+			instancingData[numInstance].World = worldMatrix;
+			instancingData[numInstance].color = particles[i].color;
+			
+			instancingData[numInstance].color.w = alph;
+			++numInstance;
+		}
 	}
+	
 	
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
@@ -65,13 +95,13 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 	Engine::GetList()->SetGraphicsRootConstantBufferView( 3, instancingResouce_->GetGPUVirtualAddress());
 	
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), instanceCount, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
 }
 
 // 頂点データの設定
 void Particle::CreateVertexResource() {
 	instancingResouce_ = Mesh::CreateBufferResoure(
-	    Engine::GetDevice().Get(), sizeof(TransformationMatrix) * instanceCount);
+	    Engine::GetDevice().Get(), sizeof(ParticleForGPU) * instanceCount);
 	// データを書き込む
 	instancingData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -80,6 +110,7 @@ void Particle::CreateVertexResource() {
 	for (uint32_t i = 0; i < instanceCount; ++i) {
 		instancingData[i].WVP = Math::MakeIdentity4x4();
 		instancingData[i].World = Math::MakeIdentity4x4();
+		instancingData[i].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f); 
 	}
 
 
@@ -114,9 +145,16 @@ void Particle::CreateVertexResource() {
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 	
-	
+	// 乱数生成
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+	for (uint32_t i = 0; i < instanceCount; ++i) {
+		particles[i] = MakeNewParticle(randomEngine);
+	}
 	
 };
+
+void Particle::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
 
 void Particle::SetColor(Vector4 color) {
 	materialData->color.rgb = {color.x, color.y, color.z};
@@ -149,11 +187,24 @@ void Particle::CreateInstanceSRV() {
 	instancingSrvDesc.Buffer.FirstElement = 0;
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	instancingSrvDesc.Buffer.NumElements = instanceCount;
-	instancingSrvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 	instancingSrvHandelCPU = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,2);
 	instancingSrvHandelGPU = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,2);
-	Engine::GetDevice()->CreateShaderResourceView(
-	    instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
+	Engine::GetDevice()->CreateShaderResourceView(  instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
 
 }
 
+Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine) {
+	std::uniform_real_distribution<float> distribution(-1.0, 1.0);
+	std::uniform_real_distribution<float> distTime(1.0, 3.0);
+	Particle_ particle;
+	particle.transform.scale = {1.0f, 1.0f, 1.0f};
+	particle.transform.rotate = {0.0f, 0.0f, 0.0f};
+	particle.transform.translate = { 0.0f, 0.0f, 0.0f}; //{distribution(randomEngine), distribution(randomEngine),//distribution(randomEngine)};
+	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
+	particle.color = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),1.0f};
+	particle.lifeTime = distTime(randomEngine);
+	particle.currentTime = 0;
+	return particle;
+	 
+}

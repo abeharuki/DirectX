@@ -161,7 +161,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 #pragma region InputLayout
 
 		// InputLayoutの設定
-		D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
+		D3D12_INPUT_ELEMENT_DESC inputElementDescs[4] = {};
 		inputElementDescs[0].SemanticName = "POSITION";
 		inputElementDescs[0].SemanticIndex = 0;
 		inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -174,6 +174,10 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 		inputElementDescs[2].SemanticIndex = 0;
 		inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 		inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+		inputElementDescs[3].SemanticName = "COLOR";
+		inputElementDescs[3].SemanticIndex = 0;
+		inputElementDescs[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		inputElementDescs[3].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 		D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 		inputLayoutDesc.pInputElementDescs = inputElementDescs;
 		inputLayoutDesc.NumElements = _countof(inputElementDescs);
@@ -268,7 +272,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 		// Depthの機能を有効化する
 		depthStencilDesc.DepthEnable = true;
 		// 書き込みします
-		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 		// 比較関数はLessEqual。つまり、近ければ描画される
 		depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
@@ -394,7 +398,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateParticleRoot
 	        D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
 	    // RootSignature作成. 複数設定できるので配列。
-	    D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	    D3D12_ROOT_PARAMETER rootParameters[5] = {};
 	    rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
 	    rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	    rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
@@ -415,11 +419,15 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateParticleRoot
 	    rootParameters[2].DescriptorTable.NumDescriptorRanges =
 	        _countof(descriptorRange); // Tableで利用する数
 
-	   
-	    // viewProjection
+		 // worldTransform
 	    rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;     // CBVを使う
 	    rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // vertexShaderで使う
 	    rootParameters[3].Descriptor.ShaderRegister = 0; // レジスタ番号を1にバインド
+	   
+	    // viewProjection
+	    rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;     // CBVを使う
+	    rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // vertexShaderで使う
+	    rootParameters[4].Descriptor.ShaderRegister = 1; // レジスタ番号を1にバインド
 
 	    // RootSignature作成
 	    D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};

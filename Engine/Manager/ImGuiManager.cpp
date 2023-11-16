@@ -51,8 +51,6 @@ void ImGuiManager::Begin() {
 void ImGuiManager::End() {
 #ifdef _DEBUG
 
-	// 開発用UIの処理。
-	ImGui::ShowDemoWindow();
 	// ImGuiの内部コマンドを生成する
 	ImGui::Render();
 #endif
