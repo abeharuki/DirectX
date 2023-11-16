@@ -73,14 +73,15 @@ void Engine::BeginFrame() {
 void Engine::Finalize(){
 	
 	
-	dxCommon->Debug();
+	
 
 	//  DirectX終了処理
 	dxCommon->Finalize();
 	
 	// ゲームウィンドウの破棄
 	win->TerminateGameWindow();
-	
+
+	//dxCommon->Debug();
 }
 
 void Engine::EndFrame() {

@@ -40,13 +40,12 @@ public:
 	static Particle* GetInstance();
 
 	// 初期化
-	
 	void Initialize(const std::string& filename, uint32_t Count);
 
+	//スタート
 	void Update();
-	/// <summary>
-	/// グラフィックスパイプラインの初期化
-	/// </summary>
+	
+
 	void sPipeline();
 
 
@@ -60,20 +59,27 @@ public:
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
 
-	
-
-	// static Model* CreateModelFromObj(const std::string& filename, const std::string&
-	// texturePath);
 	static Particle* Create(const std::string& filename,uint32_t Count);
 
 	Particle_ MakeNewParticle(std::mt19937& randomEngine);
 	
+	//パーティクルループ
+	void LoopParticles();
+
+	//パーティクルの数
+	void SetCount(int count) {
+		instanceCount = count;
+		particles[count];
+	}
+
 	// 色とアルファ値
 	void SetColor(Vector4 color);
 
 	// ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
 
+	//パーティクル速度
+	void SetSpeed(float speed);
 
 private:
 	
@@ -105,12 +111,12 @@ private:
 	uint32_t texture_;
 
     uint32_t instanceCount = 1;
-	Particle_ particles[10];
+	Particle_ particles[100];
 
-	const float kDeltaTime = 1.0f / 60.0f;
+	float kDeltaTime = 1.0f / 60.0f;
 	
-	
-	bool particle;
+	bool loop_ = false;
+	bool particle = false;
 
 	uint32_t descriptorSizeSRV;
 

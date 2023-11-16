@@ -21,17 +21,22 @@ void Particle::sPipeline() {
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
 };
 
-void Particle::Update() { 
-	for (uint32_t i = 0; i < instanceCount; ++i){
-		if (particles[i].lifeTime <= particles[i].currentTime) {
-			continue;
-		}
-		particles[i].transform.translate += particles[i].velocity * kDeltaTime;
-		particles[i].currentTime += kDeltaTime;
+void Particle::Update() { particle = true; }
+
+void Particle::LoopParticles() { 
 	
-		//++numInstance;
-	} 
+	loop_ = true;
+	for (uint32_t i = 0; i < instanceCount; ++i) {
+		if (particles[i].lifeTime <= particles[i].currentTime) {
+			std::random_device seedGenerator;
+			std::mt19937 randomEngine(seedGenerator());
+			particles[i] = MakeNewParticle(randomEngine);
+		}
+	}
+	
 }
+
+
 
 void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 	
@@ -46,11 +51,12 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 	if (particle) {
 		for (uint32_t i = 0; i < instanceCount; ++i) {
 			float alph = 1.0f - (particles[i].currentTime / particles[i].lifeTime);
-			if (particles[i].lifeTime <= particles[i].currentTime) {
-				std::random_device seedGenerator;
-				std::mt19937 randomEngine(seedGenerator());
-				particles[i] = MakeNewParticle(randomEngine);
+			if (!loop_) {
+				if (particles[i].lifeTime <= particles[i].currentTime) {
+					continue;
+				}
 			}
+			
 
 			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(
 			    particles[i].transform.scale, particles[i].transform.rotate,
@@ -90,16 +96,6 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 	
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
-	ImGui::Begin("Setting");
-	 if (ImGui::TreeNode("Particle")) {
-		// LightLight
-		ImGui::Checkbox("move", &particle);
-		ImGui::TreePop();
-	 }
-
-	
-		
-	ImGui::End();
 }
 
 // 頂点データの設定
@@ -158,6 +154,8 @@ void Particle::CreateVertexResource() {
 	
 };
 
+void Particle::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
+
 void Particle::SetColor(Vector4 color) {
 	materialData->color.rgb = {color.x, color.y, color.z};
 	materialData->color.a = color.w;
@@ -195,7 +193,6 @@ void Particle::CreateInstanceSRV() {
 	Engine::GetDevice()->CreateShaderResourceView(  instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
 
 }
-
 
 Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine) {
 	std::uniform_real_distribution<float> distribution(-1.0, 1.0);

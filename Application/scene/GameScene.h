@@ -74,4 +74,5 @@ private: // メンバ変数
 	Vector3 velo = {0.0f, 1.0f, 0.0f};
 	bool particle;
 	Vector4 particleColor;
+	int num = 10;
 };
