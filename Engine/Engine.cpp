@@ -72,9 +72,6 @@ void Engine::BeginFrame() {
 
 void Engine::Finalize(){
 	
-	
-	
-
 	//  DirectX終了処理
 	dxCommon->Finalize();
 	
