@@ -68,7 +68,7 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 
 			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(particles[i].transform.scale,particles[i].transform.rotate ,particles[i].transform.translate);
 			
-			Matrix4x4 worldViewProjectionMatrix = worldMatrix *(viewProjection.matView *viewProjection.matProjection);
+			Matrix4x4 worldViewProjectionMatrix = worldMatrix * (viewProjection.matView *viewProjection.matProjection);
 			particles[i].transform.translate += particles[i].velocity * kDeltaTime;
 			particles[i].currentTime += kDeltaTime;
 
@@ -206,7 +206,7 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine) {
 	Particle_ particle;
 	particle.transform.scale = {1.0f, 1.0f, 1.0f};
 	particle.transform.rotate = {0.0f, 0.0f, 0.0f};
-	particle.transform.translate = { 0.0f, 0.0f, 0.0f}; //{distribution(randomEngine), distribution(randomEngine),//distribution(randomEngine)};
+	particle.transform.translate = {distribution(randomEngine), distribution(randomEngine),distribution(randomEngine)};
 	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
 	particle.color = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),1.0f};
 	particle.lifeTime = distTime(randomEngine);

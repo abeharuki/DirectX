@@ -173,6 +173,9 @@ public:
 	static Matrix4x4 MakeAffineMatrix(
 	    const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
+	static Matrix4x4
+	    MakeAffineRotateMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate);
+
 	// 透視投影行列
 	static Matrix4x4
 	    MakePerspectiverFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);

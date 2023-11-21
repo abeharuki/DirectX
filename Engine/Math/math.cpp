@@ -153,7 +153,6 @@ Matrix4x4 Math::MakeRotateYMatrix(float theta) {
 	MakeRotateMatrix.m[1][2] = 0;
 	MakeRotateMatrix.m[1][3] = 0;
 	MakeRotateMatrix.m[2][0] = std::sin(theta);
-	;
 	MakeRotateMatrix.m[2][1] = 0;
 	MakeRotateMatrix.m[2][2] = std::cos(theta);
 	MakeRotateMatrix.m[2][3] = 0;
@@ -280,6 +279,33 @@ Matrix4x4
 	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
 	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
 	Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
+
+	Matrix4x4 MakeAffineMatrix;
+	MakeAffineMatrix.m[0][0] = scale.x * rotateXYZMatrix.m[0][0];
+	MakeAffineMatrix.m[0][1] = scale.x * rotateXYZMatrix.m[0][1];
+	MakeAffineMatrix.m[0][2] = scale.x * rotateXYZMatrix.m[0][2];
+	MakeAffineMatrix.m[0][3] = 0;
+	MakeAffineMatrix.m[1][0] = scale.y * rotateXYZMatrix.m[1][0];
+	MakeAffineMatrix.m[1][1] = scale.y * rotateXYZMatrix.m[1][1];
+	MakeAffineMatrix.m[1][2] = scale.y * rotateXYZMatrix.m[1][2];
+	MakeAffineMatrix.m[1][3] = 0;
+	MakeAffineMatrix.m[2][0] = scale.z * rotateXYZMatrix.m[2][0];
+	MakeAffineMatrix.m[2][1] = scale.z * rotateXYZMatrix.m[2][1];
+	MakeAffineMatrix.m[2][2] = scale.z * rotateXYZMatrix.m[2][2];
+	MakeAffineMatrix.m[2][3] = 0;
+	MakeAffineMatrix.m[3][0] = translate.x;
+	MakeAffineMatrix.m[3][1] = translate.y;
+	MakeAffineMatrix.m[3][2] = translate.z;
+	MakeAffineMatrix.m[3][3] = 1;
+	return MakeAffineMatrix;
+}
+
+// アフィン変換
+Matrix4x4
+    Math::MakeAffineRotateMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate) {
+	// 回転
+	
+	Matrix4x4 rotateXYZMatrix = rotate;
 
 	Matrix4x4 MakeAffineMatrix;
 	MakeAffineMatrix.m[0][0] = scale.x * rotateXYZMatrix.m[0][0];
