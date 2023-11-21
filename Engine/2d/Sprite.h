@@ -111,7 +111,9 @@ public: // メンバ関数
 	/// 座標の設定
 	/// </summary>
 	/// <param name="position">座標</param>
-	void SetPosition(const Vector2& position);
+	void SetPosition(const Vector2& position) { position_ = position; }
+	void SetSize(const Vector2& size) { size_ = size_; }
+	void SetRotation(const float& rotation) { rotation_ = rotation; }
 
 	const Vector2& GetPosition() const { return position_; }
 
@@ -119,7 +121,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(WorldTransform& worldTransform, Transform& uvTransform);
+	void Draw(Transform& uvTransform);
 
 
 	static Sprite* Create(
@@ -184,7 +186,7 @@ private: // メンバ変数
 	// 座標
 	Vector2 position_{};
 	// スプライト幅、高さ
-	Vector2 size_ = {100.0f, 100.0f};
+	Vector2 size_ = {1.0f, 1.0f};
 	// アンカーポイント
 	Vector2 anchorPoint_ = {0, 0};
 	// ワールド行列

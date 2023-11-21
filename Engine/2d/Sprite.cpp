@@ -53,15 +53,8 @@ void Sprite::PreDraw() {
 
 void Sprite::PostDraw(){};
 
-void Sprite::Draw(WorldTransform& worldTransform,Transform& uvTransform ) {
+void Sprite::Draw(Transform& uvTransform ) {
 	
-	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
-	// データを書き込む
-	wvpData = nullptr;
-	// 書き込むためのアドレスを取得
-	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	// 単位行列を書き込む
-	wvpData->WVP = Math::MakeIdentity4x4();
 	
 	
 	Transform cameraTransform{
@@ -70,13 +63,15 @@ void Sprite::Draw(WorldTransform& worldTransform,Transform& uvTransform ) {
         {0.0f, 0.0f, -10.0f}
     };
 	
-	
+	// Sprite用のworldViewProjectionMatrixを作る
+	Matrix4x4 matWorld_ = Math::MakeAffineMatrix(
+	    {size_.x,size_.y, 1.0f}, {0.0f, 0.0f,rotation_},
+	    {position_.x, position_.y, 0.5f});
 
 	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
 	Matrix4x4 projectionMatrixSprite = Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
-	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
-	    worldTransform.matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
-	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldTransform.matWorld_);
+	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
+	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite,matWorld_);
 
 	
 
@@ -172,6 +167,13 @@ void Sprite::CreateVertexResource() {
 	indexData_[5] = 2;
 	
 
+	wvpResouce = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
+	// データを書き込む
+	wvpData = nullptr;
+	// 書き込むためのアドレスを取得
+	wvpResouce->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込む
+	wvpData->WVP = Math::MakeIdentity4x4();
 	
 	
 	
