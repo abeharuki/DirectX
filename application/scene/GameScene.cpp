@@ -57,9 +57,12 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	if (KeyInput::GetKey(DIK_W)) {
-		worldTransformp_.translate.z += 0.1f;
+		viewProjection_.rotation_.x -= 0.1f;
+
+		//worldTransformp_.translate.z += 0.1f;
 	} else if (KeyInput::GetKey(DIK_S)) {
-		worldTransformp_.translate.z -= 0.1f;
+		viewProjection_.rotation_.x += 0.1f;
+		//worldTransformp_.translate.z -= 0.1f;
 	}
 
 	if (KeyInput::GetKey(DIK_A)) {
@@ -69,10 +72,22 @@ void GameScene::Update() {
 	}
 
 	if (KeyInput::GetKey(DIK_RIGHTARROW)) {
-		colorPlane.w += 0.01f;
+		//colorPlane.w += 0.01f;
+		viewProjection_.translation_.x += 0.1f;
 	} else if (KeyInput::GetKey(DIK_LEFTARROW)) {
-		colorPlane.w -= 0.01f;
+		viewProjection_.translation_.x -= 0.1f;
+		//colorPlane.w -= 0.01f;
 	}
+
+
+	if (KeyInput::GetKey(DIK_UPARROW)) {
+		
+		viewProjection_.translation_.y += 0.1f;
+	} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
+		viewProjection_.translation_.y -= 0.1f;
+		
+	}
+
 
 	particle_->SetSpeed(float(num));
 	
@@ -85,6 +100,8 @@ void GameScene::Update() {
 	if (KeyInput::PushKey(DIK_P)) {
 		sceneNo_ = CLEAR;
 	}
+
+	
 
 	worldTransform_.rotate.y += 0.02f;
 	worldTransform_.UpdateMatrix();
@@ -163,7 +180,7 @@ void GameScene::Draw() {
 	Model::LightDraw(color_,direction_, intensity_);
 
 	// 天球
-	//skydome_->Draw(viewProjection_,false);
+	skydome_->Draw(viewProjection_,false);
 	//sphere_->Draw(worldTransform_, viewProjection_,true);
 	//フェンス
 	//modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);

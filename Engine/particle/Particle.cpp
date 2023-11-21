@@ -1,11 +1,13 @@
 #include "Particle.h"
 #include <cassert>
 #include <format>
+#include <numbers>
 #include "ImGuiManager.h"
 
 void Particle::Initialize(const std::string& filename, uint32_t Count) {
 	instanceCount = Count;
 	particles[Count];
+	
 	LoadTexture(filename);
 	CreateVertexResource();
 	sPipeline();
@@ -39,11 +41,17 @@ void Particle::LoopParticles() {
 
 
 void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix = backToFrontMatrix * viewProjection.matView;
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;
 	
 
 	for (uint32_t i = 0; i < instanceCount; ++i) {
+		
 		particles[i].transform.scale = worldTransform.scale;
-		particles[i].transform.rotate = worldTransform.rotate;
+		particles[i].transform.rotate = {billboardMatrix.m[2][0], billboardMatrix.m[2][1], billboardMatrix.m[2][2]};
 		particles[i].transform.translate = particles[i].transform.translate + worldTransform.translate;
 		
 	}
@@ -58,15 +66,13 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 			}
 			
 
-			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(
-			    particles[i].transform.scale, particles[i].transform.rotate,
-			    particles[i].transform.translate);
-			Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
-			    worldMatrix, Math::Multiply(viewProjection.matView, viewProjection.matProjection));
+			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(particles[i].transform.scale,particles[i].transform.rotate ,particles[i].transform.translate);
+			
+			Matrix4x4 worldViewProjectionMatrix = worldMatrix *(viewProjection.matView *viewProjection.matProjection);
 			particles[i].transform.translate += particles[i].velocity * kDeltaTime;
 			particles[i].currentTime += kDeltaTime;
 
-			instancingData[numInstance].WVP = worldViewProjectionMatrixSprite;
+			instancingData[numInstance].WVP = worldViewProjectionMatrix;
 			instancingData[numInstance].World = worldMatrix;
 			instancingData[numInstance].color = particles[i].color;
 			
