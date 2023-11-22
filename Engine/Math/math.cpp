@@ -1,5 +1,5 @@
 #include "math.h"
-
+#include <imgui.h>
 // 加算
 Vector3 Math::Add(const Vector3& v1, const Vector3& v2) {
 	Vector3 add;
@@ -512,6 +512,45 @@ bool Math::IsAABBCollision(
 	return collision;
 }
 
+
+
+Matrix4x4 Math::MakeRotateAxisAngle(const Vector3& axis, float angle) {
+	Matrix4x4 matrix;
+
+	matrix.m[0][0] = (axis.x * axis.x) * (1 - std::cos(angle)) + std::cos(angle);
+	matrix.m[0][1] = (axis.x * axis.y) * (1 - std::cos(angle)) + axis.z * std::sin(angle);
+	matrix.m[0][2] = (axis.x * axis.z) * (1 - std::cos(angle)) - axis.y * std::sin(angle);
+	matrix.m[0][3] = 0.0f;
+
+	matrix.m[1][0] = (axis.x * axis.y) * (1 - std::cos(angle)) - axis.z * std::sin(angle);
+	matrix.m[1][1] = (axis.y * axis.y) * (1 - std::cos(angle)) + std::cos(angle);
+	matrix.m[1][2] = (axis.x * axis.z) * (1 - std::cos(angle)) + axis.x * std::sin(angle);
+	matrix.m[1][3] = 0.0f;
+
+	matrix.m[2][0] = (axis.x * axis.z) * (1 - std::cos(angle)) + axis.y * std::sin(angle);
+	matrix.m[2][1] = (axis.x * axis.z) * (1 - std::cos(angle)) - axis.x * std::sin(angle);
+	matrix.m[2][2] = (axis.x * axis.z) * (1 - std::cos(angle)) + std::cos(angle);
+	matrix.m[2][3] = 0.0f;
+
+	matrix.m[3][0] = 0.0f;
+	matrix.m[3][1] = 0.0f;
+	matrix.m[3][2] = 0.0f;
+	matrix.m[3][3] = 1.0f;
+
+
+	return matrix;
+}
+
+void Math::MatrixScreenPrintf(const Matrix4x4& matrix,const char* name){
+	ImGui::Begin(name);
+	ImGui::Text("%f, %f, %f, %f", matrix.m[0][0], matrix.m[0][1], matrix.m[0][2], matrix.m[0][3]);
+	ImGui::Text("%f, %f, %f, %f", matrix.m[1][0], matrix.m[1][1], matrix.m[1][2], matrix.m[1][3]);
+	ImGui::Text("%f, %f, %f, %f", matrix.m[2][0], matrix.m[2][1], matrix.m[2][2], matrix.m[2][3]);
+	ImGui::Text("%f, %f, %f, %f", matrix.m[3][0], matrix.m[3][1], matrix.m[3][2], matrix.m[3][3]);
+	ImGui::End();
+
+
+}
 
 /*--------------------演算子オーバーロード---------------------------*/
 // 二項演算子

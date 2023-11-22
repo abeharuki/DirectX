@@ -32,47 +32,5 @@ private://基本変数
 	float intensity_ = 1.0f;
 
 private: // メンバ変数
-	ViewProjection viewProjection_;
-	WorldTransform worldTransform_;
-	WorldTransform worldTransformp_;
-	WorldTransform worldTransformFence_[2];
-	//球
-	std::unique_ptr<Sphere> sphere_;
-
-	// 天球
-	std::unique_ptr<Skydome> skydome_;
-	// 天球3Dモデル
-	std::unique_ptr<Model> modelSkydome_;
-	//板ポリ
-	std::unique_ptr<Model> modelplane_;
-	//フェンス
-	std::unique_ptr<Model> modelFence_[2];
-	//板ポリ
-	std::unique_ptr<Particle> particle_;
-
-	std::unique_ptr<Sprite> sprite_;
-
-	Transform uvTransform_;
-	Vector4 colorPlane;
-	BlendMode blendMode_;
-	const char* EnumToString(BlendMode value) {
-		switch (value) {
-		case BlendMode::kNone:
-			return "kNone"; 
-		case BlendMode::kNormal:
-			return "kNormal";
-		case BlendMode::kAdd:
-			return "kAdd";
-		case BlendMode::kSubtract:
-			return "kSubtract";
-		default:
-			return "Unknown";
-		}
-	}
-
-	const float kDeltaTime = 1.0f / 60.0f;
-	Vector3 velo = {0.0f, 1.0f, 0.0f};
-	bool particle;
-	Vector4 particleColor;
-	int num = 10;
+	
 };

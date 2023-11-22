@@ -198,7 +198,11 @@ public:
 	    const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
 	    const Vector3 size2);
 
-	
+	static void MatrixScreenPrintf(const Matrix4x4& matrix, const char* name);
+
+
+	//任意の回転軸の回転
+	static Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
 };
 
 /*--------------------演算子オーバーロード---------------------------*/
