@@ -188,15 +188,15 @@ Matrix4x4 Math::MakeRotateZMatrix(float theta) {
 Matrix4x4 Math::MakeScaleMatrix(Vector3 scale) {
 	Matrix4x4 MakeAffineMatrix;
 	MakeAffineMatrix.m[0][0] = scale.x;
-	MakeAffineMatrix.m[0][1] = scale.x;
-	MakeAffineMatrix.m[0][2] = scale.x;
+	MakeAffineMatrix.m[0][1] = 0;
+	MakeAffineMatrix.m[0][2] = 0;
 	MakeAffineMatrix.m[0][3] = 0;
-	MakeAffineMatrix.m[1][0] = scale.y;
+	MakeAffineMatrix.m[1][0] = 0;
 	MakeAffineMatrix.m[1][1] = scale.y;
-	MakeAffineMatrix.m[1][2] = scale.y;
+	MakeAffineMatrix.m[1][2] = 0;
 	MakeAffineMatrix.m[1][3] = 0;
-	MakeAffineMatrix.m[2][0] = scale.z;
-	MakeAffineMatrix.m[2][1] = scale.z;
+	MakeAffineMatrix.m[2][0] = 0;
+	MakeAffineMatrix.m[2][1] = 0;
 	MakeAffineMatrix.m[2][2] = scale.z;
 	MakeAffineMatrix.m[2][3] = 0;
 	MakeAffineMatrix.m[3][0] = 0;
@@ -209,17 +209,17 @@ Matrix4x4 Math::MakeScaleMatrix(Vector3 scale) {
 
 Matrix4x4 Math::MakeTranslateMatrix(Vector3 translate) {
 	Matrix4x4 MakeAffineMatrix;
-	MakeAffineMatrix.m[0][0] = 0;
+	MakeAffineMatrix.m[0][0] = 1.0f;
 	MakeAffineMatrix.m[0][1] = 0;
 	MakeAffineMatrix.m[0][2] = 0;
 	MakeAffineMatrix.m[0][3] = 0;
 	MakeAffineMatrix.m[1][0] = 0;
-	MakeAffineMatrix.m[1][1] = 0;
+	MakeAffineMatrix.m[1][1] = 1.0f;
 	MakeAffineMatrix.m[1][2] = 0;
 	MakeAffineMatrix.m[1][3] = 0;
 	MakeAffineMatrix.m[2][0] = 0;
 	MakeAffineMatrix.m[2][1] = 0;
-	MakeAffineMatrix.m[2][2] = 0;
+	MakeAffineMatrix.m[2][2] = 1.0f;
 	MakeAffineMatrix.m[2][3] = 0;
 	MakeAffineMatrix.m[3][0] = translate.x;
 	MakeAffineMatrix.m[3][1] = translate.y;

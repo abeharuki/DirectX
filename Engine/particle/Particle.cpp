@@ -42,7 +42,8 @@ void Particle::LoopParticles() {
 
 void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrix = backToFrontMatrix * viewProjection.matView;
+	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix({1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
+	Matrix4x4 billboardMatrix = backToFrontMatrix * cameraMatrix;
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
@@ -65,15 +66,17 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 				}
 			}
 			
+			Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(particles[i].transform.scale);
+			Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particles[i].transform.translate);
+			Matrix4x4 worldMatrix2 = scaleMatrix * (billboardMatrix * translateMatrix);
 
 			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(particles[i].transform.scale,particles[i].transform.rotate ,particles[i].transform.translate);
-			
-			Matrix4x4 worldViewProjectionMatrix = worldMatrix * (viewProjection.matView *viewProjection.matProjection);
+			Matrix4x4 worldViewProjectionMatrix = worldMatrix2 * (Math::Inverse(cameraMatrix) * viewProjection.matProjection);
 			particles[i].transform.translate += particles[i].velocity * kDeltaTime;
 			particles[i].currentTime += kDeltaTime;
 
 			instancingData[numInstance].WVP = worldViewProjectionMatrix;
-			instancingData[numInstance].World = worldMatrix;
+			instancingData[numInstance].World = worldMatrix2;
 			instancingData[numInstance].color = particles[i].color;
 			
 			instancingData[numInstance].color.w = alph;

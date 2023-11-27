@@ -2,6 +2,7 @@
 #include "TextureManeger.h"
 #include <cassert>
 #include <imgui.h>
+#include <numbers>
 
 
 GameScene::GameScene() {}
@@ -17,8 +18,8 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransformp_.Initialize();
 	viewProjection_.Initialize();
-	viewProjection_.translation_ = {0.0f, 2.0f, -10.0f};
-
+	viewProjection_.translation_ = {0.0f, 0.0f, -10.0f};
+	
 	worldTransform_.translate.x = {1.0f};
 	worldTransform_.translate.z = {-2.0f};
 	worldTransform_.scale = {0.5f, 0.5f, 0.5f};
