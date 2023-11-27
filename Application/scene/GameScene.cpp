@@ -15,8 +15,11 @@ GameScene* GameScene::GetInstance() {
 
 void GameScene::Initialize() {
 	worldTransform_.Initialize();
+	worldTransformParticle_.Initialize();
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = {0.0f, 0.0f, -5.0f};
+
+	worldTransformParticle_.scale = {0.5f, 0.5f, 0.5f};
 
 	// プレイヤー
 	modelPlayer_.reset(
@@ -54,6 +57,10 @@ void GameScene::Initialize() {
 	modelFloor_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/floor.png"));
 	floor_->Initialize(modelFloor_.get());
 
+	//パーティクル
+	particle_.reset(Particle::Create("resources/particle/circle.png", 20));
+	particle_->SetSpeed(10.0f);
+
 	// ロックオン
 	lockOn_ = std::make_unique<LockOn>();
 	lockOn_->Initialize();
@@ -67,6 +74,8 @@ void GameScene::Initialize() {
 	// 自キャラの生成と初期化処理
 	player_->SetViewProjection(&followCamera_->GetViewProjection());
 	player_->SetLockOn(lockOn_.get());
+
+	
 }
 
 void GameScene::Update() {
@@ -76,9 +85,9 @@ void GameScene::Update() {
 	player_->Update();
 
 	for (std::unique_ptr<Enemy>& enemy : enemies_) {
-		enemy->Update();
+		enemy->Update();	
 	}
-
+	
 	ground_->Update();
 	skydome_->Update();
 
@@ -91,8 +100,11 @@ void GameScene::Update() {
 	viewProjection_.TransferMatrix();
 	lockOn_->Update(enemies_, viewProjection_);
 
-	ImGui::Begin("scene");
+	
+	//worldTransformParticle_.UpdateMatrix();
 
+
+	ImGui::Begin("scene");
 	ImGui::DragFloat4("translation", &worldTransform_.translate.x, 0.01f);
 	ImGui::Text(
 	    " X%f Y%f Z%f", viewProjection_.matView.m[1][0], viewProjection_.matView.m[1][1],
@@ -103,7 +115,6 @@ void GameScene::Update() {
 	ImGui::Text(
 	    " X%f Y%f Z%f", viewProjection_.matView.m[3][0], viewProjection_.matView.m[3][1],
 	    viewProjection_.matView.m[3][2]);
-
 	ImGui::Text(" collision1_%d", collision1_);
 	ImGui::Text(" collision2_%d", collision2_);
 	ImGui::End();
@@ -130,6 +141,9 @@ void GameScene::Draw() {
 	for (std::unique_ptr<Enemy>& enemy : enemies_) {
 		enemy->Draw(viewProjection_,false);
 	}
+
+	// パーティクル
+	particle_->Draw(worldTransformParticle_, viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -242,6 +256,8 @@ void GameScene::CheckAllCollision() {
 			// 敵キャラの衝突時コールバックを呼び出す
 			if (player_->IsAttack()) {
 				enemy->OnCollision(player_->GetWorldTransform());
+				particle_->Update();
+				particle_->LoopParticles();
 			}
 		}
 	}

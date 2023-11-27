@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "WorldTransform.h"
+#include "Particle.h"
 
 class Enemy : public BaseCharacter {
 public:
@@ -32,13 +33,15 @@ public:
 	/// 中心座標
 	Vector3 GetSenterPosition() const;
 
-	const WorldTransform& GetWorldTransform() { return worldtransformBase_; }
+	WorldTransform GetWorldTransform() const{ return worldtransformBase_; }
 
 	void OnCollision(const WorldTransform& worldTransform);
 	bool IsDead() { return isDead_; }
 
 private:
 	WorldTransform worldtransformBase_;
+	// パーティクル
+	std::unique_ptr<Particle> particle_;
 	std::unique_ptr<Model> modelEnemy_;
 	bool isHit_ = false;
 	bool preHit_ = false;

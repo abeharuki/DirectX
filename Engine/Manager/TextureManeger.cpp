@@ -204,7 +204,7 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 		if (identifier == "v") {
 			Vector4 position = {0.0f, 0.0f, 0.0f, 0.0f};
 			s >> position.x >> position.y >> position.z;
-			position.z *= -1.0f; // 位置の反転
+			position.x *= -1.0f; // 位置の反転
 			position.w = 1.0f;
 			positions.push_back(position);
 		} else if (identifier == "vt") {
@@ -214,7 +214,7 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 			texcoords.push_back(texcoord);
 		} else if (identifier == "vn") {
 			Vector3 normal = {0.0f, 0.0f, 0.0f};
-			normal.z *= -1.0f; // 法線の反転
+			normal.x *= -1.0f; // 法線の反転
 			s >> normal.x >> normal.y >> normal.z;
 			normals.push_back(normal);
 		} else if (identifier == "f") {

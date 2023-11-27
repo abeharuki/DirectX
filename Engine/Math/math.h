@@ -164,6 +164,11 @@ public:
 	// Z
 	static Matrix4x4 MakeRotateZMatrix(float theta = 0);
 
+	static Matrix4x4 MakeScaleMatrix(Vector3 scale);
+
+	static Matrix4x4 MakeTranslateMatrix(Vector3 translate);
+
+
 	// スカラー倍
 	static Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
 

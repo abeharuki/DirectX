@@ -19,8 +19,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformHead_.Initialize();
 	worldTransformHammer_.Initialize();
 	worldTransformWW_.Initialize();
-
-	worldTransformHead_.rotate.y = 3.160f;
+	
 	worldTransformHead_.translate.y = -1.1f;
 	worldTransformWW_.scale = {0.8f, 0.8f, 0.8f};
 	worldTransformWW_.translate.y = 4.3f;

@@ -1,8 +1,7 @@
 #include "Particle.h"
 #include <cassert>
 #include <format>
-#include "ImGuiManager.h"
-
+#include <numbers>
 void Particle::Initialize(const std::string& filename, uint32_t Count) {
 	instanceCount = Count;
 	particles[Count];
@@ -39,13 +38,20 @@ void Particle::LoopParticles() {
 
 
 void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
-	
+	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix(
+	    {1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
+	Matrix4x4 billboardMatrix = backToFrontMatrix * cameraMatrix;
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;
 
 	for (uint32_t i = 0; i < instanceCount; ++i) {
+
 		particles[i].transform.scale = worldTransform.scale;
-		particles[i].transform.rotate = worldTransform.rotate;
-		particles[i].transform.translate = particles[i].transform.translate + worldTransform.translate;
-		
+		particles[i].transform.rotate = {billboardMatrix.m[2][0], billboardMatrix.m[2][1], billboardMatrix.m[2][2]};
+		particles[i].transform.translate = worldTransform.translate + particles[i].transform.translate;
+		    
 	}
 	uint32_t numInstance = 0;
 	if (particle) {
@@ -56,25 +62,22 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 					continue;
 				}
 			}
-			
 
-			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(
-			    particles[i].transform.scale, particles[i].transform.rotate,
-			    particles[i].transform.translate);
-			Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
-			    worldMatrix, Math::Multiply(viewProjection.matView, viewProjection.matProjection));
+			Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(particles[i].transform.scale);
+			Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particles[i].transform.translate);
+			Matrix4x4 worldMatrix = scaleMatrix * (billboardMatrix * translateMatrix);
+			Matrix4x4 worldViewProjectionMatrix = worldMatrix * (Math::Inverse(cameraMatrix) * viewProjection.matProjection);
 			particles[i].transform.translate += particles[i].velocity * kDeltaTime;
 			particles[i].currentTime += kDeltaTime;
 
-			instancingData[numInstance].WVP = worldViewProjectionMatrixSprite;
+			instancingData[numInstance].WVP = worldViewProjectionMatrix;
 			instancingData[numInstance].World = worldMatrix;
 			instancingData[numInstance].color = particles[i].color;
-			
+
 			instancingData[numInstance].color.w = alph;
 			++numInstance;
 		}
 	}
-	
 	
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
@@ -153,6 +156,12 @@ void Particle::CreateVertexResource() {
 	}
 	
 };
+
+void Particle::SetPos(Vector3 vector) {
+	for (uint32_t i = 0; i < instanceCount; ++i) {
+		particles[i].transform.translate = vector;
+	}
+}
 
 void Particle::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
 

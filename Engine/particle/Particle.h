@@ -78,6 +78,9 @@ public:
 	// ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
 
+	// パーティクル位置
+	void SetPos(Vector3 vector);
+
 	//パーティクル速度
 	void SetSpeed(float speed);
 

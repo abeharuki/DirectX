@@ -40,6 +40,7 @@ private://基本変数
 
 private: // メンバ変数
 	WorldTransform worldTransform_;
+	WorldTransform worldTransformParticle_;
 	ViewProjection viewProjection_;
 
 	// player
@@ -50,6 +51,9 @@ private: // メンバ変数
 	// Enemy
 	std::list<std::unique_ptr<Enemy>> enemies_;
 	std::unique_ptr<Model> modelEnemy_;
+
+	// 板ポリ
+	std::unique_ptr<Particle> particle_;
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
@@ -70,6 +74,8 @@ private: // メンバ変数
 	std::unique_ptr<Sprite> lockOnMark_;
 	bool collision1_ = false;
 	bool collision2_ = false;
+
+
 
 	Transform transform_;
 
