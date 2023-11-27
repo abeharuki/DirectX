@@ -15,162 +15,122 @@ GameScene* GameScene::GetInstance() {
 
 void GameScene::Initialize() {
 	worldTransform_.Initialize();
-	worldTransformp_.Initialize();
 	viewProjection_.Initialize();
-	viewProjection_.translation_ = {0.0f, 2.0f, -10.0f};
+	viewProjection_.translation_ = {0.0f, 0.0f, -5.0f};
 
-	worldTransform_.translate.x = {1.0f};
-	worldTransform_.translate.z = {-2.0f};
-	worldTransform_.scale = {0.5f, 0.5f, 0.5f};
-	for (int i = 0; i < 2; i++) {
-		worldTransformFence_[i].Initialize();
-		modelFence_[i].reset(
-		    Model::CreateModelFromObj("resources/fence/fence.obj", "resources/fence/fence.png"));
+	// プレイヤー
+	modelPlayer_.reset(
+	    Model::CreateModelFromObj("resources/player/float_Head.obj", "resources/player/tex.png"));
+	modelHammer_.reset(
+	    Model::CreateModelFromObj("resources/hammer/hammer.obj", "resources/hammer/hammer.png"));
+	player_ = std::make_unique<Player>();
+	std::vector<Model*> playerModels = {modelPlayer_.get(), modelHammer_.get()};
+	player_->Initialize(playerModels);
+
+	// 敵
+	for (int i = 0; i < 5; i++) {
+		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+		newEnemy->Initialize(enemyPos[i]);
+		enemies_.push_back(std::move(newEnemy));
 	}
-	
-	//板ポリ
-	modelplane_.reset(
-	    Model::CreateModelFromObj("resources/plane.obj", "resources/uvChecker.png"));
-	
+
+	lockOnMark_.reset(Sprite::Create("resources/Reticle.png"));
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
 	// 3Dモデルの生成
-	modelSkydome_.reset(Model::CreateModelFromObj("resources/skydome.obj", "resources/skydome/sky.png"));
+	modelSkydome_.reset(
+	    Model::CreateModelFromObj("resources/skydome.obj", "resources/skydome/sky.png"));
 	skydome_->Initialize(modelSkydome_.get());
 
-	//スフィア
-	sphere_ = std::make_unique<Sphere>();
-	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
+	// 地面
+	ground_ = std::make_unique<Ground>();
+	// 3Dモデルの生成
+	modelGround_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/ground.png"));
+	ground_->Initialize(modelGround_.get());
 
-	particle_.reset(Particle::Create("resources/particle/circle.png",num));
+	// 床
+	floor_ = std::make_unique<MoveFloor>();
+	// 3Dモデルの生成
+	modelFloor_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/floor.png"));
+	floor_->Initialize(modelFloor_.get());
 
+	// ロックオン
+	lockOn_ = std::make_unique<LockOn>();
+	lockOn_->Initialize();
 
-	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
-
-	
-	particle = false;
-	colorPlane = {1.0f, 1.0f, 1.0f, 1.0f};
-	blendMode_ = BlendMode::kNone;
-	
+	// レールカメラ
+	followCamera_ = std::make_unique<FollowCamera>();
+	followCamera_->Initialize();
+	// 自キャラのワールドトランスフォームを追従カメラにセット
+	followCamera_->SetTarget(&player_->GetWorldTransform());
+	followCamera_->SetLockOn(lockOn_.get());
+	// 自キャラの生成と初期化処理
+	player_->SetViewProjection(&followCamera_->GetViewProjection());
+	player_->SetLockOn(lockOn_.get());
 }
 
 void GameScene::Update() {
 
-	if (KeyInput::GetKey(DIK_W)) {
-		worldTransformp_.translate.z += 0.1f;
-	} else if (KeyInput::GetKey(DIK_S)) {
-		worldTransformp_.translate.z -= 0.1f;
+	floor_->Update();
+
+	player_->Update();
+
+	for (std::unique_ptr<Enemy>& enemy : enemies_) {
+		enemy->Update();
 	}
 
-	if (KeyInput::GetKey(DIK_A)) {
-		worldTransformp_.translate.x -= 0.1f;
-	} else if (KeyInput::GetKey(DIK_D)) {
-		worldTransformp_.translate.x += 0.1f;
-	}
-
-	if (KeyInput::GetKey(DIK_RIGHTARROW)) {
-		colorPlane.w += 0.01f;
-	} else if (KeyInput::GetKey(DIK_LEFTARROW)) {
-		colorPlane.w -= 0.01f;
-	}
-
-	particle_->SetSpeed(float(num));
-	
-	if (particle) {
-		particle_->Update();
-		particle_->LoopParticles();
-	}
-	
-
-	if (KeyInput::PushKey(DIK_P)) {
-		sceneNo_ = CLEAR;
-	}
-
-	worldTransform_.rotate.y += 0.02f;
-	worldTransform_.UpdateMatrix();
-	worldTransformp_.UpdateMatrix();
-	viewProjection_.UpdateMatrix();
+	ground_->Update();
 	skydome_->Update();
 
+	CheckAllCollision();
 
-	modelplane_->SetColor(colorPlane);
-	
-	
-	ImGui::Begin("Setting");
-	if (ImGui::TreeNode("plane")) {
-		ImGui::SliderFloat4("Color", &colorPlane.x, -1.0f, 1.0f);
-		if (ImGui::BeginCombo("BlendMode", EnumToString(blendMode_))) {
-			if (ImGui::Selectable("kNone", blendMode_ == BlendMode::kNone)) {
-				blendMode_ = BlendMode::kNone;
-				
-			}
-			if (ImGui::Selectable("kNormal", blendMode_ == BlendMode::kNormal)) {
-				blendMode_ = BlendMode::kNormal;
-			}
-			if (ImGui::Selectable("kAdd", blendMode_ == BlendMode::kAdd)) {
-				blendMode_ = BlendMode::kAdd;
-			}
-			if (ImGui::Selectable("kSubtract", blendMode_ == BlendMode::kSubtract)) {
-				blendMode_ = BlendMode::kSubtract;
+	// 追従カメラの更新
+	followCamera_->Update();
+	viewProjection_.matView = followCamera_->GetViewProjection().matView;
+	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+	viewProjection_.TransferMatrix();
+	lockOn_->Update(enemies_, viewProjection_);
 
-			}
-			
-			ImGui::EndCombo();
-		}
-		ImGui::TreePop();
-	}
+	ImGui::Begin("scene");
 
-	
-	if (ImGui::TreeNode("Sphere")) {
-		
-		;
-		ImGui::SliderFloat3("Sprite", &worldTransform_.translate.x, -1.0f, 10.0f);
+	ImGui::DragFloat4("translation", &worldTransform_.translate.x, 0.01f);
+	ImGui::Text(
+	    " X%f Y%f Z%f", viewProjection_.matView.m[1][0], viewProjection_.matView.m[1][1],
+	    viewProjection_.matView.m[1][2]);
+	ImGui::Text(
+	    " X%f Y%f Z%f", viewProjection_.matView.m[2][0], viewProjection_.matView.m[2][1],
+	    viewProjection_.matView.m[2][2]);
+	ImGui::Text(
+	    " X%f Y%f Z%f", viewProjection_.matView.m[3][0], viewProjection_.matView.m[3][1],
+	    viewProjection_.matView.m[3][2]);
 
-		ImGui::TreePop();
-	}
-
-	if (ImGui::TreeNode("Sprite")) {
-		// LightLight
-		ImGui::SliderFloat3("UVTransform.scale", &uvTransform_.scale.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("UVTransform.translate", &uvTransform_.translate.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("Sprite", &worldTransform_.scale.x, -1.0f, 10.0f);
-		
-
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Particle")) {
-		ImGui::Checkbox("move", &particle);
-		ImGui::SliderInt("speed", &num, 0, 100);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Light")) {
-		// LightLight
-		ImGui::SliderFloat3("LightColor", &color_.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("LightDirecton", &direction_.x, -1.0f, 1.0f);
-		ImGui::DragFloat("Intensity", &intensity_, 0.1f);
-
-		ImGui::TreePop();
-	}
-	
+	ImGui::Text(" collision1_%d", collision1_);
+	ImGui::Text(" collision2_%d", collision2_);
 	ImGui::End();
-	modelplane_->SetBlendMode(blendMode_);
 }
-
 
 void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
-	Model::LightDraw(color_,direction_, intensity_);
+	
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
 
 	// 天球
-	//skydome_->Draw(viewProjection_,false);
-	//sphere_->Draw(worldTransform_, viewProjection_,true);
-	//フェンス
-	//modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
-	//板ポリ
-	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
-	//パーティクル
-	particle_->Draw(worldTransformp_, viewProjection_);
+	skydome_->Draw(viewProjection_,false);
+	// 地面
+	ground_->Draw(viewProjection_);
+	// 床
+	floor_->Draw(viewProjection_);
+	// プレーヤー
+	player_->Draw(viewProjection_,false);
+	// 敵
+	for (std::unique_ptr<Enemy>& enemy : enemies_) {
+		enemy->Draw(viewProjection_,false);
+	}
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -178,14 +138,112 @@ void GameScene::Draw() {
 #pragma region 前景スプライト描画
 	// 前景スプライト描画前処理
 	Sprite::PreDraw();
-	
 
-	//sprite_->Draw(worldTransform_,uvTransform_);
-	
-	//sprite2_->Draw(worldTransformB_);
-	
+	lockOn_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
+#pragma endregion
+}
+
+void GameScene::CheckAllCollision() {
+	// 判定対象AとBの座標
+	Vector3 posA, posB[2];
+
+#pragma region 自キャラと地面の当たり判定
+	// 自キャラ座標
+	posA = player_->GetWorldPosition();
+
+	// 自キャラと地面全ての当たり判定
+	for (int i = 0; i < 2; i++) {
+		// 地面の座標
+		posB[i] = ground_->GetWorldPosition(i);
+
+		if (Math::IsAABBCollision(
+		        posA, player_->GetWorldTransform().scale, posB[i],
+		        ground_->GetWorldTransform(i).scale)) {
+			// 自キャラの衝突時コールバックを呼び出す
+			if (posA.y >= -5.0f) {
+				player_->OnCollision();
+			}
+
+			collision1_ = true;
+			break;
+		} else {
+			collision1_ = false;
+			if (!collision2_) {
+				player_->OutCollision();
+			}
+		}
+	}
+
+#pragma endregion
+
+#pragma region 自キャラと移動床の当たり判定
+	// 自キャラ座標
+	posA = player_->GetWorldPosition();
+
+	// 移動床の座標
+	posB[0] = floor_->GetWorldPosition();
+
+	if (Math::IsAABBCollision(
+	        posA, player_->GetWorldTransform().scale, posB[0], floor_->GetWorldTransform().scale)) {
+		// 自キャラの衝突時コールバックを呼び出す
+		player_->OnCollision();
+		player_->OnCollisionFloor();
+
+		player_->Relationship(floor_->GetWorldTransform());
+		collision2_ = true;
+	} else {
+		player_->DeleteParent();
+		collision2_ = false;
+		if (!collision1_) {
+			player_->OutCollisionFloor();
+		}
+	}
+
+#pragma endregion
+
+#pragma region 自キャラと敵
+	for (auto& enemy : enemies_) {
+		// 自キャラ座標
+		posA = player_->GetWorldPosition();
+
+		// 敵の座標
+		posB[0] = enemy->GetWorldPosition();
+
+		if (Math::IsAABBCollision(
+		        posA, player_->GetWorldTransform().scale, posB[0],
+		        enemy->GetWorldTransform().scale)) {
+			// 自キャラの衝突時コールバックを呼び出す
+			if (!enemy->IsDead()) {
+				player_->SetPosition({0.0f, 0.0f, 0.0f});
+			}
+		}
+	}
+
+#pragma endregion
+
+#pragma region 自キャラの攻撃と敵
+	for (auto& enemy : enemies_) {
+		// 自キャラ座標
+		posA = player_->GetHammerWorldPos();
+
+		// 移動床の座標
+		posB[0] = enemy->GetWorldPosition();
+
+		// 距離
+		float distance = (posB[0].x - posA.x) * (posB[0].x - posA.x) +
+		                 (posB[0].y - posA.y) * (posB[0].y - posA.y) +
+		                 (posB[0].z - posA.z) * (posB[0].z - posA.z);
+		float R1 = 1.5f;
+		float R2 = 1.0f;
+		if (distance <= (R1 + R2) * (R1 + R2)) {
+			// 敵キャラの衝突時コールバックを呼び出す
+			if (player_->IsAttack()) {
+				enemy->OnCollision(player_->GetWorldTransform());
+			}
+		}
+	}
 #pragma endregion
 }

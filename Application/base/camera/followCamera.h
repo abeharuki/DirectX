@@ -6,6 +6,9 @@
 #include <imgui.h>
 #include <memory>
 
+// 前方宣言
+class LockOn;
+
 class FollowCamera {
 public:
 	/// <summary>
@@ -29,6 +32,8 @@ public:
 
 	Vector3 GetTargetWordPos();
 
+	void SetLockOn(const LockOn* lockOn) { lockOn_ = lockOn; }
+
 	// 調整項目の適用
 	void ApplyGlobalVariables();
 
@@ -45,4 +50,7 @@ private:
 	float destinationAngleX_ = 0.0f;
 	// 遅延量
 	float delayAmount_ = 0.2f;
+
+	// ロックオン
+	const LockOn* lockOn_ = nullptr;
 };

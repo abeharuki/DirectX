@@ -135,6 +135,8 @@ struct ParticleForGPU {
 class Math {
 public:
 
+	static Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
+
 	// 正規化
 	static Vector3 Normalize(const Vector3& v);
 

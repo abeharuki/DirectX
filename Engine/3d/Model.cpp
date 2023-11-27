@@ -132,6 +132,7 @@ void Model::SetColor(Vector4 color) {
 	materialData->color.a = color.w;
 }
 
+
 void Model::SetBlendMode(BlendMode blendMode) { 
 	blendMode_ = blendMode; 
 	

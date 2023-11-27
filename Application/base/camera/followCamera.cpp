@@ -1,4 +1,5 @@
 #include "FollowCamera.h"
+#include "LockOn.h"
 #include <GlobalVariables.h>
 
 void FollowCamera::Initialize() {
@@ -19,29 +20,41 @@ void FollowCamera::Update() {
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
 
-	// ジョイスティックの状態取得
-	if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
-		// 回転速度
-		float kCharacterSpeed = 0.05f;
+	if (lockOn_->ExistTarget()) {
+		// ロックオン座標
+		Vector3 lockOnPos = lockOn_->GetTargetPos();
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = lockOnPos - GetTargetWordPos();
 
-		destinationAngleY_ += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kCharacterSpeed;
-		destinationAngleX_ -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * kCharacterSpeed / 5;
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
-			destinationAngleY_ = target_->rotate.y;
-			destinationAngleX_ = target_->rotate.x;
+		// y軸周りの回転
+		viewProjection_.rotation_.y = std::atan2(sub.x, sub.z);
+
+	} else {
+
+		// ジョイスティックの状態取得
+		if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
+			// 回転速度
+			float kCharacterSpeed = 0.05f;
+
+			destinationAngleY_ += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kCharacterSpeed;
+			destinationAngleX_ -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * kCharacterSpeed / 5;
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
+				destinationAngleY_ = target_->rotate.y;
+				destinationAngleX_ = target_->rotate.x;
+			}
 		}
-	}
 
-	if (KeyInput::GetKey(DIK_UPARROW)) {
-		destinationAngleX_ -= 0.1f;
-	} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
-		destinationAngleX_ += 0.1f;
-	}
+		if (KeyInput::GetKey(DIK_UPARROW)) {
+			destinationAngleX_ -= 0.1f;
+		} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
+			destinationAngleX_ += 0.1f;
+		}
 
-	if (KeyInput::GetKey(DIK_LEFTARROW)) {
-		destinationAngleY_ -= 0.1f;
-	} else if (KeyInput::GetKey(DIK_RIGHTARROW)) {
-		destinationAngleY_ += 0.1f;
+		if (KeyInput::GetKey(DIK_LEFTARROW)) {
+			destinationAngleY_ -= 0.1f;
+		} else if (KeyInput::GetKey(DIK_RIGHTARROW)) {
+			destinationAngleY_ += 0.1f;
+		}
 	}
 
 	viewProjection_.rotation_.y =

@@ -80,7 +80,7 @@ public:
 	
 	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 
-	//色とアルファ値
+	// 色とアルファ値
 	void SetColor(Vector4 color);
 
 	//ブレンドモード

@@ -121,7 +121,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(Transform& uvTransform);
+	void Draw(Transform& transform,Transform& uvTransform);
 
 
 	static Sprite* Create(

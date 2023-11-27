@@ -53,7 +53,8 @@ void Sprite::PreDraw() {
 
 void Sprite::PostDraw(){};
 
-void Sprite::Draw(Transform& uvTransform ) {
+
+void Sprite::Draw(Transform& transform,Transform& uvTransform) {
 	
 	
 	
@@ -65,7 +66,7 @@ void Sprite::Draw(Transform& uvTransform ) {
 	
 	// Sprite用のworldViewProjectionMatrixを作る
 	Matrix4x4 matWorld_ = Math::MakeAffineMatrix(
-	    {size_.x,size_.y, 1.0f}, {0.0f, 0.0f,rotation_},
+	    {transform.scale.x, transform.scale.y, 1.0f}, {0.0f, 0.0f, transform.rotate.z},
 	    {position_.x, position_.y, 0.5f});
 
 	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
@@ -76,7 +77,7 @@ void Sprite::Draw(Transform& uvTransform ) {
 	
 
 	// UVTransform用の行列
-	Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
+	/*Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
 	    {
 	        uvTransform.scale.x+1,
 	        uvTransform.scale.y+1,
@@ -84,7 +85,7 @@ void Sprite::Draw(Transform& uvTransform ) {
 	    },
 	    uvTransform.rotate, uvTransform.translate);
 	
-	 materialDataSprite->uvTransform = uvTransformMatrix;
+	 materialDataSprite->uvTransform = uvTransformMatrix;*/
 
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

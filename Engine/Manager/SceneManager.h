@@ -11,7 +11,7 @@ public:
 	SceneManager();
 	~SceneManager();
 
-	void Finalize();
+
 	int Run();
 
 private:

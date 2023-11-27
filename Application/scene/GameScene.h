@@ -2,12 +2,17 @@
 #include "IScene.h"
 #include "WorldTransform.h"
 #include "ViewProjection.h"
-#include "DirectXCommon.h"
 #include "Model.h"
-#include "Engine.h"
 #include "Sprite.h"
 #include "Skydome.h"
 #include "Sphere.h"
+#include "Player.h"
+#include "Enemy.h"
+#include "camera/FollowCamera.h"
+#include "Ground.h"
+#include "MoveFloor.h"
+#include "camera/LockOn.h"
+#include <list>
 #include "Particle.h"
 
 
@@ -24,6 +29,8 @@ public: // メンバ関数
 	~GameScene();
 
 	static GameScene* GetInstance();
+	// 当たり判定
+	void CheckAllCollision();
 
 private://基本変数
 	//光の数値
@@ -32,47 +39,46 @@ private://基本変数
 	float intensity_ = 1.0f;
 
 private: // メンバ変数
-	ViewProjection viewProjection_;
 	WorldTransform worldTransform_;
-	WorldTransform worldTransformp_;
-	WorldTransform worldTransformFence_[2];
-	//球
-	std::unique_ptr<Sphere> sphere_;
+	ViewProjection viewProjection_;
+
+	// player
+	std::unique_ptr<Player> player_;
+	std::unique_ptr<Model> modelPlayer_;
+	std::unique_ptr<Model> modelHammer_;
+
+	// Enemy
+	std::list<std::unique_ptr<Enemy>> enemies_;
+	std::unique_ptr<Model> modelEnemy_;
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
 	// 天球3Dモデル
 	std::unique_ptr<Model> modelSkydome_;
-	//板ポリ
-	std::unique_ptr<Model> modelplane_;
-	//フェンス
-	std::unique_ptr<Model> modelFence_[2];
-	//板ポリ
-	std::unique_ptr<Particle> particle_;
+	// 地面
+	std::unique_ptr<Ground> ground_;
+	// 地面3Dモデル
+	std::unique_ptr<Model> modelGround_;
+	// 床
+	std::unique_ptr<MoveFloor> floor_;
+	// 床3Dモデル
+	std::unique_ptr<Model> modelFloor_;
+	// レールカメラ
+	std::unique_ptr<FollowCamera> followCamera_;
+	// ロックオン
+	std::unique_ptr<LockOn> lockOn_;
+	std::unique_ptr<Sprite> lockOnMark_;
+	bool collision1_ = false;
+	bool collision2_ = false;
 
-	std::unique_ptr<Sprite> sprite_;
+	Transform transform_;
 
-	Transform uvTransform_;
-	Vector4 colorPlane;
-	BlendMode blendMode_;
-	const char* EnumToString(BlendMode value) {
-		switch (value) {
-		case BlendMode::kNone:
-			return "kNone"; 
-		case BlendMode::kNormal:
-			return "kNormal";
-		case BlendMode::kAdd:
-			return "kAdd";
-		case BlendMode::kSubtract:
-			return "kSubtract";
-		default:
-			return "Unknown";
-		}
-	}
+	Vector3 enemyPos[5] = {
+	    {0.0f,   0.0f, 100.0f},
+        {50.0f,  0.0f, 100.0f},
+        {-50.0f, 0.0f, 100.0f},
+	    {50.0f,  0.0f, 0.0f  },
+        {-50.0f, 0.0f, 0.0f  },
+	};
 
-	const float kDeltaTime = 1.0f / 60.0f;
-	Vector3 velo = {0.0f, 1.0f, 0.0f};
-	bool particle;
-	Vector4 particleColor;
-	int num = 10;
 };
