@@ -48,14 +48,6 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
 	
-
-	for (uint32_t i = 0; i < instanceCount; ++i) {
-		
-		particles[i].transform.scale = worldTransform.scale;
-		particles[i].transform.rotate = {billboardMatrix.m[2][0], billboardMatrix.m[2][1], billboardMatrix.m[2][2]};
-		particles[i].transform.translate = particles[i].transform.translate + worldTransform.translate;
-		
-	}
 	uint32_t numInstance = 0;
 	if (particle) {
 		for (uint32_t i = 0; i < instanceCount; ++i) {
@@ -66,8 +58,8 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 				}
 			}
 			
-			Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(particles[i].transform.scale);
-			Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particles[i].transform.translate);
+			Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(worldTransform.scale);
+			Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particles[i].transform.translate + worldTransform.translate);
 			Matrix4x4 worldMatrix2 = scaleMatrix * (billboardMatrix * translateMatrix);
 
 			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(particles[i].transform.scale,particles[i].transform.rotate ,particles[i].transform.translate);
