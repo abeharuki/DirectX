@@ -112,7 +112,7 @@ private:
 
     uint32_t instanceCount = 1;
 	Particle_ particles[100];
-
+	
 	float kDeltaTime = 1.0f / 60.0f;
 	
 	bool loop_ = false;
