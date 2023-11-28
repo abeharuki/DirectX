@@ -27,7 +27,7 @@ void MoveFloor::Update() {
 /// 描画
 /// </summary>
 void MoveFloor::Draw(const ViewProjection viewprojection) {
-	model_->Draw(worldTransform_, viewprojection,false);
+	model_->Draw(worldTransform_, viewprojection,true);
 };
 
 Vector3 MoveFloor::GetWorldPosition() {

@@ -100,6 +100,8 @@ public: // メンバ関数
 
 	// 攻撃フラグ
 	bool IsAttack() { return workAttack_.isAttack; }
+	//最後の攻撃
+	bool GetFinalAttack() { return workAttack_.isFinalAttack; }
 
 	// 当たり判定
 	void OnCollision();
@@ -115,6 +117,8 @@ private: // メンバ変数
 	WorldTransform worldTransformFloor_;
 	WorldTransform worldTransformWW_;
 	const ViewProjection* viewProjection_;
+
+
 
 	// 速度
 	Vector3 velocity_ = {};
@@ -157,6 +161,7 @@ private: // メンバ変数
 		int32_t inComboPhase = 0;
 		bool comboNext = false;
 		bool isAttack = false;
+		bool isFinalAttack = false;
 	};
 
 	WorkAttack workAttack_;

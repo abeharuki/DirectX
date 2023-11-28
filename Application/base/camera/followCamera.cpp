@@ -1,6 +1,7 @@
 #include "FollowCamera.h"
 #include "LockOn.h"
 #include <GlobalVariables.h>
+#include <numbers>
 
 void FollowCamera::Initialize() {
 
@@ -27,7 +28,19 @@ void FollowCamera::Update() {
 		Vector3 sub = lockOnPos - GetTargetWordPos();
 
 		// y軸周りの回転
-		viewProjection_.rotation_.y = std::atan2(sub.x, sub.z);
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+				                         ? std::numbers::pi_v<float> - destinationAngleY_
+				                         : -std::numbers::pi_v<float> - destinationAngleY_;
+			}
+		} else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			                                    : -std::numbers::pi_v<float> / 2.0f;
+		}
+		//viewProjection_.rotation_.y = std::atan2(sub.x, sub.z);
 
 	} else {
 

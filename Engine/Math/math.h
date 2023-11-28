@@ -48,6 +48,13 @@ struct Vector4 final {
 	float w;
 };
 
+struct Quaternion {
+	float x;
+	float y;
+	float z;
+	float w;
+};
+
 struct Vertex {
 	Vector3 position;
 	Vector4 color;
@@ -147,6 +154,7 @@ public:
 	
 	static Vector3 Multiply(float scalar, const Vector3& v);
 
+
 	static Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2);
 
 	static Matrix4x4 Subract(const Matrix4x4& m1, const Matrix4x4& m2);
@@ -191,6 +199,23 @@ public:
 	// 逆行列
 	static Matrix4x4 Inverse(const Matrix4x4& m);
 
+	//外積
+	static Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
+	//ない席
+	static float Dot(const Vector3& v1, const Vector3& v2);
+
+	//クォータニオンの作成
+	static Quaternion MakeQuaternion(Vector3& axis, const float& radian);
+
+	static Vector3 QuaternionVector(Quaternion q);
+
+	//クォータニオンを回転行列に変換
+	static Matrix4x4 QuaternionMatrix(Quaternion q);
+
+	//クォータニオンの掛け算
+	static Quaternion CalcQuaternion(Quaternion& q1, Quaternion& q2);
+
 	// 長さ(ノルマ)
 	static float Length(const Vector3& v);
 
@@ -200,7 +225,7 @@ public:
 	// 最短角補間
 	static float LerpShortAngle(float a, float b, float t);
 
-	// 四角形の当たり判定
+	// 四角形の当たり判定 １個目{座標,サイズ},2個目{座標,サイズ}
 	static bool IsAABBCollision(
 	    const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
 	    const Vector3 size2);

@@ -38,7 +38,7 @@ void Particle::LoopParticles() {
 
 
 void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
-	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 backToFrontMatrix =Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix(
 	    {1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
 	Matrix4x4 billboardMatrix = backToFrontMatrix * cameraMatrix;
@@ -46,13 +46,7 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
 
-	for (uint32_t i = 0; i < instanceCount; ++i) {
-
-		particles[i].transform.scale = worldTransform.scale;
-		particles[i].transform.rotate = {billboardMatrix.m[2][0], billboardMatrix.m[2][1], billboardMatrix.m[2][2]};
-		particles[i].transform.translate = worldTransform.translate + particles[i].transform.translate;
-		    
-	}
+	
 	uint32_t numInstance = 0;
 	if (particle) {
 		for (uint32_t i = 0; i < instanceCount; ++i) {
@@ -63,8 +57,8 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 				}
 			}
 
-			Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(particles[i].transform.scale);
-			Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particles[i].transform.translate);
+			Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(particles[i].transform.scale + worldTransform.scale);
+			Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particles[i].transform.translate+worldTransform.translate);
 			Matrix4x4 worldMatrix = scaleMatrix * (billboardMatrix * translateMatrix);
 			Matrix4x4 worldViewProjectionMatrix = worldMatrix * (Math::Inverse(cameraMatrix) * viewProjection.matProjection);
 			particles[i].transform.translate += particles[i].velocity * kDeltaTime;
@@ -96,7 +90,8 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView( 0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView( 3, instancingResouce_->GetGPUVirtualAddress());
-	
+	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
+
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
 }
@@ -207,7 +202,7 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine) {
 	std::uniform_real_distribution<float> distribution(-1.0, 1.0);
 	std::uniform_real_distribution<float> distTime(1.0, 3.0);
 	Particle_ particle;
-	particle.transform.scale = {1.0f, 1.0f, 1.0f};
+	particle.transform.scale = {0.0f, 0.0f, 0.0f};
 	particle.transform.rotate = {0.0f, 0.0f, 0.0f};
 	particle.transform.translate = { 0.0f, 0.0f, 0.0f}; //{distribution(randomEngine), distribution(randomEngine),//distribution(randomEngine)};
 	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};

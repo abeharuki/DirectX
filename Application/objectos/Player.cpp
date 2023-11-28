@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "camera/LockOn.h"
 #include <imgui.h>
+#include <numbers>
 
 // コンボ定数表
 const std::array<Player::ConstAttack, Player::ComboNum> Player::kConstAttacks_ = {
@@ -19,7 +20,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformHead_.Initialize();
 	worldTransformHammer_.Initialize();
 	worldTransformWW_.Initialize();
-	
+	worldTransformHead_.rotate.y = 3.14f;
 	worldTransformHead_.translate.y = -1.1f;
 	worldTransformWW_.scale = {0.8f, 0.8f, 0.8f};
 	worldTransformWW_.translate.y = 4.3f;
@@ -133,7 +134,7 @@ void Player::Update() {
 void Player::Draw(const ViewProjection& viewprojection,bool light) {
 	models_[0]->Draw(worldTransformHead_, viewprojection,light);
 	if (behavior_ == Behavior::kAttack) {
-		models_[1]->Draw(worldTransformHammer_, viewprojection,false);
+		models_[1]->Draw(worldTransformHammer_, viewprojection,true);
 	}
 }
 
@@ -269,19 +270,28 @@ void Player::Move() {
 		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
 	}
 
-	//
-	Matrix4x4 rotateMatrix = Math::Multiply(
-	    Math::MakeRotateXMatrix(viewProjection_->rotation_.x),
-	    Math::Multiply(
-	        Math::MakeRotateYMatrix(viewProjection_->rotation_.y),
-	        Math::MakeRotateZMatrix(viewProjection_->rotation_.z)));
-
-	velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
-	velocity_.y = 0.0f;
+	
 	if (isMove_) {
+		// 移動ベクトルをカメラの角度だけ回転する
+		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_->rotation_.y);
+		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+		// 現在の位置から移動する位置へのベクトル
+		Vector3 sub = (worldTransformBase_.translate+velocity_) - GetLocalPosition();
 		// 平行移動
 		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity_);
-		destinationAngleY_ = std::atan2(velocity_.x, velocity_.z);
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+				                         ? std::numbers::pi_v<float> - destinationAngleY_
+				                         : -std::numbers::pi_v<float> - destinationAngleY_;
+			}
+		} else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			                                    : -std::numbers::pi_v<float> / 2.0f;
+		}
+		//Rotate(velocity_);
 	} else if (lockOn_ && lockOn_->ExistTarget()) {
 		// ロックオン座標
 		Vector3 lockOnPos = lockOn_->GetTargetPos();
@@ -289,7 +299,18 @@ void Player::Move() {
 		Vector3 sub = lockOnPos - GetWorldPosition();
 
 		// y軸周りの回転
-		destinationAngleY_ = std::atan2(sub.x, sub.z);
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+				                         ? std::numbers::pi_v<float> - destinationAngleY_
+				                         : -std::numbers::pi_v<float> - destinationAngleY_;
+			}
+		} else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			                                    : -std::numbers::pi_v<float> / 2.0f;
+		}
 	}
 
 	// ジャンプ
@@ -343,6 +364,7 @@ void Player::AttackInitialize() {
 	workAttack_.inComboPhase = 0;
 	workAttack_.comboNext = false;
 	workAttack_.isAttack = true;
+	workAttack_.isFinalAttack = false;
 }
 void Player::AttackUpdata() {
 	// ゲームパッドの状態を得る変数(XINPUT)
@@ -424,6 +446,7 @@ void Player::AttackUpdata() {
 		else {
 			behaviorRequest_ = Behavior::kRoot;
 			workAttack_.isAttack = false;
+			workAttack_.isFinalAttack = true;
 		}
 	}
 
@@ -455,6 +478,7 @@ void Player::AttackUpdata() {
 
 		if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
 			workAttack_.isAttack = false;
+		
 		}
 
 		break;
@@ -477,6 +501,7 @@ void Player::AttackUpdata() {
 
 		if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
 			workAttack_.isAttack = false;
+			
 		}
 
 		break;
@@ -600,11 +625,17 @@ void Player::ApplyGlobalVariables() {
 
 #endif
 }
-//
-//void Player::Rotate(const Vector3& v) {
-//	Vector3 vector = Math::Normalize(v);
-//	Vector3 cross = Math::Normalize(Math::Cross({0.0f, 0.0f, 1.0f}, vector));
-//	float dot = Math::Dot({0.0f, 0.0f, 1.0f}, vector);
-//	Quaternion destinationQuaternion = Math::MakeQuaternion(cross, std::acos(dot));
-//	// worldTransformBase_.matWorld_ = Math::QuaternionMatrix(destinationQuaternion);
-//}
+
+void Player::Rotate(const Vector3& v) {
+	Vector3 cross = Math::Normalize(Math::Cross({0.0f, 0.0f, 1.0f}, v));
+	float dot = Math::Dot({0.0f, 0.0f, 1.0f}, v);
+	Quaternion destinationQuaternion = Math::MakeQuaternion(cross, std::acos(dot));
+	Quaternion posQuaternion = {
+	    0, worldTransformBase_.translate.x, worldTransformBase_.translate.y,
+	    worldTransformBase_.translate.z};
+
+	Quaternion posQuaternionY = Math::CalcQuaternion(destinationQuaternion, posQuaternion);
+
+
+	destinationAngleY_ = posQuaternionY.y;
+}

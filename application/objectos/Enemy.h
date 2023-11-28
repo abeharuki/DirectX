@@ -35,6 +35,8 @@ public:
 
 	WorldTransform GetWorldTransform() const{ return worldtransformBase_; }
 
+	void SetFinalAttack(bool attack) { isPlayerFinalAttack = attack; }
+
 	void OnCollision(const WorldTransform& worldTransform);
 	bool IsDead() { return isDead_; }
 
@@ -52,4 +54,6 @@ private:
 	float speed = 1.0f;
 
 	float a = 1.0f;
+
+	bool isPlayerFinalAttack = false;
 };

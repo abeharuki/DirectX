@@ -83,11 +83,12 @@ bool LockOn::IsOutOfRange(
 		// 距離条件チェック
 		if (minDistance_ <= posView.z && posView.z <= maxDistance_) {
 			// カメラの前方との角度を計算
-			float arcTangent =
-			    std::atan2(std::sqrt(posView.x * posView.x + posView.y * posView.y), posView.z);
-
+			//float arcTangent = std::atan2(std::sqrt(posView.x * posView.x + posView.y * posView.y), posView.z);
+			float dot = Math::Dot({0.0f, 0.0f, 1.0f}, posView);
+			float length = Math::Length(posView);
+			float angle = std::acos(dot / length);
 			// 角度条件チェック
-			if (arcTangent <= angleRenge_) {
+			if (std::abs(angle) <= angleRenge_) {
 				return false;
 			}
 		}
@@ -112,11 +113,12 @@ void LockOn::searchTarget(
 		// 距離条件チェック
 		if (minDistance_ <= posView.z && posView.z <= maxDistance_) {
 			// カメラの前方との角度を計算
-			float arcTangent =
-			    std::atan2(std::sqrt(posView.x * posView.x + posView.y * posView.y), posView.z);
-
+			//float arcTangent = std::atan2(std::sqrt(posView.x * posView.x + posView.y * posView.y), posView.z);
+			float dot = Math::Dot({0.0f, 0.0f, 1.0f}, posView);
+			float length = Math::Length(posView);
+			float angle = std::acos(dot / length);
 			// 角度条件チェック
-			if (arcTangent <= angleRenge_) {
+			if (std::abs(angle) <= angleRenge_) {
 				targets.emplace_back(std::make_pair(posView.z, enemy.get()));
 			}
 		}

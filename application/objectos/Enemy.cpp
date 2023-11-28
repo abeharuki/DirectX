@@ -24,6 +24,10 @@ void Enemy::Update() {
 	preHit_ = isHit_;
 	isHit_ = false;
 
+	if (isPlayerFinalAttack) {
+		hitCount = 0;
+	}
+
 	if (isDead_) {
 		a -= 0.01f;
 		worldtransformBase_.translate = Math::Add(worldtransformBase_.translate, deathVelocity);

@@ -35,6 +35,7 @@ void GameScene::Initialize() {
 		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
 		newEnemy->Initialize(enemyPos[i]);
 		enemies_.push_back(std::move(newEnemy));
+
 	}
 
 	lockOnMark_.reset(Sprite::Create("resources/Reticle.png"));
@@ -86,6 +87,7 @@ void GameScene::Update() {
 
 	for (std::unique_ptr<Enemy>& enemy : enemies_) {
 		enemy->Update();	
+		enemy->SetFinalAttack(player_->GetFinalAttack());
 	}
 	
 	ground_->Update();
@@ -123,7 +125,7 @@ void GameScene::Update() {
 void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
-	
+	Model::LightDraw(lightColor_, direction_, intensity_);
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
@@ -136,10 +138,10 @@ void GameScene::Draw() {
 	// 床
 	floor_->Draw(viewProjection_);
 	// プレーヤー
-	player_->Draw(viewProjection_,false);
+	player_->Draw(viewProjection_,true);
 	// 敵
 	for (std::unique_ptr<Enemy>& enemy : enemies_) {
-		enemy->Draw(viewProjection_,false);
+		enemy->Draw(viewProjection_,true);
 	}
 
 	// パーティクル
@@ -256,6 +258,7 @@ void GameScene::CheckAllCollision() {
 			// 敵キャラの衝突時コールバックを呼び出す
 			if (player_->IsAttack()) {
 				enemy->OnCollision(player_->GetWorldTransform());
+				
 				particle_->Update();
 				particle_->LoopParticles();
 			}
