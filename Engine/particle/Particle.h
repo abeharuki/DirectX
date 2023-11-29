@@ -40,14 +40,12 @@ public:
 	static Particle* GetInstance();
 
 	// 初期化
-	void Initialize(const std::string& filename, uint32_t Count);
+	void Initialize(const std::string& filename, Emitter emitter);
 
-	//スタート
+	// スタート
 	void Update();
-	
 
 	void sPipeline();
-
 
 	/// <summary>
 	/// 3Dモデル生成
@@ -57,16 +55,16 @@ public:
 
 	void CreateInstanceSRV();
 
-	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
+	void Draw(const ViewProjection& viewProjection);
 
-	static Particle* Create(const std::string& filename,uint32_t Count);
+	static Particle* Create(const std::string& filename, Emitter emitter);
 
-	Particle_ MakeNewParticle(std::mt19937& randomEngine);
-	
-	//パーティクルループ
+	Particle_ MakeNewParticle(std::mt19937& randomEngine, const Transform transform);
+
+	// パーティクルループ
 	void LoopParticles();
 
-	//パーティクルの数
+	// パーティクルの数
 	void SetCount(int count) {
 		instanceCount = count;
 		particles[count];
@@ -78,11 +76,10 @@ public:
 	// ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
 
-	//パーティクル速度
+	// パーティクル速度
 	void SetSpeed(float speed);
 
 private:
-	
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
@@ -101,7 +98,6 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandelCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandelGPU;
 
-	
 	// データを書き込む
 	ParticleForGPU* instancingData;
 	ModelData modelData;
@@ -110,9 +106,11 @@ private:
 	TextureManager* textureManager_;
 	uint32_t texture_;
 
-    uint32_t instanceCount = 1;
+	uint32_t instanceCount = 1;
 	Particle_ particles[100];
-	
+
+	Emitter emitter_{};
+
 	float kDeltaTime = 1.0f / 60.0f;
 	
 	bool loop_ = false;

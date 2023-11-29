@@ -43,7 +43,13 @@ void GameScene::Initialize() {
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 
-	particle_.reset(Particle::Create("resources/particle/circle.png",num));
+	emitter_.transform = {
+	    {1.0f, 1.0f, 1.0f},
+	    {0.0f, 0.0f, 0.0f},
+	    {0.0f, 0.0f, 0.0f},
+	};
+	emitter_.count = 10;
+	particle_.reset(Particle::Create("resources/particle/circle.png",emitter_));
 
 
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
@@ -188,7 +194,7 @@ void GameScene::Draw() {
 	//板ポリ
 	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
 	//パーティクル
-	particle_->Draw(worldTransformp_, viewProjection_);
+	particle_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

@@ -586,6 +586,7 @@ bool Math::IsAABBCollision(
 /*--------------------演算子オーバーロード---------------------------*/
 // 二項演算子
 Vector3 operator+(const Vector3& v1, const Vector3& v2) { return Math::Add(v1, v2); }
+Vector3 operator+(const Vector3& v1, float s) { return {v1.x + s, v1.y + s, v1.z + s}; }
 Vector3 operator-(const Vector3& v1, const Vector3& v2) { return Math::Subract(v1, v2); }
 Vector3 operator*(float s, const Vector3& v2) { return Math::Multiply(s, v2); }
 Vector3 operator*(const Vector3& v, float s) { return s * v; }
