@@ -184,6 +184,11 @@ public:
 	// 逆行列
 	static Matrix4x4 Inverse(const Matrix4x4& m);
 
+	static Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
+	static float Dot(const Vector3& v1, const Vector3& v2);
+
+
 	// 長さ(ノルマ)
 	static float Length(const Vector3& v);
 
@@ -198,11 +203,17 @@ public:
 	    const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
 	    const Vector3 size2);
 
+
+	/*--------------------------------MT授業関数---------------------------------*/
 	static void MatrixScreenPrintf(const Matrix4x4& matrix, const char* name);
 
 
 	//任意の回転軸の回転
 	static Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
+
+	//ある方向からある方向への回転
+	static Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
+
 };
 
 /*--------------------演算子オーバーロード---------------------------*/

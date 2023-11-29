@@ -22,11 +22,13 @@ Vector3 Math::Multiply(float scalar, const Vector3& v) {
 
 // 正規化
 Vector3 Math::Normalize(const Vector3& v) {
-	Vector3 normalize;
-	float mag = 1.0f / (float)sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-	normalize.x = v.x * mag;
-	normalize.y = v.y * mag;
-	normalize.z = v.z * mag;
+	Vector3 normalize{};
+	float mag = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	if (mag != 0) {
+		normalize.x = v.x / mag;
+		normalize.y = v.y / mag;
+		normalize.z = v.z / mag;
+	}
 	return normalize;
 };
 
@@ -452,11 +454,26 @@ Matrix4x4 Math::Inverse(const Matrix4x4& m) {
 	return result;
 };
 
+Vector3 Math::Cross(const Vector3& v1, const Vector3& v2) {
+	Vector3 result{};
+	result.x = (v1.y * v2.z) - (v1.z * v2.y);
+	result.y = (v1.z * v2.x) - (v1.x * v2.z);
+	result.z = (v1.x * v2.y) - (v1.y * v2.x);
+	return result;
+}
+
+float Math::Dot(const Vector3& v1, const Vector3& v2) {
+	float result{};
+	result = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+	return result;
+}
+
 
 // 長さ(ノルマ)
 float Math::Length(const Vector3& v) {
-	float length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-	return length;
+	float result{};
+	result = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+	return result;
 };
 
 
@@ -514,9 +531,12 @@ bool Math::IsAABBCollision(
 
 
 
-Matrix4x4 Math::MakeRotateAxisAngle(const Vector3& axis, float angle) {
-	Matrix4x4 matrix;
 
+/*-------------------------MT授業関数--------------------------------*/
+//任意軸の回転
+Matrix4x4 Math::MakeRotateAxisAngle(const Vector3& axis_, float angle) {
+	Matrix4x4 matrix;
+	Vector3 axis = Math::Normalize(axis_);
 	matrix.m[0][0] = (axis.x * axis.x) * (1 - std::cos(angle)) + std::cos(angle);
 	matrix.m[0][1] = (axis.x * axis.y) * (1 - std::cos(angle)) + axis.z * std::sin(angle);
 	matrix.m[0][2] = (axis.x * axis.z) * (1 - std::cos(angle)) - axis.y * std::sin(angle);
@@ -524,12 +544,12 @@ Matrix4x4 Math::MakeRotateAxisAngle(const Vector3& axis, float angle) {
 
 	matrix.m[1][0] = (axis.x * axis.y) * (1 - std::cos(angle)) - axis.z * std::sin(angle);
 	matrix.m[1][1] = (axis.y * axis.y) * (1 - std::cos(angle)) + std::cos(angle);
-	matrix.m[1][2] = (axis.x * axis.z) * (1 - std::cos(angle)) + axis.x * std::sin(angle);
+	matrix.m[1][2] = (axis.y * axis.z) * (1 - std::cos(angle)) + axis.x * std::sin(angle);
 	matrix.m[1][3] = 0.0f;
 
 	matrix.m[2][0] = (axis.x * axis.z) * (1 - std::cos(angle)) + axis.y * std::sin(angle);
-	matrix.m[2][1] = (axis.x * axis.z) * (1 - std::cos(angle)) - axis.x * std::sin(angle);
-	matrix.m[2][2] = (axis.x * axis.z) * (1 - std::cos(angle)) + std::cos(angle);
+	matrix.m[2][1] = (axis.y * axis.z) * (1 - std::cos(angle)) - axis.x * std::sin(angle);
+	matrix.m[2][2] = (axis.z * axis.z) * (1 - std::cos(angle)) + std::cos(angle);
 	matrix.m[2][3] = 0.0f;
 
 	matrix.m[3][0] = 0.0f;
@@ -541,12 +561,54 @@ Matrix4x4 Math::MakeRotateAxisAngle(const Vector3& axis, float angle) {
 	return matrix;
 }
 
+//ある方向からある方向への回転
+Matrix4x4 Math::DirectionToDirection(const Vector3& from, const Vector3& to) { 
+	Matrix4x4 result{}; 
+	Vector3 n{};
+	if (from.x == -to.x && from.y == -to.y && from.z == -to.z) {
+		if (from.x != 0.0f || from.y != 0.0f) {
+			n = {from.y, -from.x, 0.0f};
+		}
+		else if (from.x != 0.0f || from.z != 0.0f) {
+			n = {from.z, 0.0f, -from.x};
+		}
+
+	} else {
+		n = Normalize(Cross(from, to));
+	}
+
+	float cos = Dot(from, to);
+	float sin = Length(Cross(from, to));
+
+	result.m[0][0] = (n.x * n.x) * (1 - cos) + cos;
+	result.m[0][1] = (n.x * n.y) * (1 - cos) + n.z * sin;
+	result.m[0][2] = (n.x * n.z) * (1 - cos) - n.y * sin;
+	result.m[0][3] = 0.0f;
+
+	result.m[1][0] = (n.x * n.y) * (1 - cos) - n.z * sin;
+	result.m[1][1] = (n.y * n.y) * (1 - cos) + cos;
+	result.m[1][2] = (n.y * n.z) * (1 - cos) + n.x * sin;
+	result.m[1][3] = 0.0f;
+
+	result.m[2][0] = (n.x * n.z) * (1 - cos) + n.y * sin;
+	result.m[2][1] = (n.y * n.z) * (1 - cos) - n.x * sin;
+	result.m[2][2] = (n.z * n.z) * (1 - cos) + cos;
+	result.m[2][3] = 0.0f;
+
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
 void Math::MatrixScreenPrintf(const Matrix4x4& matrix,const char* name){
 	ImGui::Begin(name);
-	ImGui::Text("%f, %f, %f, %f", matrix.m[0][0], matrix.m[0][1], matrix.m[0][2], matrix.m[0][3]);
-	ImGui::Text("%f, %f, %f, %f", matrix.m[1][0], matrix.m[1][1], matrix.m[1][2], matrix.m[1][3]);
-	ImGui::Text("%f, %f, %f, %f", matrix.m[2][0], matrix.m[2][1], matrix.m[2][2], matrix.m[2][3]);
-	ImGui::Text("%f, %f, %f, %f", matrix.m[3][0], matrix.m[3][1], matrix.m[3][2], matrix.m[3][3]);
+	ImGui::Text("%1.3f, %1.3f, %1.3f, %1.3f", matrix.m[0][0], matrix.m[0][1], matrix.m[0][2], matrix.m[0][3]);
+	ImGui::Text("%1.3f, %1.3f, %1.3f, %1.3f", matrix.m[1][0], matrix.m[1][1], matrix.m[1][2], matrix.m[1][3]);
+	ImGui::Text("%1.3f, %1.3f, %1.3f, %1.3f", matrix.m[2][0], matrix.m[2][1], matrix.m[2][2], matrix.m[2][3]);
+	ImGui::Text("%1.3f, %1.3f, %1.3f, %1.3f", matrix.m[3][0], matrix.m[3][1], matrix.m[3][2], matrix.m[3][3]);
 	ImGui::End();
 
 
