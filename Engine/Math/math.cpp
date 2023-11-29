@@ -565,11 +565,14 @@ Matrix4x4 Math::MakeRotateAxisAngle(const Vector3& axis_, float angle) {
 Matrix4x4 Math::DirectionToDirection(const Vector3& from, const Vector3& to) { 
 	Matrix4x4 result{}; 
 	Vector3 n{};
-	if (from.x != 0.0f || from.y != 0.0f) {
-		n = Normalize({from.y, -from.x, 0.0f});
-	} else if (from.x != 0.0f || from.z != 0.0f) {
-		n = Normalize({from.z, 0.0f, -from.x});
-	} else {
+	if (from.x == -to.x && from.y == -to.y && from.z == -to.z) {
+		if (from.x != 0.0f || from.y != 0.0f) {
+			n = Normalize({from.y, -from.x, 0.0f});
+		} else if (from.x != 0.0f || from.z != 0.0f) {
+			n = Normalize({from.z, 0.0f, -from.x});
+		} 
+	}
+	else {
 		n = Normalize(Cross(from, to));
 	}
 
