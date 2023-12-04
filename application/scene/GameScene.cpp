@@ -14,23 +14,31 @@ GameScene* GameScene::GetInstance() {
 }
 
 void GameScene::Initialize() {
-	
+	inputHandler_ = std::make_unique<InputHandler>();
+	inputHandler_->AssingMoveRightCommand2PressKeyD();
+	inputHandler_->AssingMoveLeftCommand2PressKeyA();
+
+	viewProjection_.Initialize();
+	viewProjection_.translation_ = {0.0f, 0.0f, -5.0f};
+
+	// プレイヤー
+	modelPlayer_.reset(Model::CreateModelFromObj("resources/cube/cube.obj", "resources/cube/cube.jpg"));
+	player_ = std::make_unique<Player>();
+	std::vector<Model*> playerModels = {modelPlayer_.get()};
+	player_->Initialize(playerModels);
+
+
 	
 }
 
-void GameScene::Update() {
-	Vector3 from0 = Math::Normalize({1.0f,0.7f,0.5f});
-	Vector3 to0 = -from0;
-	Vector3 from1 = Math::Normalize({-0.6f, 0.9f, 0.2f});
-	Vector3 to1 = Math::Normalize({0.4f, 0.7f, -0.5f});
-	Matrix4x4 rotateMatrix0 = Math::DirectionToDirection(Math::Normalize(Vector3{1.0f, 0.0f, 0.0f}), Math::Normalize({-1.0f, 0.0f, 0.0f}));
-	Matrix4x4 rotateMatrix1 = Math::DirectionToDirection(from0, to0);
-	Matrix4x4 rotateMatrix2 = Math::DirectionToDirection(from1, to1);
+void GameScene::Update() { 
+	command_ = inputHandler_->HandleInput();
 
-	Math::MatrixScreenPrintf(rotateMatrix0, "rotateMatrix0");
-	Math::MatrixScreenPrintf(rotateMatrix1, "rotateMatrix1");
-	Math::MatrixScreenPrintf(rotateMatrix2, "rotateMatrix2");
+	if (this->command_) {
+		command_->Exec(*player_);
+	}
 
+	player_->Update();
 }
 
 
@@ -39,7 +47,8 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	//Model::LightDraw(color_,direction_, intensity_);
 
-	
+	// プレーヤー
+	player_->Draw(viewProjection_, false);
 	Model::PostDraw();
 #pragma endregion
 

@@ -134,13 +134,13 @@ void Sprite::CreateVertexResource() {
 	
 
 	// 1枚目の三角形
-	vertexData_[0].position = {0.0f, 360.0f, 0.0f, 1.0f}; // 左下0
+	vertexData_[0].position = {0.0f, 100.0f, 0.0f, 1.0f}; // 左下0
 	vertexData_[0].texcoord = {0.0f, 1.0f};
 	vertexData_[1].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 左上1
 	vertexData_[1].texcoord = {0.0f, 0.0f};
-	vertexData_[2].position = {360.0f, 360.0f, 0.0f, 1.0f}; // 右下2
+	vertexData_[2].position = {100.0f, 100.0f, 0.0f, 1.0f}; // 右下2
 	vertexData_[2].texcoord = {1.0f, 1.0f};
-	vertexData_[3].position = {360.0f, 0.0f, 0.0f, 1.0f}; // 右上3
+	vertexData_[3].position = {100.0f, 0.0f, 0.0f, 1.0f}; // 右上3
 	vertexData_[3].texcoord = {1.0f, 0.0f};
 
 	vertexData_[0].normal = {0.0f, 0.0f, -1.0f};

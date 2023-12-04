@@ -14,16 +14,6 @@
 class Player : public BaseCharacter {
 
 public: // メンバ関数
-	/// <summary>
-	/// コンストクラタ
-	/// </summary>
-	Player();
-
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
-	~Player();
-
 
 	/// <summary>
 	/// 初期化
@@ -41,6 +31,11 @@ public: // メンバ関数
 	void Draw(const ViewProjection& viewprojection, bool light) override;
 
 
+	//キーごとのコマンド
+	void MoveRight();
+	void MoveLeft();
+
+
 	Vector3 GetWorldPosition();
 
 	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
@@ -53,4 +48,6 @@ private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	ViewProjection viewProjection_;
 	
+	float speed_ = 1.0f;
+
 };

@@ -11,11 +11,22 @@ void Player::Initialize(const std::vector<Model*>& models) {
 void Player::Update(){
 
 	BaseCharacter::Update();
+	worldTransformBase_.UpdateMatrix();
 }
 
 void Player::Draw(const ViewProjection& viewprojection, bool light) {
 	models_[0]->Draw(worldTransformBase_, viewprojection,light);
 }
+
+
+void Player::MoveRight() { 
+	this->worldTransformBase_.translate.x += this->speed_; 
+}
+
+void Player::MoveLeft() { 
+	this->worldTransformBase_.translate.x -= this->speed_; 
+}
+
 
 Vector3 Player::GetWorldPosition() {
 	// ワールド座標を入れる関数

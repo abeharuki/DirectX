@@ -9,7 +9,8 @@
 #include "Skydome.h"
 #include "Sphere.h"
 #include "Particle.h"
-
+#include "Player.h"
+#include "InputHandler.h"
 
 /// <summary>
 /// ゲームシーン
@@ -32,5 +33,11 @@ private://基本変数
 	float intensity_ = 1.0f;
 
 private: // メンバ変数
-	
+	std::unique_ptr <InputHandler> inputHandler_;
+	ICommand *command_; 
+	ViewProjection viewProjection_;
+
+	// player
+	std::unique_ptr<Player> player_;
+	std::unique_ptr<Model> modelPlayer_;
 };
