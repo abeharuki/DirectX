@@ -193,15 +193,18 @@
       <Filter>ソース ファイル\Application\base</Filter>
     </ClCompile>
     <ClCompile Include="Application\scene\TitleScene.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Application\scene</Filter>
     </ClCompile>
     <ClCompile Include="Application\scene\ClearScene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Manager\SceneManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Application\scene</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Manager\IScene.cpp">
+      <Filter>ソース ファイル\Engine\Maneger</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Manager\SceneManager.cpp">
+      <Filter>ソース ファイル\Engine\Maneger</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Audio\Audio.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -306,16 +309,19 @@
     <ClInclude Include="Application\base\camera\followCamera.h">
       <Filter>ヘッダー ファイル\Application\base</Filter>
     </ClInclude>
-    <ClInclude Include="Application\scene\TitleScene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Application\scene\ClearScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\scene\TitleScene.h">
+      <Filter>ヘッダー ファイル\Application\scene</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Manager\IScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Engine\Maneger</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Manager\SceneManager.h">
+      <Filter>ヘッダー ファイル\Engine\Maneger</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Audio\Audio.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
