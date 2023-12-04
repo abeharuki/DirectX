@@ -15,14 +15,14 @@
 #include "ImGuiManager.h"
 #include "KeyInput.h"
 #include <GlobalVariables.h>
-
+#include "Audio/Audio.h"
 
 
 WinApp* win = nullptr;
 DirectXCommon* dxCommon = nullptr;
 ImGuiManager* imguiManager = nullptr;
 KeyInput* keyInput = nullptr;
-
+Audio* audio = nullptr;
 
 Engine* Engine::GetInstance() {
 	static Engine instance;
@@ -40,11 +40,13 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 
 	imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win, dxCommon);	
+
 	//	Inputの初期化処理
 	keyInput = KeyInput::GetInstance();
 	keyInput->Initialize();
 	
-	
+	audio = Audio::GetInstance();
+	audio->Initialize();
 }
 
 bool Engine::ProcessMessage() {
@@ -72,6 +74,8 @@ void Engine::BeginFrame() {
 
 void Engine::Finalize(){
 	
+	audio->Finalize();
+
 	//  DirectX終了処理
 	dxCommon->Finalize();
 	

@@ -4,9 +4,10 @@
 #include <numbers>
 #include "ImGuiManager.h"
 
-void Particle::Initialize(const std::string& filename, uint32_t Count) {
-	instanceCount = Count;
-	particles[Count];
+void Particle::Initialize(const std::string& filename, Emitter emitter) {
+	emitter_ = emitter;
+	instanceCount = emitter_.count;
+	particles[emitter_.count];
 	
 	LoadTexture(filename);
 	CreateVertexResource();
@@ -32,7 +33,7 @@ void Particle::LoopParticles() {
 		if (particles[i].lifeTime <= particles[i].currentTime) {
 			std::random_device seedGenerator;
 			std::mt19937 randomEngine(seedGenerator());
-			particles[i] = MakeNewParticle(randomEngine);
+			particles[i] = MakeNewParticle(randomEngine,emitter_.transform);
 		}
 	}
 	
@@ -40,7 +41,7 @@ void Particle::LoopParticles() {
 
 
 
-void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+void Particle::Draw(const ViewProjection& viewProjection) {
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix({1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
 	Matrix4x4 billboardMatrix = backToFrontMatrix * cameraMatrix;
@@ -58,8 +59,8 @@ void Particle::Draw(WorldTransform& worldTransform, const ViewProjection& viewPr
 				}
 			}
 			
-			Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(worldTransform.scale);
-			Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particles[i].transform.translate + worldTransform.translate);
+			Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(emitter_.transform.scale);
+			Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particles[i].transform.translate + emitter_.transform.translate);
 			Matrix4x4 worldMatrix2 = scaleMatrix * (billboardMatrix * translateMatrix);
 
 			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(particles[i].transform.scale,particles[i].transform.rotate ,particles[i].transform.translate);
@@ -150,7 +151,7 @@ void Particle::CreateVertexResource() {
 	std::random_device seedGenerator;
 	std::mt19937 randomEngine(seedGenerator());
 	for (uint32_t i = 0; i < instanceCount; ++i) {
-		particles[i] = MakeNewParticle(randomEngine);
+		particles[i] = MakeNewParticle(randomEngine,emitter_.transform);
 	}
 	
 };
@@ -164,9 +165,9 @@ void Particle::SetColor(Vector4 color) {
 
 void Particle::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 
-Particle* Particle::Create(const std::string& filename,uint32_t Count) {
+Particle* Particle::Create(const std::string& filename, Emitter emitter) {
 	Particle* model = new Particle;
-	model->Initialize(filename,Count);
+	model->Initialize(filename,emitter);
 	return model;
 }
 
@@ -195,13 +196,13 @@ void Particle::CreateInstanceSRV() {
 
 }
 
-Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine) {
+Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {
 	std::uniform_real_distribution<float> distribution(-1.0, 1.0);
 	std::uniform_real_distribution<float> distTime(1.0, 3.0);
 	Particle_ particle;
-	particle.transform.scale = {1.0f, 1.0f, 1.0f};
-	particle.transform.rotate = {0.0f, 0.0f, 0.0f};
-	particle.transform.translate = {distribution(randomEngine), distribution(randomEngine),distribution(randomEngine)};
+	particle.transform.scale = transform.scale;
+	particle.transform.rotate = transform.rotate;
+	particle.transform.translate = transform.translate + distribution(randomEngine);
 	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
 	particle.color = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),1.0f};
 	particle.lifeTime = distTime(randomEngine);

@@ -47,8 +47,9 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelplane_;
 	//フェンス
 	std::unique_ptr<Model> modelFence_[2];
-	//板ポリ
+	//パーティクル
 	std::unique_ptr<Particle> particle_;
+	Emitter emitter_{};
 
 	std::unique_ptr<Sprite> sprite_;
 
