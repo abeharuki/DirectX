@@ -18,7 +18,7 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransformp_.Initialize();
 	viewProjection_.Initialize();
-	viewProjection_.translation_ = {0.0f, 0.0f, -10.0f};
+	viewProjection_.translation_ = {0.0f, 0.0f, -15.0f};
 	
 	worldTransform_.translate.x = {1.0f};
 	worldTransform_.translate.z = {-2.0f};
@@ -49,6 +49,12 @@ void GameScene::Initialize() {
 	    {0.0f, 0.0f, 0.0f},
 	};
 	emitter_.count = 10;
+	emitter_.frequency = 0.5f;
+	emitter_.frequencyTime = 0.0f;
+
+	accelerationField_.acceleration = {10.0f, 0.0f, 0.0f};
+	accelerationField_.area.min = {-1.0f, -1.0f, -1.0f};
+	accelerationField_.area.max = {1.0f, 1.0f, 1.0f};
 	particle_.reset(Particle::Create("resources/particle/circle.png",emitter_));
 
 
@@ -56,6 +62,7 @@ void GameScene::Initialize() {
 
 	
 	particle = false;
+	area = false;
 	colorPlane = {1.0f, 1.0f, 1.0f, 1.0f};
 	blendMode_ = BlendMode::kNone;
 	
@@ -97,11 +104,19 @@ void GameScene::Update() {
 
 
 	particle_->SetSpeed(float(num));
-	
 	if (particle) {
 		particle_->Update();
-		particle_->LoopParticles();
+		particle_->SetFiled(accelerationField_);
+		if (area) {
+			accelerationField_.acceleration = {15.0f, 0.0f, 0.0f};
+		} else {
+			accelerationField_.acceleration = {0.0f, 0.0f, 0.0f};
+		}
+		//particle_->SetColor(particleColor);
+	} else {
+		particle_->StopParticles();
 	}
+	
 	
 
 	if (KeyInput::PushKey(DIK_P)) {
@@ -164,7 +179,9 @@ void GameScene::Update() {
 	}
 	if (ImGui::TreeNode("Particle")) {
 		ImGui::Checkbox("move", &particle);
+		ImGui::Checkbox("area", &area);
 		ImGui::SliderInt("speed", &num, 0, 100);
+		ImGui::SliderFloat4("Color", &particleColor.x, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Light")) {
@@ -177,7 +194,7 @@ void GameScene::Update() {
 	}
 	
 	ImGui::End();
-	modelplane_->SetBlendMode(blendMode_);
+	
 }
 
 

@@ -30,7 +30,9 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-	BlendMode blendMode_ = BlendMode::kAdd;
+	//BlendMode blendMode_ = BlendMode::kAdd;
+	BlendMode blendMode_ = BlendMode::kNormal;
+	
 
 public:
 	/// <summary>
@@ -57,18 +59,14 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	static Particle* Create(const std::string& filename, Emitter emitter);
+	static Particle*Create(const std::string& filename, Emitter emitter);
 
 	Particle_ MakeNewParticle(std::mt19937& randomEngine, const Transform transform);
 
-	// パーティクルループ
-	void LoopParticles();
+	std::list<Particle_> Emission(const Emitter& emitter, std::mt19937& randomEngine);
 
-	// パーティクルの数
-	void SetCount(int count) {
-		instanceCount = count;
-		particles[count];
-	}
+	// パーティクルループ
+	void StopParticles();
 
 	// 色とアルファ値
 	void SetColor(Vector4 color);
@@ -78,6 +76,9 @@ public:
 
 	// パーティクル速度
 	void SetSpeed(float speed);
+
+	//フィールドをセット
+	void SetFiled(AccelerationField accelerationField);
 
 private:
 	// 頂点バッファビュー
@@ -107,15 +108,20 @@ private:
 	uint32_t texture_;
 
 	uint32_t instanceCount = 1;
-	Particle_ particles[100];
+	std::list<Particle_> particles;
 
 	Emitter emitter_{};
+	AccelerationField accelerationField_;
 
 	float kDeltaTime = 1.0f / 60.0f;
 	
 	bool loop_ = false;
 	bool particle = false;
 
+	Vector4 color_;
+	bool isColor = false;
+
+	std::random_device seedGenerator;
 	uint32_t descriptorSizeSRV;
 
 private:

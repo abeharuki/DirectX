@@ -50,6 +50,7 @@ private: // メンバ変数
 	//パーティクル
 	std::unique_ptr<Particle> particle_;
 	Emitter emitter_{};
+	AccelerationField accelerationField_;
 
 	std::unique_ptr<Sprite> sprite_;
 
@@ -74,6 +75,7 @@ private: // メンバ変数
 	const float kDeltaTime = 1.0f / 60.0f;
 	Vector3 velo = {0.0f, 1.0f, 0.0f};
 	bool particle;
+	bool area;
 	Vector4 particleColor;
-	int num = 10;
+	int num = 5;
 };
