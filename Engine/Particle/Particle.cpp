@@ -1,14 +1,24 @@
 #include "Particle.h"
+#include "ImGuiManager.h"
 #include <cassert>
 #include <format>
 #include <numbers>
-#include "ImGuiManager.h"
+
+
+bool IsCollision(const AABB& aabb, const Vector3& point) {
+	if ((aabb.min.x <= point.x && point.x <= aabb.max.x) &&
+	    (aabb.min.y <= point.y && point.y <= aabb.max.y) &&
+	    (aabb.min.z <= point.z && point.z <= aabb.max.z)) {
+		return true;
+	}
+
+	return false;
+}
 
 void Particle::Initialize(const std::string& filename, Emitter emitter) {
 	emitter_ = emitter;
 	instanceCount = emitter_.count;
-	particles[emitter_.count];
-	
+	accelerationField_.acceleration = {0.0f, 0.0f, 0.0f};
 	LoadTexture(filename);
 	CreateVertexResource();
 	sPipeline();
@@ -24,60 +34,67 @@ void Particle::sPipeline() {
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
 };
 
-void Particle::Update() { particle = true; }
-
-void Particle::LoopParticles() { 
-	
-	loop_ = true;
-	for (uint32_t i = 0; i < instanceCount; ++i) {
-		if (particles[i].lifeTime <= particles[i].currentTime) {
-			std::random_device seedGenerator;
-			std::mt19937 randomEngine(seedGenerator());
-			particles[i] = MakeNewParticle(randomEngine,emitter_.transform);
-		}
-	}
-	
+void Particle::Update() { 
+	particle = true; 
 }
 
-
+void Particle::StopParticles() {
+	particle = false;
+}
 
 void Particle::Draw(const ViewProjection& viewProjection) {
+	// 乱数生成
+	std::mt19937 randomEngine(seedGenerator());
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix({1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
+	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix(
+	    {1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
 	Matrix4x4 billboardMatrix = backToFrontMatrix * cameraMatrix;
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
-	
+
 	uint32_t numInstance = 0;
+
+	emitter_.frequencyTime += kDeltaTime;
+	if (emitter_.frequency <= emitter_.frequencyTime) {
+		particles.splice(particles.end(), Emission(emitter_, randomEngine));
+		emitter_.frequencyTime -= emitter_.frequency;
+	}
+
 	if (particle) {
-		for (uint32_t i = 0; i < instanceCount; ++i) {
-			float alph = 1.0f - (particles[i].currentTime / particles[i].lifeTime);
-			if (!loop_) {
-				if (particles[i].lifeTime <= particles[i].currentTime) {
-					continue;
-				}
+		for (std::list<Particle_>::iterator particleIterator = particles.begin(); particleIterator != particles.end();) {
+
+			if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
+				particleIterator = particles.erase(particleIterator);
+				continue;
 			}
-			
-			Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(emitter_.transform.scale);
-			Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particles[i].transform.translate + emitter_.transform.translate);
-			Matrix4x4 worldMatrix2 = scaleMatrix * (billboardMatrix * translateMatrix);
 
-			Matrix4x4 worldMatrix = Math::MakeAffineMatrix(particles[i].transform.scale,particles[i].transform.rotate ,particles[i].transform.translate);
-			Matrix4x4 worldViewProjectionMatrix = worldMatrix2 * (Math::Inverse(cameraMatrix) * viewProjection.matProjection);
-			particles[i].transform.translate += particles[i].velocity * kDeltaTime;
-			particles[i].currentTime += kDeltaTime;
+			if (IsCollision(accelerationField_.area, (*particleIterator).transform.translate)) {
+				(*particleIterator).velocity += accelerationField_.acceleration * kDeltaTime;
+			}
 
-			instancingData[numInstance].WVP = worldViewProjectionMatrix;
-			instancingData[numInstance].World = worldMatrix2;
-			instancingData[numInstance].color = particles[i].color;
+			(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
+			(*particleIterator).currentTime += kDeltaTime;
+
+			if (numInstance < instanceCount) {
+				Matrix4x4 worldMatrix =
+				    Math::MakeScaleMatrix((*particleIterator).transform.scale) *
+				    (billboardMatrix * Math::MakeTranslateMatrix((*particleIterator).transform.translate));
+				Matrix4x4 worldViewProjectionMatrix =worldMatrix * (Math::Inverse(cameraMatrix) * viewProjection.matProjection);
+
+				instancingData[numInstance].WVP = worldViewProjectionMatrix;
+				instancingData[numInstance].World = worldMatrix;
+
+				float alph = 1.2f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
+				instancingData[numInstance].color = (*particleIterator).color;
+				instancingData[numInstance].color.w = alph;
+				numInstance++;
+			}
+
+			++particleIterator;
 			
-			instancingData[numInstance].color.w = alph;
-			++numInstance;
 		}
 	}
-	
-	
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
@@ -93,11 +110,14 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootConstantBufferView( 0, materialResorce_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootConstantBufferView( 3, instancingResouce_->GetGPUVirtualAddress());
-	
+	Engine::GetList()->SetGraphicsRootConstantBufferView(
+	    0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(
+	    3, instancingResouce_->GetGPUVirtualAddress());
+
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
+	numInstance =0;
 }
 
 // 頂点データの設定
@@ -112,9 +132,8 @@ void Particle::CreateVertexResource() {
 	for (uint32_t i = 0; i < instanceCount; ++i) {
 		instancingData[i].WVP = Math::MakeIdentity4x4();
 		instancingData[i].World = Math::MakeIdentity4x4();
-		instancingData[i].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f); 
+		instancingData[i].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
-
 
 	// 頂点リソースを作る
 	vertexResource_ = Mesh::CreateBufferResoure(
@@ -146,28 +165,26 @@ void Particle::CreateVertexResource() {
 	materialData->enableLighting = false;
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
-	
-	// 乱数生成
-	std::random_device seedGenerator;
-	std::mt19937 randomEngine(seedGenerator());
-	for (uint32_t i = 0; i < instanceCount; ++i) {
-		particles[i] = MakeNewParticle(randomEngine,emitter_.transform);
-	}
+
 	
 };
 
 void Particle::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
 
 void Particle::SetColor(Vector4 color) {
-	materialData->color.rgb = {color.x, color.y, color.z};
-	materialData->color.a = color.w;
+	color_ = color;
+	isColor = true;
 }
 
 void Particle::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 
-Particle* Particle::Create(const std::string& filename, Emitter emitter) {
+void Particle::SetFiled(AccelerationField accelerationField) {
+	accelerationField_ = accelerationField;
+}
+
+Particle* Particle::Create( const std::string& filename, Emitter emitter) {
 	Particle* model = new Particle;
-	model->Initialize(filename,emitter);
+	model->Initialize(filename, emitter);
 	return model;
 }
 
@@ -181,7 +198,7 @@ void Particle::LoadTexture(const std::string& filename) {
 void Particle::CreateInstanceSRV() {
 	descriptorSizeSRV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(
 	    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	
+
 	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
 	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
 	instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -190,10 +207,9 @@ void Particle::CreateInstanceSRV() {
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	instancingSrvDesc.Buffer.NumElements = instanceCount;
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-	instancingSrvHandelCPU = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,2);
-	instancingSrvHandelGPU = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,2);
-	Engine::GetDevice()->CreateShaderResourceView(  instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
-
+	instancingSrvHandelCPU =Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
+	instancingSrvHandelGPU = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
+	Engine::GetDevice()->CreateShaderResourceView(instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
 }
 
 Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {
@@ -204,9 +220,24 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform 
 	particle.transform.rotate = transform.rotate;
 	particle.transform.translate = transform.translate + distribution(randomEngine);
 	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
-	particle.color = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),1.0f};
+	if (isColor) {
+		particle.color = color_;
+	} else {
+		particle.color = {
+		    distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),
+		    1.0f};
+	}
 	particle.lifeTime = distTime(randomEngine);
 	particle.currentTime = 0;
 	return particle;
-	 
 }
+
+
+std::list<Particle_> Particle::Emission(const Emitter& emitter, std::mt19937& randomEngine) {
+	std::list<Particle_> particles;
+	for (uint32_t count = 0; count < emitter.count; ++count) {
+		particles.push_back(MakeNewParticle(randomEngine, emitter.transform));
+	}
+	return particles;
+}
+

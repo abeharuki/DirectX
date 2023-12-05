@@ -96,8 +96,7 @@ void Engine::EndFrame() {
 	dxCommon->PostDraw();
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE Engine::GetCPUDescriptorHandle(
-    ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+D3D12_CPU_DESCRIPTOR_HANDLE Engine::GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize * index);
 	return handleCPU;

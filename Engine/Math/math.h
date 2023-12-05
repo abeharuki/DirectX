@@ -133,11 +133,15 @@ struct ParticleForGPU {
 
 struct Emitter {
 	Transform transform;
-	uint32_t count;      // 発生数
+	uint32_t count;      // 発生数　発生頻度秒に何個出すか
 	float frequency;     // 発生頻度
-	float frequencyTime; // 頻度用時刻
+	float frequencyTime; // 頻度用時刻　0で初期化
 };
 
+struct AccelerationField {
+	Vector3 acceleration;//加速度
+	AABB area;//範囲
+};
 
 class Math {
 public:
