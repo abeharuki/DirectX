@@ -182,11 +182,13 @@ void Player::MoveInitialize() { worldTransformBase_.translate.y = 0.0f; }
 void Player::joyMove() {
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
+	
 	// ジョイスティックの状態取得
 	if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
 		const float value = 0.7f;
 		bool isMove = false;
-
+		// 移動量
+		velocity_ = {0.0f, 0.0f, 0.0f};
 		// 移動速度
 		const float kCharacterSpeed = 0.2f;
 		// 移動量
@@ -209,9 +211,25 @@ void Player::joyMove() {
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 
 		if (isMove) {
-
+	// 移動ベクトルをカメラの角度だけ回転する
+			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_->rotation_.y);
+			velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+			// 現在の位置から移動する位置へのベクトル
+			Vector3 sub = (worldTransformBase_.translate + velocity_) - GetLocalPosition();
+			// 平行移動
 			worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity_);
-			destinationAngleY_ = std::atan2(velocity_.x, velocity_.z);
+			if (sub.z != 0.0) {
+				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+				if (sub.z < 0.0) {
+					destinationAngleY_ = (sub.x >= 0.0)
+					                         ? std::numbers::pi_v<float> - destinationAngleY_
+					                         : -std::numbers::pi_v<float> - destinationAngleY_;
+				}
+			} else {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				                                    : -std::numbers::pi_v<float> / 2.0f;
+			}
 		} else if (lockOn_ && lockOn_->ExistTarget()) {
 			// ロックオン座標
 			Vector3 lockOnPos = lockOn_->GetTargetPos();
@@ -219,7 +237,18 @@ void Player::joyMove() {
 			Vector3 sub = lockOnPos - GetWorldPosition();
 
 			// y軸周りの回転
-			destinationAngleY_ = std::atan2(sub.x, sub.z);
+			if (sub.z != 0.0) {
+				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+				if (sub.z < 0.0) {
+					destinationAngleY_ = (sub.x >= 0.0)
+					                         ? std::numbers::pi_v<float> - destinationAngleY_
+					                         : -std::numbers::pi_v<float> - destinationAngleY_;
+				}
+			} else {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				                                    : -std::numbers::pi_v<float> / 2.0f;
+			}
 		}
 	}
 
@@ -291,7 +320,7 @@ void Player::Move() {
 			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
 			                                    : -std::numbers::pi_v<float> / 2.0f;
 		}
-		//Rotate(velocity_);
+		
 	} else if (lockOn_ && lockOn_->ExistTarget()) {
 		// ロックオン座標
 		Vector3 lockOnPos = lockOn_->GetTargetPos();
@@ -368,7 +397,7 @@ void Player::AttackInitialize() {
 }
 void Player::AttackUpdata() {
 	// ゲームパッドの状態を得る変数(XINPUT)
-	// XINPUT_STATE joyState;
+	XINPUT_STATE joyState;
 
 	float speed = 1.0f;
 	// worldTransformHammer_.rotate.x += attackSpeed;
@@ -405,14 +434,14 @@ void Player::AttackUpdata() {
 
 	// コンボ上限に達していない
 	if (workAttack_.comboIndex < ComboNum - 1) {
-		// ジョイスティックの状態取得
-		// if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
-		//	 // 攻撃ボタンをトリガーしたら
-		//	 if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
-		//		 // コンボ有効
-		//		 workAttack_.comboNext = true;
-		//	 }
-		//}
+		 //ジョイスティックの状態取得
+		if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
+			 // 攻撃ボタンをトリガーしたら
+			 if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+				 // コンボ有効
+				 workAttack_.comboNext = true;
+			 }
+		}
 		if (KeyInput::PushKey(DIK_E)) {
 			// コンボ有効
 			workAttack_.comboNext = true;

@@ -40,7 +40,7 @@ void FollowCamera::Update() {
 			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
 			                                    : -std::numbers::pi_v<float> / 2.0f;
 		}
-		//viewProjection_.rotation_.y = std::atan2(sub.x, sub.z);
+	
 
 	} else {
 

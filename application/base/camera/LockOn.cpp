@@ -6,33 +6,54 @@ void LockOn::Initialize() {
 	transform_.translate = {(1280 / 2.0f), 720 / 2.0f, 0.0f};
 }
 
-void LockOn::Update(
-    const std::list<std::unique_ptr<Enemy>>& enemies, const ViewProjection& viewProjection) {
-
+void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const ViewProjection& viewProjection) {
+	// ゲームパッドの状態を得る変数(XINPUT)
+	XINPUT_STATE joyState;
+	//KeyInput::GetInstance()->GetJoystickState(0, joyState);
 	for (const std::unique_ptr<Enemy>& enemy : enemies) {
 		// ロックオン状態
 		if (target_) {
 			// ロックオン解除
-			if (KeyInput::PushKey(DIK_L)) {
+			if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB ||
+				    joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+					target_ = nullptr;
+				} else if (IsOutOfRange(enemies, viewProjection)) {
+					target_ = nullptr;
+				}
+
+
+				
+			}
+			
+			if (KeyInput::PushKey(DIK_L) || KeyInput::PushKey(DIK_J)) {
 				target_ = nullptr;
 			} else if (IsOutOfRange(enemies, viewProjection)) {
 				target_ = nullptr;
 			}
 
-			// ロックオン対象切り替え
-			if (KeyInput::PushKey(DIK_I)) {
-				target_ = nullptr;
-			}
+			
 
 		} else {
+			if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
+				// ロックオントリガー
+				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) {
+					searchTarget(enemies, viewProjection);
+				}
+
+
+			}
+
 			// ロックオントリガー
-			if (KeyInput::PushKey(DIK_L)) {
+			if (KeyInput::PushKey(DIK_L) ) {
 				searchTarget(enemies, viewProjection);
 			}
 			// 自動ロックオン
 			if (autoLockOn) {
 				searchTarget(enemies, viewProjection);
 			}
+
+			
 		}
 
 		// ロックオン継続
@@ -50,6 +71,20 @@ void LockOn::Update(
 			ImGui::End();
 		}
 	}
+
+	if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
+
+		//自動ロックオン　オン・オフ
+		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+			if (autoLockOn) {
+				autoLockOn = false;
+			} else {
+				autoLockOn = true;
+			}
+		}
+	
+	}
+
 	if (KeyInput::PushKey(DIK_J)) {
 		if (autoLockOn) {
 			autoLockOn = false;
@@ -57,6 +92,7 @@ void LockOn::Update(
 			autoLockOn = true;
 		}
 	}
+	
 
 	ImGui::Begin("Reticl");
 	ImGui::Text("autoLoackOn%d", autoLockOn);

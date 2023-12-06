@@ -75,7 +75,8 @@ private: // メンバ変数
 	bool collision1_ = false;
 	bool collision2_ = false;
 
-
+	Emitter emitter_;
+	AccelerationField field_;
 
 	Transform transform_;
 

@@ -138,6 +138,17 @@ struct ParticleForGPU {
 	Vector4 color;
 };
 
+struct Emitter {
+	Transform transform;
+	uint32_t count;      // 発生数　発生頻度秒に何個出すか
+	float frequency;     // 発生頻度
+	float frequencyTime; // 頻度用時刻　0で初期化
+};
+
+struct AccelerationField {
+	Vector3 acceleration; // 加速度
+	AABB area;            // 範囲
+};
 
 class Math {
 public:
@@ -237,6 +248,8 @@ public:
 // 二項演算子
 Vector3 operator+(const Vector3& v1, const Vector3& v2);
 Vector3 operator-(const Vector3& v1, const Vector3& v2);
+Vector3 operator+(const Vector3& v1, float s);
+Vector3 operator-(const Vector3& v1, float s);
 Vector3 operator*(float s, const Vector3& v2);
 Vector3 operator*(const Vector3& v, float s);
 Vector3 operator/(const Vector3& v, float s);
