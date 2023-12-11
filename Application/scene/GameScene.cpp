@@ -49,7 +49,7 @@ void GameScene::Initialize() {
 	    {0.0f, 0.0f, 0.0f},
 	};
 	emitter_.count = 10;
-	emitter_.frequency = 0.5f;
+	emitter_.frequency = 0.1f;
 	emitter_.frequencyTime = 0.0f;
 
 	accelerationField_.acceleration = {10.0f, 0.0f, 0.0f};
@@ -102,7 +102,7 @@ void GameScene::Update() {
 		
 	}
 
-
+	particle_->SetTranslate({pos});
 	particle_->SetSpeed(float(num));
 	if (particle) {
 		particle_->Update();
@@ -181,6 +181,7 @@ void GameScene::Update() {
 		ImGui::Checkbox("move", &particle);
 		ImGui::Checkbox("area", &area);
 		ImGui::SliderInt("speed", &num, 0, 100);
+		ImGui::SliderFloat3("Pos", &pos.x, 0.0f, 10.0f);
 		ImGui::SliderFloat4("Color", &particleColor.x, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}

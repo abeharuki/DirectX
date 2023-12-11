@@ -68,6 +68,8 @@ public:
 	// パーティクルループ
 	void StopParticles();
 
+	void SetTranslate(Vector3 transform) { emitter_.transform.translate = transform; }
+
 	// 色とアルファ値
 	void SetColor(Vector4 color);
 
