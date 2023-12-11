@@ -7,23 +7,19 @@ void LockOn::Initialize() {
 }
 
 void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const ViewProjection& viewProjection) {
-	// ゲームパッドの状態を得る変数(XINPUT)
-	XINPUT_STATE joyState;
-	//KeyInput::GetInstance()->GetJoystickState(0, joyState);
+	
 	for (const std::unique_ptr<Enemy>& enemy : enemies) {
 		// ロックオン状態
 		if (target_) {
 			// ロックオン解除
-			if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
-				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB ||
-				    joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+			if (KeyInput::GetPadConnect()) {
+				if (KeyInput::GetPadButtonDown(XINPUT_GAMEPAD_LEFT_THUMB) ||
+				    KeyInput::GetPadButtonDown(XINPUT_GAMEPAD_LEFT_SHOULDER)
+				   ) {
 					target_ = nullptr;
 				} else if (IsOutOfRange(enemies, viewProjection)) {
 					target_ = nullptr;
 				}
-
-
-				
 			}
 			
 			if (KeyInput::PushKey(DIK_L) || KeyInput::PushKey(DIK_J)) {
@@ -35,13 +31,13 @@ void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 			
 
 		} else {
-			if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
+			if (KeyInput::GetPadConnect()) {
 				// ロックオントリガー
-				if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) {
+				if (KeyInput::GetPadButtonDown(XINPUT_GAMEPAD_LEFT_SHOULDER)) {
 					searchTarget(enemies, viewProjection);
 				}
 
-
+				
 			}
 
 			// ロックオントリガー
@@ -72,10 +68,10 @@ void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 		}
 	}
 
-	if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
+	if (KeyInput::GetPadConnect()) {
 
 		//自動ロックオン　オン・オフ
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+		if (KeyInput::GetPadButtonDown(XINPUT_GAMEPAD_LEFT_THUMB)) {
 			if (autoLockOn) {
 				autoLockOn = false;
 			} else {
@@ -111,7 +107,13 @@ bool LockOn::IsOutOfRange(
 
 	for (const std::unique_ptr<Enemy>& enemy : enemies) {
 		// 敵のロックオン座標
-		Vector3 posWorld = enemy->GetSenterPosition();
+		Vector3 posWorld;
+		if (enemy->IsDead()) {
+			posWorld = {0.0f, 0.0f, -1000.0f};
+			
+		} else {
+			posWorld = enemy->GetSenterPosition();
+		}
 
 		// ワールドビュー座標変換
 		Vector3 posView = Math::Transform(posWorld, viewProjection.matView);

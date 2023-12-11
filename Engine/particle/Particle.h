@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Engine.h"
 #include "GraphicsPipeline.h"
 #include "Mesh.h"
@@ -13,9 +12,9 @@
 #include <dxcapi.h>
 #include <fstream>
 #include <memory>
+#include <random>
 #include <sstream>
 #include <wrl.h>
-#include <random>
 
 class Particle {
 public: // 静的メンバ変数
@@ -30,7 +29,8 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-	BlendMode blendMode_ = BlendMode::kAdd;
+	// BlendMode blendMode_ = BlendMode::kAdd;
+	BlendMode blendMode_ = BlendMode::kNormal;
 
 public:
 	/// <summary>
@@ -40,14 +40,12 @@ public:
 	static Particle* GetInstance();
 
 	// 初期化
-	void Initialize(const std::string& filename, uint32_t Count);
+	void Initialize(const std::string& filename, Emitter emitter);
 
-	//スタート
+	// スタート
 	void Update();
-	
 
 	void sPipeline();
-
 
 	/// <summary>
 	/// 3Dモデル生成
@@ -57,20 +55,19 @@ public:
 
 	void CreateInstanceSRV();
 
-	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
+	void Draw(const ViewProjection& viewProjection);
 
-	static Particle* Create(const std::string& filename,uint32_t Count);
+	static Particle* Create(const std::string& filename, Emitter emitter);
 
-	Particle_ MakeNewParticle(std::mt19937& randomEngine);
+	Particle_ MakeNewParticle(std::mt19937& randomEngine, const Transform transform);
+
+	std::list<Particle_> Emission(const Emitter& emitter, std::mt19937& randomEngine);
+
+	// パーティクルループ
+	void LoopParticle();
+
 	
-	//パーティクルループ
-	void LoopParticles();
-
-	//パーティクルの数
-	void SetCount(int count) {
-		instanceCount = count;
-		particles[count];
-	}
+	void StopParticles();
 
 	// 色とアルファ値
 	void SetColor(Vector4 color);
@@ -78,14 +75,13 @@ public:
 	// ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
 
-	// パーティクル位置
-	void SetPos(Vector3 vector);
-
-	//パーティクル速度
+	// パーティクル速度
 	void SetSpeed(float speed);
 
+	// フィールドをセット
+	void SetFiled(AccelerationField accelerationField);
+
 private:
-	
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
@@ -104,7 +100,6 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandelCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandelGPU;
 
-	
 	// データを書き込む
 	ParticleForGPU* instancingData;
 	ModelData modelData;
@@ -113,19 +108,25 @@ private:
 	TextureManager* textureManager_;
 	uint32_t texture_;
 
-    uint32_t instanceCount = 1;
-	Particle_ particles[100];
+	uint32_t instanceCount = 1;
+	std::list<Particle_> particles;
+
+	Emitter emitter_{};
+	AccelerationField accelerationField_;
 
 	float kDeltaTime = 1.0f / 60.0f;
-	
+
 	bool loop_ = false;
 	bool particle = false;
 
+	Vector4 color_;
+	bool isColor = false;
+
+	std::random_device seedGenerator;
 	uint32_t descriptorSizeSRV;
 
 private:
 	// DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	void LoadTexture(const std::string& filename);
-
-	
 };
+

@@ -65,16 +65,16 @@ public:
 
 
 	// パッドに接続されてるか
-	bool GetPadConnect();
+	static bool GetPadConnect();
 
 	// パッドのボタンが押されているか
-	bool GetPadButton(UINT button);
+	static bool GetPadButton(UINT button);
 
 	// パッドのボタンが離れた瞬間か
-	bool GetPadButtonUp(UINT button);
+	static bool GetPadButtonUp(UINT button);
 
 	// パッドのボタンが押された瞬間か
-	bool GetPadButtonDown(UINT button);
+	static bool GetPadButtonDown(UINT button);
 
 	// パッドの左スティック
 	Vector2 GetPadLStick();
@@ -82,15 +82,4 @@ public:
 	// パッドの右スティック
 	Vector2 GetPadRStick();
 
-	// 左トリガーを押し込んだ瞬間か
-	bool GetLTriggerDown();
-
-	// 右トリガーを押し込んだ瞬間か
-	bool GetRTriggerDown();
-
-	// 左トリガーが押されているか
-	bool GetLTrigger();
-
-	// 右トリガーが押されているか
-	bool GetRTrigger();
 };

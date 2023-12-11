@@ -58,8 +58,17 @@ void GameScene::Initialize() {
 	modelFloor_.reset(Model::CreateModelFromObj("resources/cube.obj", "resources/floor.png"));
 	floor_->Initialize(modelFloor_.get());
 
+
+	emitter_.count = 20;
+	emitter_.frequency = 0.5f;
+	emitter_.frequencyTime = 0.0f;
+	emitter_.transform = {
+	    {0.5f, 0.5f, 0.5f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f}
+	};
 	//パーティクル
-	particle_.reset(Particle::Create("resources/particle/circle.png", 20));
+	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));
 	particle_->SetSpeed(10.0f);
 
 	// ロックオン
@@ -100,6 +109,11 @@ void GameScene::Update() {
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
+	for (std::unique_ptr<Enemy>& enemy : enemies_) {
+		if (!enemy->IsDead()) {
+			//lockOn_->Update(enemies_, viewProjection_);
+		}
+	}
 	lockOn_->Update(enemies_, viewProjection_);
 
 	
@@ -145,7 +159,7 @@ void GameScene::Draw() {
 	}
 
 	// パーティクル
-	particle_->Draw(worldTransformParticle_, viewProjection_);
+	particle_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -260,7 +274,9 @@ void GameScene::CheckAllCollision() {
 				enemy->OnCollision(player_->GetWorldTransform());
 				
 				particle_->Update();
-				particle_->LoopParticles();
+				
+			} else {
+				particle_->StopParticles();
 			}
 		}
 	}

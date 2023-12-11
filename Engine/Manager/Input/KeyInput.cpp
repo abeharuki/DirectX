@@ -88,16 +88,20 @@ bool KeyInput::ReleaseKey(uint8_t keynumber) {
 	return !KeyInput::GetInstance()->key[keynumber] && KeyInput::GetInstance()->oldKey[keynumber];
 }
 
-bool KeyInput::GetPadConnect() { return isConnectPad; }
+bool KeyInput::GetPadConnect() { return KeyInput::GetInstance()->isConnectPad; }
 
-bool KeyInput::GetPadButton(UINT button) { return xInputState.Gamepad.wButtons == button; }
+bool KeyInput::GetPadButton(UINT button) {
+	return KeyInput::GetInstance()->xInputState.Gamepad.wButtons == button;
+}
 
 bool KeyInput::GetPadButtonUp(UINT button) {
-	return xInputState.Gamepad.wButtons != button && oldXInputState.Gamepad.wButtons == button;
+	return KeyInput::GetInstance()->xInputState.Gamepad.wButtons != button &&
+	       KeyInput::GetInstance()->oldXInputState.Gamepad.wButtons == button;
 }
 
 bool KeyInput::GetPadButtonDown(UINT button) {
-	return xInputState.Gamepad.wButtons == button && oldXInputState.Gamepad.wButtons != button;
+	return KeyInput::GetInstance()->xInputState.Gamepad.wButtons == button &&
+	       KeyInput::GetInstance()->oldXInputState.Gamepad.wButtons != button;
 }
 
 Vector2 KeyInput::GetPadLStick() {
@@ -112,37 +116,6 @@ Vector2 KeyInput::GetPadRStick() {
 	SHORT y = xInputState.Gamepad.sThumbRY;
 
 	return Vector2(static_cast<float>(x) / 32767.0f, static_cast<float>(y) / 32767.0f);
-}
-
-bool KeyInput::GetLTriggerDown() {
-	//	デッドラインの設定必須
-	if (oldXInputState.Gamepad.bLeftTrigger < 128 && xInputState.Gamepad.bLeftTrigger >= 128) {
-		return true;
-	}
-	return false;
-}
-
-bool KeyInput::GetRTriggerDown() {
-	//	デッドラインの設定必須
-	if (oldXInputState.Gamepad.bRightTrigger < 128 && xInputState.Gamepad.bRightTrigger >= 128) {
-		return true;
-	}
-	return false;
-}
-bool KeyInput::GetLTrigger() {
-	//	デッドラインの設定必須
-	if (xInputState.Gamepad.bLeftTrigger >= 128) {
-		return true;
-	}
-	return false;
-}
-
-bool KeyInput::GetRTrigger() {
-	//	デッドラインの設定必須
-	if (xInputState.Gamepad.bRightTrigger >= 128) {
-		return true;
-	}
-	return false;
 }
 
 bool KeyInput::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const {

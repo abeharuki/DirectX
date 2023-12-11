@@ -187,8 +187,7 @@ void Player::joyMove() {
 	if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
 		const float value = 0.7f;
 		bool isMove = false;
-		// 移動量
-		velocity_ = {0.0f, 0.0f, 0.0f};
+	
 		// 移動速度
 		const float kCharacterSpeed = 0.2f;
 		// 移動量
@@ -198,17 +197,13 @@ void Player::joyMove() {
 
 		if (Math::Length(velocity_) > value) {
 			isMove = true;
+			velocity_ = Math::Normalize(velocity_);
+			velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
 		}
 
-		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
+		
 
-		Matrix4x4 rotateMatrix = Math::Multiply(
-		    Math::MakeRotateXMatrix(viewProjection_->rotation_.x),
-		    Math::Multiply(
-		        Math::MakeRotateYMatrix(viewProjection_->rotation_.y),
-		        Math::MakeRotateZMatrix(viewProjection_->rotation_.z)));
-		// move = utility_->Normalize(move);
-		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+	
 
 		if (isMove) {
 	// 移動ベクトルをカメラの角度だけ回転する
@@ -437,7 +432,7 @@ void Player::AttackUpdata() {
 		 //ジョイスティックの状態取得
 		if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
 			 // 攻撃ボタンをトリガーしたら
-			 if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+			if (KeyInput::GetPadButtonDown(XINPUT_GAMEPAD_B)) {
 				 // コンボ有効
 				 workAttack_.comboNext = true;
 			 }
