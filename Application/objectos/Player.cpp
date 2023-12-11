@@ -270,7 +270,7 @@ void Player::Move() {
 	float kCharacterSpeed = 0.3f;
 	// 移動量
 	velocity_ = {0.0f, 0.0f, 0.0f};
-
+	
 	// 左右移動
 	if (KeyInput::GetKey(DIK_A)) {
 		velocity_.x = -1;
@@ -352,6 +352,8 @@ void Player::Move() {
 	if (KeyInput::PushKey(DIK_Q)) {
 		behaviorRequest_ = Behavior::kDash;
 	}
+
+	move_ = isMove_;
 }
 
 // ジャンプ初期化

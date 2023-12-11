@@ -63,11 +63,15 @@ public:
 
 	std::list<Particle_> Emission(const Emitter& emitter, std::mt19937& randomEngine);
 
+
 	// パーティクルループ
 	void LoopParticle();
 
 	
 	void StopParticles();
+
+	//位置
+	void SetTranslate(Vector3 transform) { emitter_.transform.translate = transform; }
 
 	// 色とアルファ値
 	void SetColor(Vector4 color);

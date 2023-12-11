@@ -77,14 +77,9 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 			(*particleIterator).currentTime += kDeltaTime;
 
 			if (numInstance < instanceCount) {
-				Matrix4x4 worldMatrix =
-				    Math::MakeScaleMatrix((*particleIterator).transform.scale) *
-				    (billboardMatrix *
-				     Math::MakeTranslateMatrix((*particleIterator).transform.translate));
-				Matrix4x4 worldViewProjectionMatrix =
-				    worldMatrix * (Math::Inverse(cameraMatrix) * viewProjection.matProjection);
+				Matrix4x4 worldMatrix =Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *Math::MakeTranslateMatrix((*particleIterator).transform.translate);
+				Matrix4x4 worldViewProjectionMatrix = worldMatrix * (Math::Inverse(cameraMatrix) * viewProjection.matProjection);
 
-				instancingData[numInstance].WVP = worldViewProjectionMatrix;
 				instancingData[numInstance].World = worldMatrix;
 
 				float alph =
@@ -116,6 +111,8 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	    0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
 	    3, instancingResouce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(
+	    4, viewProjection.constBuff_->GetGPUVirtualAddress());
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
@@ -132,7 +129,6 @@ void Particle::CreateVertexResource() {
 	instancingResouce_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData));
 	// 単位行列を書き込む
 	for (uint32_t i = 0; i < instanceCount; ++i) {
-		instancingData[i].WVP = Math::MakeIdentity4x4();
 		instancingData[i].World = Math::MakeIdentity4x4();
 		instancingData[i].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	}

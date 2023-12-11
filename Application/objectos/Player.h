@@ -98,6 +98,8 @@ public: // メンバ関数
 	// 落下
 	void IsFall();
 
+	bool IsMove() { return move_; }
+
 	// 攻撃フラグ
 	bool IsAttack() { return workAttack_.isAttack; }
 	//最後の攻撃
@@ -118,7 +120,7 @@ private: // メンバ変数
 	WorldTransform worldTransformWW_;
 	const ViewProjection* viewProjection_;
 
-
+	bool move_ = false;
 
 	// 速度
 	Vector3 velocity_ = {};

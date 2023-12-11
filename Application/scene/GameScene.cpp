@@ -93,6 +93,14 @@ void GameScene::Update() {
 	floor_->Update();
 
 	player_->Update();
+	if (player_->IsMove()){
+		particle_->SetTranslate(player_->GetWorldPosition());
+		particle_->Update();
+	} else {
+		//particle_->StopParticles();
+	}
+	particle_->SetTranslate({0.0f,0.0f,5.0f});
+	particle_->Update();
 
 	for (std::unique_ptr<Enemy>& enemy : enemies_) {
 		enemy->Update();	
@@ -272,11 +280,6 @@ void GameScene::CheckAllCollision() {
 			// 敵キャラの衝突時コールバックを呼び出す
 			if (player_->IsAttack()) {
 				enemy->OnCollision(player_->GetWorldTransform());
-				
-				particle_->Update();
-				
-			} else {
-				particle_->StopParticles();
 			}
 		}
 	}
