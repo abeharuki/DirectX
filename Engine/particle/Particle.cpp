@@ -53,13 +53,14 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	uint32_t numInstance = 0;
 
 	emitter_.frequencyTime += kDeltaTime;
-	if (emitter_.frequency <= emitter_.frequencyTime) {
-		particles.splice(particles.end(), Emission(emitter_, randomEngine));
-		emitter_.frequencyTime -= emitter_.frequency;
-	}
-
 	if (particle) {
-		for (std::list<Particle_>::iterator particleIterator = particles.begin();
+		if (emitter_.frequency <= emitter_.frequencyTime) {
+			particles.splice(particles.end(), Emission(emitter_, randomEngine));
+			emitter_.frequencyTime -= emitter_.frequency;
+		}
+	}
+	
+	for (std::list<Particle_>::iterator particleIterator = particles.begin();
 		     particleIterator != particles.end();) {
 
 			if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
@@ -80,15 +81,15 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 				instancingData[numInstance].World = worldMatrix;
 
 				float alph =
-				    1.2f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
+				    1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
 				instancingData[numInstance].color = (*particleIterator).color;
 				instancingData[numInstance].color.w = alph;
 				numInstance++;
 			}
 
 			++particleIterator;
-		}
 	}
+	
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());

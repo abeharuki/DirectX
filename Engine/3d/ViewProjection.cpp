@@ -25,6 +25,7 @@ void ViewProjection::UpdateMatrix() {
 void ViewProjection::TransferMatrix() {
 	constMap->view = matView;
 	constMap->projection = matProjection;
+	
 }
 
 void ViewProjection::UpdateViewMatrix() {

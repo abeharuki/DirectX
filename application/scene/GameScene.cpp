@@ -59,11 +59,11 @@ void GameScene::Initialize() {
 	floor_->Initialize(modelFloor_.get());
 
 
-	emitter_.count = 20;
-	emitter_.frequency = 0.5f;
+	emitter_.count = 10;
+	emitter_.frequency = 0.01f;
 	emitter_.frequencyTime = 0.0f;
 	emitter_.transform = {
-	    {0.5f, 0.5f, 0.5f},
+	    {1.0f, 1.0f, 1.0f},
         {0.0f, 0.0f, 0.0f},
         {0.0f, 0.0f, 0.0f}
 	};
@@ -93,14 +93,8 @@ void GameScene::Update() {
 	floor_->Update();
 
 	player_->Update();
-	if (player_->IsMove()){
-		//particle_->SetTranslate(player_->GetWorldPosition());
-		//particle_->Update();
-	} else {
-		//particle_->StopParticles();
-	}
-	particle_->SetTranslate({0.0f,0.0f,5.0f});
-	particle_->Update();
+	particle_->SetTranslate(player_->GetWorldPosition());
+	
 
 	for (std::unique_ptr<Enemy>& enemy : enemies_) {
 		enemy->Update();	
@@ -117,15 +111,8 @@ void GameScene::Update() {
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
-	for (std::unique_ptr<Enemy>& enemy : enemies_) {
-		if (!enemy->IsDead()) {
-			//lockOn_->Update(enemies_, viewProjection_);
-		}
-	}
 	lockOn_->Update(enemies_, viewProjection_);
 
-	
-	//worldTransformParticle_.UpdateMatrix();
 
 
 	ImGui::Begin("scene");
@@ -280,8 +267,17 @@ void GameScene::CheckAllCollision() {
 			// 敵キャラの衝突時コールバックを呼び出す
 			if (player_->IsAttack()) {
 				enemy->OnCollision(player_->GetWorldTransform());
+				particle_->SetTranslate(enemy->GetWorldPosition());
+				particle_->SetSpeed(10.0f);
+				particle_->Update();
+			} else {
+				particle_->StopParticles();
 			}
-		}
+		} 
 	}
+
+	if (!player_->IsAttack()) {
+		particle_->StopParticles();
+	} 
 #pragma endregion
 }
