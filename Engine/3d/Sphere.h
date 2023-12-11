@@ -87,7 +87,7 @@ private:
 	Material* materialData = nullptr;
 	DirectionalLight* directionalLightData = nullptr;
 
-	const uint32_t kSubdivision = 64;
+	const uint32_t kSubdivision = 128;
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 
 private:

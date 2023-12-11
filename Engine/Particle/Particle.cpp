@@ -65,7 +65,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 		for (std::list<Particle_>::iterator particleIterator = particles.begin(); particleIterator != particles.end();) {
 
 			if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
-				particleIterator = particles.erase(particleIterator);
+				//particleIterator = particles.erase(particleIterator);
 				continue;
 			}
 

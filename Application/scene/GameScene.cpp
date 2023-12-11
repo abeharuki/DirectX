@@ -18,11 +18,11 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransformp_.Initialize();
 	viewProjection_.Initialize();
-	viewProjection_.translation_ = {0.0f, 0.0f, -15.0f};
+	viewProjection_.translation_ = {0.0f, 0.0f, -10.0f};
 	
-	worldTransform_.translate.x = {1.0f};
-	worldTransform_.translate.z = {-2.0f};
-	worldTransform_.scale = {0.5f, 0.5f, 0.5f};
+	worldTransform_.translate.x = {0.0f};
+	worldTransform_.translate.z = {0.0f};
+	worldTransform_.scale = {1.0f, 1.0f, 1.0f};
 	for (int i = 0; i < 2; i++) {
 		worldTransformFence_[i].Initialize();
 		modelFence_[i].reset(
@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 
 	//スフィア
 	sphere_ = std::make_unique<Sphere>();
-	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
+	sphere_.reset(Sphere::CreateSphere("resources/moon.png"));
 
 	emitter_.transform = {
 	    {1.0f, 1.0f, 1.0f},
