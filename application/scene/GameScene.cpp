@@ -94,8 +94,8 @@ void GameScene::Update() {
 
 	player_->Update();
 	if (player_->IsMove()){
-		particle_->SetTranslate(player_->GetWorldPosition());
-		particle_->Update();
+		//particle_->SetTranslate(player_->GetWorldPosition());
+		//particle_->Update();
 	} else {
 		//particle_->StopParticles();
 	}

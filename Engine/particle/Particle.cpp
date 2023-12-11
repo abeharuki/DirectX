@@ -45,9 +45,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	// 乱数生成
 	std::mt19937 randomEngine(seedGenerator());
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix(
-	    {1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
-	Matrix4x4 billboardMatrix = backToFrontMatrix * cameraMatrix;
+	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
@@ -78,8 +76,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 			if (numInstance < instanceCount) {
 				Matrix4x4 worldMatrix =Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *Math::MakeTranslateMatrix((*particleIterator).transform.translate);
-				Matrix4x4 worldViewProjectionMatrix = worldMatrix * (Math::Inverse(cameraMatrix) * viewProjection.matProjection);
-
+				
 				instancingData[numInstance].World = worldMatrix;
 
 				float alph =
@@ -103,16 +100,14 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
-
+	
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
 	    0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
-	    3, instancingResouce_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(
 	    4, viewProjection.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
