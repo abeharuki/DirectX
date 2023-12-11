@@ -28,6 +28,19 @@ void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 				target_ = nullptr;
 			}
 
+			// ターゲットを変える
+			if (KeyInput::PushKey(DIK_X)) {
+				searchTarget(enemies, viewProjection);
+				targetIndex_++;
+				if (targetIndex_ >= targets_.size()) {
+					targetIndex_ = 0;
+					target_ = nullptr;
+					target_ = targets_[targetIndex_].second;
+				} else {
+					target_ = nullptr;
+					target_ = targets_[targetIndex_].second;
+				}
+			}
 			
 
 		} else {
@@ -138,7 +151,7 @@ bool LockOn::IsOutOfRange(
 void LockOn::searchTarget(
     const std::list<std::unique_ptr<Enemy>>& enemies, const ViewProjection& viewProjection) {
 	// 目標
-	std::list<std::pair<float, const Enemy*>> targets;
+	targets_.clear();
 
 	// 全ての敵に対してロックオン判定
 	for (const std::unique_ptr<Enemy>& enemy : enemies) {
@@ -151,22 +164,22 @@ void LockOn::searchTarget(
 		// 距離条件チェック
 		if (minDistance_ <= posView.z && posView.z <= maxDistance_) {
 			// カメラの前方との角度を計算
-			//float arcTangent = std::atan2(std::sqrt(posView.x * posView.x + posView.y * posView.y), posView.z);
+		
 			float dot = Math::Dot({0.0f, 0.0f, 1.0f}, posView);
 			float length = Math::Length(posView);
 			float angle = std::acos(dot / length);
 			// 角度条件チェック
 			if (std::abs(angle) <= angleRenge_) {
-				targets.emplace_back(std::make_pair(posView.z, enemy.get()));
+				targets_.emplace_back(std::make_pair(posView.z, enemy.get()));
 			}
 		}
 
 		target_ = nullptr;
-		if (!targets.empty()) {
+		if (targets_.size() != 0) {
 			// 距離で昇順にソート
-			targets.sort([](auto& pair1, auto& pair2) { return pair1.first < pair2.first; });
+			std::sort(targets_.begin(), targets_.end(), [](auto& pair1, auto& pair2) {return pair1.first < pair2.first; });
 			// ソートの結果1番地快適をロックオン対象とする
-			target_ = targets.front().second;
+			target_ = targets_.front().second;
 		}
 	}
 }

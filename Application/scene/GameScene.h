@@ -81,7 +81,7 @@ private: // メンバ変数
 	Transform transform_;
 
 	Vector3 enemyPos[5] = {
-	    {50.0f,   0.0f,10.0f },
+	    {60.0f,   0.0f,-5.0f },
         {50.0f,  0.0f, 0.0f},
         {50.0f, 0.0f, -10.0f},
 	    {-50.0f,  0.0f, 10.0f  },

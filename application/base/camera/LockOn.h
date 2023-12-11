@@ -50,6 +50,9 @@ private:
 	float maxDistance_ = 40.0f;
 	// 角度範囲
 	float angleRenge_ = 20.0f * kDegreeToRadian;
-
+	// 目標
+	std::vector<std::pair<float, const Enemy*>> targets_;
+	// 目標のインデックス
+	uint32_t targetIndex_ = 0;
 	bool autoLockOn = false;
 };
