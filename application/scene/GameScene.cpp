@@ -22,7 +22,7 @@ void GameScene::Initialize() {
 	
 	worldTransform_.translate.x = {0.0f};
 	worldTransform_.translate.z = {0.0f};
-	worldTransform_.scale = {1.0f, 1.0f, 1.0f};
+	worldTransform_.scale = {1.5f, 1.5f, 1.5f};
 	for (int i = 0; i < 2; i++) {
 		worldTransformFence_[i].Initialize();
 		modelFence_[i].reset(
@@ -206,7 +206,7 @@ void GameScene::Draw() {
 
 	// 天球
 	skydome_->Draw(viewProjection_,false);
-	//sphere_->Draw(worldTransform_, viewProjection_,true);
+	sphere_->Draw(worldTransform_, viewProjection_,true);
 	//フェンス
 	//modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
 	//板ポリ
@@ -222,7 +222,7 @@ void GameScene::Draw() {
 	Sprite::PreDraw();
 	
 
-	//sprite_->Draw(worldTransform_,uvTransform_);
+	sprite_->Draw(uvTransform_);
 	
 	//sprite2_->Draw(worldTransformB_);
 	

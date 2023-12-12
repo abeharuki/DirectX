@@ -80,8 +80,8 @@ public: // 静的メンバ変数
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 
-	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	
 	
 	// 射影行列

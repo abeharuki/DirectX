@@ -20,11 +20,13 @@ void ViewProjection::Map() {
 void ViewProjection::UpdateMatrix() {
 	UpdateViewMatrix();
 	UpdateProjectionMatrix();
+	TransferMatrix();
 }
 
 void ViewProjection::TransferMatrix() {
 	constMap->view = matView;
 	constMap->projection = matProjection;
+	constMap->cameraPos = {matView.m[3][0], matView.m[3][1], matView.m[3][2]};
 }
 
 void ViewProjection::UpdateViewMatrix() {

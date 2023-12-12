@@ -67,6 +67,7 @@ void Sphere::Draw(
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, Model::GetLightRsurce()->GetGPUVirtualAddress());
 
 	// 三角形の描画

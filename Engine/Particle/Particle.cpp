@@ -4,7 +4,6 @@
 #include <format>
 #include <numbers>
 
-
 bool IsCollision(const AABB& aabb, const Vector3& point) {
 	if ((aabb.min.x <= point.x && point.x <= aabb.max.x) &&
 	    (aabb.min.y <= point.y && point.y <= aabb.max.y) &&
@@ -34,20 +33,16 @@ void Particle::sPipeline() {
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
 };
 
-void Particle::Update() { 
-	particle = true; 
-}
+void Particle::Update() { particle = true; }
 
-void Particle::StopParticles() {
-	particle = false;
-}
+void Particle::StopParticles() { particle = false; }
+
 
 void Particle::Draw(const ViewProjection& viewProjection) {
 	// 乱数生成
 	std::mt19937 randomEngine(seedGenerator());
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix( {1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
-	//Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);TransferMatrix()こっちを使う時に使う。
 	Matrix4x4 billboardMatrix = backToFrontMatrix * cameraMatrix;
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
@@ -56,44 +51,42 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	uint32_t numInstance = 0;
 
 	emitter_.frequencyTime += kDeltaTime;
-	if (emitter_.frequency <= emitter_.frequencyTime) {
-		particles.splice(particles.end(), Emission(emitter_, randomEngine));
-		emitter_.frequencyTime -= emitter_.frequency;
+	if (particle) {
+		if (emitter_.frequency <= emitter_.frequencyTime) {
+			particles.splice(particles.end(), Emission(emitter_, randomEngine));
+			emitter_.frequencyTime -= emitter_.frequency;
+		}
 	}
 
-	if (particle) {
-		for (std::list<Particle_>::iterator particleIterator = particles.begin(); particleIterator != particles.end();) {
+	for (std::list<Particle_>::iterator particleIterator = particles.begin();
+	     particleIterator != particles.end();) {
 
-			if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
-				particleIterator = particles.erase(particleIterator);
-				continue;
-			}
-
-			if (IsCollision(accelerationField_.area, (*particleIterator).transform.translate)) {
-				(*particleIterator).velocity += accelerationField_.acceleration * kDeltaTime;
-			}
-
-			(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
-			(*particleIterator).currentTime += kDeltaTime;
-
-			if (numInstance < instanceCount) {
-				Matrix4x4 worldMatrix =
-				    Math::MakeScaleMatrix((*particleIterator).transform.scale) *
-				    (billboardMatrix * Math::MakeTranslateMatrix((*particleIterator).transform.translate));
-				Matrix4x4 worldViewProjectionMatrix =worldMatrix * (Math::Inverse(cameraMatrix) * viewProjection.matProjection);
-
-				instancingData[numInstance].WVP = worldViewProjectionMatrix;
-				instancingData[numInstance].World = worldMatrix;
-
-				float alph = 1.2f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
-				instancingData[numInstance].color = (*particleIterator).color;
-				instancingData[numInstance].color.w = alph;
-				numInstance++;
-			}
-
-			++particleIterator;
-			
+		if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
+			particleIterator = particles.erase(particleIterator);
+			continue;
 		}
+
+		if (IsCollision(accelerationField_.area, (*particleIterator).transform.translate)) {
+			(*particleIterator).velocity += accelerationField_.acceleration * kDeltaTime;
+		}
+
+		(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
+		(*particleIterator).currentTime += kDeltaTime;
+
+		if (numInstance < instanceCount) {
+			Matrix4x4 worldMatrix =
+			    Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
+			    Math::MakeTranslateMatrix((*particleIterator).transform.translate);
+
+			instancingData[numInstance].World = worldMatrix;
+
+			float alph = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
+			instancingData[numInstance].color = (*particleIterator).color;
+			instancingData[numInstance].color.w = alph;
+			numInstance++;
+		}
+
+		++particleIterator;
 	}
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
@@ -106,18 +99,18 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
 	    0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
-	    3, instancingResouce_->GetGPUVirtualAddress());
+	    4, viewProjection.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
-	numInstance =0;
+	numInstance = 0;
 }
 
 // 頂点データの設定
@@ -130,7 +123,6 @@ void Particle::CreateVertexResource() {
 	instancingResouce_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData));
 	// 単位行列を書き込む
 	for (uint32_t i = 0; i < instanceCount; ++i) {
-		instancingData[i].WVP = Math::MakeIdentity4x4();
 		instancingData[i].World = Math::MakeIdentity4x4();
 		instancingData[i].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
@@ -165,8 +157,6 @@ void Particle::CreateVertexResource() {
 	materialData->enableLighting = false;
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
-
-	
 };
 
 void Particle::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
@@ -182,7 +172,7 @@ void Particle::SetFiled(AccelerationField accelerationField) {
 	accelerationField_ = accelerationField;
 }
 
-Particle* Particle::Create( const std::string& filename, Emitter emitter) {
+Particle* Particle::Create(const std::string& filename, Emitter emitter) {
 	Particle* model = new Particle;
 	model->Initialize(filename, emitter);
 	return model;
@@ -207,9 +197,12 @@ void Particle::CreateInstanceSRV() {
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	instancingSrvDesc.Buffer.NumElements = instanceCount;
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-	instancingSrvHandelCPU =Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
-	instancingSrvHandelGPU = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
-	Engine::GetDevice()->CreateShaderResourceView(instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
+	instancingSrvHandelCPU =
+	    Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
+	instancingSrvHandelGPU =
+	    Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
+	Engine::GetDevice()->CreateShaderResourceView(
+	    instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
 }
 
 Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {
@@ -219,7 +212,8 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform 
 	particle.transform.scale = transform.scale;
 	particle.transform.rotate = transform.rotate;
 	particle.transform.translate = transform.translate + distribution(randomEngine);
-	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
+	particle.velocity = {
+	    distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
 	if (isColor) {
 		particle.color = color_;
 	} else {
@@ -232,7 +226,6 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform 
 	return particle;
 }
 
-
 std::list<Particle_> Particle::Emission(const Emitter& emitter, std::mt19937& randomEngine) {
 	std::list<Particle_> particles;
 	for (uint32_t count = 0; count < emitter.count; ++count) {
@@ -240,4 +233,3 @@ std::list<Particle_> Particle::Emission(const Emitter& emitter, std::mt19937& ra
 	}
 	return particles;
 }
-
