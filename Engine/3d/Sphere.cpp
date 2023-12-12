@@ -3,7 +3,7 @@
 #include <format>
 #include <imgui.h>
 #include "Model.h"
-
+#include <numbers> 
 
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::pixelShaderBlob_;
@@ -141,7 +141,7 @@ void Sphere::LoadTexture(const std::string& texturePath) {
 
 void Sphere::DrawSphere(VertexData* vertexData, const uint32_t kSubdivision_) {
 	const uint32_t kSubdivision = kSubdivision_; // 分割数
-	const float pi = 3.1415f;                     // π
+	const float pi = (float)std::numbers::pi;                 // π
 	const float kLonEvery = 2.0f * pi / kSubdivision; // 経度分割1つ分の角度(φd)
 	const float kLatEvery = pi / kSubdivision;        // 緯度分割1つ分の角度(θd)
 	float u;

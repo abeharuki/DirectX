@@ -18,11 +18,11 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransformp_.Initialize();
 	viewProjection_.Initialize();
-	viewProjection_.translation_ = {0.0f, 0.0f, -15.0f};
+	viewProjection_.translation_ = {0.0f, 0.0f, -10.0f};
 	
-	worldTransform_.translate.x = {1.0f};
-	worldTransform_.translate.z = {-2.0f};
-	worldTransform_.scale = {0.5f, 0.5f, 0.5f};
+	worldTransform_.translate.x = {0.0f};
+	worldTransform_.translate.z = {0.0f};
+	worldTransform_.scale = {1.0f, 1.0f, 1.0f};
 	for (int i = 0; i < 2; i++) {
 		worldTransformFence_[i].Initialize();
 		modelFence_[i].reset(
@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 
 	//スフィア
 	sphere_ = std::make_unique<Sphere>();
-	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
+	sphere_.reset(Sphere::CreateSphere("resources/moon.png"));
 
 	emitter_.transform = {
 	    {1.0f, 1.0f, 1.0f},
@@ -49,7 +49,7 @@ void GameScene::Initialize() {
 	    {0.0f, 0.0f, 0.0f},
 	};
 	emitter_.count = 10;
-	emitter_.frequency = 0.5f;
+	emitter_.frequency = 0.1f;
 	emitter_.frequencyTime = 0.0f;
 
 	accelerationField_.acceleration = {10.0f, 0.0f, 0.0f};
@@ -102,7 +102,7 @@ void GameScene::Update() {
 		
 	}
 
-
+	particle_->SetTranslate({pos});
 	particle_->SetSpeed(float(num));
 	if (particle) {
 		particle_->Update();
@@ -181,6 +181,7 @@ void GameScene::Update() {
 		ImGui::Checkbox("move", &particle);
 		ImGui::Checkbox("area", &area);
 		ImGui::SliderInt("speed", &num, 0, 100);
+		ImGui::SliderFloat3("Pos", &pos.x, 0.0f, 10.0f);
 		ImGui::SliderFloat4("Color", &particleColor.x, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
