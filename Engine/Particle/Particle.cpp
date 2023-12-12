@@ -46,8 +46,8 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	// 乱数生成
 	std::mt19937 randomEngine(seedGenerator());
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix(
-	    {1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
+	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix( {1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
+	//Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);TransferMatrix()こっちを使う時に使う。
 	Matrix4x4 billboardMatrix = backToFrontMatrix * cameraMatrix;
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
