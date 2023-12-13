@@ -2,6 +2,7 @@
 #include <cassert>
 #include <format>
 #include <vector>
+#include "Quaternion.h"
 
 
 
@@ -204,17 +205,52 @@ public:
 	    const Vector3 size2);
 
 
-	/*--------------------------------MT授業関数---------------------------------*/
-	static void MatrixScreenPrintf(const Matrix4x4& matrix, const char* name);
-
+	
 
 	//任意の回転軸の回転
 	static Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
 
 	//ある方向からある方向への回転
 	static Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
+	/*--------------------------------Quaternion---------------------------------*/
 
+	// 積
+	static Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs);
+
+	// 単位Quaternionを返す
+	static Quaternion IdentityQuaternion();
+
+	// 共役Quaternionを返す
+	static Quaternion Conjugate(const Quaternion& q);
+
+	// QuaternionのNormを返す
+	static float Norm(const Quaternion& q);
+
+	// 正規化したQuaternionを返す
+	static Quaternion Normalize(const Quaternion& q);
+
+	// 逆Quaternionを返す
+	static Quaternion Inverse(const Quaternion& q);
+
+	// 任意軸を表すQuaternionを返す
+	static Quaternion MakeRoateAxisAngleQuaternion(const Vector3& axis, float angle);
+
+	// ベクトルをQuaternionで回転させた結果のベクトルを求める
+	static Vector3 RotateVector(const Vector3& vector, const Quaternion& q);
+
+	// Quaternionから回転行列を求める
+	static Matrix4x4 MakeRotateMatrix(const Quaternion& q);
+
+
+	/*--------------------------------MT授業関数---------------------------------*/
+	static void MatrixScreenPrintf(const Vector3& matrix, const char* name);
+
+	static void MatrixScreenPrintf(const Matrix4x4& matrix, const char* name);
+
+	static void MatrixScreenPrintf(const Quaternion& q, const char* name);
 };
+
+
 
 /*--------------------演算子オーバーロード---------------------------*/
 // 二項演算子

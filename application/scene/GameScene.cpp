@@ -19,18 +19,7 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-	Vector3 from0 = Math::Normalize({1.0f,0.7f,0.5f});
-	Vector3 to0 = -from0;
-	Vector3 from1 = Math::Normalize({-0.6f, 0.9f, 0.2f});
-	Vector3 to1 = Math::Normalize({0.4f, 0.7f, -0.5f});
-	Matrix4x4 rotateMatrix0 = Math::DirectionToDirection(Math::Normalize(Vector3{1.0f, 0.0f, 0.0f}), Math::Normalize({-1.0f, 0.0f, 0.0f}));
-	Matrix4x4 rotateMatrix1 = Math::DirectionToDirection(from0, to0);
-	Matrix4x4 rotateMatrix2 = Math::DirectionToDirection(from1, to1);
-
-	Math::MatrixScreenPrintf(rotateMatrix0, "rotateMatrix0");
-	Math::MatrixScreenPrintf(rotateMatrix1, "rotateMatrix1");
-	Math::MatrixScreenPrintf(rotateMatrix2, "rotateMatrix2");
-
+	
 }
 
 

@@ -567,9 +567,9 @@ Matrix4x4 Math::DirectionToDirection(const Vector3& from, const Vector3& to) {
 	Vector3 n{};
 	if (from.x == -to.x && from.y == -to.y && from.z == -to.z) {
 		if (from.x != 0.0f || from.y != 0.0f) {
-			n = Normalize({from.y, -from.x, 0.0f});
+			n = Normalize(Vector3{from.y, -from.x, 0.0f});
 		} else if (from.x != 0.0f || from.z != 0.0f) {
-			n = Normalize({from.z, 0.0f, -from.x});
+			n = Normalize(Vector3{from.z, 0.0f, -from.x});
 		} 
 	}
 	else {
@@ -602,6 +602,137 @@ Matrix4x4 Math::DirectionToDirection(const Vector3& from, const Vector3& to) {
 	return result;
 }
 
+
+// 積
+Quaternion Math::Multiply(const Quaternion& lhs, const Quaternion& rhs) {
+	Quaternion result{};
+	Vector3 cross = Cross({lhs.x, lhs.y, lhs.z}, {rhs.x, rhs.y, rhs.z});
+	float dot = Dot({lhs.x, lhs.y, lhs.z}, {rhs.x, rhs.y, rhs.z});
+	result.x = cross.x + rhs.w * lhs.x + lhs.w * rhs.x;
+	result.y = cross.y + rhs.w * lhs.y + lhs.w * rhs.y;
+	result.z = cross.z + rhs.w * lhs.z + lhs.w * rhs.z;
+	result.w = lhs.w * rhs.w - dot;
+	return result;
+};
+
+// 単位Quaternionを返す
+Quaternion Math::IdentityQuaternion() {
+	Quaternion result{};
+	result.x = 0.0f;
+	result.y = 0.0f;
+	result.z = 0.0f;
+	result.w = 1;
+	return result;
+};
+
+// 共役Quaternionを返す
+Quaternion Math::Conjugate(const Quaternion& q) {
+	Quaternion result{};
+	result.x = -q.x;
+	result.y = -q.y;
+	result.z = -q.z;
+	result.w = q.w;
+	return result;
+};
+
+// QuaternionのNormを返す
+float Math::Norm(const Quaternion& q) {
+	float result{};
+	result = std::sqrtf((q.w * q.w) + (q.x * q.x) + (q.y * q.y) + (q.z * q.z));
+	return result;
+};
+
+// 正規化したQuaternionを返す
+Quaternion Math::Normalize(const Quaternion& q) {
+	Quaternion result{};
+	float mag = Math::Norm(q);
+	if (mag != 0) {
+		result.x = q.x / mag;
+		result.y = q.y / mag;
+		result.z = q.z / mag;
+		result.w = q.w / mag;
+	}
+	return result;
+};
+
+// 逆Quaternionを返す
+Quaternion Math::Inverse(const Quaternion& q) {
+	Quaternion result{};
+	Quaternion conj = Conjugate(q);
+	float norm = Norm(q);
+	if (norm != 0.0f) {
+		float normSquared = norm * norm;
+		result.x = conj.x / normSquared;
+		result.y = conj.y / normSquared;
+		result.z = conj.z / normSquared;
+		result.w = conj.w / normSquared;
+	}
+	return result;
+};
+
+
+
+
+
+// 任意軸を表すQuaternionを返す
+Quaternion Math::MakeRoateAxisAngleQuaternion(const Vector3& axis, float angle) {
+	Quaternion result{};
+	result.x = axis.x * std::sin(angle / 2);
+	result.y = axis.y * std::sin(angle / 2);
+	result.z = axis.z * std::sin(angle / 2);
+	result.w = std::cos(angle / 2);
+	return result;
+};
+
+// ベクトルをQuaternionで回転させた結果のベクトルを求める
+Vector3 Math::RotateVector(const Vector3& vector, const Quaternion& q) {
+	Vector3 result{};
+	Quaternion r = {vector.x, vector.y, vector.z, 0};
+	// 共役
+	Quaternion conj = Conjugate(q);
+	Quaternion rotate = Multiply(q, Multiply(r, conj));
+
+	result.x = rotate.x;
+	result.y = rotate.y;
+	result.z = rotate.z;
+	return result;
+};
+
+// Quaternionから回転行列を求める
+Matrix4x4 Math::MakeRotateMatrix(const Quaternion& q) {
+	Matrix4x4 result{};
+	result.m[0][0] = q.w * q.w + q.x * q.x -  q.y * q.y - q.z * q.z;
+	result.m[0][1] = 2.0f * (q.x * q.y + q.w * q.z);
+	result.m[0][2] = 2.0f * (q.x * q.z - q.w * q.y);
+	result.m[0][3] = 0.0f;
+	result.m[1][0] = 2.0f * (q.x * q.y - q.w * q.z);
+	result.m[1][1] = q.w * q.w - q.x * q.x + q.y * q.y - q.z * q.z;
+	result.m[1][2] = 2.0f * (q.y * q.z + q.w * q.x);
+	result.m[1][3] = 0.0f;
+	result.m[2][0] = 2.0f * (q.x * q.z + q.w * q.y);
+	result.m[2][1] = 2.0f * (q.y * q.z - q.w * q.x);
+	result.m[2][2] = q.w * q.w - q.x * q.x -q.y * q.y + q.z * q.z;
+	result.m[2][3] = 0.0f;
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
+	return result;
+
+	return result;
+};
+
+
+
+void Math::MatrixScreenPrintf(const Vector3& matrix, const char* name) {
+	ImGui::Begin(name);
+	ImGui::Text("%1.3f, %1.3f, %1.3f", matrix.x, matrix.y, matrix.z);
+	
+	ImGui::End();
+}
+
+
+
 void Math::MatrixScreenPrintf(const Matrix4x4& matrix,const char* name){
 	ImGui::Begin(name);
 	ImGui::Text("%1.3f, %1.3f, %1.3f, %1.3f", matrix.m[0][0], matrix.m[0][1], matrix.m[0][2], matrix.m[0][3]);
@@ -611,6 +742,13 @@ void Math::MatrixScreenPrintf(const Matrix4x4& matrix,const char* name){
 	ImGui::End();
 
 
+}
+
+
+void Math::MatrixScreenPrintf(const Quaternion& q, const char* name) {
+	ImGui::Begin(name);
+	ImGui::Text("%1.2f, %1.2f, %1.2f, %1.2f", q.x, q.y, q.z, q.w);
+	ImGui::End();
 }
 
 /*--------------------演算子オーバーロード---------------------------*/
