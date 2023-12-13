@@ -29,7 +29,7 @@ void LockOn::Update(const std::list<std::unique_ptr<Enemy>>& enemies, const View
 			}
 
 			// ターゲットを変える
-			if (KeyInput::PushKey(DIK_X)) {
+			if (KeyInput::GetPadButtonDown(XINPUT_GAMEPAD_X)) {
 				searchTarget(enemies, viewProjection);
 				targetIndex_++;
 				if (targetIndex_ >= targets_.size()) {
