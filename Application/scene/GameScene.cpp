@@ -26,7 +26,7 @@ void GameScene::Initialize() {
 	for (int i = 0; i < 2; i++) {
 		worldTransformFence_[i].Initialize();
 		modelFence_[i].reset(
-		    Model::CreateModelFromObj("resources/fence/fence.obj", "resources/fence/fence.png"));
+		    Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 	}
 	
 	//板ポリ
@@ -128,6 +128,7 @@ void GameScene::Update() {
 	worldTransform_.rotate.y += 0.02f;
 	worldTransform_.UpdateMatrix();
 	worldTransformp_.UpdateMatrix();
+	worldTransformFence_[0].UpdateMatrix();
 	viewProjection_.UpdateMatrix();
 	skydome_->Update();
 
@@ -159,10 +160,16 @@ void GameScene::Update() {
 		ImGui::TreePop();
 	}
 
+	if (ImGui::TreeNode("bunny")) {
+
+		ImGui::SliderFloat3("transletion", &worldTransformFence_[0].translate.x, -1.0f, 10.0f);
+		ImGui::SliderFloat3("rotate", &worldTransformFence_[0].rotate.x, -1.0f, 10.0f);
+
+		ImGui::TreePop();
+	}
 	
 	if (ImGui::TreeNode("Sphere")) {
 		
-		;
 		ImGui::SliderFloat3("Sprite", &worldTransform_.translate.x, -1.0f, 10.0f);
 
 		ImGui::TreePop();
@@ -208,7 +215,7 @@ void GameScene::Draw() {
 	skydome_->Draw(viewProjection_,false);
 	//sphere_->Draw(worldTransform_, viewProjection_,true);
 	//フェンス
-	//modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
+	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
 	//板ポリ
 	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
 	//パーティクル
