@@ -9,7 +9,7 @@
 #include "Skydome.h"
 #include "Sphere.h"
 #include "Particle.h"
-
+#include "Ground.h"
 
 /// <summary>
 /// ゲームシーン
@@ -38,5 +38,9 @@ private: // メンバ変数
 	std::unique_ptr<Skydome> skydome_;
 	// 天球3Dモデル
 	std::unique_ptr<Model> modelSkydome_;
+	// 地面
+	std::unique_ptr<Ground> ground_;
+	// 地面3Dモデル
+	std::unique_ptr<Model> modelGround_;
 
 };

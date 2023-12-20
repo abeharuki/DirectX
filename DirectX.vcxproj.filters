@@ -207,6 +207,9 @@
     <ClCompile Include="Engine\Audio\Audio.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="application\base\Ground.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\hlsl\Object3d.VS.hlsl" />
@@ -322,6 +325,9 @@
       <Filter>ヘッダー ファイル\Engine\Maneger</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Audio\Audio.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="application\base\Ground.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

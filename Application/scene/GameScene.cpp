@@ -25,7 +25,11 @@ void GameScene::Initialize() {
 	modelSkydome_.reset(Model::CreateModelFromObj("resources/skydome.obj", "resources/skydome/sky.png"));
 	skydome_->Initialize(modelSkydome_.get());
 
-	
+	// 地面
+	ground_ = std::make_unique<Ground>();
+	// 3Dモデルの生成
+	modelGround_.reset(Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
+	ground_->Initialize(modelGround_.get());
 	
 	
 }
@@ -43,6 +47,7 @@ void GameScene::Update() {
 
 	viewProjection_.UpdateMatrix();
 	skydome_->Update();
+	ground_->Update();
 		
 }
 
@@ -54,7 +59,9 @@ void GameScene::Draw() {
 
 	// 天球
 	skydome_->Draw(viewProjection_,false);
-	
+	//地面
+	ground_->Draw(viewProjection_,false);
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
