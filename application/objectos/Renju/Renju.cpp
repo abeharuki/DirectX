@@ -12,6 +12,7 @@ void Renju::Initialize(){
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = -2.0f;
 	worldTransformBase_.rotate.y = 3.14f;
+	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
 };
 
 /// <summary>
@@ -29,6 +30,9 @@ void Renju::Update(){
 			break;
 		case Behavior::kJump:
 			JumpInitialize();
+			break;
+		case Behavior::kAttack:
+			AttackInitialize();
 			break;
 		case Behavior::kDead:
 
@@ -48,6 +52,9 @@ void Renju::Update(){
 	case Behavior::kJump:
 		JumpUpdata();
 		break;
+	case Behavior::kAttack:
+		AttackUpdata();
+		break;
 	case Behavior::kDead:
 		break;
 	}
@@ -59,18 +66,96 @@ void Renju::Update(){
 	worldTransformBase_.UpdateMatrix();
 };
 
+void Renju::Draw(const ViewProjection& view) {
+
+	// 弾の描画
+	for (RenjuBullet* bullet : bullets_) {
+		bullet->Draw(view);
+	}
+	
+
+}
+
+
 // 移動
-void Renju::MoveInitialize(){};
+void Renju::MoveInitialize(){
+	// デスフラグが立った弾を削除
+	bullets_.remove_if([](RenjuBullet* bullet) { 
+		delete bullet;
+		return true;
+	});
+};
 void Renju::MoveUpdata(){
 	// プレイヤーに集合
 	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X) && !followPlayer_) {
 		followPlayer_ = true;
+	}
+
+	// 敵を探す
+	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_Y) ) {
+		searchTarget_ = true;
 	}
 };
 
 // ジャンプ
 void Renju::JumpInitialize(){};
 void Renju::JumpUpdata(){};
+
+
+// 攻撃
+void Renju::AttackInitialize() { 
+	searchTarget_ = false;
+	fireTimer_ = 20;
+};
+void Renju::AttackUpdata(){
+	--fireTimer_;
+
+	if (fireTimer_ == 0) {
+		// 弾の速度
+		const float kBulletSpeed = 1.0f;
+		
+		Vector3 vector = Vector3{enemyPos_.x,enemyPos_.y+7,enemyPos_.z} - worldTransformBase_.GetWorldPos();
+		vector = Math::Normalize(vector);
+		Vector3 velocity = kBulletSpeed * vector;
+
+		// 弾を生成、初期化
+		RenjuBullet* newBullet = new RenjuBullet();
+		newBullet->Initialize(
+		    bulletModel_.get(), worldTransformBase_.translate, {0.5f, 0.5f, 0.5f},
+		    worldTransformBase_.rotate, velocity);
+		
+
+		bullets_.push_back(newBullet);
+
+		fireTimer_ = 20;
+	}
+
+	// デスフラグが立った弾を削除
+	bullets_.remove_if([](RenjuBullet* bullet) {
+		if (bullet->IsDead()) {
+
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
+	for (RenjuBullet* bullet : bullets_) {
+
+		bullet->Update();
+	}
+
+
+
+
+	// プレイヤーに集合
+	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X)) {
+		behaviorRequest_ = Behavior::kRoot;
+		followPlayer_ = true;
+		
+	}
+};
+
 
 void Renju::followPlayer(Vector3 playerPos) {
 	if (followPlayer_) {
@@ -101,6 +186,40 @@ void Renju::followPlayer(Vector3 playerPos) {
 			worldTransformBase_.translate.y = 0.0f;
 		} else {
 			followPlayer_ = false;
+		}
+	}
+}
+
+void Renju::searchTarget(Vector3 enemyPos) {
+	enemyPos_ = enemyPos;
+	if (!followPlayer_ && searchTarget_) {
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = enemyPos - GetWorldPosition();
+
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+				                         ? std::numbers::pi_v<float> - destinationAngleY_
+				                         : -std::numbers::pi_v<float> - destinationAngleY_;
+			}
+		} else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			                                    : -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		// プレイヤーの座標までの距離
+		float length = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
+
+		// 距離条件チェック
+		if (minDistance_*2 <= length) {
+			worldTransformBase_.translate =
+			    Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
+			worldTransformBase_.translate.y = 0.0f;
+		} else {
+			behaviorRequest_ = Behavior::kAttack;
 		}
 	}
 }

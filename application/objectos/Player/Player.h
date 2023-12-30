@@ -79,6 +79,7 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
 
+
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
 	}

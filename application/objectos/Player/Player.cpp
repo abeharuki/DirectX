@@ -16,6 +16,7 @@ void Player::Initialize() {
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = 2.0f;
 	worldTransformHammer_.Initialize();
+	worldTransformHammer_.rotate.y = 3.14f;
 	worldTransformHead_.Initialize();
 	worldTransformHead_.rotate.y = 3.14f;
 }
@@ -38,7 +39,7 @@ void Player::Update() {
 			break;
 		case Behavior::kAttack:
 			AttackInitialize();
-
+			break;
 		case Behavior::kDead:
 
 			break;
@@ -65,6 +66,7 @@ void Player::Update() {
 	case Behavior::kAttack:
 		// 攻撃
 		AttackUpdata();
+		break;
 	case Behavior::kDead:
 		break;
 	}
@@ -78,6 +80,11 @@ void Player::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
+	\
+	ImGui::Begin("katana");
+	ImGui::SliderFloat3("pos", &worldTransformHammer_.translate.x, -3.0f, 3.0f);
+	ImGui::SliderFloat3("rotate", &worldTransformHammer_.rotate.x, -3.0f, 3.0f);
+	ImGui::End();
 }
 
 // 移動
@@ -202,8 +209,13 @@ void Player::MoveUpdata(){
 			behaviorRequest_ = Behavior::kJump;
 		}
 
-		// ダッシュ
+		//攻撃
 		if (KeyInput::PushKey(DIK_E)) {
+			behaviorRequest_ = Behavior::kAttack;
+		}
+
+		// ダッシュ
+		if (KeyInput::PushKey(DIK_F)) {
 			behaviorRequest_ = Behavior::kDash;
 		}
 	 }
@@ -254,8 +266,8 @@ void Player::DashUpdata() {
 
 // 攻撃
 void Player::AttackInitialize() {
-	 worldTransformHammer_.rotate = {0.0f, 0.0f, 0.0f};
-
+	 worldTransformHammer_.rotate = {0.0f, 3.14f, 0.0f};
+	 worldTransformHammer_.translate.x = 0.0f;
 	 workAttack_.attackParameter_ = 0;
 	 workAttack_.comboIndex = 0;
 	 workAttack_.inComboPhase = 0;
@@ -265,8 +277,25 @@ void Player::AttackInitialize() {
 }
 void Player::AttackUpdata() {
 	 float speed = 1.0f;
-	 // worldTransformHammer_.rotate.x += attackSpeed;
+	
+	 // コンボ上限に達していない
+	 if (workAttack_.comboIndex < ComboNum - 1) {
+		// ジョイスティックの状態取得
+		if (KeyInput::GetInstance()->GetPadConnect()) {
+			// 攻撃ボタンをトリガーしたら
+			if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B)) {
+				workAttack_.comboNext = true;
+			}
 
+
+		} else {
+			if (KeyInput::PushKey(DIK_E)) {
+				// コンボ有効
+				workAttack_.comboNext = true;
+			}
+		}
+		
+	 }
 
 	 // 攻撃の合計時間
 	 uint32_t totalTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime +
@@ -285,17 +314,17 @@ void Player::AttackUpdata() {
 
 			switch (workAttack_.comboIndex) {
 			case 0:
-				worldTransformHammer_.translate = {0.0f, 0.8f, 0.0f};
-				worldTransformHammer_.rotate = {0.0f, 0.0f, 0.0f};
+				worldTransformHammer_.translate = {0.0f, -1.6f, 0.0f};
+				worldTransformHammer_.rotate = {0.0f, 3.14f, 0.0f};
 
 				break;
 			case 1:
-				worldTransformHammer_.translate = {0.0f, 0.8f, 0.0f};
-				worldTransformHammer_.rotate = {1.0f, 0.0f, 3.14f / 2.0f};
+				worldTransformHammer_.translate = {0.0f, 0.5f, 0.0f};
+				worldTransformHammer_.rotate = {0.0f, 3.14f, 1.5f};
 				break;
 			case 2:
-				worldTransformHammer_.translate = {0.0f, 0.8f, 0.0f};
-				worldTransformHammer_.rotate = {worldTransformHammer_.rotate.x, 0.0f, 3.14f / 2.0f};
+				worldTransformHammer_.translate = {0.0f, 0.5f, 0.0f};
+				worldTransformHammer_.rotate = {worldTransformHammer_.rotate.x, 3.14f, 1.5f};
 				break;
 			}
 		}
@@ -318,50 +347,6 @@ void Player::AttackUpdata() {
 	 switch (workAttack_.comboIndex) {
 	 case 0:
 		if (workAttack_.attackParameter_ < anticipationTime) {
-			worldTransformHammer_.rotate.x +=
-			    kConstAttacks_[workAttack_.comboIndex].anticipationSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= anticipationTime &&
-		    workAttack_.attackParameter_ < chargeTime) {
-			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].chargeSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= chargeTime &&
-		    workAttack_.attackParameter_ < swingTime) {
-			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].swingSpeed;
-			workAttack_.isAttack = true;
-		}
-
-		if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
-			workAttack_.isAttack = false;
-		}
-
-		break;
-	 case 1:
-		if (workAttack_.attackParameter_ < anticipationTime) {
-			worldTransformHammer_.rotate.x +=
-			    kConstAttacks_[workAttack_.comboIndex].anticipationSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= anticipationTime &&
-		    workAttack_.attackParameter_ < chargeTime) {
-			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].chargeSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= chargeTime &&
-		    workAttack_.attackParameter_ < swingTime) {
-			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].swingSpeed;
-			workAttack_.isAttack = true;
-		}
-
-		if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
-			workAttack_.isAttack = false;
-		}
-
-		break;
-	 case 2:
-		if (workAttack_.attackParameter_ < anticipationTime) {
 			worldTransformHammer_.rotate.x -=
 			    kConstAttacks_[workAttack_.comboIndex].anticipationSpeed;
 		}
@@ -374,6 +359,50 @@ void Player::AttackUpdata() {
 		if (workAttack_.attackParameter_ >= chargeTime &&
 		    workAttack_.attackParameter_ < swingTime) {
 			worldTransformHammer_.rotate.x -= kConstAttacks_[workAttack_.comboIndex].swingSpeed;
+			workAttack_.isAttack = true;
+		}
+
+		if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
+			workAttack_.isAttack = false;
+		}
+
+		break;
+	 case 1:
+		if (workAttack_.attackParameter_ < anticipationTime) {
+			worldTransformHammer_.rotate.x -=
+			    kConstAttacks_[workAttack_.comboIndex].anticipationSpeed;
+		}
+
+		if (workAttack_.attackParameter_ >= anticipationTime &&
+		    workAttack_.attackParameter_ < chargeTime) {
+			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].chargeSpeed;
+		}
+
+		if (workAttack_.attackParameter_ >= chargeTime &&
+		    workAttack_.attackParameter_ < swingTime) {
+			worldTransformHammer_.rotate.x -= kConstAttacks_[workAttack_.comboIndex].swingSpeed;
+			workAttack_.isAttack = true;
+		}
+
+		if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
+			workAttack_.isAttack = false;
+		}
+
+		break;
+	 case 2:
+		if (workAttack_.attackParameter_ < anticipationTime) {
+			worldTransformHammer_.rotate.x +=
+			    kConstAttacks_[workAttack_.comboIndex].anticipationSpeed;
+		}
+
+		if (workAttack_.attackParameter_ >= anticipationTime &&
+		    workAttack_.attackParameter_ < chargeTime) {
+			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].chargeSpeed;
+		}
+
+		if (workAttack_.attackParameter_ >= chargeTime &&
+		    workAttack_.attackParameter_ < swingTime) {
+			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].swingSpeed;
 			workAttack_.isAttack = true;
 		}
 

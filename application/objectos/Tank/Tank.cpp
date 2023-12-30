@@ -27,6 +27,8 @@ void Tank::Update() {
 		case Behavior::kJump:
 			JumpInitialize();
 			break;
+		case Behavior::kAttack:
+			AttackInitialize();
 		case Behavior::kDead:
 
 			break;
@@ -45,6 +47,8 @@ void Tank::Update() {
 	case Behavior::kJump:
 		JumpUpdata();
 		break;
+	case Behavior::kAttack:
+		AttackUpdata();
 	case Behavior::kDead:
 		break;
 	}
@@ -65,11 +69,49 @@ void Tank::MoveUpdata(){
 	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X) && !followPlayer_) {
 		followPlayer_ = true;
 	}
+
+	// 敵を探す
+	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_Y)) {
+		searchTarget_ = true;
+	}
 };
 
 // ジャンプ
 void Tank::JumpInitialize(){};
 void Tank::JumpUpdata(){};
+
+// 攻撃
+void Tank::AttackInitialize(){};
+void Tank::AttackUpdata(){
+	--fireTimer_;
+	
+	if (fireTimer_>10) {
+		worldTransformBase_.translate = Math::Lerp(
+		    worldTransformBase_.translate,
+		    {worldTransformBase_.translate.x, worldTransformBase_.translate.y,
+		     worldTransformBase_.translate.z - 2.0f},
+		    0.05f);
+	} else if (fireTimer_ > 5) {
+		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos_, 0.2f);
+	} else if (fireTimer_ >0 ) {
+		worldTransformBase_.translate = Math::Lerp(
+		    worldTransformBase_.translate,
+		    {worldTransformBase_.translate.x, worldTransformBase_.translate.y,
+		     worldTransformBase_.translate.z - 4.0f},
+		    0.2f);
+		fireTimer_ = 40;
+	}
+
+	
+	
+	
+	// プレイヤーに集合
+	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X)) {
+		behaviorRequest_ = Behavior::kRoot;
+		followPlayer_ = true;
+	}
+};
+
 
 	// プレイヤーに追従
 void Tank::followPlayer(Vector3 playerPos){
@@ -105,6 +147,43 @@ void Tank::followPlayer(Vector3 playerPos){
 	}
 };
 
+// 敵を探す
+void Tank::searchTarget(Vector3 enemyPos) {
+	enemyPos_ = enemyPos;
+	if (!followPlayer_ && searchTarget_) {
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = enemyPos - GetWorldPosition();
+
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+				                         ? std::numbers::pi_v<float> - destinationAngleY_
+				                         : -std::numbers::pi_v<float> - destinationAngleY_;
+			}
+		} else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			                                    : -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		// プレイヤーの座標までの距離
+		float length = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
+
+		// 距離条件チェック
+		if (minDistance_-8 <= length) {
+			worldTransformBase_.translate =
+			    Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
+			worldTransformBase_.translate.y = 0.0f;
+		} else {
+			behaviorRequest_ = Behavior::kAttack;
+			searchTarget_ = false;
+		}
+	}
+}
+
+
 Vector3 Tank::GetWorldPosition() {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
@@ -114,7 +193,6 @@ Vector3 Tank::GetWorldPosition() {
 	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
 	return worldPos;
 }
-
 Vector3 Tank::GetLocalPosition() {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;

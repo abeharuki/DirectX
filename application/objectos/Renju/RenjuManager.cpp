@@ -15,11 +15,12 @@ void RenjuManager::Update() {
 	renju_->Update();
 	worldTransformBase_ = renju_->GetWorldTransform();
 	renju_->followPlayer(playerPos_);
-
+	renju_->searchTarget(enemyPos_);
 };
 
 void RenjuManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(worldTransformBase_, camera, false);
+	renju_->Draw(camera);
 };
 
 

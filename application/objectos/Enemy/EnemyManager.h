@@ -9,7 +9,8 @@ public:
 	void Draw(const ViewProjection& camera);
 
 	const WorldTransform& GetWorldTransform();
-	
+	Vector3 GetWorldPos();
+
 private:
 	WorldTransform worldTransformBase_;
 	std::unique_ptr<Model> Model_;

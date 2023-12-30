@@ -16,6 +16,7 @@ void TankManager::Update() {
 	tank_->Update();
 	worldTransformBase_ = tank_->GetWorldTransform();
 	tank_->followPlayer(playerPos_);
+	tank_->searchTarget(enemyPos_);
 };
 
 void TankManager::Draw(const ViewProjection& camera) {

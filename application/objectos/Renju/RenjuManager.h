@@ -13,6 +13,8 @@ public:
 
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
+	//敵の位置を検索
+	void SetEnemypPos(Vector3 enemyPos) { enemyPos_ = enemyPos; };
 
 private:
 	WorldTransform worldTransformBase_;
@@ -21,4 +23,5 @@ private:
 
 	bool isDead_ = false;
 	Vector3 playerPos_;
+	Vector3 enemyPos_;
 };

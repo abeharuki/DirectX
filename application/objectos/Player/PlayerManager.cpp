@@ -3,7 +3,7 @@
 void PlayerManager::Initialize() {
 
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
-	HammerModel_.reset(Model::CreateModelFromObj("resources/hammer/hammer.obj",  "resources/hammer/hammer.png"));
+	HammerModel_.reset(Model::CreateModelFromObj("resources/katana/katana.obj",  "resources/katana/kata.png"));
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
@@ -20,6 +20,7 @@ void PlayerManager::Update() {
 
 void PlayerManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(player_->GetWorldTransformHead(), camera, false);
+
 	HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);
 };
 

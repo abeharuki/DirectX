@@ -6,6 +6,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "RenjuBullet.h"
 
 /// <summary>
 /// ゲームシーン
@@ -28,6 +29,8 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+	void Draw(const ViewProjection& view);
+
 	// 移動
 	void MoveInitialize();
 	void MoveUpdata();
@@ -36,8 +39,16 @@ public: // メンバ関数
 	void JumpInitialize();
 	void JumpUpdata();
 
+	// 攻撃
+	void AttackInitialize();
+	void AttackUpdata();
+
+
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
+
+	//敵を探す
+	void searchTarget(Vector3 enemyPos);
 
 	Vector3 GetWorldPosition();
 	Vector3 GetLocalPosition();
@@ -50,6 +61,9 @@ public: // メンバ関数
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	ViewProjection viewProjection_;
+	
+	std::unique_ptr<Model> bulletModel_;
+
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
@@ -58,6 +72,7 @@ private: // メンバ変数
 	enum class Behavior {
 		kRoot, // 通常状態
 		kJump, // ジャンプ
+		kAttack,//攻撃
 		kDead, // 死亡
 	};
 
@@ -70,4 +85,14 @@ private: // メンバ変数
 	// プレイヤー座標
 	float minDistance_ = 10.0f;
 	bool followPlayer_ = false;
+
+	//敵を探すフラグ
+	bool searchTarget_ = false;
+
+	//弾
+	std::list<RenjuBullet*> bullets_;
+	// 攻撃時間
+	int fireTimer_ = 20;
+
+	Vector3 enemyPos_;
 };

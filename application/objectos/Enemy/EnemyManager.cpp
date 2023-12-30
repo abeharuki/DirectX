@@ -16,4 +16,6 @@ void EnemyManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(enemy_->GetWorldTransform(), camera, false);
 };
 
+Vector3 EnemyManager::GetWorldPos() { return enemy_->GetWorldTransform().GetWorldPos(); }
+
 const WorldTransform& EnemyManager::GetWorldTransform() { return enemy_->GetWorldTransform(); }
