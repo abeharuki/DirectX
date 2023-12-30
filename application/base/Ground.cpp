@@ -6,7 +6,7 @@ void Ground::Initialize(Model* model) {
 	model_.reset(model);
 	worldTransform_.Initialize();
 	worldTransform_.scale = {1.0f, 1.0f, 1.0f};
-	worldTransform_.translate.y = -2.0f;
+	
 }
 
 /// <summary>

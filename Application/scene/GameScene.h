@@ -10,6 +10,12 @@
 #include "Sphere.h"
 #include "Particle.h"
 #include "Ground.h"
+#include <Player/PlayerManager.h>
+#include "camera/followCamera.h"
+#include <Enemy/EnemyManager.h>
+#include <Healer/HealerManager.h>
+#include <Tank/TankManager.h>
+#include <Renju/RenjuManager.h>
 
 /// <summary>
 /// ゲームシーン
@@ -24,6 +30,7 @@ public: // メンバ関数
 	~GameScene();
 
 	static GameScene* GetInstance();
+	void CheckAllCollision();
 
 private://基本変数
 	//光の数値
@@ -42,5 +49,21 @@ private: // メンバ変数
 	std::unique_ptr<Ground> ground_;
 	// 地面3Dモデル
 	std::unique_ptr<Model> modelGround_;
+
+	//追従カメラ
+	std::unique_ptr<FollowCamera> followCamera_;
+
+
+	//プレイヤー
+	std::unique_ptr<PlayerManager> playerManager_;
+	// 敵
+	std::unique_ptr<EnemyManager> enemyManager_;
+
+	//タンク
+	std::unique_ptr<TankManager> tankManager_;
+	//ヒーラー
+	std::unique_ptr<HealerManager> healerManager_;
+	//レンジャー
+	std::unique_ptr<RenjuManager> renjuManager_;
 
 };

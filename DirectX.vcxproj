@@ -104,6 +104,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\base\camera\followCamera.cpp" />
     <ClCompile Include="application\base\Ground.cpp" />
     <ClCompile Include="Application\base\Skydome.cpp" />
+    <ClCompile Include="application\objectos\Enemy\Enemy.cpp" />
+    <ClCompile Include="application\objectos\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="application\objectos\Healer\Healer.cpp" />
+    <ClCompile Include="application\objectos\Healer\HealerManager.cpp" />
+    <ClCompile Include="application\objectos\Player\PlayerManager.cpp" />
+    <ClCompile Include="application\objectos\Renju\Renju.cpp" />
+    <ClCompile Include="application\objectos\Renju\RenjuManager.cpp" />
+    <ClCompile Include="application\objectos\Tank\Tank.cpp" />
+    <ClCompile Include="application\objectos\Tank\TankManager.cpp" />
     <ClCompile Include="Application\scene\ClearScene.cpp" />
     <ClCompile Include="Application\scene\GameScene.cpp" />
     <ClCompile Include="Application\scene\TitleScene.cpp" />
@@ -133,7 +142,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\base\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\particle\Particle.cpp" />
-    <ClCompile Include="Application\objectos\Player.cpp" />
+    <ClCompile Include="application\objectos\Player\Player.cpp" />
     <ClCompile Include="Engine\base\StringUtility.cpp" />
     <ClCompile Include="Engine\Manager\TextureManeger.cpp" />
   </ItemGroup>
@@ -168,6 +177,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\base\camera\followCamera.h" />
     <ClInclude Include="application\base\Ground.h" />
     <ClInclude Include="Application\base\Skydome.h" />
+    <ClInclude Include="application\objectos\Enemy\Enemy.h" />
+    <ClInclude Include="application\objectos\Enemy\EnemyManager.h" />
+    <ClInclude Include="application\objectos\Healer\Healer.h" />
+    <ClInclude Include="application\objectos\Healer\HealerManager.h" />
+    <ClInclude Include="application\objectos\Player\PlayerManager.h" />
+    <ClInclude Include="application\objectos\Renju\Renju.h" />
+    <ClInclude Include="application\objectos\Renju\RenjuManager.h" />
+    <ClInclude Include="application\objectos\Tank\Tank.h" />
+    <ClInclude Include="application\objectos\Tank\TankManager.h" />
     <ClInclude Include="Application\scene\ClearScene.h" />
     <ClInclude Include="Application\scene\GameScene.h" />
     <ClInclude Include="Application\scene\TitleScene.h" />
@@ -196,7 +214,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Manager\ImGuiManager.h" />
     <ClInclude Include="Engine\Manager\Input\KeyInput.h" />
     <ClInclude Include="Engine\particle\Particle.h" />
-    <ClInclude Include="Application\objectos\Player.h" />
+    <ClInclude Include="application\objectos\Player\Player.h" />
     <ClInclude Include="Engine\base\StringUtility.h" />
     <ClInclude Include="Engine\Manager\TextureManeger.h" />
     <ClInclude Include="Application\base\GlobalVariables\GlobalVariables.h" />

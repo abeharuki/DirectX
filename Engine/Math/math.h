@@ -156,6 +156,8 @@ public:
 	
 	static Vector3 Multiply(float scalar, const Vector3& v);
 
+	static Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
+
 	static Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2);
 
 	static Matrix4x4 Subract(const Matrix4x4& m1, const Matrix4x4& m2);
@@ -201,6 +203,10 @@ public:
 
 	// 逆行列
 	static Matrix4x4 Inverse(const Matrix4x4& m);
+
+	// ない席
+	static float Dot(const Vector3& v1, const Vector3& v2);
+
 
 	// 長さ(ノルマ)
 	static float Length(const Vector3& v);

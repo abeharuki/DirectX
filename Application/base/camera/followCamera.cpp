@@ -25,24 +25,26 @@ void FollowCamera::Update() {
 		float kCharacterSpeed = 0.05f;
 
 		destinationAngleY_ += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kCharacterSpeed;
-		destinationAngleX_ -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * kCharacterSpeed / 5;
+		destinationAngleX_ -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * kCharacterSpeed / 4;
 		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
 			destinationAngleY_ = target_->rotate.y;
 			destinationAngleX_ = target_->rotate.x;
 		}
+	} else {
+		if (KeyInput::GetKey(DIK_UPARROW)) {
+			destinationAngleX_ -= 0.1f;
+		} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
+			destinationAngleX_ += 0.1f;
+		}
+
+		if (KeyInput::GetKey(DIK_LEFTARROW)) {
+			destinationAngleY_ -= 0.1f;
+		} else if (KeyInput::GetKey(DIK_RIGHTARROW)) {
+			destinationAngleY_ += 0.1f;
+		}
 	}
 
-	if (KeyInput::GetKey(DIK_UPARROW)) {
-		destinationAngleX_ -= 0.1f;
-	} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
-		destinationAngleX_ += 0.1f;
-	}
-
-	if (KeyInput::GetKey(DIK_LEFTARROW)) {
-		destinationAngleY_ -= 0.1f;
-	} else if (KeyInput::GetKey(DIK_RIGHTARROW)) {
-		destinationAngleY_ += 0.1f;
-	}
+	
 
 	viewProjection_.rotation_.y =
 	    Math::LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 0.1f);

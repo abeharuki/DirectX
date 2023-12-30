@@ -22,7 +22,7 @@ void GameScene::Initialize() {
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
 	// 3Dモデルの生成
-	modelSkydome_.reset(Model::CreateModelFromObj("resources/skydome.obj", "resources/skydome/sky.png"));
+	modelSkydome_.reset(Model::CreateModelFromObj("resources/skydome/skydome.obj", "resources/skydome/sky.png"));
 	skydome_->Initialize(modelSkydome_.get());
 
 	// 地面
@@ -31,7 +31,33 @@ void GameScene::Initialize() {
 	modelGround_.reset(Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
 	ground_->Initialize(modelGround_.get());
 	
-	
+	//プレイヤー
+	playerManager_ = std::make_unique<PlayerManager>();
+	playerManager_->Initialize();
+
+	//追従カメラ
+	followCamera_ = std::make_unique<FollowCamera>();
+	followCamera_->Initialize();
+	// 自キャラのワールドトランスフォームを追従カメラにセット
+	followCamera_->SetTarget(&playerManager_->GetWorldTransform());
+
+	// 自キャラの生成と初期化処理
+	playerManager_->SetViewProjection(&followCamera_->GetViewProjection());
+
+	//敵
+	enemyManager_ = std::make_unique<EnemyManager>();
+	enemyManager_->Initialize();
+
+	//タンク
+	tankManager_ = std::make_unique<TankManager>();
+	tankManager_->Initialize();
+	//レンジャー
+	renjuManager_ = std::make_unique<RenjuManager>();
+	renjuManager_->Initialize();
+	//ヒーラー
+	healerManager_ = std::make_unique<HealerManager>();
+	healerManager_->Initialize();
+
 }
 
 void GameScene::Update() {
@@ -44,11 +70,22 @@ void GameScene::Update() {
 	}
 
 	
-
-	viewProjection_.UpdateMatrix();
+	playerManager_->Update();
+	healerManager_->Update();
+	renjuManager_->Update();
+	tankManager_->Update();
+	enemyManager_->Update();
+	// 追従カメラの更新
+	followCamera_->Update();
+	viewProjection_.matView = followCamera_->GetViewProjection().matView;
+	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+	viewProjection_.TransferMatrix();
 	skydome_->Update();
 	ground_->Update();
-		
+	//プレイヤーに追従
+	healerManager_->followPlayer(playerManager_->GetWorldPos());
+	renjuManager_->followPlayer(playerManager_->GetWorldPos());
+	tankManager_->followPlayer(playerManager_->GetWorldPos());
 }
 
 
@@ -61,6 +98,16 @@ void GameScene::Draw() {
 	skydome_->Draw(viewProjection_,false);
 	//地面
 	ground_->Draw(viewProjection_,false);
+	//プレイヤー
+	playerManager_->Draw(viewProjection_);
+	//敵
+	enemyManager_->Draw(viewProjection_);
+	// タンク
+	tankManager_->Draw(viewProjection_);
+	// ヒーラー
+	healerManager_->Draw(viewProjection_);
+	// レンジャー
+	renjuManager_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -75,3 +122,16 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 #pragma endregion
 }
+
+//
+//void GameScene::CheckAllCollision() {
+//	 判定対象AとBの座標
+//	Vector3 posA, posB;
+//
+//#pragma region 自キャラとヒーラーの当たり判定
+//	 自キャラ座標
+//	posA = playerManager_->GetWorldPos();
+//	ヒーラー
+//	posB = healerManager_->
+//
+//}

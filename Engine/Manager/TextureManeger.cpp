@@ -214,8 +214,8 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 			texcoords.push_back(texcoord);
 		} else if (identifier == "vn") {
 			Vector3 normal = {0.0f, 0.0f, 0.0f};
-			normal.z *= -1.0f; // 法線の反転
 			s >> normal.x >> normal.y >> normal.z;
+			normal.z *= -1.0f; // 法線の反転
 			normals.push_back(normal);
 		} else if (identifier == "f") {
 			VertexData triangle[3];
