@@ -86,6 +86,9 @@ void GameScene::Update() {
 	healerManager_->followPlayer(playerManager_->GetWorldPos());
 	renjuManager_->followPlayer(playerManager_->GetWorldPos());
 	tankManager_->followPlayer(playerManager_->GetWorldPos());
+	//敵の座標の取得
+	renjuManager_->SetEnemypPos(enemyManager_->GetWorldPos());
+	tankManager_->SetEnemypPos(enemyManager_->GetWorldPos());
 }
 
 
