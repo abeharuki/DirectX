@@ -9,12 +9,18 @@ public:
 	void Draw(const ViewProjection& camera);
 
 	const WorldTransform& GetWorldTransform();
+	const Vector3 GetWorldPos() { return worldTransformBase_.GetWorldPos(); }
 	void SetViewProjection(const ViewProjection& viewProjection);
 
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
 	// 敵の位置を検索
 	void SetEnemypPos(Vector3 enemyPos) { enemyPos_ = enemyPos; };
+
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	bool GetAttack() { return tank_->GetAttack(); }
 
 private:
 	WorldTransform worldTransformBase_;

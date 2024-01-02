@@ -78,3 +78,7 @@ void RenjuBullet::Update() {
 void RenjuBullet::Draw(const ViewProjection& viewprojection) {
 	model_->Draw(worldTransform_, viewprojection, false);
 };
+
+void RenjuBullet::OnCollision() { 
+	isDead_ = true;
+}

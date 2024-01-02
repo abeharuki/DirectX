@@ -19,6 +19,9 @@ void Player::Initialize() {
 	worldTransformHammer_.rotate.y = 3.14f;
 	worldTransformHead_.Initialize();
 	worldTransformHead_.rotate.y = 3.14f;
+	worldTransformCollision_.Initialize();
+	worldTransformCollision_.scale = {0.1f, 1.0f, 0.1f};
+	worldTransformCollision_.translate.y = 2.0f;
 }
 
 void Player::Update() { 
@@ -426,6 +429,12 @@ void Player::Relationship() {
 	         worldTransformHammer_.scale, worldTransformHammer_.rotate,
 	         worldTransformHammer_.translate),
 	     worldTransformBase_.matWorld_);
+
+	worldTransformCollision_.matWorld_ = Math::Multiply(
+	     Math::MakeAffineMatrix(
+	         worldTransformCollision_.scale, worldTransformCollision_.rotate,
+	         worldTransformCollision_.translate),
+	     worldTransformHammer_.matWorld_);
 }
 
 Vector3 Player::GetWorldPosition() {

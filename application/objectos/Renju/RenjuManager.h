@@ -16,6 +16,10 @@ public:
 	//敵の位置を検索
 	void SetEnemypPos(Vector3 enemyPos) { enemyPos_ = enemyPos; };
 
+	// 弾リストの取得
+	const std::list<RenjuBullet*>& GetBullets() const { return renju_->GetBullets(); }
+
+	
 private:
 	WorldTransform worldTransformBase_;
 	std::unique_ptr<Model> Model_;

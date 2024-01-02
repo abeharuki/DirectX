@@ -14,6 +14,8 @@ public:
 	//プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
 	
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
 
 private:
 	WorldTransform worldTransformBase_;

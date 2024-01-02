@@ -59,6 +59,15 @@ void Renju::Update(){
 		break;
 	}
 
+	// デスフラグが立った弾を削除
+	bullets_.remove_if([](RenjuBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		} 
+		return false;
+	});
+
 	// 回転
 	worldTransformBase_.rotate.y =
 	    Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_ + 3.14f, 0.2f);
@@ -79,10 +88,11 @@ void Renju::Draw(const ViewProjection& view) {
 
 // 移動
 void Renju::MoveInitialize(){
-	// デスフラグが立った弾を削除
-	bullets_.remove_if([](RenjuBullet* bullet) { 
+	bullets_.remove_if([](RenjuBullet* bullet) {
+		
 		delete bullet;
 		return true;
+		
 	});
 };
 void Renju::MoveUpdata(){
@@ -121,7 +131,7 @@ void Renju::AttackUpdata(){
 		// 弾を生成、初期化
 		RenjuBullet* newBullet = new RenjuBullet();
 		newBullet->Initialize(
-		    bulletModel_.get(), worldTransformBase_.translate, {0.5f, 0.5f, 0.5f},
+		    bulletModel_.get(), worldTransformBase_.translate, {0.3f, 0.3f, 0.3f},
 		    worldTransformBase_.rotate, velocity);
 		
 

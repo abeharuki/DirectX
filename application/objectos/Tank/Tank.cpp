@@ -81,10 +81,10 @@ void Tank::JumpInitialize(){};
 void Tank::JumpUpdata(){};
 
 // 攻撃
-void Tank::AttackInitialize(){};
+void Tank::AttackInitialize(){ searchTarget_ = false; };
 void Tank::AttackUpdata(){
 	--fireTimer_;
-	
+	attack_ = false; 
 	if (fireTimer_>10) {
 		worldTransformBase_.translate = Math::Lerp(
 		    worldTransformBase_.translate,
@@ -92,6 +92,7 @@ void Tank::AttackUpdata(){
 		     worldTransformBase_.translate.z - 2.0f},
 		    0.05f);
 	} else if (fireTimer_ > 5) {
+		attack_ = true;
 		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos_, 0.2f);
 	} else if (fireTimer_ >0 ) {
 		worldTransformBase_.translate = Math::Lerp(
@@ -177,8 +178,9 @@ void Tank::searchTarget(Vector3 enemyPos) {
 			    Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
 			worldTransformBase_.translate.y = 0.0f;
 		} else {
+			
 			behaviorRequest_ = Behavior::kAttack;
-			searchTarget_ = false;
+			
 		}
 	}
 }

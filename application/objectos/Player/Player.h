@@ -77,8 +77,9 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformHammer() { return worldTransformHammer_; }
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
 	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
+	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
-
+	bool IsAttack() { return workAttack_.isAttack; }
 
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
@@ -88,6 +89,8 @@ private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformHammer_;
+	WorldTransform worldTransformCollision_;
+
 	const ViewProjection* viewProjection_;
 	
 	// 目標の角度

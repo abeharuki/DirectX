@@ -89,6 +89,8 @@ void GameScene::Update() {
 	//敵の座標の取得
 	renjuManager_->SetEnemypPos(enemyManager_->GetWorldPos());
 	tankManager_->SetEnemypPos(enemyManager_->GetWorldPos());
+
+	CheckAllCollision();
 }
 
 
@@ -126,15 +128,68 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
-//
-//void GameScene::CheckAllCollision() {
-//	 判定対象AとBの座標
-//	Vector3 posA, posB;
-//
-//#pragma region 自キャラとヒーラーの当たり判定
-//	 自キャラ座標
-//	posA = playerManager_->GetWorldPos();
-//	ヒーラー
-//	posB = healerManager_->
-//
-//}
+
+void GameScene::CheckAllCollision() {
+	// 判定対象AとBの座標
+	Vector3 posA, posB;
+
+	const std::list<RenjuBullet*>& renjuBullets = renjuManager_->GetBullets();
+
+#pragma region 敵とレンジャーの弾の当たり判定
+	// 敵キャラ座標
+	posA = {enemyManager_->GetWorldPos().x, enemyManager_->GetWorldPos().y+6.0f,enemyManager_->GetWorldPos().z};
+	//レンジャー弾
+	for (RenjuBullet* bullet : renjuBullets) {
+		posB = bullet->GetWorldPosition();
+
+		if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.0f}, posB, {0.3f, 0.3f, 0.3f})) {
+			bullet->OnCollision();
+			//enemyManager_->OnCollision();
+		}
+
+	}
+	
+		
+	
+#pragma endregion
+
+#pragma region 敵キャラとタンクの当たり判定
+
+	// 敵キャラ座標
+	posA = {enemyManager_->GetWorldPos().x, enemyManager_->GetWorldPos().y+6.0f,enemyManager_->GetWorldPos().z};
+	posB = tankManager_->GetWorldPos();
+	
+	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.0f}, posB, {1.0f, 1.0f, 1.0f})) {
+		if (tankManager_->GetAttack()) {
+			enemyManager_->OnCollision();
+		}
+		
+	}
+
+#pragma endregion
+
+#pragma region 敵キャラとヒーラーの当たり判定
+	// 敵キャラ座標
+	posA = {enemyManager_->GetWorldPos().x, enemyManager_->GetWorldPos().y+6.0f,enemyManager_->GetWorldPos().z};
+	
+
+	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.0f}, posB, {0.3f, 0.3f, 0.3f})) {
+	}
+#pragma endregion
+
+#pragma region 敵キャラと自キャラの攻撃当たり判定
+	// 敵キャラ座標
+	posA = {enemyManager_->GetWorldPos().x, enemyManager_->GetWorldPos().y+6.0f,enemyManager_->GetWorldPos().z};
+	posB = playerManager_->katanaPos();
+
+	
+	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.5f}, posB, {0.1f, 1.0f, 0.1f})) {
+		enemyManager_->OnCollision();
+	}
+#pragma endregion
+
+#pragma region 自キャラと敵キャラ攻撃の当たり判定
+	// 敵キャラ座標
+	posA = {enemyManager_->GetWorldPos().x, enemyManager_->GetWorldPos().y+6.0f,enemyManager_->GetWorldPos().z};
+#pragma endregion
+}

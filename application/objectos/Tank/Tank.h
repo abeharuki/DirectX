@@ -52,6 +52,8 @@ public: // メンバ関数
 		viewProjection_ = viewProjection;
 	}
 
+	bool GetAttack() { return attack_; }
+
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	ViewProjection viewProjection_;
@@ -85,4 +87,6 @@ private: // メンバ変数
 	int fireTimer_ = 40;
 
 	Vector3 enemyPos_;
+
+	bool attack_ = false;
 };

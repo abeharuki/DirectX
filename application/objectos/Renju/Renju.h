@@ -54,6 +54,10 @@ public: // メンバ関数
 	Vector3 GetLocalPosition();
 	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
+		// 弾リストの取得
+	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
+
+
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
