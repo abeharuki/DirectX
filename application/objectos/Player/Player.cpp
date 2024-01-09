@@ -83,7 +83,7 @@ void Player::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
-	\
+	
 	ImGui::Begin("katana");
 	ImGui::SliderFloat3("pos", &worldTransformHammer_.translate.x, -3.0f, 3.0f);
 	ImGui::SliderFloat3("rotate", &worldTransformHammer_.rotate.x, -3.0f, 3.0f);
@@ -436,6 +436,11 @@ void Player::Relationship() {
 	         worldTransformCollision_.translate),
 	     worldTransformHammer_.matWorld_);
 }
+
+// 衝突を検出したら呼び出されるコールバック関数
+void Player::OnAllyCollision(const WorldTransform& worldTransform){
+};
+
 
 Vector3 Player::GetWorldPosition() {
 	// ワールド座標を入れる関数

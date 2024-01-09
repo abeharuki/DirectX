@@ -13,6 +13,10 @@ void TankManager::Initialize() {
 }
 
 void TankManager::Update() { 
+	// 前のフレームの当たり判定のフラグを取得 
+	preHit_ = isHit_;
+	isHit_ = false;
+
 	tank_->Update();
 	worldTransformBase_ = tank_->GetWorldTransform();
 	tank_->followPlayer(playerPos_);
@@ -23,7 +27,14 @@ void TankManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(worldTransformBase_, camera, false);
 };
 
+// 衝突を検出したら呼び出されるコールバック関数
+void TankManager::OnAllyCollision(const WorldTransform& worldTransform) {
+	isHit_ = true;
+	if (isHit_ != preHit_) {
+		tank_->OnAllyCollision(worldTransform);
+	}
 
+}
 
 void TankManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }
 

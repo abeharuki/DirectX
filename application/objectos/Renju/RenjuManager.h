@@ -10,6 +10,7 @@ public:
 
 	const WorldTransform& GetWorldTransform();
 	void SetViewProjection(const ViewProjection& viewProjection);
+	Vector3 GetWorldPos() { return renju_->GetWorldTransform().GetWorldPos(); }
 
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
@@ -18,6 +19,9 @@ public:
 
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return renju_->GetBullets(); }
+
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnAllyCollision(const WorldTransform& worldTransform);
 
 	
 private:
@@ -28,4 +32,8 @@ private:
 	bool isDead_ = false;
 	Vector3 playerPos_;
 	Vector3 enemyPos_;
+
+	// 味方の判定
+	bool preHit_;
+	bool isHit_;
 };

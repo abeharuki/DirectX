@@ -9,7 +9,7 @@ public:
 	void Draw(const ViewProjection& camera);
 
 	const WorldTransform& GetWorldTransform();
-	const Vector3 GetWorldPos() { return worldTransformBase_.GetWorldPos(); }
+	Vector3 GetWorldPos() { return tank_->GetWorldTransform().GetWorldPos(); }
 	void SetViewProjection(const ViewProjection& viewProjection);
 
 	// プレイヤーに追従
@@ -18,7 +18,8 @@ public:
 	void SetEnemypPos(Vector3 enemyPos) { enemyPos_ = enemyPos; };
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	void OnAllyCollision(const WorldTransform& worldTransform);
+
 
 	bool GetAttack() { return tank_->GetAttack(); }
 
@@ -30,4 +31,8 @@ private:
 	bool isDead_ = false;
 	Vector3 playerPos_;
 	Vector3 enemyPos_;
+
+	// 味方の判定
+	bool preHit_;
+	bool isHit_;
 };

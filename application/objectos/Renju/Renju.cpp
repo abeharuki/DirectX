@@ -97,10 +97,9 @@ void Renju::MoveInitialize(){
 };
 void Renju::MoveUpdata(){
 	// プレイヤーに集合
-	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X) && !followPlayer_) {
+	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X) || !searchTarget_) {
 		followPlayer_ = true;
 	}
-
 	// 敵を探す
 	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_Y) ) {
 		searchTarget_ = true;
@@ -119,6 +118,32 @@ void Renju::AttackInitialize() {
 };
 void Renju::AttackUpdata(){
 	--fireTimer_;
+
+	// 追従対象からロックオン対象へのベクトル
+	Vector3 sub = enemyPos_ - GetWorldPosition();
+
+	// y軸周りの回転
+	if (sub.z != 0.0) {
+		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+		if (sub.z < 0.0) {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> - destinationAngleY_
+			                                    : -std::numbers::pi_v<float> - destinationAngleY_;
+		}
+	} else {
+		destinationAngleY_ =
+		    (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
+	}
+
+
+	// プレイヤーの座標までの距離
+	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
+
+	// 距離条件チェック
+	if (minDistance_ * 2 <= length && !followPlayer_) {
+		behaviorRequest_ = Behavior::kRoot;
+		searchTarget_ = true;
+	} 
 
 	if (fireTimer_ == 0) {
 		// 弾の速度
@@ -162,7 +187,7 @@ void Renju::AttackUpdata(){
 	if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X)) {
 		behaviorRequest_ = Behavior::kRoot;
 		followPlayer_ = true;
-		
+		searchTarget_ = false;
 	}
 };
 
@@ -233,6 +258,21 @@ void Renju::searchTarget(Vector3 enemyPos) {
 		}
 	}
 }
+
+// 衝突を検出したら呼び出されるコールバック関数
+void Renju::OnAllyCollision(const WorldTransform& worldTransform){
+	const float kSpeed = 0.4f;
+	float sub = worldTransformBase_.matWorld_.m[3][0] - GetWorldPosition().x;
+	if (sub < 0) {
+		allyVelocity = {kSpeed, 0.0f, kSpeed};
+	} else {
+		allyVelocity = {-kSpeed, 0.0f, kSpeed};
+	}
+	
+	allyVelocity = Math::TransformNormal(allyVelocity, worldTransform.matWorld_);
+	worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
+};
+
 
 Vector3 Renju::GetWorldPosition() {
 	// ワールド座標を入れる関数

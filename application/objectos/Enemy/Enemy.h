@@ -32,11 +32,18 @@ public: // メンバ関数
 	void MoveInitialize();
 	void MoveUpdata();
 
+	void DeadInitilize();
+	void DeadUpdata();
+
 	Vector3 GetWorldPosition();
 
 	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
 
-	
+	void isDead(bool dead) {
+		if (dead) {
+			Behavior behavior_ = Behavior::kDead;
+		};
+	}
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
@@ -54,4 +61,6 @@ private: // メンバ変数
 
 	// 速度
 	Vector3 velocity_ = {};
+
+	int time_;
 };

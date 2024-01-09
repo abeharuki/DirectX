@@ -112,7 +112,7 @@ public: // メンバ関数
 	/// </summary>
 	/// <param name="position">座標</param>
 	void SetPosition(const Vector2& position) { position_ = position; }
-	void SetSize(const Vector2& size) { size_ = size_; }
+	void SetSize(const Vector2& size) { size_ = size; }
 	void SetRotation(const float& rotation) { rotation_ = rotation; }
 
 	const Vector2& GetPosition() const { return position_; }

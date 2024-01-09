@@ -12,6 +12,9 @@ void RenjuManager::Initialize() {
 }
 
 void RenjuManager::Update() { 
+	// 前のフレームの当たり判定のフラグを取得
+	preHit_ = isHit_;
+	isHit_ = false;
 	renju_->Update();
 	worldTransformBase_ = renju_->GetWorldTransform();
 	renju_->followPlayer(playerPos_);
@@ -21,6 +24,16 @@ void RenjuManager::Update() {
 void RenjuManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(worldTransformBase_, camera, false);
 	renju_->Draw(camera);
+};
+
+
+// 衝突を検出したら呼び出されるコールバック関数
+void RenjuManager::OnAllyCollision(const WorldTransform& worldTransform){
+	isHit_ = true;
+	if (isHit_ != preHit_) {
+			renju_->OnAllyCollision(worldTransform);
+	}
+
 };
 
 

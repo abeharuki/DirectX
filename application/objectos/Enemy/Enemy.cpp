@@ -6,9 +6,52 @@ void Enemy::Initialize() {
 	worldTransformBase_.Initialize();
 	worldTransformBase_.rotate.x = 1.65f;
 	worldTransformBase_.translate.z = 10.0f;
+	
 }
 
 void Enemy::Update() { 
+	
+
+	if (KeyInput::GetKey(DIK_RIGHTARROW)) {
+		velocity_.x = 0.1f;
+	} else if (KeyInput::GetKey(DIK_LEFTARROW)) {
+		velocity_.x = -0.1f;
+		
+	}
+
+	if (behaviorRequest_) {
+		// 振る舞い変更
+		behavior_ = behaviorRequest_.value();
+		// 各振る舞いごとの初期化
+		switch (behavior_) {
+		case Behavior::kRoot:
+		default:
+			MoveInitialize();
+			break;
+		case Behavior::kDead:
+			DeadInitilize();
+			break;
+		}
+
+		// 振る舞いリセット
+		behaviorRequest_ = std::nullopt;
+	}
+
+	switch (behavior_) {
+	case Behavior::kRoot:
+	default:
+		// 通常行動
+		MoveUpdata();
+		break;
+	
+	case Behavior::kDead:
+		DeadUpdata();
+		break;
+	}
+
+
+	worldTransformBase_.translate += velocity_;
+	
 	worldTransformBase_.UpdateMatrix();
 
 
@@ -17,6 +60,17 @@ void Enemy::Update() {
 	ImGui::End();
 
 }
+
+
+
+
+void Enemy::DeadInitilize() {
+
+}
+void Enemy::DeadUpdata(){};
+
+
+
 
 Vector3 Enemy::GetWorldPosition() {
 	// ワールド座標を入れる関数

@@ -50,6 +50,10 @@ public: // メンバ関数
 	//敵を探す
 	void searchTarget(Vector3 enemyPos);
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnAllyCollision(const WorldTransform& worldTransform);
+
+
 	Vector3 GetWorldPosition();
 	Vector3 GetLocalPosition();
 	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
@@ -86,6 +90,9 @@ private: // メンバ変数
 
 	// 速度
 	Vector3 velocity_ = {};
+	// 味方の押し出し処理
+	Vector3 allyVelocity;
+
 	// プレイヤー座標
 	float minDistance_ = 10.0f;
 	bool followPlayer_ = false;

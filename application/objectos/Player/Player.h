@@ -72,6 +72,10 @@ public: // メンバ関数
 	// パーツ親子関係
 	void Relationship();
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnAllyCollision(const WorldTransform& worldTransform);
+
+
 	Vector3 GetWorldPosition();
 	Vector3 GetLocalPosition();
 	WorldTransform& GetWorldTransformHammer() { return worldTransformHammer_; }

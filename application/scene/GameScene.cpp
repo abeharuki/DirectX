@@ -87,6 +87,7 @@ void GameScene::Update() {
 	renjuManager_->followPlayer(playerManager_->GetWorldPos());
 	tankManager_->followPlayer(playerManager_->GetWorldPos());
 	//敵の座標の取得
+	healerManager_->SetEnemypPos(enemyManager_->GetWorldPos());
 	renjuManager_->SetEnemypPos(enemyManager_->GetWorldPos());
 	tankManager_->SetEnemypPos(enemyManager_->GetWorldPos());
 
@@ -122,6 +123,7 @@ void GameScene::Draw() {
 	// 前景スプライト描画前処理
 	Sprite::PreDraw();
 	
+	enemyManager_->DrawUI();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -144,7 +146,7 @@ void GameScene::CheckAllCollision() {
 
 		if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.0f}, posB, {0.3f, 0.3f, 0.3f})) {
 			bullet->OnCollision();
-			//enemyManager_->OnCollision();
+			enemyManager_->OnCollision();
 		}
 
 	}
@@ -171,9 +173,13 @@ void GameScene::CheckAllCollision() {
 #pragma region 敵キャラとヒーラーの当たり判定
 	// 敵キャラ座標
 	posA = {enemyManager_->GetWorldPos().x, enemyManager_->GetWorldPos().y+6.0f,enemyManager_->GetWorldPos().z};
-	
+	posB = healerManager_->GetCanePos();
 
-	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.0f}, posB, {0.3f, 0.3f, 0.3f})) {
+	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.0f}, posB, {0.27f, 0.27f, 1.0f})) {
+		if (healerManager_->IsAttack()) {
+			enemyManager_->OnCollision();
+		}
+		
 	}
 #pragma endregion
 
@@ -191,5 +197,41 @@ void GameScene::CheckAllCollision() {
 #pragma region 自キャラと敵キャラ攻撃の当たり判定
 	// 敵キャラ座標
 	posA = {enemyManager_->GetWorldPos().x, enemyManager_->GetWorldPos().y+6.0f,enemyManager_->GetWorldPos().z};
+#pragma endregion
+
+#pragma region ヒーラーとレンジャーの当たり判定
+	posA = healerManager_->GetWorldPos();
+	posB = renjuManager_->GetWorldPos();
+	if (Math::IsAABBCollision(posA, {0.6f, 0.4f, 0.2f}, posB, {0.6f, 0.4f, 0.2f})) {
+		healerManager_->OnAllyCollision(renjuManager_->GetWorldTransform());
+		renjuManager_->OnAllyCollision(healerManager_->GetWorldTransform());
+	}
+
+#pragma endregion
+#pragma region タンクとレンジャーの当たり判定
+	posA = tankManager_->GetWorldPos();
+	posB = renjuManager_->GetWorldPos();
+	if (Math::IsAABBCollision(posA, {0.6f, 0.4f, 0.2f}, posB, {0.6f, 0.4f, 0.2f})) {
+		tankManager_->OnAllyCollision(renjuManager_->GetWorldTransform());
+		renjuManager_->OnAllyCollision(tankManager_->GetWorldTransform());
+	}
+
+#pragma endregion
+#pragma region ヒーラーとタンクの当たり判定
+	posA = healerManager_->GetWorldPos();
+	posB = tankManager_->GetWorldPos();
+	if (Math::IsAABBCollision(posA, {0.6f, 0.4f, 0.2f}, posB, {0.6f, 0.4f, 0.2f})) {
+		healerManager_->OnAllyCollision(tankManager_->GetWorldTransform());
+		tankManager_->OnAllyCollision(healerManager_->GetWorldTransform());
+	}
+
+#pragma endregion
+#pragma region プレイヤーとタンクの当たり判定
+	posA = playerManager_->GetWorldPos();
+	posB = tankManager_->GetWorldPos();
+	if (Math::IsAABBCollision(posA, {0.6f, 0.4f, 0.2f}, posB, {0.4f, 0.6f, 0.2f})) {
+		tankManager_->OnAllyCollision(playerManager_->GetWorldTransform());
+	}
+
 #pragma endregion
 }

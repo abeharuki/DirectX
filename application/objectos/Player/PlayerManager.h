@@ -15,7 +15,8 @@ public:
 	Vector3 katanaPos();
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	void OnAllyCollision(const WorldTransform& worldTransform);
+
 
 	bool IsAttack() { return player_->IsAttack(); }
 

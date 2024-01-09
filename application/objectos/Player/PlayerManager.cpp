@@ -23,10 +23,17 @@ void PlayerManager::Update() {
 void PlayerManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(player_->GetWorldTransformHead(), camera, false);
 
-	HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);
+	if (player_->IsAttack()) {
+		HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);
 
-	bulletModel_->Draw(player_->GetWorldTransformCollision(), camera, false);
+	}
+	
 };
+
+// 衝突を検出したら呼び出されるコールバック関数
+void PlayerManager::OnAllyCollision(const WorldTransform& worldTransform){
+};
+
 
 const WorldTransform& PlayerManager::GetWorldTransform() { return player_->GetWorldTransform(); }
 Vector3 PlayerManager::GetWorldPos() { return player_->GetWorldTransform().GetWorldPos(); }
