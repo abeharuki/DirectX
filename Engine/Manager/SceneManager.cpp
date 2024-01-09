@@ -31,30 +31,18 @@ int SceneManager::Run() {
 
 		currentsceneNo_ = IScene::sceneNo_;
 
+		
+
 		if (prevSceneNo_ != currentsceneNo_) {
+			
 			sceneArr_[currentsceneNo_]->Initialize();
 		}
+
+		
 
 		// 更新処理
 		sceneArr_[currentsceneNo_]->Update(); // シーンごとの更新
 
-		ImGui::Begin("Scene");
-
-		if (currentsceneNo_ == 0) {
-			ImGui::Text("Scene::Title");
-			ImGui::Text("State PushKey(P)");
-		}
-
-		if (currentsceneNo_ == 1) {
-			ImGui::Text("Scene::Game");
-		}
-
-		if (currentsceneNo_ == 2) {
-			ImGui::Text("Scene::Clear");
-			ImGui::Text("Title PushKey(P)");
-		}
-
-		ImGui::End();
 
 		// 描画処理
 		sceneArr_[currentsceneNo_]->Draw();

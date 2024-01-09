@@ -22,6 +22,8 @@ void Player::Initialize() {
 	worldTransformCollision_.Initialize();
 	worldTransformCollision_.scale = {0.1f, 1.0f, 0.1f};
 	worldTransformCollision_.translate.y = 2.0f;
+	a = 0.0f;
+	isOver_ = false;
 }
 
 void Player::Update() { 
@@ -49,7 +51,7 @@ void Player::Update() {
 			knockInitialize();
 			break;
 		case Behavior::kDead:
-
+			DeadInitilize();
 			break;
 		}
 
@@ -79,6 +81,8 @@ void Player::Update() {
 		knockUpdata();
 		break;
 	case Behavior::kDead:
+		DeadUpdata(); 
+
 		break;
 	}
 
@@ -431,6 +435,17 @@ void Player::AttackUpdata() {
 		break;
 	 }
 }
+
+void Player::DeadInitilize(){ a = 0.0f; };
+void Player::DeadUpdata(){ 
+	if (a < 1) {
+		a += 0.02f;
+	} else {
+		a = 1.0f;
+		isOver_ = true;
+	}
+	
+};
 
 // 親子関係
 void Player::Relationship() {

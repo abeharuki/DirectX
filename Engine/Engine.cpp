@@ -59,10 +59,12 @@ bool Engine::ProcessMessage() {
 
 
 void Engine::BeginFrame() { 
+#ifdef _DEBUG
 	// ImGui受付開始
 	imguiManager->Begin();
+#endif 
 	// グローバル変数の更新
-	GlobalVariables::GetInstance()->Updeat();
+    //GlobalVariables::GetInstance()->Updeat();
 
 	//	Input初期の更新
 	keyInput->Update();

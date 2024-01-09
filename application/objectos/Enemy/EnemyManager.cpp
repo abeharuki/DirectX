@@ -37,8 +37,8 @@ void EnemyManager::Update() {
 	spriteHPG_->SetSize({2.0f, 0.08f});
 	spriteHPG_->SetPosition({HpTransform_.translate.x, HpTransform_.translate.y});
 
-	spriteBoss_->SetSize({0.01f, 0.01f});
-	spriteBoss_->SetPosition({1.0f, 1.0f});
+	spriteBoss_->SetSize({1.5f, 1.5f});
+	spriteBoss_->SetPosition({HpTransform_.translate.x, HpTransform_.translate.y+30});
 
 	if (HpTransform_.scale.x  <= 0) {
 		isDead_ = true;
@@ -56,6 +56,9 @@ void EnemyManager::Draw(const ViewProjection& camera) {
 
 void EnemyManager::DrawUI() { 
 	Transform uv;
+	uv.scale = {0.0f, 0.0f, 0.0f};
+	uv.rotate = {0.0f, 0.0f, 0.0f};
+	uv.translate = {0.0f, 0.0f, 0.0f};
 	spriteHPG_->Draw(uv);
 	spriteHP_->Draw(uv);
 	spriteBoss_->Draw(uv);

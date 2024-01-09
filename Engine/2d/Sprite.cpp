@@ -8,11 +8,6 @@ Microsoft::WRL::ComPtr<IDxcBlob> Sprite::pixelShaderBlob_;
 
 
 
-Sprite* Sprite::GetInstance() {
-	static Sprite instance;
-	return &instance;
-}
-
 
 void Sprite::Initialize(const std::string& fileName) {
 	LoadTexture(fileName);

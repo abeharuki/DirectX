@@ -54,12 +54,6 @@ void Enemy::Update() {
 	
 	worldTransformBase_.UpdateMatrix();
 
-
-	ImGui::Begin("Enemy");
-	ImGui::SliderFloat3("roto", &worldTransformBase_.rotate.x, -1.0f, 5.0f);
-	ImGui::Text("%d", time_);
-	ImGui::End();
-
 }
 
 

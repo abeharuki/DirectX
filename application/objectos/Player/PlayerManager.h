@@ -16,11 +16,16 @@ public:
 	Vector3 katanaPos();
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnAllyCollision(const WorldTransform& worldTransform);
+
+	void OnHCollision();
+	void OnRCollision();
+	void OnTCollision();
 	void OnCollision(const WorldTransform& worldTransform);
 
+	
 
 	bool IsAttack() { return player_->IsAttack(); }
+	bool IsOver() { return player_->IsOver(); }
 
 private:
 	WorldTransform worldTransformBase_;
@@ -31,23 +36,26 @@ private:
 	std::unique_ptr<Player> player_;
 	std::unique_ptr<Model> bulletModel_;
 
-	std::unique_ptr<Sprite> spriteHP0_;
-	std::unique_ptr<Sprite> spriteHPG0_;
-	std::unique_ptr<Sprite> spriteHP1_;
-	std::unique_ptr<Sprite> spriteHPG1_;
-	std::unique_ptr<Sprite> spriteHP2_;
-	std::unique_ptr<Sprite> spriteHPG2_;
-	std::unique_ptr<Sprite> spriteHP3_;
-	std::unique_ptr<Sprite> spriteHPG3_;
-	std::unique_ptr<Sprite> spriteHP4_;
-	std::unique_ptr<Sprite> spriteHPG4_;
-	std::unique_ptr<Sprite> spriteHP5_;
-	std::unique_ptr<Sprite> spriteHPG5_;
+	std::unique_ptr<Sprite> spriteHP_[6];
+	std::unique_ptr<Sprite> spriteHPG_[6];
 
+	std::unique_ptr<Sprite> spriteBack_;
+	
 	Transform HpTransform_;
 
 	bool isDead_ = false;
 
+	int hitCount_;
+
 	bool preHit_;
 	bool isHit_;
+
+	bool preHitH_;
+	bool isHitH_;
+
+	bool preHitR_;
+	bool isHitR_;
+
+	bool preHitT_;
+	bool isHitT_;
 };

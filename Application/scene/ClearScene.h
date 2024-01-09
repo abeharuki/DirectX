@@ -11,4 +11,5 @@ public:
 
 private:
 	std::unique_ptr<Sprite> spriteClear_;
+	std::unique_ptr<Sprite> spritePushA_;
 };

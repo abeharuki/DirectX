@@ -2,11 +2,12 @@
 
 void ClearScene::Initialize() { 
 	spriteClear_.reset(Sprite::Create("resources/clear.png"));
-	spriteClear_->SetPosition({0.0f, 0.0f});
+	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
 }
 
 void ClearScene::Update() {
-	//spriteClear_->SetSize({4.0f, 2.0f});
+	spriteClear_->SetSize({3.6f, 2.0f});
+	spritePushA_->SetSize({3.6f, 2.0f});
 
 	if (KeyInput::GetInstance()->GetPadConnect()) {
 		if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
@@ -21,5 +22,9 @@ void ClearScene::Update() {
 
 void ClearScene::Draw() {
 	Transform uv;
+	uv.scale = {0.0f, 0.0f, 0.0f};
+	uv.rotate = {0.0f, 0.0f, 0.0f};
+	uv.translate = {0.0f, 0.0f, 0.0f};
 	spriteClear_->Draw(uv);
+	spritePushA_->Draw(uv);
 }

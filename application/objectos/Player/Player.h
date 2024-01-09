@@ -73,6 +73,9 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdata();
 
+	void DeadInitilize();
+	void DeadUpdata();
+
 	// パーツ親子関係
 	void Relationship();
 
@@ -89,7 +92,14 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
 	bool IsAttack() { return workAttack_.isAttack; }
+	bool IsOver() { return isOver_; };
 
+	void IsDead(bool dead) {
+		if (dead) {
+			behavior_ = Behavior::kDead;
+		};
+	}
+	float GetAlpha() { return a; }
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
 	}
@@ -150,4 +160,6 @@ private: // メンバ変数
 	// 速度
 	Vector3 velocity_ = {};
 
+	bool isOver_;
+	float a;
 };

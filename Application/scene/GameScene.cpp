@@ -61,15 +61,19 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-
+	if (KeyInput::PushKey(DIK_P)) {
+		sceneNo_ = CLEAR;
+	}
 	
+
 	if (enemyManager_->isClear()) {
 		sceneNo_ = CLEAR;
 	}
 
-	if (KeyInput::PushKey(DIK_P)) {
-		sceneNo_ = CLEAR;
+	if (playerManager_->IsOver()) {
+		sceneNo_ = OVER;
 	}
+	
 
 	
 	playerManager_->Update();
@@ -230,6 +234,7 @@ void GameScene::CheckAllCollision() {
 	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.5f}, posB, {0.6f, 0.4f, 0.2f})) {
 		if (enemyManager_->IsAttack()) {
 			healerManager_->OnCollision(enemyManager_->GetWorldTransform());
+			playerManager_->OnHCollision();
 		}
 	}
 #pragma endregion
@@ -243,6 +248,7 @@ void GameScene::CheckAllCollision() {
 	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.5f}, posB, {0.6f, 0.4f, 0.2f})) {
 		if (enemyManager_->IsAttack()) {
 			renjuManager_->OnCollision(enemyManager_->GetWorldTransform());
+			playerManager_->OnRCollision();
 		}
 	}
 #pragma endregion
@@ -256,6 +262,7 @@ void GameScene::CheckAllCollision() {
 	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.5f}, posB, {0.6f, 0.4f, 0.2f})) {
 		if (enemyManager_->IsAttack()) {
 			tankManager_->OnCollision(enemyManager_->GetWorldTransform());
+			playerManager_->OnTCollision();
 		}
 	}
 #pragma endregion

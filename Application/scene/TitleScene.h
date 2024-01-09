@@ -13,8 +13,10 @@ public:
 private:
 	Audio* audio_ = nullptr;
 	uint32_t audioData_;
-	std::unique_ptr<Sprite> spriteHP_;
-	std::unique_ptr<Sprite> spriteHP0_;
-	std::unique_ptr<Sprite> spriteHPG0_;
+	std::unique_ptr<Sprite> spriteTitle_;
+	std::unique_ptr<Sprite> spritePushA_;
+	std::unique_ptr<Sprite> spriteRule_;
 
+	Vector2 pos_;
+	bool rule_;
 };
