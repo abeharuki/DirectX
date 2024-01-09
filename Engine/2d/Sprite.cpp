@@ -143,7 +143,7 @@ void Sprite::CreateVertexResource() {
 	vertexData_[3].position = {360.0f, 0.0f, 0.0f, 1.0f}; // 右上3
 	vertexData_[3].texcoord = {1.0f, 0.0f};
 
-	vertexData_[0].normal = {0.0f, 0.0f, -1.0f};
+	//vertexData_[0].normal = {0.0f, 0.0f, -1.0f};
 	
 	
 	// インデックス
