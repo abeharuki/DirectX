@@ -115,20 +115,13 @@ void GameScene::Update() {
 
 
 
-	ImGui::Begin("scene");
-	ImGui::DragFloat4("translation", &worldTransform_.translate.x, 0.01f);
-	ImGui::Text(
-	    " X%f Y%f Z%f", viewProjection_.matView.m[1][0], viewProjection_.matView.m[1][1],
-	    viewProjection_.matView.m[1][2]);
-	ImGui::Text(
-	    " X%f Y%f Z%f", viewProjection_.matView.m[2][0], viewProjection_.matView.m[2][1],
-	    viewProjection_.matView.m[2][2]);
-	ImGui::Text(
-	    " X%f Y%f Z%f", viewProjection_.matView.m[3][0], viewProjection_.matView.m[3][1],
-	    viewProjection_.matView.m[3][2]);
-	ImGui::Text(" collision1_%d", collision1_);
-	ImGui::Text(" collision2_%d", collision2_);
+	ImGui::Begin("Method of operation");
+	ImGui::Text("Attack : B");
+	ImGui::Text("Jump : A");
+	ImGui::Text("LockOn : L stick");
+	ImGui::Text("Dash : RB");
 	ImGui::End();
+
 }
 
 void GameScene::Draw() {
