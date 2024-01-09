@@ -59,7 +59,7 @@ void GameScene::Initialize() {
 
 
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
-
+	
 	
 	particle = false;
 	area = false;
