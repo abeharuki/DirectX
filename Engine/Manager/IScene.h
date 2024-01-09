@@ -6,6 +6,7 @@ enum SCENE {
 	TITLE,
 	GAME,
 	CLEAR,
+	OVER,
 	SCENEMAX,
 };
 

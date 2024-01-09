@@ -7,7 +7,7 @@ void EnemyManager::Initialize() {
 	
 	spriteHP_.reset(Sprite::Create("resources/enemy/HP.png"));
 	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
-
+	spriteBoss_.reset(Sprite::Create("resources/enemy/BOSS.png"));
 
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize();
@@ -17,7 +17,7 @@ void EnemyManager::Initialize() {
 	worldTransform_ = worldTransformBase_;
 
 	HpTransform_.scale = {2.0f, 0.08f, 1.0f};
-	HpTransform_.translate = {270.0f, 100.0f, 1.0f};
+	HpTransform_.translate = {270.0f, 20.0f, 1.0f};
 
 }
 
@@ -37,20 +37,17 @@ void EnemyManager::Update() {
 	spriteHPG_->SetSize({2.0f, 0.08f});
 	spriteHPG_->SetPosition({HpTransform_.translate.x, HpTransform_.translate.y});
 
-	if (spriteHP_ <= 0) {
+	spriteBoss_->SetSize({0.01f, 0.01f});
+	spriteBoss_->SetPosition({1.0f, 1.0f});
+
+	if (HpTransform_.scale.x  <= 0) {
 		isDead_ = true;
 	}
-	if (isDead_) {
-		enemy_->isDead(isDead_);
-	}
-
+	enemy_->isDead(isDead_);
 	enemy_->Update(); 
 	worldTransform_.UpdateMatrix();
 
-	ImGui::Begin("enemy");
-	ImGui::SliderFloat3("size", &HpTransform_.scale.x, 0.0f,1.0f);
-	ImGui::SliderFloat3("pos", &HpTransform_.translate.x, 0.0f, 500.0f);
-	ImGui::End();
+	
 };
 
 void EnemyManager::Draw(const ViewProjection& camera) {
@@ -61,6 +58,7 @@ void EnemyManager::DrawUI() {
 	Transform uv;
 	spriteHPG_->Draw(uv);
 	spriteHP_->Draw(uv);
+	spriteBoss_->Draw(uv);
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

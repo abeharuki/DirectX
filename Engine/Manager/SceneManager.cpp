@@ -6,6 +6,7 @@ SceneManager::SceneManager() {
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[GAME] = std::make_unique<GameScene>();
 	sceneArr_[CLEAR] = std::make_unique<ClearScene>();
+	sceneArr_[OVER] = std::make_unique<OverScene>();
 
 	IScene::sceneNo_ = TITLE;
 }
@@ -16,7 +17,7 @@ int SceneManager::Run() {
 	int32_t windowWidth = 1280;
 	int32_t windowHeight = 720;
 	Engine::Initialize(L"自作エンジン", windowWidth, windowHeight);
-
+	
 	// ウインドウの×ボタンが押されるまでループ
 	while (true) {
 

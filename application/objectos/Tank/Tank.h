@@ -35,6 +35,10 @@ public: // メンバ関数
 	void JumpInitialize();
 	void JumpUpdata();
 
+	// ノックバック
+	void knockInitialize();
+	void knockUpdata();
+
 	// 攻撃
 	void AttackInitialize();
 	void AttackUpdata();
@@ -46,6 +50,7 @@ public: // メンバ関数
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
+	void OnCollision(const WorldTransform& worldTransform);
 
 
 	Vector3 GetWorldPosition();
@@ -69,6 +74,7 @@ private: // メンバ変数
 	enum class Behavior {
 		kRoot, // 通常状態
 		kJump, // ジャンプ
+		knock,   // ノックバック
 		kAttack, // 攻撃
 		kDead, // 死亡
 	};
@@ -92,6 +98,7 @@ private: // メンバ変数
 	// 攻撃時間
 	int fireTimer_ = 40;
 
+	uint32_t nockTime_;
 	Vector3 enemyPos_;
 
 	bool attack_ = false;

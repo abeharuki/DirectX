@@ -66,4 +66,5 @@ private: // メンバ変数
 	//レンジャー
 	std::unique_ptr<RenjuManager> renjuManager_;
 
+
 };

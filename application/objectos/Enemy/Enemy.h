@@ -32,26 +32,48 @@ public: // メンバ関数
 	void MoveInitialize();
 	void MoveUpdata();
 
+	// 攻撃
+	void AttackInitialize();
+	void AttackUpdata();
+
+
 	void DeadInitilize();
 	void DeadUpdata();
 
 	Vector3 GetWorldPosition();
-
 	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
+
+	void SetPlayerPos(Vector3 pos) { playerPos_ = pos; };
+	void SetHealerPos(Vector3 pos) { healerPos_ = pos; };
+	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; };
+	void SetTankPos(Vector3 pos) { tankPos_ = pos; };
+	
+	bool isAttack() { return isAttack_; };
+
+	bool isClear() { return clear_; };
 
 	void isDead(bool dead) {
 		if (dead) {
-			Behavior behavior_ = Behavior::kDead;
+			behavior_ = Behavior::kDead;
 		};
 	}
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	
-	
+	Vector3 playerPos_ = {};
+	Vector3 healerPos_ = {};
+	Vector3 renjuPos_ = {};
+	Vector3 tankPos_ = {};
+
+	bool isAttack_;
+
+	// 目標の角度
+	float destinationAngleY_ = 0.0f;
 	// 振る舞い
 	enum class Behavior {
 		kRoot, // 通常状態
+		kAttack, // 攻撃
 		kDead, // 死亡
 	};
 
@@ -61,6 +83,10 @@ private: // メンバ変数
 
 	// 速度
 	Vector3 velocity_ = {};
-
+	//差分
+	Vector3 sub;
 	int time_;
+	int num_;
+
+	bool clear_;
 };

@@ -22,6 +22,7 @@ public:
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
+	void OnCollision(const WorldTransform& worldTransform);
 
 	
 private:
@@ -36,4 +37,8 @@ private:
 	// 味方の判定
 	bool preHit_;
 	bool isHit_;
+
+	// 敵の判定
+	bool preHitE_;
+	bool isHitE_;
 };

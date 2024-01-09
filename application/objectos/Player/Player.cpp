@@ -25,6 +25,8 @@ void Player::Initialize() {
 }
 
 void Player::Update() { 
+	
+
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -42,6 +44,9 @@ void Player::Update() {
 			break;
 		case Behavior::kAttack:
 			AttackInitialize();
+			break;
+		case Behavior::knock:
+			knockInitialize();
 			break;
 		case Behavior::kDead:
 
@@ -70,6 +75,9 @@ void Player::Update() {
 		// 攻撃
 		AttackUpdata();
 		break;
+	case Behavior::knock:
+		knockUpdata();
+		break;
 	case Behavior::kDead:
 		break;
 	}
@@ -84,10 +92,7 @@ void Player::Update() {
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
 	
-	ImGui::Begin("katana");
-	ImGui::SliderFloat3("pos", &worldTransformHammer_.translate.x, -3.0f, 3.0f);
-	ImGui::SliderFloat3("rotate", &worldTransformHammer_.rotate.x, -3.0f, 3.0f);
-	ImGui::End();
+	
 }
 
 // 移動
@@ -266,6 +271,16 @@ void Player::DashUpdata() {
 	 }
 }
 
+	// ノックバック
+void Player::knockInitialize() { nockTime_ = 30; };
+void Player::knockUpdata(){
+	 
+	 worldTransformBase_.translate += velocity_;
+	 worldTransformBase_.translate.y = 0;
+	 if (--nockTime_ <= 0) {
+		behaviorRequest_ = Behavior::kRoot;
+	 }
+};
 
 // 攻撃
 void Player::AttackInitialize() {
@@ -440,7 +455,15 @@ void Player::Relationship() {
 // 衝突を検出したら呼び出されるコールバック関数
 void Player::OnAllyCollision(const WorldTransform& worldTransform){
 };
+void Player::OnCollision(const WorldTransform& worldTransform){
+	const float kSpeed = 8.0f;
+	velocity_ = {0.0f, 0.0f, kSpeed};
+	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
+	behaviorRequest_ = Behavior::knock;
 
+	ImGui::Begin("Player");
+	ImGui::End();
+};
 
 Vector3 Player::GetWorldPosition() {
 	// ワールド座標を入れる関数

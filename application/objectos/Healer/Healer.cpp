@@ -36,6 +36,9 @@ void Healer::Update() {
 		case Behavior::kJump:
 			JumpInitialize();
 			break;
+		case Behavior::knock:
+			knockInitialize();
+			break;
 		case Behavior::kAttack:
 			AttackInitialize();
 			break;
@@ -57,6 +60,9 @@ void Healer::Update() {
 	case Behavior::kJump:
 		JumpUpdata();
 		break;
+	case Behavior::knock:
+		knockUpdata();
+		break;
 	case Behavior::kAttack:
 		AttackUpdata();
 		break;
@@ -73,11 +79,7 @@ void Healer::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformCane_.TransferMatrix();
 
-	ImGui::Begin("Healer");
-	ImGui::SliderFloat3("pos", &worldTransformCane_.translate.x, -2.0f, 2.0f);
-	ImGui::SliderFloat3("rotate", &worldTransformCane_.rotate.x, -2.0f, 2.0f);
-	ImGui::SliderFloat3("scale", &worldTransformCollision_.translate.x, -3.0f, 3.0f);
-	ImGui::End();
+	
 };
 
 // 移動
@@ -97,6 +99,18 @@ void Healer::MoveUpdata(){
 // ジャンプ
 void Healer::JumpInitialize(){};
 void Healer::JumpUpdata(){};
+
+	// ノックバック
+void Healer::knockInitialize() { nockTime_ = 30; };
+void Healer::knockUpdata() {
+
+	worldTransformBase_.translate += velocity_;
+	worldTransformBase_.translate.y = 0;
+	if (--nockTime_ <= 0) {
+		behaviorRequest_ = Behavior::kRoot;
+	}
+};
+
 
 //アタック
 void Healer::AttackInitialize() { 
@@ -251,7 +265,15 @@ void Healer::OnAllyCollision(const WorldTransform& worldTransform) {
 	allyVelocity = Math::TransformNormal(allyVelocity, worldTransform.matWorld_);
 	worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
 }
+void Healer::OnCollision(const WorldTransform& worldTransform) {
+	const float kSpeed = 8.0f;
+	velocity_ = {0.0f, 0.0f, kSpeed};
+	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
+	behaviorRequest_ = Behavior::knock;
 
+	ImGui::Begin("Player");
+	ImGui::End();
+};
 
 Vector3 Healer::GetWorldPosition() {
 	// ワールド座標を入れる関数

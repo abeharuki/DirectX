@@ -17,6 +17,10 @@ void TankManager::Update() {
 	preHit_ = isHit_;
 	isHit_ = false;
 
+	// 敵の判定
+	preHitE_ = isHitE_;
+	isHitE_ = false;
+
 	tank_->Update();
 	worldTransformBase_ = tank_->GetWorldTransform();
 	tank_->followPlayer(playerPos_);
@@ -35,6 +39,13 @@ void TankManager::OnAllyCollision(const WorldTransform& worldTransform) {
 	}
 
 }
+// 衝突を検出したら呼び出されるコールバック関数
+void TankManager::OnCollision(const WorldTransform& worldTransform) {
+	isHitE_ = true;
+	if (isHitE_ != preHitE_) {
+		tank_->OnCollision(worldTransform);
+	}
+};
 
 void TankManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }
 

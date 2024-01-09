@@ -19,6 +19,9 @@ void HealerManager::Update() {
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
+	// 敵の判定
+	preHitE_ = isHitE_;
+	isHitE_ = false;
 	healer_->Update();
 	healer_->followPlayer(playerPos_);
 	healer_->searchTarget(enemyPos_);
@@ -43,6 +46,14 @@ void HealerManager::OnAllyCollision(const WorldTransform& worldTransform) {
 	
 	
 }
+// 衝突を検出したら呼び出されるコールバック関数
+void HealerManager::OnCollision(const WorldTransform& worldTransform) {
+	isHitE_ = true;
+	if (isHitE_ != preHitE_) {
+		healer_->OnCollision(worldTransform);
+	}
+};
+
 
 const WorldTransform& HealerManager::GetWorldTransform() { return healer_->GetWorldTransform(); }
  void HealerManager::SetViewProjection(const ViewProjection& viewProjection) {

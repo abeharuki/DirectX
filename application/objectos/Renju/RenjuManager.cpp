@@ -15,6 +15,10 @@ void RenjuManager::Update() {
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
+	// 敵の判定
+	preHitE_ = isHitE_;
+	isHitE_ = false;
+
 	renju_->Update();
 	worldTransformBase_ = renju_->GetWorldTransform();
 	renju_->followPlayer(playerPos_);
@@ -36,7 +40,13 @@ void RenjuManager::OnAllyCollision(const WorldTransform& worldTransform){
 
 };
 
-
+// 衝突を検出したら呼び出されるコールバック関数
+void RenjuManager::OnCollision(const WorldTransform& worldTransform) {
+	isHitE_ = true;
+	if (isHitE_ != preHitE_) {
+		    renju_->OnCollision(worldTransform);
+	}
+};
 void RenjuManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }
 
 const WorldTransform& RenjuManager::GetWorldTransform() { return renju_->GetWorldTransform(); }

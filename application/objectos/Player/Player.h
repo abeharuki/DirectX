@@ -65,6 +65,10 @@ public: // メンバ関数
 	void DashInitialize();
 	void DashUpdata();
 
+	// ノックバック
+	void knockInitialize();
+	void knockUpdata();
+
 	//攻撃
 	void AttackInitialize();
 	void AttackUpdata();
@@ -74,6 +78,7 @@ public: // メンバ関数
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
+	void OnCollision(const WorldTransform& worldTransform);
 
 
 	Vector3 GetWorldPosition();
@@ -106,6 +111,7 @@ private: // メンバ変数
 		kJump, // ジャンプ
 		kDash, // ダッシュ
 		kAttack, //攻撃
+		knock,//ノックバック
 		kDead, // 死亡
 	};
 
@@ -138,6 +144,8 @@ private: // メンバ変数
 
 	// 攻撃の時間
 	const uint32_t behaviorAttackTime = 15;
+
+	uint32_t nockTime_;
 
 	// 速度
 	Vector3 velocity_ = {};
