@@ -15,7 +15,7 @@ SceneManager::~SceneManager() {}
 int SceneManager::Run() {
 	int32_t windowWidth = 1280;
 	int32_t windowHeight = 720;
-	Engine::Initialize(L"自作エンジン", windowWidth, windowHeight);
+	Engine::Initialize(L"LE2A_02_アベ_ハルキ", windowWidth, windowHeight);
 
 	// ウインドウの×ボタンが押されるまでループ
 	while (true) {
