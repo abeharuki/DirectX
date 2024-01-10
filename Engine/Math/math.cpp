@@ -602,6 +602,24 @@ Matrix4x4 Math::DirectionToDirection(const Vector3& from, const Vector3& to) {
 	return result;
 }
 
+Quaternion Math::Add(const Quaternion& q1, const Quaternion& q2) {
+	Quaternion subract;
+	subract.x = q1.x + q2.x;
+	subract.y = q1.y + q2.y;
+	subract.z = q1.z + q2.z;
+	subract.w = q1.w + q2.w;
+	return subract;
+};
+
+Quaternion Math::Subract(const Quaternion& q1, const Quaternion& q2){
+	Quaternion subract;
+	subract.x = q1.x - q2.x;
+	subract.y = q1.y - q2.y;
+	subract.z = q1.z - q2.z;
+	subract.w = q1.w - q2.w;
+	return subract;
+};
+
 
 // 積
 Quaternion Math::Multiply(const Quaternion& lhs, const Quaternion& rhs) {
@@ -614,6 +632,15 @@ Quaternion Math::Multiply(const Quaternion& lhs, const Quaternion& rhs) {
 	result.w = lhs.w * rhs.w - dot;
 	return result;
 };
+Quaternion Math::Multiply(float scalar, const Quaternion& v){
+	Quaternion multiply;
+	multiply.x = v.x * scalar;
+	multiply.y = v.y * scalar;
+	multiply.z = v.z * scalar;
+	multiply.w = v.w * scalar;
+	return multiply;
+};
+
 
 // 単位Quaternionを返す
 Quaternion Math::IdentityQuaternion() {
@@ -724,6 +751,26 @@ Matrix4x4 Math::MakeRotateMatrix(const Quaternion& q) {
 
 
 
+
+Quaternion Math::Slerp(Quaternion& q0, Quaternion& q1, float t){ 
+	float dot = Dot({q0.x, q0.y, q0.z}, {q1.x, q1.y, q1.z});
+	if (dot < 0) {
+		q0 = -q0;
+		dot = -dot;
+	}
+
+	float theta = std::acos(dot);
+
+	float scale0;
+	float scale1;
+
+	scale0 = sin((1 - t) * theta) / sin(theta);
+	scale1 = sin(t*theta) / sin(theta);
+
+	return scale0 * q0 + scale1 * q1;
+};
+
+
 void Math::MatrixScreenPrintf(const Vector3& matrix, const char* name) {
 	ImGui::Begin(name);
 	ImGui::Text("%1.3f, %1.3f, %1.3f", matrix.x, matrix.y, matrix.z);
@@ -761,7 +808,14 @@ Vector3 operator/(const Vector3& v, float s) { return Math::Multiply(1.0f / s, v
 Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Add(m1, m2); }
 Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Subract(m1, m2); }
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Multiply(m1, m2); }
+Quaternion operator+(const Quaternion& m1, const Quaternion& m2) { return Math::Add(m1, m2); };
+Quaternion operator-(const Quaternion& m1, const Quaternion& m2) { return Math::Subract(m1, m2); };
+Quaternion operator*(float s, const Quaternion& m) { return Math::Multiply(s, m); };
+Quaternion operator*(const Quaternion& m, float s) { return s * m; };
+
 
 // 単項演算子
  Vector3 operator-(const Vector3& v) { return {-v.x, -v.y, -v.z}; }
  Vector3 operator+(const Vector3& v) { return v; }
+ Quaternion operator-(const Quaternion& v) { return {-v.x, -v.y, -v.z,-v.w}; }
+ Quaternion operator+(const Quaternion& v) { return v; }

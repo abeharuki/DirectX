@@ -185,8 +185,9 @@ public:
 	// 逆行列
 	static Matrix4x4 Inverse(const Matrix4x4& m);
 
+	//外積
 	static Vector3 Cross(const Vector3& v1, const Vector3& v2);
-
+	//内積
 	static float Dot(const Vector3& v1, const Vector3& v2);
 
 
@@ -213,9 +214,15 @@ public:
 	//ある方向からある方向への回転
 	static Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
 	/*--------------------------------Quaternion---------------------------------*/
+	//加算
+	static Quaternion Add(const Quaternion& q1, const Quaternion& q2);
+
+	//減算
+	static Quaternion Subract(const Quaternion& q1, const Quaternion& q2);
 
 	// 積
 	static Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs);
+	static Quaternion Multiply(float scalar, const Quaternion& v);
 
 	// 単位Quaternionを返す
 	static Quaternion IdentityQuaternion();
@@ -241,6 +248,10 @@ public:
 	// Quaternionから回転行列を求める
 	static Matrix4x4 MakeRotateMatrix(const Quaternion& q);
 
+	
+	//球面線形補間
+	static Quaternion Slerp(Quaternion& q0 ,Quaternion& q1, float t);
+
 
 	/*--------------------------------MT授業関数---------------------------------*/
 	static void MatrixScreenPrintf(const Vector3& matrix, const char* name);
@@ -262,8 +273,14 @@ Vector3 operator/(const Vector3& v, float s);
 Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2);
 Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2);
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2);
+Quaternion operator+(const Quaternion& m1, const Quaternion& m2);
+Quaternion operator-(const Quaternion& m1, const Quaternion& m2);
+Quaternion operator*(float s, const Quaternion& m);
+Quaternion operator*(const Quaternion& m,float s);
+
 
 // 単項演算子
 Vector3 operator-(const Vector3& v);
 Vector3 operator+(const Vector3& v);
-
+Quaternion operator-(const Quaternion& v);
+Quaternion operator+(const Quaternion& v);

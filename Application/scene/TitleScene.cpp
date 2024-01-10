@@ -3,18 +3,21 @@
 void TitleScene::Initialize() { ; }
 
 void TitleScene::Update() {
-	Quaternion rotation =   Math::MakeRoateAxisAngleQuaternion(Math::Normalize(Vector3{1.0f, 0.4f, -0.2f}), 0.45f);
-	Vector3 pointY = {2.1f, -0.9f, 1.3f};
-	Matrix4x4 rotateMatrix = Math::MakeRotateMatrix(rotation);
-	Vector3 rotateByQuaternion = Math::RotateVector(pointY, rotation);
-	Vector3 rotateByMatrix = Math::TransformNormal(pointY, rotateMatrix);
+	Quaternion rotation0 =   Math::MakeRoateAxisAngleQuaternion({0.71f, 0.71f, 0.0f}, 0.3f);
+	Quaternion rotation1 =   Math::MakeRoateAxisAngleQuaternion({0.71f, 0.0f, 0.71f}, 3.141592f);
 
-
-	Math::MatrixScreenPrintf(rotation, "rotation");
-	Math::MatrixScreenPrintf(rotateMatrix, "rotateMatrix ");
-	Math::MatrixScreenPrintf(rotateByQuaternion, "rotateByQuaternion");
-	Math::MatrixScreenPrintf(rotateByMatrix, "rotateByMatrix");
-
+	Quaternion interpolate0 = Math::Slerp(rotation0,rotation1,0.0f);
+	Quaternion interpolate1 = Math::Slerp(rotation0,rotation1,0.3f);
+	Quaternion interpolate2 = Math::Slerp(rotation0,rotation1,0.5f);
+	Quaternion interpolate3 = Math::Slerp(rotation0,rotation1,0.7f);
+	Quaternion interpolate4 = Math::Slerp(rotation0,rotation1,1.0f);
+	
+	Math::MatrixScreenPrintf(interpolate0, "  : interpolate0, Slerp(q0, q1, 0.0f)");
+	Math::MatrixScreenPrintf(interpolate1, "  : interpolate1, Slerp(q0, q1, 0.3f)");
+	Math::MatrixScreenPrintf(interpolate2, "  : interpolate2, Slerp(q0, q1, 0.5f)");
+	Math::MatrixScreenPrintf(interpolate3, "  : interpolate3, Slerp(q0, q1, 0.7f)");
+	Math::MatrixScreenPrintf(interpolate4, "  : interpolate4, Slerp(q0, q1, 1.0f)");
+	
 	if (KeyInput::PushKey(DIK_P)) {
 		sceneNo_ = GAME;
 	}
