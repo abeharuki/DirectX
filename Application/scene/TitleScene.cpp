@@ -10,12 +10,13 @@ void TitleScene::Initialize() {
 	spriteRule_.reset(Sprite::Create("resources/Title/rule.png"));
 	rule_ = false;
 	pos_.x = 1280.0f;
-}
-
-void TitleScene::Update() {
 	spriteTitle_->SetSize({3.6f, 2.0f});
 	spritePushA_->SetSize({3.6f, 2.0f});
 	spriteRule_->SetSize({3.6f, 2.3f});
+}
+
+void TitleScene::Update() {
+
 	spriteRule_->SetPosition(pos_);
 	if (KeyInput::GetInstance()->GetPadConnect()) {
 		if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
