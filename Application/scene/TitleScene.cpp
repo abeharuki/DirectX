@@ -5,7 +5,8 @@ void TitleScene::Initialize() {
 	audioData_ = audio_->SoundLoadWave("resources/audio/fanfare.wav");
 	//audio_->SoundPlayWave(audioData_, true, 3.0f);
 	sprite_.reset(Sprite::Create("resources/clear.png"));
-	size = {1.0f, 1.0f};
+	//size = {1.0f, 1.0f};
+	
 }
 
 void TitleScene::Update() {
@@ -13,8 +14,8 @@ void TitleScene::Update() {
 	if (KeyInput::PushKey(DIK_P)) {
 		sceneNo_ = GAME;
 	}
-
 	sprite_->SetSize(size);
+	
 	ImGui::Begin("scene");
 	ImGui::SliderFloat2("size",&size.x,0.0f,10.0f);
 	ImGui::End();

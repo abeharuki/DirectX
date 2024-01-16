@@ -94,13 +94,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
-	
-	// WVP用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
-	// データを書き込む
-	TransformationMatrix* wvpData;
+
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
 	Material* materialData = nullptr;

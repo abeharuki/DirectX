@@ -52,7 +52,7 @@ private: // メンバ変数
 	Emitter emitter_{};
 	AccelerationField accelerationField_;
 
-	std::unique_ptr<Sprite> sprite_;
+	//std::unique_ptr<Sprite> sprite_;
 
 	Transform uvTransform_;
 	Vector4 colorPlane;

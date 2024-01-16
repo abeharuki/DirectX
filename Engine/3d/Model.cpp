@@ -36,20 +36,6 @@ void Model::sPipeline() {
 
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection ,bool light) {
-	wvpResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
-	// データを書き込む
-	wvpData = nullptr;
-	// 書き込むためのアドレスを取得
-	wvpResouce_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	// 単位行列を書き込む
-	wvpData->WVP = Math::MakeIdentity4x4();
-	wvpData->World = Math::MakeIdentity4x4();
-	
-	Matrix4x4 worldViewProjectionMatrix = Math::Multiply(
-	    worldTransform.matWorld_,
-	    Math::Multiply(viewProjection.matView, viewProjection.matProjection));
-	*wvpData = TransformationMatrix(worldViewProjectionMatrix, worldTransform.matWorld_);
-
 	//ライティング有効化
 	materialData->enableLighting = light;
 
@@ -72,7 +58,9 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
     // wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画

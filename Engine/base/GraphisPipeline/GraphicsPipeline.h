@@ -63,6 +63,11 @@ public:
 	//	pixelshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreatePSShader();
 
+	//	vertexshaderの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreateSpriteVSShader();
+	//	pixelshaderの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreateSpritePSShader();
+
 	//	ParticleVertexshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateParticleVSShader();
 	//	ParticlePixelshaderの生成

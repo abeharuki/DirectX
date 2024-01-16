@@ -217,6 +217,8 @@
     <FxCompile Include="resources\hlsl\Particle.PS.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
+    <FxCompile Include="resources\hlsl\SpriteVS.hlsl" />
+    <FxCompile Include="resources\hlsl\SpritePS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -335,5 +337,6 @@
     <None Include="resources\hlsl\Particle.hlsli">
       <Filter>リソース ファイル</Filter>
     </None>
+    <None Include="resources\hlsl\Sprite.hlsli" />
   </ItemGroup>
 </Project>

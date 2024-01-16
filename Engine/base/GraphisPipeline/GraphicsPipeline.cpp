@@ -525,6 +525,58 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePSShader() {
 	    return GraphicsPipeline::GetInstance()->pixelShaderBlob_;
 }
 
+Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateSpriteVSShader() {
+	    HRESULT hr_ = S_FALSE;
+
+	    // dxcCompilerを初期化
+	    IDxcUtils* dxcUtils = nullptr;
+	    IDxcCompiler3* dxcCompiler = nullptr;
+	    hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	    assert(SUCCEEDED(hr_));
+	    hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	    assert(SUCCEEDED(hr_));
+
+	    // 現時点でincludeしないが、includeに対応するための設定を行っておく
+	    IDxcIncludeHandler* includeHandler = nullptr;
+	    hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	    assert(SUCCEEDED(hr_));
+	    // Shaderをコンパイルする
+	    //	早期リターン
+	    if (GraphicsPipeline::GetInstance()->vertexShaderBlob_) {
+		    return GraphicsPipeline::GetInstance()->vertexShaderBlob_;
+	    }
+	    GraphicsPipeline::GetInstance()->vertexShaderBlob_ = CompileShader(
+	        L"resources/hlsl/SpriteVS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	    assert(vertexShaderBlob_ != nullptr);
+	    return GraphicsPipeline::GetInstance()->vertexShaderBlob_;
+}
+
+Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateSpritePSShader() {
+	    HRESULT hr_ = S_FALSE;
+
+	    // dxcCompilerを初期化
+	    IDxcUtils* dxcUtils = nullptr;
+	    IDxcCompiler3* dxcCompiler = nullptr;
+	    hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	    assert(SUCCEEDED(hr_));
+	    hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	    assert(SUCCEEDED(hr_));
+
+	    // 現時点でincludeしないが、includeに対応するための設定を行っておく
+	    IDxcIncludeHandler* includeHandler = nullptr;
+	    hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	    assert(SUCCEEDED(hr_));
+
+	    // Shaderをコンパイルする
+	    if (GraphicsPipeline::GetInstance()->pixelShaderBlob_) {
+		    return GraphicsPipeline::GetInstance()->pixelShaderBlob_;
+	    }
+	    GraphicsPipeline::GetInstance()->pixelShaderBlob_ = CompileShader(
+	        L"resources/hlsl/SpritePS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	    assert(pixelShaderBlob_ != nullptr);
+
+	    return GraphicsPipeline::GetInstance()->pixelShaderBlob_;
+}
 
 Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateParticleVSShader() {
 	    HRESULT hr_ = S_FALSE;

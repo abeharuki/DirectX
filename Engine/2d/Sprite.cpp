@@ -33,8 +33,8 @@ Sprite* Sprite::Create(const std::string& fileName/* Vector4 color = {1, 1, 1, 1
 void Sprite::sPipeline(){
 
 
-	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
-	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
+	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateSpriteVSShader();
+	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreateSpritePSShader();
 
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();

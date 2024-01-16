@@ -58,7 +58,7 @@ void GameScene::Initialize() {
 	particle_.reset(Particle::Create("resources/particle/circle.png",emitter_));
 
 
-	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
+	//sprite_.reset(Sprite::Create("resources/uvChecker.png"));
 	
 	
 	particle = false;
