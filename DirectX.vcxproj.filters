@@ -19,20 +19,8 @@
     <Filter Include="ソース ファイル\Engine">
       <UniqueIdentifier>{bc2708d8-353f-47b5-a321-549949dd6f60}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Application">
-      <UniqueIdentifier>{43b1872a-fa27-4ac2-bf0a-d0f2899624e9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Application\base">
-      <UniqueIdentifier>{0f11f3e2-a86c-43f8-b8fd-a723a8ebf0e3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Application\scene">
-      <UniqueIdentifier>{d4d56d79-e68f-4726-9b83-19b59d32faec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\math">
       <UniqueIdentifier>{8b073c8c-00a0-4eac-a2e0-a9633c1c7456}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Application\objects">
-      <UniqueIdentifier>{450df54a-985f-44b3-9b06-397a462216d3}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\Engine\3d">
       <UniqueIdentifier>{57f58952-bb7b-464b-af50-3bc18a797692}</UniqueIdentifier>
@@ -94,11 +82,23 @@
     <Filter Include="ヘッダー ファイル\Engine\particle">
       <UniqueIdentifier>{8311d542-1425-47b8-b028-3efbcf665cce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Application\base\GlobalVariables">
+      <UniqueIdentifier>{b4b1a66c-600f-4397-860a-a3845ebb8931}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application">
+      <UniqueIdentifier>{1cc5768e-7450-4e08-923b-8953ca2cd279}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\base">
+      <UniqueIdentifier>{0f11f3e2-a86c-43f8-b8fd-a723a8ebf0e3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ソース ファイル\Application\base\GlobalVariables">
       <UniqueIdentifier>{3b1305d6-6c15-4276-a617-41b0ce433e04}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Application\base\GlobalVariables">
-      <UniqueIdentifier>{b4b1a66c-600f-4397-860a-a3845ebb8931}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\Application\objects">
+      <UniqueIdentifier>{450df54a-985f-44b3-9b06-397a462216d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\scene">
+      <UniqueIdentifier>{d4d56d79-e68f-4726-9b83-19b59d32faec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -150,9 +150,6 @@
     <ClCompile Include="Engine\particle\Particle.cpp">
       <Filter>ソース ファイル\Engine\particle</Filter>
     </ClCompile>
-    <ClCompile Include="Application\base\BaseCharacter.cpp">
-      <Filter>ソース ファイル\Application\base</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\base\DirectXCommon.cpp">
       <Filter>ソース ファイル\Engine\base</Filter>
     </ClCompile>
@@ -203,6 +200,9 @@
     </ClCompile>
     <ClCompile Include="Engine\Manager\SceneManager.cpp">
       <Filter>ソース ファイル\Engine\Maneger</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\base\BaseCharacter.cpp">
+      <Filter>ソース ファイル\Application\base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Audio\Audio.cpp">
       <Filter>ソース ファイル</Filter>
@@ -266,9 +266,6 @@
     <ClInclude Include="Engine\Manager\TextureManeger.h">
       <Filter>ヘッダー ファイル\Engine\Maneger</Filter>
     </ClInclude>
-    <ClInclude Include="Application\base\BaseCharacter.h">
-      <Filter>ヘッダー ファイル\Application\base</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\base\DirectXCommon.h">
       <Filter>ヘッダー ファイル\Engine\base</Filter>
     </ClInclude>
@@ -302,9 +299,6 @@
     <ClInclude Include="Application\base\GlobalVariables\GlobalVariables.h">
       <Filter>ヘッダー ファイル\Application\base\GlobalVariables</Filter>
     </ClInclude>
-    <ClInclude Include="Application\base\Skydome.h">
-      <Filter>ヘッダー ファイル\Application\base</Filter>
-    </ClInclude>
     <ClInclude Include="Application\objectos\Player.h">
       <Filter>ヘッダー ファイル\Application\objects</Filter>
     </ClInclude>
@@ -324,6 +318,12 @@
       <Filter>ヘッダー ファイル\Engine\Maneger</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Audio\Audio.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\base\BaseCharacter.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\base\Skydome.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
