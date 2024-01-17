@@ -38,7 +38,7 @@ void Sprite::sPipeline(){
 
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateSpritePipeline(blendMode_);
 
 	
 	

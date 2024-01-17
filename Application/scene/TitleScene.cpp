@@ -5,7 +5,7 @@ void TitleScene::Initialize() {
 	audioData_ = audio_->SoundLoadWave("resources/audio/fanfare.wav");
 	//audio_->SoundPlayWave(audioData_, true, 3.0f);
 	sprite_.reset(Sprite::Create("resources/clear.png"));
-	//size = {1.0f, 1.0f};
+	size = {1.0f, 1.0f};
 	
 }
 

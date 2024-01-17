@@ -150,6 +150,143 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 	}
 }
 
+Microsoft::WRL::ComPtr<ID3D12PipelineState>
+    GraphicsPipeline::CreateSpritePipeline(BlendMode blendMode_) {
+	if (spritePipelineState_) {
+		return spritePipelineState_;
+	} else {
+		spritePipelineState_ = nullptr;
+
+#pragma region InputLayout
+
+		// InputLayoutの設定
+		D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
+		inputElementDescs[0].SemanticName = "POSITION";
+		inputElementDescs[0].SemanticIndex = 0;
+		inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+		inputElementDescs[1].SemanticName = "TEXCOORD";
+		inputElementDescs[1].SemanticIndex = 0;
+		inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+		inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+		inputElementDescs[2].SemanticName = "NORMAL";
+		inputElementDescs[2].SemanticIndex = 0;
+		inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+		D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
+		inputLayoutDesc.pInputElementDescs = inputElementDescs;
+		inputLayoutDesc.NumElements = _countof(inputElementDescs);
+
+#pragma endregion
+
+#pragma region BlendState
+		// BlendStateの設定
+		D3D12_BLEND_DESC blendDesc{};
+		// すべての色要素を書き込む
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.AlphaToCoverageEnable = FALSE; // アンチエイリアシング有無
+		blendDesc.IndependentBlendEnable = FALSE; // ブレンドステートを個別化するか有無
+
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+
+		// ブレンディング係数の設定
+		switch (blendMode_) {
+		case BlendMode::kNone:
+			blendDesc.RenderTarget[0].BlendEnable = FALSE;
+			break;
+		case BlendMode::kNormal:
+			blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+			blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+			break;
+		case BlendMode::kAdd:
+			blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+			blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+			break;
+		case BlendMode::kSubtract:
+			blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
+			blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+			break;
+		case BlendMode::kMultily:
+			blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+			blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
+			blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+			blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
+			break;
+		}
+
+#pragma endregion
+
+#pragma region RasiterzerState
+
+		// RasiterzerStateの設定
+		D3D12_RASTERIZER_DESC rasterizerDesc{};
+		// 裏面(時計回り)を表示しない
+		rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
+		// 三角形の中を塗りつぶす
+		rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+
+#pragma endregion
+
+#pragma region PSO
+
+		// PSO生成
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
+		graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get(); // RootSignature
+
+		graphicsPipelineStateDesc.InputLayout = inputLayoutDesc; // InputLayout
+
+		graphicsPipelineStateDesc.VS = {
+		    vertexSpriteShaderBlob_->GetBufferPointer(),
+		    vertexSpriteShaderBlob_->GetBufferSize()}; // VertexShader
+		graphicsPipelineStateDesc.PS = {
+		    pixelSpriteShaderBlob_->GetBufferPointer(), 
+			pixelSpriteShaderBlob_->GetBufferSize()}; // PixelShader
+
+		graphicsPipelineStateDesc.BlendState = blendDesc;           // BrendState
+		graphicsPipelineStateDesc.RasterizerState = rasterizerDesc; // RasterizerState
+
+		// 書き込むRTVの情報
+		graphicsPipelineStateDesc.NumRenderTargets = 1;
+		graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		// 利用するトロポジ（形状）のタイプ。三角形
+		graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		// どのように画面に色を打ち込むの設定
+		graphicsPipelineStateDesc.SampleDesc.Count = 1;
+		graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+
+		// DepthStencilStateの設定
+		D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+		// Depthの機能を有効化する
+		depthStencilDesc.DepthEnable = true;
+		// 書き込みします
+		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		// 比較関数はLessEqual。つまり、近ければ描画される
+		depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+
+		// DepthStencilの設定
+		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
+		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+#pragma endregion
+
+		// 実際に生成
+		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		    &graphicsPipelineStateDesc, IID_PPV_ARGS(&spritePipelineState_));
+		assert(SUCCEEDED(hr_));
+
+		return spritePipelineState_;
+	}
+}
+
+
 
 Microsoft::WRL::ComPtr<ID3D12PipelineState>
     GraphicsPipeline::CreateParticleGraphicsPipeline(BlendMode blendMode_) {
@@ -290,7 +427,6 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 		return particlesPipelineState_;
 	}
 }
-
 
 
 Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateRootSignature() {
@@ -542,13 +678,13 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateSpriteVSShader() {
 	    assert(SUCCEEDED(hr_));
 	    // Shaderをコンパイルする
 	    //	早期リターン
-	    if (GraphicsPipeline::GetInstance()->vertexShaderBlob_) {
-		    return GraphicsPipeline::GetInstance()->vertexShaderBlob_;
+	    if (GraphicsPipeline::GetInstance()->vertexSpriteShaderBlob_) {
+		    return GraphicsPipeline::GetInstance()->vertexSpriteShaderBlob_;
 	    }
-	    GraphicsPipeline::GetInstance()->vertexShaderBlob_ = CompileShader(
+	    GraphicsPipeline::GetInstance()->vertexSpriteShaderBlob_ = CompileShader(
 	        L"resources/hlsl/SpriteVS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
-	    assert(vertexShaderBlob_ != nullptr);
-	    return GraphicsPipeline::GetInstance()->vertexShaderBlob_;
+	    assert(vertexSpriteShaderBlob_ != nullptr);
+	    return GraphicsPipeline::GetInstance()->vertexSpriteShaderBlob_;
 }
 
 Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateSpritePSShader() {
@@ -568,14 +704,14 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateSpritePSShader() {
 	    assert(SUCCEEDED(hr_));
 
 	    // Shaderをコンパイルする
-	    if (GraphicsPipeline::GetInstance()->pixelShaderBlob_) {
-		    return GraphicsPipeline::GetInstance()->pixelShaderBlob_;
+	    if (GraphicsPipeline::GetInstance()->pixelSpriteShaderBlob_) {
+		    return GraphicsPipeline::GetInstance()->pixelSpriteShaderBlob_;
 	    }
-	    GraphicsPipeline::GetInstance()->pixelShaderBlob_ = CompileShader(
+	    GraphicsPipeline::GetInstance()->pixelSpriteShaderBlob_ = CompileShader(
 	        L"resources/hlsl/SpritePS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
-	    assert(pixelShaderBlob_ != nullptr);
+	    assert(pixelSpriteShaderBlob_ != nullptr);
 
-	    return GraphicsPipeline::GetInstance()->pixelShaderBlob_;
+	    return GraphicsPipeline::GetInstance()->pixelSpriteShaderBlob_;
 }
 
 Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateParticleVSShader() {
