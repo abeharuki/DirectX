@@ -17,6 +17,9 @@ GameScene* GameScene::GetInstance() {
 void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransformp_.Initialize();
+	worldTransformSphere_.Initialize();
+	worldTransformSphere_.scale = {3.0f, 3.0f, 3.0f};
+
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = {0.0f, 0.0f, -10.0f};
 	
@@ -128,6 +131,7 @@ void GameScene::Update() {
 	worldTransform_.rotate.y += 0.02f;
 	worldTransform_.UpdateMatrix();
 	worldTransformp_.UpdateMatrix();
+	worldTransformSphere_.UpdateMatrix();
 	worldTransformFence_[0].UpdateMatrix();
 	viewProjection_.UpdateMatrix();
 	skydome_->Update();
@@ -170,7 +174,7 @@ void GameScene::Update() {
 	
 	if (ImGui::TreeNode("Sphere")) {
 		
-		ImGui::SliderFloat3("Sprite", &worldTransform_.translate.x, -1.0f, 10.0f);
+		ImGui::SliderFloat3("Sprite", &worldTransformSphere_.translate.x, -10.0f, 10.0f);
 
 		ImGui::TreePop();
 	}
@@ -218,6 +222,7 @@ void GameScene::Draw() {
 	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
 	//板ポリ
 	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
+	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	//パーティクル
 	particle_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理

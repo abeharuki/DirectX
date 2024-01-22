@@ -36,6 +36,7 @@ private: // メンバ変数
 	WorldTransform worldTransform_;
 	WorldTransform worldTransformp_;
 	WorldTransform worldTransformFence_[2];
+	WorldTransform worldTransformSphere_;
 	//球
 	std::unique_ptr<Sphere> sphere_;
 

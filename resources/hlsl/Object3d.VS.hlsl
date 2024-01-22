@@ -11,10 +11,11 @@ ConstantBuffer<ViewProjectionMatrix> gViewProjectionMatrix : register(b1);
 
 VertexShaderOutput main(VertexShaderInput input) {
 	VertexShaderOutput output;
-	float32_t4x4 WorldViewProjection = mul(gViewProjectionMatrix.view, gViewProjectionMatrix.projection);
+	float32_t4x4 WorldViewProjection =  mul(gTransformationMatrix.matWorld,mul(gViewProjectionMatrix.view, gViewProjectionMatrix.projection));
 	output.texcoord = input.texcoord;
-	output.position = mul(input.position, mul(gTransformationMatrix.World,WorldViewProjection));
-	output.normal = normalize(mul(input.normal, (float32_t3x3)gTransformationMatrix.World));
+	output.position = mul(input.position,WorldViewProjection);
+	output.normal = normalize(mul(input.normal, (float32_t3x3)gTransformationMatrix.matWorld));
+	output.worldPosition = mul(input.position, gTransformationMatrix.matWorld).xyz;
 	return output;
 
 }

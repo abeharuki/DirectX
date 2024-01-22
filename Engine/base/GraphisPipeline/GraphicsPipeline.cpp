@@ -34,6 +34,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 		inputElementDescs[2].SemanticIndex = 0;
 		inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 		inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+		
 		D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 		inputLayoutDesc.pInputElementDescs = inputElementDescs;
 		inputLayoutDesc.NumElements = _countof(inputElementDescs);
@@ -287,7 +288,6 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 }
 
 
-
 Microsoft::WRL::ComPtr<ID3D12PipelineState>
     GraphicsPipeline::CreateParticleGraphicsPipeline(BlendMode blendMode_) {
 	if (particlesPipelineState_) {
@@ -447,7 +447,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateRootSignatur
 	
 
 		// RootSignature作成. 複数設定できるので配列。
-		D3D12_ROOT_PARAMETER rootParameters[5] = {};
+		D3D12_ROOT_PARAMETER rootParameters[6] = {};
 		rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
 		rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 		rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
@@ -473,6 +473,10 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateRootSignatur
 	    rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // vertexShaderで使う
 	    rootParameters[4].Descriptor.ShaderRegister = 1; // レジスタ番号を1にバインド
 
+		
+		rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
+	    rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	    rootParameters[5].Descriptor.ShaderRegister = 2; // レジスタ番号2を使う
 
 			// RootSignature作成
 	    D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};

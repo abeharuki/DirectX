@@ -8,6 +8,10 @@
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::pixelShaderBlob_;
 
+Microsoft::WRL::ComPtr<ID3D12Resource> Sphere::lightResource_;
+DirectionalLight* Sphere::directionalLightData;
+
+
 void Sphere::Initialize(const std::string& texturePath) {
 	LoadTexture(texturePath);
 	CreateVertexResource();
@@ -30,19 +34,8 @@ void Sphere::sPipeline() {
 
 void Sphere::Draw(
     WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light) {
-	wvpResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(TransformationMatrix));
-	// データを書き込む
-	wvpData = nullptr;
-	// 書き込むためのアドレスを取得
-	wvpResouce_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	// 単位行列を書き込む
-	wvpData->WVP = Math::MakeIdentity4x4();
-	wvpData->World = Math::MakeIdentity4x4();
-
-	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(
-	    worldTransform.matWorld_,
-	    Math::Multiply(viewProjection.matView, viewProjection.matProjection));
-	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, worldTransform.matWorld_);
+	cameraData->worldPos = viewProjection.translation_;
+	
 
 	// ライティング有効化
 	materialData->enableLighting = light;
@@ -66,8 +59,10 @@ void Sphere::Draw(
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(3, Model::GetLightRsurce()->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(vertexIndex, 1, 0, 0);
@@ -103,19 +98,26 @@ void Sphere::CreateVertexResource() {
 	materialData->color.a = float(1.0f);
 	// Lightingを有効にする
 	materialData->enableLighting = false;
+	// 光沢
+	materialData->shininess = 10.0f;
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 
-	//// ライティング
-	//lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DirectionalLight));
-	//// 頂点リソースにデータを書き込む
-	//// 書き込むためのアドレスを取得
-	//lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+	// カメラ
+	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
+	cameraResorce_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
+	cameraData->worldPos = {0.0f, 0.0f, -10.0f};
 
-	//// デフォルト値
-	//directionalLightData->color = {1.0f, 1.0f, 1.0f, 1.0f};
-	//directionalLightData->direction = {0.0f, -1.0f, 0.0f};
-	//directionalLightData->intensity = 1.0f;
+	// ライティング
+	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DirectionalLight));
+	// 頂点リソースにデータを書き込む
+	// 書き込むためのアドレスを取得
+	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+
+	// デフォルト値
+	directionalLightData->color = {1.0f, 1.0f, 1.0f, 1.0f};
+	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
+	directionalLightData->intensity = 1.0f;
 };
 
 void Sphere::SetColor(Vector4 color) {
@@ -125,11 +127,21 @@ void Sphere::SetColor(Vector4 color) {
 
 void Sphere::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 
+void Sphere::SetShininess(float i) { materialData->shininess = i; }
+
 Sphere* Sphere::CreateSphere(const std::string& texturePath) {
 	Sphere* sphere = new Sphere;
 	sphere->Initialize(texturePath);
 	return sphere;
 }
+
+void Sphere::LightDraw(Vector4 color, Vector3 direction, float intensity) {
+
+	directionalLightData->color = color;
+	directionalLightData->direction = Math::Normalize(direction);
+	directionalLightData->intensity = intensity;
+}
+
 
 void Sphere::LoadTexture(const std::string& texturePath) {
 	

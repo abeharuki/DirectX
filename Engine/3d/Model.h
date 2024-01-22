@@ -86,6 +86,9 @@ public:
 	//ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
 
+	//光沢度
+	void SetShininess(float i);
+
 private:
 	
 	
@@ -97,10 +100,13 @@ private:
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 
+	// カメラ用リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
+
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
 	Material* materialData = nullptr;
-	
+	CameraForGPU* cameraData = nullptr;
 	
 	TextureManager* textureManager_;
 	uint32_t texture_;

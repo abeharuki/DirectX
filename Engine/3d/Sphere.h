@@ -27,6 +27,10 @@ public:
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	BlendMode blendMode_ = BlendMode::kNormal;
 
+	// ライティング
+	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	static DirectionalLight* directionalLightData;
+
 public:
 	/// <summary>
 	/// シングルトンインスタンスの取得
@@ -55,13 +59,17 @@ public:
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 	
-	
+	//光の色　向き　明るさ
+	static void LightDraw(Vector4 color, Vector3 direction, float intensity);
+
 
 	static Sphere* CreateSphere(const std::string& texturePath);
 
 	void SetColor(Vector4 color);
 	// ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
+	// 光沢度
+	void SetShininess(float i);
 
 private:
 	TextureManager* textureManager_;
@@ -74,10 +82,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
-	// ライティング
-	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
-	// WVP用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce_;
+	// カメラ用リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
 	// マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 	// データを書き込む
@@ -85,7 +91,7 @@ private:
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
 	Material* materialData = nullptr;
-	DirectionalLight* directionalLightData = nullptr;
+	CameraForGPU* cameraData = nullptr;
 
 	const uint32_t kSubdivision = 128;
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;

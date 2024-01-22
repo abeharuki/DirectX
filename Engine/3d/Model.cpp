@@ -36,6 +36,9 @@ void Model::sPipeline() {
 
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection ,bool light) {
+	//カメラpos
+	cameraData->worldPos = viewProjection.worldPos_;
+
 	//ライティング有効化
 	materialData->enableLighting = light;
 
@@ -58,9 +61,9 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
     // wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
-	//Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画
@@ -98,6 +101,8 @@ void Model::CreateVertexResource() {
 	materialData->color.a = float(1.0f);
 	// Lightingを有効にする
 	materialData->enableLighting = false;
+	//光沢
+	materialData->shininess = 10.0f;
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 
@@ -112,7 +117,10 @@ void Model::CreateVertexResource() {
 	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
 	directionalLightData->intensity = 1.0f;
 
-	
+	//カメラ
+	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
+	cameraResorce_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
+
 };
 
 void Model::SetColor(Vector4 color) {
@@ -125,6 +133,9 @@ void Model::SetBlendMode(BlendMode blendMode) {
 	
 
 }
+
+void Model::SetShininess(float i) { materialData->shininess = i; }
+
 
 Model* Model::CreateModelFromObj(const std::string& filename, const std::string& texturePath) {
 	Model* model = new Model;

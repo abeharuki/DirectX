@@ -93,6 +93,7 @@ struct Material {
 	int32_t enableLighting;
 	float padding[3];
 	Matrix4x4 uvTransform;
+	float shininess;
 };
 
 struct MaterialData {
@@ -110,6 +111,9 @@ struct TransformationMatrix {
 	Matrix4x4 World;
 };
 
+struct CameraForGPU {
+	Vector3 worldPos;
+};
 
 struct DirectionalLight {
 	Vector4 color;     // ライトの色
