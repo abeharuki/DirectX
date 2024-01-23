@@ -15,6 +15,8 @@ void TitleScene::Initialize() {
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 	
+	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
+
 }
 
 void TitleScene::Update() {
@@ -50,17 +52,19 @@ void TitleScene::Update() {
 }
 
 void TitleScene::Draw() {
+	// 3Dオブジェクト描画前処理
+	Sphere::LightDraw(color_, direction_, intensity_);
+	Model::LightDraw(color_, direction_, intensity_);
 	Transform uv;
 	uv.scale = {0.0f, 0.0f, 0.0f};
 	uv.rotate = {0.0f, 0.0f, 0.0f};
 	uv.translate = {0.0f, 0.0f};
-	// 3Dオブジェクト描画前処理
-	Sphere::LightDraw(color_, direction_, intensity_);
 
+	modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 
 	ImGui::Begin("scene");
 	ImGui::SliderFloat3("s", &uv.scale.x, 0.0f, 10.0f);
 	ImGui::End();
 	sprite_->Draw(uv);
-	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
+	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 }

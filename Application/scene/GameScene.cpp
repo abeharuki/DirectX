@@ -219,7 +219,7 @@ void GameScene::Draw() {
 	skydome_->Draw(viewProjection_,false);
 	//sphere_->Draw(worldTransform_, viewProjection_,true);
 	//フェンス
-	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, false);
+	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, true);
 	//板ポリ
 	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
 	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
