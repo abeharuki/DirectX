@@ -32,7 +32,8 @@ void TitleScene::Update() {
 	if (ImGui::TreeNode("Sphere")) {
 
 		ImGui::SliderFloat3("SpritePos", &worldTransformSphere_.translate.x, -10.0f, 10.0f);
-		ImGui::SliderFloat3("SpriteRotate", &worldTransformSphere_.rotate.x, -10.0f, 10.0f);
+		ImGui::SliderFloat3("SpriteRotate", &worldTransformSphere_.rotate.x, -1.0f, 1.0f);
+		ImGui::SliderFloat3("SpriteSize", &worldTransformSphere_.scale.x, -10.0f, 10.0f);
 		ImGui::TreePop();
 	}
 

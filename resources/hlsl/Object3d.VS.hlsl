@@ -14,7 +14,8 @@ VertexShaderOutput main(VertexShaderInput input) {
 	float32_t4x4 WorldViewProjection =  mul(gTransformationMatrix.matWorld,mul(gViewProjectionMatrix.view, gViewProjectionMatrix.projection));
 	output.texcoord = input.texcoord;
 	output.position = mul(input.position,WorldViewProjection);
-	output.normal = normalize(mul(input.normal, (float32_t3x3)gTransformationMatrix.matWorld));
+	output.normal =
+	    normalize(mul(input.normal, (float32_t3x3)gTransformationMatrix.WorldInverseTranspose));
 	output.worldPosition = mul(input.position, gTransformationMatrix.matWorld).xyz;
 	return output;
 

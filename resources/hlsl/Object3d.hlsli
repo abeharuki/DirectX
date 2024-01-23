@@ -8,6 +8,7 @@ struct VertexShaderInput {
 
 struct TransformationMatrix {
 	float32_t4x4 matWorld;
+	float32_t4x4 WorldInverseTranspose;
 };
 
 

@@ -16,7 +16,10 @@ void WorldTransform::Map() {
 	constBuff_.Get()->Map(0, nullptr, reinterpret_cast<void**>(&constMap));
 }
 
-void WorldTransform::TransferMatrix() { constMap->matWorld = matWorld_; }
+void WorldTransform::TransferMatrix() { 
+	constMap->matWorld = matWorld_; 
+	constMap->WorldInverseTranspose = Math::Inverse(matWorld_);
+}
 
 void WorldTransform::UpdateMatrix() {
 	Matrix4x4 AffineMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
