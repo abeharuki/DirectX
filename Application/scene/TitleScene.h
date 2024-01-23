@@ -28,6 +28,8 @@ private:
 	WorldTransform worldTransformSphere_;
 	// 球
 	std::unique_ptr<Sphere> sphere_;
+	// バニー
+	std::unique_ptr<Model> modelBunny_;
 
 	Vector2 size;
 };

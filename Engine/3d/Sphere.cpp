@@ -50,8 +50,7 @@ void Sphere::Draw(
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 
-	// Engine::GetList()->SetGraphicsRootConstantBufferView(3,
-	// lightResource_->GetGPUVirtualAddress());
+
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));

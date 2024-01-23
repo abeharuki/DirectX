@@ -75,7 +75,6 @@ private:
 	TextureManager* textureManager_;
 	uint32_t texture_;
 
-	
 
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
