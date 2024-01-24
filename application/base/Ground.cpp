@@ -3,7 +3,7 @@
 
 void Ground::Initialize(Model* model) {
 	assert(model);
-	model_.reset(model);
+	model_ = model;
 	worldTransform_.Initialize();
 	worldTransform_.scale = {1.0f, 1.0f, 1.0f};
 	

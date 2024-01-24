@@ -30,7 +30,7 @@ public: // メンバ関数
 	GameScene();
 	~GameScene();
 
-	static GameScene* GetInstance();
+	//static GameScene* GetInstance();
 	void CheckAllCollision();
 
 private://基本変数

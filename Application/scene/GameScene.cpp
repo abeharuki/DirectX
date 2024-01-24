@@ -9,11 +9,12 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {}
-
+/*
 GameScene* GameScene::GetInstance() {
 	static GameScene instance;
 	return &instance;
 }
+*/
 
 void GameScene::Initialize() {
 
@@ -30,7 +31,8 @@ void GameScene::Initialize() {
 	ground_ = std::make_unique<Ground>();
 	// 3Dモデルの生成
 	modelGround_.reset(Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
-	ground_->Initialize(modelGround_.get());
+	ground_->Initialize(
+	    Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
 	
 	//プレイヤー
 	playerManager_ = std::make_unique<PlayerManager>();
