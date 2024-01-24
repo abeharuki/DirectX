@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "Framework/SceneManager.h"
 #include "TextureManeger.h"
 #include <cassert>
 #include <imgui.h>
@@ -62,16 +63,16 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	if (KeyInput::PushKey(DIK_P)) {
-		sceneNo_ = CLEAR;
+		sceneManager_->ChangeScene("ClearScene");
 	}
 	
 
 	if (enemyManager_->isClear()) {
-		sceneNo_ = CLEAR;
+		sceneManager_->ChangeScene("ClearScene");
 	}
 
 	if (playerManager_->IsOver()) {
-		sceneNo_ = OVER;
+		sceneManager_->ChangeScene("OverScene");
 	}
 	
 
