@@ -1,13 +1,13 @@
 #include "Framework/SceneManager.h"
-#include "ClearScene.h"
+#include "OverScene.h"
 
-void ClearScene::Initialize() {}
+void OverScene::Initialize() {}
 
-void ClearScene::Update() {
+void OverScene::Update() {
 
 	if (KeyInput::PushKey(DIK_P)) {
 		SceneManager::GetInstance()->ChangeScene("TitleScene");
 	}
 }
 
-void ClearScene::Draw() {}
+void OverScene::Draw() {}

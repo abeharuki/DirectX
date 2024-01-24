@@ -1,5 +1,6 @@
 #pragma once
-#include "IScene.h"
+#include "Framework/IScene.h"
+#include "KeyInput.h"
 #include <memory>
 #include "Audio/Audio.h"
 #include <Sprite.h>

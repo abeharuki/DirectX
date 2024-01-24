@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "TextureManeger.h"
+#include "Framework/SceneManager.h"
 #include <cassert>
 #include <imgui.h>
 #include <numbers>
@@ -123,7 +124,7 @@ void GameScene::Update() {
 	
 
 	if (KeyInput::PushKey(DIK_P)) {
-		sceneNo_ = CLEAR;
+		SceneManager::GetInstance()->ChangeScene("ClearScene");
 	}
 
 	

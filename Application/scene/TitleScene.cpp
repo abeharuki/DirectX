@@ -1,5 +1,5 @@
 #include "TitleScene.h"
-
+#include "Framework/SceneManager.h"
 
 void TitleScene::Initialize() { 
 	audio_ = Audio::GetInstance();
@@ -21,8 +21,9 @@ void TitleScene::Initialize() {
 
 void TitleScene::Update() {
 	
+
 	if (KeyInput::PushKey(DIK_P)) {
-		sceneNo_ = GAME;
+		SceneManager::GetInstance()->ChangeScene("GameScene");
 	}
 	sprite_->SetSize(size);
 	sphere_->SetShininess(70.0f);
