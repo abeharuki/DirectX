@@ -1,10 +1,10 @@
-#include "SceneManager.h"
+#include "Application/Game/game.h"
 
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-	std::unique_ptr<SceneManager> sceneManager = std::make_unique<SceneManager>();
-	sceneManager->Run();
-	sceneManager.release();
+	GameManager* game = new Game();
+	game->Run();
+	delete game;
 	return 0;
 }
 

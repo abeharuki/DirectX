@@ -1,5 +1,6 @@
 #pragma once
-#include "IScene.h"
+#include "Framework/IScene.h"
+#include "KeyInput.h"
 #include <Sprite.h>
 
 

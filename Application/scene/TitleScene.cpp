@@ -1,4 +1,5 @@
 #include "TitleScene.h"
+#include "Framework/SceneManager.h"
 
 void TitleScene::Initialize() {
 	audio_ = Audio::GetInstance();
@@ -32,11 +33,20 @@ void TitleScene::Update() {
 			pos_.x = 0.0f;
 			if (KeyInput::GetInstance()->GetPadConnect()) {
 				if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
-					sceneNo_ = GAME;
+					sceneManager_->ChangeScene("GameScene");
 				}
 			}
+
 		}
 		
+	}
+
+	if (KeyInput::PushKey(DIK_G)) {
+		sceneManager_->ChangeScene("GameScene");
+	}
+	
+	if (KeyInput::PushKey(DIK_P)) {
+		sceneManager_->ChangeScene("ClearScene");
 	}
 
 }

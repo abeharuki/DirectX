@@ -1,5 +1,6 @@
 #pragma once
-#include "IScene.h"
+#include "Framework/IScene.h"
+#include "KeyInput.h"
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include "DirectXCommon.h"

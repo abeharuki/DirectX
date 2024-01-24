@@ -1,4 +1,5 @@
 #include "ClearScene.h"
+#include "Framework/SceneManager.h"
 
 void ClearScene::Initialize() { 
 	spriteClear_.reset(Sprite::Create("resources/clear.png"));
@@ -11,12 +12,12 @@ void ClearScene::Update() {
 
 	if (KeyInput::GetInstance()->GetPadConnect()) {
 		if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
-			sceneNo_ = GAME;
+			
 		}
 	}
 
 	if (KeyInput::PushKey(DIK_P)) {
-		sceneNo_ = TITLE;
+		sceneManager_->ChangeScene("TitleScene");
 	}
 }
 
