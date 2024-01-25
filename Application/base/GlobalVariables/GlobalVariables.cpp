@@ -4,7 +4,7 @@
 #include <iostream>
 #include <json.hpp>
 
-#ifdef _DEBUG
+
 GlobalVariables* GlobalVariables::GetInstance() {
 	static GlobalVariables globalVariables_;
 	return &globalVariables_;
@@ -344,4 +344,3 @@ Vector3 GlobalVariables::GetVecter3Value(const std::string& groupName, const std
 
 	return std::get<Vector3>(group[key]);
 }
-#endif
