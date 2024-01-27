@@ -99,7 +99,7 @@ public: // メンバ関数
 			behavior_ = Behavior::kDead;
 		};
 	}
-	float GetAlpha() { return a; }
+
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
 	}

@@ -33,6 +33,8 @@ public: // メンバ関数
 	//static GameScene* GetInstance();
 	void CheckAllCollision();
 
+	void Fade();
+
 private://基本変数
 	//光の数値
 	Vector4 color_ = {1.0f,1.0f,1.0f,1.0};
@@ -51,6 +53,9 @@ private: // メンバ変数
 	// 地面3Dモデル
 	std::unique_ptr<Model> modelGround_;
 
+	//フェードイン・フェードアウト用スプライト
+	std::unique_ptr<Sprite> spriteBack_;
+
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
 
@@ -67,5 +72,8 @@ private: // メンバ変数
 	//レンジャー
 	std::unique_ptr<RenjuManager> renjuManager_;
 
-
+	bool isFadeOut_;
+	bool isFadeIn_;
+	float alpha_;
+	
 };

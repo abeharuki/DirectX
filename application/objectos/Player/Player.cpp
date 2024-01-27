@@ -436,16 +436,8 @@ void Player::AttackUpdata() {
 	 }
 }
 
-void Player::DeadInitilize(){ a = 0.0f; };
-void Player::DeadUpdata(){ 
-	if (a < 1) {
-		a += 0.02f;
-	} else {
-		a = 1.0f;
-		isOver_ = true;
-	}
-	
-};
+void Player::DeadInitilize(){};
+void Player::DeadUpdata(){ isOver_ = true;};
 
 // 親子関係
 void Player::Relationship() {
@@ -476,8 +468,7 @@ void Player::OnCollision(const WorldTransform& worldTransform){
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	behaviorRequest_ = Behavior::knock;
 
-	ImGui::Begin("Player");
-	ImGui::End();
+	
 };
 
 Vector3 Player::GetWorldPosition() {

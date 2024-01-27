@@ -11,7 +11,7 @@ public:
 	void DrawUI();
 
 	bool IsAttack() { return enemy_->isAttack(); }
-	bool isClear() { return enemy_->isClear(); }
+	bool IsClear() { return enemy_->isClear(); }
 
 	void SetPlayerPos(Vector3 pos) { enemy_->SetPlayerPos(pos); };
 	void SetHealerPos(Vector3 pos) { enemy_->SetHealerPos(pos); };

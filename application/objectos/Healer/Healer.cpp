@@ -271,8 +271,6 @@ void Healer::OnCollision(const WorldTransform& worldTransform) {
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	behaviorRequest_ = Behavior::knock;
 
-	ImGui::Begin("Player");
-	ImGui::End();
 };
 
 Vector3 Healer::GetWorldPosition() {

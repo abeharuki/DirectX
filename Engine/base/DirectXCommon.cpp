@@ -34,9 +34,12 @@ DirectXCommon* DirectXCommon::GetInstance() {
 }
 
 void DirectXCommon::Finalize() {
+#ifdef _DEBUG
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+#endif 
+
 
 }
 

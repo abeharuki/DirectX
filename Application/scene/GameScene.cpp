@@ -34,6 +34,11 @@ void GameScene::Initialize() {
 	ground_->Initialize(
 	    Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
 	
+	alpha_ = 1.0f;
+	//フェードイン・フェードアウト用スプライト
+	spriteBack_.reset(Sprite::Create("resources/Player/B.png"));
+	spriteBack_->SetSize({10.0f, 10.0f});
+	
 	//プレイヤー
 	playerManager_ = std::make_unique<PlayerManager>();
 	playerManager_->Initialize();
@@ -60,30 +65,39 @@ void GameScene::Initialize() {
 	//ヒーラー
 	healerManager_ = std::make_unique<HealerManager>();
 	healerManager_->Initialize();
+	
+	isFadeIn_ = true;
+	isFadeOut_ = false; 
 
 }
 
 void GameScene::Update() {
+	
+	Fade();
 	if (KeyInput::PushKey(DIK_P)) {
 		sceneManager_->ChangeScene("ClearScene");
 	}
 	
 
-	if (enemyManager_->isClear()) {
+	if (enemyManager_->IsClear() && isFadeOut_) {
 		sceneManager_->ChangeScene("ClearScene");
 	}
 
-	if (playerManager_->IsOver()) {
+	if (playerManager_->IsOver() && isFadeOut_) {
 		sceneManager_->ChangeScene("OverScene");
 	}
 	
 
+	if (!isFadeIn_) {
+		
+	}
 	
 	playerManager_->Update();
 	healerManager_->Update();
 	renjuManager_->Update();
 	tankManager_->Update();
 	enemyManager_->Update();
+
 	// 追従カメラの更新
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -143,11 +157,38 @@ void GameScene::Draw() {
 	enemyManager_->DrawUI();
 	playerManager_->DrawUI();
 
+	Transform uv;
+	uv.scale = {0.0f, 0.0f, 0.0f};
+	uv.rotate = {0.0f, 0.0f, 0.0f};
+	uv.translate = {0.0f, 0.0f, 0.0f};
+	
+	spriteBack_->Draw(uv);
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 #pragma endregion
 }
 
+void GameScene::Fade() {
+	if (isFadeIn_) {
+		if (alpha_ > 0.001f) {
+			alpha_ -= 0.02f;
+		} else {
+			alpha_ = 0.0f;
+			isFadeIn_ = false;
+		}
+	}
+
+	if (playerManager_->IsOver()|| enemyManager_->IsClear()) {
+		if (alpha_ < 1) {
+			alpha_ += 0.02f;
+		} else {
+			alpha_ = 1.0f;
+			isFadeOut_ = true;
+		}
+	}
+	spriteBack_->SetColor({1.0f, 1.0f, 1.0f, alpha_});
+}
 
 void GameScene::CheckAllCollision() {
 	// 判定対象AとBの座標

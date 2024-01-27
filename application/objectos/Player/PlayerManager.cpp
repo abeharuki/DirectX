@@ -10,8 +10,7 @@ void PlayerManager::Initialize() {
 		spriteHPG_[i].reset(Sprite::Create("resources/Player/life0.png"));
 	
 	}
-	spriteBack_.reset(Sprite::Create("resources/Player/B.png"));
-	spriteBack_->SetSize({10.0f, 10.0f});
+	
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
 
@@ -57,7 +56,6 @@ void PlayerManager::Update() {
 
 	player_->IsDead(isDead_);
 	player_->Update();
-	spriteBack_->SetColor({1.0f, 1.0f, 1.0f, player_->GetAlpha()});
 	
 
 	
@@ -82,7 +80,7 @@ void PlayerManager::DrawUI() {
 		spriteHPG_[i]->Draw(uv);
 		spriteHP_[i]->Draw(uv);
 	}
-	spriteBack_->Draw(uv);
+	
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

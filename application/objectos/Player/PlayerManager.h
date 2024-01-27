@@ -39,7 +39,7 @@ private:
 	std::unique_ptr<Sprite> spriteHP_[6];
 	std::unique_ptr<Sprite> spriteHPG_[6];
 
-	std::unique_ptr<Sprite> spriteBack_;
+	
 	
 	Transform HpTransform_;
 
