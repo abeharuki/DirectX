@@ -9,6 +9,8 @@ void RenjuManager::Initialize() {
 	renju_->Initialize();
 
 	worldTransformBase_.Initialize();
+	worldTransformBase_ = renju_->GetWorldTransform();
+
 }
 
 void RenjuManager::Update() { 

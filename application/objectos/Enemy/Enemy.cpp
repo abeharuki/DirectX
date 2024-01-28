@@ -9,6 +9,7 @@ void Enemy::Initialize() {
 	worldTransformBase_.translate.z = 10.0f;
 	clear_ = false;
 	time_ = 60*6;
+	worldTransformBase_.UpdateMatrix();
 }
 
 void Enemy::Update() { 

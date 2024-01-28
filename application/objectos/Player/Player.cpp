@@ -24,6 +24,10 @@ void Player::Initialize() {
 	worldTransformCollision_.translate.y = 2.0f;
 	a = 0.0f;
 	isOver_ = false;
+
+	Relationship();
+	worldTransformBase_.UpdateMatrix();
+	worldTransformHead_.TransferMatrix();
 }
 
 void Player::Update() { 

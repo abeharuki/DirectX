@@ -18,6 +18,10 @@ void Healer::Initialize() {
 	worldTransformCollision_.Initialize();
 	worldTransformCollision_.scale = {0.27f, 0.27f, 1.0f};
 	worldTransformCollision_.translate.z = 1.5f;
+
+	worldTransformBase_.rotate.y = 3.14f;
+
+	worldTransformBase_.UpdateMatrix();
 };
 
 /// <summary>

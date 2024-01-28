@@ -18,6 +18,7 @@ void PlayerManager::Initialize() {
 	HpTransform_.scale = {0.2f, 0.2f, 0.1f};
 	HpTransform_.translate = {650.0f, 550.0f, 1.0f};
 	hitCount_ = 6;
+	
 }
 
 void PlayerManager::Update() {

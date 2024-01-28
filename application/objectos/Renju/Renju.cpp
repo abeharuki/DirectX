@@ -13,6 +13,7 @@ void Renju::Initialize(){
 	worldTransformBase_.translate.x = -2.0f;
 	worldTransformBase_.rotate.y = 3.14f;
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
+	worldTransformBase_.UpdateMatrix();
 };
 
 /// <summary>

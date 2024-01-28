@@ -10,6 +10,8 @@ void TankManager::Initialize() {
 
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = 2;
+	worldTransformBase_.rotate.y = 3.14f;
+	worldTransformBase_.UpdateMatrix();
 }
 
 void TankManager::Update() { 

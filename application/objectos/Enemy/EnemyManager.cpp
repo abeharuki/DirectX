@@ -18,7 +18,7 @@ void EnemyManager::Initialize() {
 
 	HpTransform_.scale = {2.0f, 0.08f, 1.0f};
 	HpTransform_.translate = {270.0f, 20.0f, 1.0f};
-
+	
 }
 
 void EnemyManager::Update() {
