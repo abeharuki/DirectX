@@ -60,6 +60,7 @@ void GameScene::Initialize() {
 	accelerationField_.area.min = {-1.0f, -1.0f, -1.0f};
 	accelerationField_.area.max = {1.0f, 1.0f, 1.0f};
 	particle_.reset(Particle::Create("resources/particle/circle.png",emitter_));
+	particle2_.reset(Particle::Create("resources/moon.png", emitter_));
 
 
 	//sprite_.reset(Sprite::Create("resources/uvChecker.png"));
@@ -121,7 +122,9 @@ void GameScene::Update() {
 		particle_->StopParticles();
 	}
 	
-	
+	particle2_->SetTranslate({pos});
+	particle2_->SetSpeed(float(num));
+	particle2_->Update();
 
 	if (KeyInput::PushKey(DIK_P)) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
@@ -223,9 +226,10 @@ void GameScene::Draw() {
 	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, true);
 	//板ポリ
 	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
-	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
+	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	//パーティクル
 	particle_->Draw(viewProjection_);
+	particle2_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

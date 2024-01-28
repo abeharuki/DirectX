@@ -98,7 +98,9 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
+	Engine::GetList()->SetGraphicsRootDescriptorTable(1, textureManager_->GetParticleGPUHandle(instancing_));
+	//Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
+
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -186,23 +188,24 @@ void Particle::LoadTexture(const std::string& filename) {
 }
 
 void Particle::CreateInstanceSRV() {
-	descriptorSizeSRV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(
-	    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
-	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	instancingSrvDesc.Buffer.FirstElement = 0;
-	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	instancingSrvDesc.Buffer.NumElements = instanceCount;
-	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-	instancingSrvHandelCPU =
-	    Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
-	instancingSrvHandelGPU =
-	    Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
-	Engine::GetDevice()->CreateShaderResourceView(
-	    instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
+	instancing_ = textureManager_->ParticleLoad(instancingResouce_.Get(), instanceCount);
+
+	//descriptorSizeSRV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(
+	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	//D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
+	//instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	//instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	//instancingSrvDesc.Buffer.FirstElement = 0;
+	//instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	//instancingSrvDesc.Buffer.NumElements = instanceCount;
+	//instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
+	//instancingSrvHandelCPU = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
+	//instancingSrvHandelGPU = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
+	//Engine::GetDevice()->CreateShaderResourceView(instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
+
 }
 
 Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {

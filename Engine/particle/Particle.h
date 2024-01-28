@@ -31,7 +31,7 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
 	//BlendMode blendMode_ = BlendMode::kAdd;
-	BlendMode blendMode_ = BlendMode::kNormal;
+	BlendMode blendMode_ = BlendMode::kNone;
 	
 
 public:
@@ -108,6 +108,7 @@ private:
 
 	TextureManager* textureManager_;
 	uint32_t texture_;
+	uint32_t instancing_;
 
 	uint32_t instanceCount = 1;
 	std::list<Particle_> particles;

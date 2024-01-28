@@ -51,6 +51,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelFence_[2];
 	//パーティクル
 	std::unique_ptr<Particle> particle_;
+	// パーティクル
+	std::unique_ptr<Particle> particle2_;
 	Emitter emitter_{};
 	AccelerationField accelerationField_;
 
