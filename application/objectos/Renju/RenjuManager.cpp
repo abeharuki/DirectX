@@ -12,7 +12,7 @@ void RenjuManager::Initialize() {
 	worldTransformBase_ = renju_->GetWorldTransform();
 
 	emitter_.transform = {
-	    {1.0f, 1.0f, 1.0f},
+	    {0.8f, 0.8f, 0.8f},
         {0.0f, 0.0f, 0.0f},
         {0.0f, 0.0f, 0.0f}
     };
@@ -20,8 +20,7 @@ void RenjuManager::Initialize() {
 	emitter_.frequencyTime = 0;
 
 	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));
-	particle_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-	particle_->SetSpeed(5.0f);
+	
 }
 
 void RenjuManager::Update() { 
@@ -31,6 +30,7 @@ void RenjuManager::Update() {
 	// 敵の判定
 	preHitE_ = isHitE_;
 	isHitE_ = false;
+
 	for (RenjuParticle* particle : particles_) {
 
 		particle->Update();
@@ -44,7 +44,7 @@ void RenjuManager::Update() {
 void RenjuManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(worldTransformBase_, camera, false);
 	renju_->Draw(camera);
-
+	
 	for (RenjuParticle* particle : particles_) {
 		particle->Draw(camera);
 	}
