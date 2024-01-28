@@ -80,7 +80,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 			instancingData[numInstance].World = worldMatrix;
 
-			float alph = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
+			float alph = 1.0f;//-((*particleIterator).currentTime / (*particleIterator).lifeTime);
 			instancingData[numInstance].color = (*particleIterator).color;
 			instancingData[numInstance].color.w = alph;
 			numInstance++;
@@ -98,7 +98,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
+	Engine::GetList()->SetGraphicsRootDescriptorTable(1, textureManager_->GetParticleGPUHandle(instancing_));
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -186,23 +186,7 @@ void Particle::LoadTexture(const std::string& filename) {
 }
 
 void Particle::CreateInstanceSRV() {
-	descriptorSizeSRV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(
-	    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
-	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	instancingSrvDesc.Buffer.FirstElement = 0;
-	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	instancingSrvDesc.Buffer.NumElements = instanceCount;
-	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-	instancingSrvHandelCPU =
-	    Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
-	instancingSrvHandelGPU =
-	    Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
-	Engine::GetDevice()->CreateShaderResourceView(
-	    instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
+	instancing_ = textureManager_->ParticleLoad(instancingResouce_.Get(), instanceCount);
 }
 
 Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {
@@ -211,7 +195,7 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform 
 	Particle_ particle;
 	particle.transform.scale = transform.scale;
 	particle.transform.rotate = transform.rotate;
-	particle.transform.translate = transform.translate + distribution(randomEngine);
+	particle.transform.translate = transform.translate; //+ distribution(randomEngine);
 	particle.velocity = {
 	    distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
 	if (isColor) {

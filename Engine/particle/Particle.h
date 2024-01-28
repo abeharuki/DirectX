@@ -30,8 +30,8 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-	//BlendMode blendMode_ = BlendMode::kAdd;
-	BlendMode blendMode_ = BlendMode::kNormal;
+	BlendMode blendMode_ = BlendMode::kAdd;
+	//BlendMode blendMode_ = BlendMode::kNormal;
 	
 
 public:
@@ -98,9 +98,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	uint32_t* indexData_;
 
-	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandelCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandelGPU;
-
 	// データを書き込む
 	ParticleForGPU* instancingData;
 	ModelData modelData;
@@ -108,6 +105,7 @@ private:
 
 	TextureManager* textureManager_;
 	uint32_t texture_;
+	uint32_t instancing_;
 
 	uint32_t instanceCount = 1;
 	std::list<Particle_> particles;
@@ -124,7 +122,7 @@ private:
 	bool isColor = false;
 
 	std::random_device seedGenerator;
-	uint32_t descriptorSizeSRV;
+	
 
 private:
 	// DirectX::ScratchImage LoadTexture(const std::string& filePath);

@@ -1,6 +1,8 @@
 #pragma once
 #include "Model.h"
 #include "Renju.h"
+#include <Particle.h>
+#include "RenjuParticle.h"
 
 class RenjuManager {
 public:
@@ -23,14 +25,20 @@ public:
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
 	void OnCollision(const WorldTransform& worldTransform);
-
+	void SetParticlePos(Vector3 pos);
 	
 private:
 	WorldTransform worldTransformBase_;
 	std::unique_ptr<Model> Model_;
 	std::unique_ptr<Renju> renju_;
+	std::unique_ptr<Particle> particle_;
+	Emitter emitter_{};
+	
+	// 弾
+	std::list<RenjuParticle*> particles_;
 
 	bool isDead_ = false;
+	bool isParticle_ = false;
 	Vector3 playerPos_;
 	Vector3 enemyPos_;
 

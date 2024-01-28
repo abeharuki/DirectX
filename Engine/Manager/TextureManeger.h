@@ -35,12 +35,17 @@ public:
 
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(uint32_t textureHandle);
 
+	uint32_t ParticleLoad(ID3D12Resource* pResource, uint32_t instanceCount);
+	const D3D12_GPU_DESCRIPTOR_HANDLE GetParticleGPUHandle(uint32_t textureHandle);
+
+
 	static const int maxtex = 256;
 
 	
 private:
 	
 	void LoadTexture(const std::string& filePath, uint32_t index);
+	void CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource, uint32_t instanceCount);
 
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[maxtex];
@@ -49,6 +54,10 @@ private:
 	uint32_t descriptorSizeDSV;
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_[maxtex];
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_[maxtex];
+	// particle
+	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandelCPU[maxtex];
+	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandelGPU[maxtex];
+
 	//0がImGui1がパーティクルで使ってるから
 	uint32_t textureIndex_;
 };

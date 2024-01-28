@@ -11,6 +11,17 @@ void RenjuManager::Initialize() {
 	worldTransformBase_.Initialize();
 	worldTransformBase_ = renju_->GetWorldTransform();
 
+	emitter_.transform = {
+	    {1.0f, 1.0f, 1.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f}
+    };
+	emitter_.count = 20;
+	emitter_.frequencyTime = 0;
+
+	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));
+	particle_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+	particle_->SetSpeed(5.0f);
 }
 
 void RenjuManager::Update() { 
@@ -20,7 +31,10 @@ void RenjuManager::Update() {
 	// 敵の判定
 	preHitE_ = isHitE_;
 	isHitE_ = false;
+	for (RenjuParticle* particle : particles_) {
 
+		particle->Update();
+	}
 	renju_->Update();
 	worldTransformBase_ = renju_->GetWorldTransform();
 	renju_->followPlayer(playerPos_);
@@ -30,8 +44,26 @@ void RenjuManager::Update() {
 void RenjuManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(worldTransformBase_, camera, false);
 	renju_->Draw(camera);
+
+	for (RenjuParticle* particle : particles_) {
+		particle->Draw(camera);
+	}
 };
 
+
+void RenjuManager::SetParticlePos(Vector3 pos) { 
+	// デスフラグが立った弾を削除
+	particles_.remove_if([](RenjuParticle* particle) {
+		
+		delete particle;
+		return true;
+		
+	});
+	RenjuParticle* newParticle = new RenjuParticle();
+	newParticle->Initialize(particle_.get(), pos);
+
+	particles_.push_back(newParticle);
+}
 
 // 衝突を検出したら呼び出されるコールバック関数
 void RenjuManager::OnAllyCollision(const WorldTransform& worldTransform){

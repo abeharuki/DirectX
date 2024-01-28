@@ -113,6 +113,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\objectos\Renju\Renju.cpp" />
     <ClCompile Include="application\objectos\Renju\RenjuBullet.cpp" />
     <ClCompile Include="application\objectos\Renju\RenjuManager.cpp" />
+    <ClCompile Include="Application\objectos\Renju\RenjuParticle.cpp" />
     <ClCompile Include="application\objectos\Tank\Tank.cpp" />
     <ClCompile Include="application\objectos\Tank\TankManager.cpp" />
     <ClCompile Include="Application\scene\ClearScene.cpp" />
@@ -191,6 +192,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\objectos\Renju\Renju.h" />
     <ClInclude Include="application\objectos\Renju\RenjuBullet.h" />
     <ClInclude Include="application\objectos\Renju\RenjuManager.h" />
+    <ClInclude Include="Application\objectos\Renju\RenjuParticle.h" />
     <ClInclude Include="application\objectos\Tank\Tank.h" />
     <ClInclude Include="application\objectos\Tank\TankManager.h" />
     <ClInclude Include="Application\scene\ClearScene.h" />

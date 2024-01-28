@@ -35,11 +35,23 @@ uint32_t TextureManager::Load(const std::string& filePath) {
 	return textureIndex_;
 }
 
+uint32_t TextureManager::ParticleLoad(ID3D12Resource* pResource, uint32_t instanceCount) {
+
+	textureIndex_++;
+	CreateInstanceSRV(textureIndex_, pResource, instanceCount);
+	return textureIndex_;
+}
 
 const D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetGPUHandle(uint32_t textureHandle) {
 	D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle = textureSrvHandleGPU_[textureHandle];
 	return GPUHandle;
 }
+
+const D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetParticleGPUHandle(uint32_t textureHandle) {
+	D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle = instancingSrvHandelGPU[textureHandle];
+	return GPUHandle;
+}
+
 
 // Textureデータの読み込み
 DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
@@ -75,13 +87,37 @@ void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
 	// SRVを作成するDescripterHeapの場所を決める
-	textureSrvHandleGPU_[index] = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+2); // direct_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
-	textureSrvHandleCPU_[index] = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+2);
+	textureSrvHandleGPU_[index] = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+1); // direct_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
+	textureSrvHandleCPU_[index] = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+1);
 	// 先頭はIMGUIが使ってるからその次を使う
 	textureSrvHandleCPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	textureSrvHandleGPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	Engine::GetDevice()->CreateShaderResourceView(textureResource[index].Get(), &srvDesc, textureSrvHandleCPU_[index]);
 }
+
+void TextureManager::CreateInstanceSRV(
+    uint32_t index, ID3D12Resource* pResource, uint32_t instanceCount) {
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
+	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	instancingSrvDesc.Buffer.FirstElement = 0;
+	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	instancingSrvDesc.Buffer.NumElements = instanceCount;
+	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
+	instancingSrvHandelCPU[index] =
+	    Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, index + 1);
+	instancingSrvHandelGPU[index] =
+	    Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, index + 1);
+	instancingSrvHandelCPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
+	    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	instancingSrvHandelGPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(
+	    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	Engine::GetDevice()->CreateShaderResourceView(
+	    pResource, &instancingSrvDesc, instancingSrvHandelCPU[index]);
+}
+
 
 // TextureResourceの作成
 ID3D12Resource* TextureManager::CreateTextureResource(

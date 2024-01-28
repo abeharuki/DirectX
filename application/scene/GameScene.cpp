@@ -206,6 +206,7 @@ void GameScene::CheckAllCollision() {
 		if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.0f}, posB, {0.3f, 0.3f, 0.3f})) {
 			bullet->OnCollision();
 			enemyManager_->OnCollision();
+			renjuManager_->SetParticlePos(posB);
 		}
 
 	}
