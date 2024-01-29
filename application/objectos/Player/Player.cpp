@@ -100,7 +100,9 @@ void Player::Update() {
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
 	
-	
+	ImGui::Begin("Player");
+	ImGui::SliderFloat3("pos",&worldTransformBase_.translate.x,-10.0f,10.0f);
+	ImGui::End();
 }
 
 // 移動

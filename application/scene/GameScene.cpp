@@ -260,6 +260,10 @@ void GameScene::CheckAllCollision() {
 	}
 #pragma endregion
 
+/*------------------
+  敵の攻撃の当たり判定
+-------------------*/
+
 #pragma region 自キャラと敵キャラ攻撃の当たり判定
 	// 敵キャラ座標
 	posA = {enemyManager_->GetWorldPos().x, enemyManager_->GetWorldPos().y+6.0f,enemyManager_->GetWorldPos().z};
@@ -271,8 +275,7 @@ void GameScene::CheckAllCollision() {
 		}
 	}
 #pragma endregion
-
-	#pragma region ヒーラーと敵キャラ攻撃の当たり判定
+#pragma region ヒーラーと敵キャラ攻撃の当たり判定
 	// 敵キャラ座標
 	posA = {
 	    enemyManager_->GetWorldPos().x, enemyManager_->GetWorldPos().y + 6.0f,
@@ -314,6 +317,59 @@ void GameScene::CheckAllCollision() {
 		}
 	}
 #pragma endregion
+
+#pragma region 自キャラと敵キャラ投擲攻撃の当たり判定
+	// 敵キャラ座標
+	posA = enemyManager_->GetRockWorldPos();
+	posB = playerManager_->GetWorldPos();
+
+	if (Math::IsAABBCollision(posA, {1.0f, 1.0f, 1.0f}, posB, {0.6f, 0.4f, 0.2f})) {
+		if (enemyManager_->IsAttack()) {
+			playerManager_->OnCollision(enemyManager_->GetWorldTransform());
+		}
+	}
+#pragma endregion
+#pragma region ヒーラーと敵キャラ投擲攻撃の当たり判定
+	// 敵キャラ座標
+	posA = enemyManager_->GetRockWorldPos();
+	posB = healerManager_->GetWorldPos();
+
+	if (Math::IsAABBCollision(posA, {1.0f,1.0f, 1.0f}, posB, {0.6f, 0.4f, 0.2f})) {
+		if (enemyManager_->IsAttack()) {
+			healerManager_->OnCollision(enemyManager_->GetWorldTransform());
+			playerManager_->OnHCollision();
+		}
+	}
+#pragma endregion
+#pragma region レンジャーと敵キャラ投擲攻撃の当たり判定
+	// 敵キャラ座標
+	posA = enemyManager_->GetRockWorldPos();
+	posB = renjuManager_->GetWorldPos();
+
+	if (Math::IsAABBCollision(posA, {1.0f, 1.0f, 1.0f}, posB, {0.6f, 0.4f, 0.2f})) {
+		if (enemyManager_->IsAttack()) {
+			renjuManager_->OnCollision(enemyManager_->GetWorldTransform());
+			playerManager_->OnRCollision();
+		}
+	}
+#pragma endregion
+#pragma region タンクと敵キャラ投擲攻撃の当たり判定
+	// 敵キャラ座標
+	posA = enemyManager_->GetRockWorldPos();
+	posB = tankManager_->GetWorldPos();
+
+	if (Math::IsAABBCollision(posA, {1.0f, 1.0f, 1.0f}, posB, {0.6f, 0.4f, 0.2f})) {
+		if (enemyManager_->IsAttack()) {
+			tankManager_->OnCollision(enemyManager_->GetWorldTransform());
+			playerManager_->OnTCollision();
+		}
+	}
+#pragma endregion
+
+
+/*------------------
+  仲間同士の当たり判定	
+-------------------*/
 
 #pragma region ヒーラーとレンジャーの当たり判定
 	posA = healerManager_->GetWorldPos();

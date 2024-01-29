@@ -3,6 +3,7 @@
 void EnemyManager::Initialize() {
 
 	Model_.reset( Model::CreateModelFromObj("resources/enemy/enemy.obj", "resources/enemy/enemy.png"));
+	rockModel_.reset(Model::CreateModelFromObj("resources/rock.obj", "resources/skydome/sky.png"));
 	bulletModel_.reset( Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
 	
 	spriteHP_.reset(Sprite::Create("resources/enemy/HP.png"));
@@ -45,13 +46,14 @@ void EnemyManager::Update() {
 	}
 	enemy_->isDead(isDead_);
 	enemy_->Update(); 
-	worldTransform_.UpdateMatrix();
+
 
 	
 };
 
 void EnemyManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(enemy_->GetWorldTransform(), camera, false);
+	rockModel_->Draw(enemy_->GetWorldTransformRock(), camera, false);
 };
 
 void EnemyManager::DrawUI() { 
@@ -109,5 +111,6 @@ void EnemyManager::OnRenjuCollision(){
 };
 
 Vector3 EnemyManager::GetWorldPos() { return enemy_->GetWorldTransform().GetWorldPos(); }
+Vector3 EnemyManager::GetRockWorldPos() { return enemy_->GetWorldTransformRock().GetWorldPos(); }
 
 const WorldTransform& EnemyManager::GetWorldTransform() { return enemy_->GetWorldTransform(); }

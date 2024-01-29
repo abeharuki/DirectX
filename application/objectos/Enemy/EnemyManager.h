@@ -2,6 +2,7 @@
 #include "Enemy.h"
 #include "Model.h"
 
+
 class EnemyManager {
 public:
 	void Initialize();
@@ -20,6 +21,7 @@ public:
 
 	const WorldTransform& GetWorldTransform();
 	Vector3 GetWorldPos();
+	Vector3 GetRockWorldPos();
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 	void OnHealerCollision();
@@ -30,6 +32,7 @@ private:
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransform_;
 	std::unique_ptr<Model> Model_;
+	std::unique_ptr<Model> rockModel_;
 	std::unique_ptr<Model> bulletModel_;
 	std::unique_ptr<Enemy> enemy_;
 

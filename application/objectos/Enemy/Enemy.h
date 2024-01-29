@@ -6,6 +6,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "Utilities/RandomGenerator.h"
 
 /// <summary>
 /// ゲームシーン
@@ -36,18 +37,32 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdata();
 
-
 	void DeadInitilize();
 	void DeadUpdata();
 
+
+
+	void DashAttackInitialize();
+	void DashAttackUpdata();
+
+
+	void ThrowingAttackInitialize();
+	void ThrowingAttackUpdata();
+
+
+
 	Vector3 GetWorldPosition();
 	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
+	WorldTransform& GetWorldTransformRock() { return worldTransformRock_; }
 
 	void SetPlayerPos(Vector3 pos) { playerPos_ = pos; };
 	void SetHealerPos(Vector3 pos) { healerPos_ = pos; };
 	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; };
 	void SetTankPos(Vector3 pos) { tankPos_ = pos; };
-	
+	// パーツ親子関係
+	void Relationship();
+
+
 	bool isAttack() { return isAttack_; };
 
 	bool isClear() { return clear_; };
@@ -60,6 +75,7 @@ public: // メンバ関数
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformRock_;
 	
 	Vector3 playerPos_ = {};
 	Vector3 healerPos_ = {};
@@ -81,6 +97,17 @@ private: // メンバ変数
 	// 次の振る舞いリクエスト
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
+
+	enum class BehaviorAttack {
+		kDash, // ダッシュ攻撃
+		kThrowing,//投擲攻撃
+	};
+
+	BehaviorAttack attack_ = BehaviorAttack::kDash;
+	// 次の振る舞いリクエスト
+	std::optional<BehaviorAttack> attackRequest_ = std::nullopt;
+
+
 	// 速度
 	Vector3 velocity_ = {};
 	//差分
@@ -89,4 +116,10 @@ private: // メンバ変数
 	int num_;
 
 	bool clear_;
+
+	//シェイク
+	float shakeTimer_;
+	float randX = 0;
+	float randZ = 0;
+
 };

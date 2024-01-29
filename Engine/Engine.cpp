@@ -16,6 +16,7 @@
 #include "KeyInput.h"
 #include <GlobalVariables.h>
 #include "Audio/Audio.h"
+#include <Utilities/RandomGenerator.h>
 
 
 WinApp* win = nullptr;
@@ -47,6 +48,9 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 	
 	audio = Audio::GetInstance();
 	audio->Initialize();
+
+	// RandomGeneratorの初期化
+	RandomGenerator::Initialize();
 }
 
 bool Engine::ProcessMessage() {
@@ -59,12 +63,12 @@ bool Engine::ProcessMessage() {
 
 
 void Engine::BeginFrame() { 
-#ifdef _DEBUG
+
 	// ImGui受付開始
 	imguiManager->Begin();
-#endif 
+
 	// グローバル変数の更新
-    //GlobalVariables::GetInstance()->Updeat();
+    GlobalVariables::GetInstance()->Updeat();
 
 	//	Input初期の更新
 	keyInput->Update();
