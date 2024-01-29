@@ -1,6 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "Tank.h"
+#include <Particle.h>
 
 class TankManager {
 public:
@@ -20,7 +21,7 @@ public:
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
 	void OnCollision(const WorldTransform& worldTransform);
-
+	void SetParticlePos(Vector3 pos);
 
 	bool GetAttack() { return tank_->GetAttack(); }
 
@@ -29,7 +30,12 @@ private:
 	std::unique_ptr<Model> Model_;
 	std::unique_ptr<Tank> tank_;
 
+	std::unique_ptr<Particle> particle_;
+	Emitter emitter_{};
+	bool isParticle_ = false;
+
 	bool isDead_ = false;
+	
 	Vector3 playerPos_;
 	Vector3 enemyPos_;
 

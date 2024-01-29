@@ -34,7 +34,7 @@ private:
 	std::unique_ptr<Particle> particle_;
 	Emitter emitter_{};
 	
-	// 弾
+	//
 	std::list<RenjuParticle*> particles_;
 
 	bool isDead_ = false;

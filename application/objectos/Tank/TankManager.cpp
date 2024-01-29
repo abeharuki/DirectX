@@ -1,9 +1,19 @@
 #include "TankManager.h"
 
 void TankManager::Initialize() {
+	emitter_.transform = {
+	    {0.8f, 0.8f, 0.8f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f}
+    };
+	emitter_.count = 10;
+	emitter_.frequencyTime = 0;
 
-	Model_.reset(
-	    Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
+	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));
+	particle_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+	particle_->SetSpeed(5.0f);
+	isParticle_ = false;
+	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 
 	tank_ = std::make_unique<Tank>();
 	tank_->Initialize();
@@ -23,6 +33,13 @@ void TankManager::Update() {
 	preHitE_ = isHitE_;
 	isHitE_ = false;
 
+	if (isParticle_) {
+		particle_->Update();
+		isParticle_ = false;
+	} else {
+		particle_->StopParticles();
+	}
+
 	tank_->Update();
 	worldTransformBase_ = tank_->GetWorldTransform();
 	tank_->followPlayer(playerPos_);
@@ -31,6 +48,7 @@ void TankManager::Update() {
 
 void TankManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(worldTransformBase_, camera, false);
+	particle_->Draw(camera);
 };
 
 // 衝突を検出したら呼び出されるコールバック関数
@@ -48,6 +66,15 @@ void TankManager::OnCollision(const WorldTransform& worldTransform) {
 		tank_->OnCollision(worldTransform);
 	}
 };
+
+
+void TankManager::SetParticlePos(Vector3 pos) { 
+	particle_->SetTranslate(pos); 
+	isParticle_ = true;
+	
+
+}
+
 
 void TankManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }
 

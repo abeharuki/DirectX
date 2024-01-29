@@ -224,6 +224,7 @@ void GameScene::CheckAllCollision() {
 	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.0f}, posB, {1.0f, 1.0f, 1.0f})) {
 		if (tankManager_->GetAttack()) {
 			enemyManager_->OnCollision();
+			tankManager_->SetParticlePos(posB);
 		}
 		
 	}
@@ -238,6 +239,7 @@ void GameScene::CheckAllCollision() {
 	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.0f}, posB, {0.27f, 0.27f, 1.0f})) {
 		if (healerManager_->IsAttack()) {
 			enemyManager_->OnCollision();
+			healerManager_->SetParticlePos(posB);
 		}
 		
 	}
@@ -252,6 +254,7 @@ void GameScene::CheckAllCollision() {
 	if (Math::IsAABBCollision(posA, {2.0f, 6.0f, 1.5f}, posB, {0.1f, 1.0f, 0.1f})) {
 		if (playerManager_->IsAttack()) {
 			enemyManager_->OnCollision();
+			playerManager_->SetParticlePos(posB);
 		}
 		
 	}

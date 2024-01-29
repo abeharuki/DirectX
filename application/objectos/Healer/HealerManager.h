@@ -1,6 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "Healer.h"
+#include <Particle.h>
 
 class HealerManager {
 public:
@@ -25,6 +26,7 @@ public:
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
 	void OnCollision(const WorldTransform& worldTransform);
+	void SetParticlePos(Vector3 pos);
 
 private:
 	
@@ -32,6 +34,11 @@ private:
 	std::unique_ptr<Model> CaneModel_;
 	std::unique_ptr<Healer> healer_;
 	
+	//パーティクル
+	std::unique_ptr<Particle> particle_;
+	Emitter emitter_{};
+	bool isParticle_ = false;
+
 	bool isDead_ = false;
 
 	Vector3 playerPos_;

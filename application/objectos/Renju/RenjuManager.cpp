@@ -16,7 +16,7 @@ void RenjuManager::Initialize() {
         {0.0f, 0.0f, 0.0f},
         {0.0f, 0.0f, 0.0f}
     };
-	emitter_.count = 20;
+	emitter_.count = 10;
 	emitter_.frequencyTime = 0;
 
 	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));

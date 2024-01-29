@@ -11,7 +11,18 @@ void HealerManager::Initialize() {
 	healer_ = std::make_unique<Healer>();
 	healer_->Initialize();
 
-	
+	emitter_.transform = {
+	    {0.8f, 0.8f, 0.8f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f}
+    };
+	emitter_.count = 10;
+	emitter_.frequencyTime = 0;
+
+	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));
+	particle_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+	particle_->SetSpeed(5.0f);
+	isParticle_ = false;
 	
 }
 
@@ -22,6 +33,13 @@ void HealerManager::Update() {
 	// 敵の判定
 	preHitE_ = isHitE_;
 	isHitE_ = false;
+	if (isParticle_) {
+		particle_->Update();
+		isParticle_ = false;
+	} else {
+		particle_->StopParticles();
+	}
+
 	healer_->Update();
 	healer_->followPlayer(playerPos_);
 	healer_->searchTarget(enemyPos_);
@@ -29,6 +47,7 @@ void HealerManager::Update() {
 
 void HealerManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(healer_->GetWorldTransform(), camera, false);
+	particle_->Draw(camera);
 	if (healer_->IsAttack()) {
 		CaneModel_->Draw(healer_->GetWorldTransformCane(), camera, false);
 	
@@ -53,6 +72,13 @@ void HealerManager::OnCollision(const WorldTransform& worldTransform) {
 		healer_->OnCollision(worldTransform);
 	}
 };
+
+
+void HealerManager::SetParticlePos(Vector3 pos) {
+	particle_->SetTranslate(pos);
+	isParticle_ = true;
+}
+
 
 
 const WorldTransform& HealerManager::GetWorldTransform() { return healer_->GetWorldTransform(); }

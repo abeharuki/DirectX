@@ -14,7 +14,18 @@ void PlayerManager::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
 
-	
+	emitter_.transform = {
+	    {0.8f, 0.8f, 0.8f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f}
+    };
+	emitter_.count = 10;
+	emitter_.frequencyTime = 0;
+
+	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));
+	particle_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+	particle_->SetSpeed(8.0f);
+	isParticle_ = false;
 	HpTransform_.scale = {0.2f, 0.2f, 0.1f};
 	HpTransform_.translate = {650.0f, 550.0f, 1.0f};
 	hitCount_ = 6;
@@ -55,6 +66,14 @@ void PlayerManager::Update() {
 		isDead_ = true;
 	}
 
+	if (isParticle_) {
+		particle_->Update();
+		isParticle_ = false;
+	} else {
+		particle_->StopParticles();
+	}
+
+
 	player_->IsDead(isDead_);
 	player_->Update();
 	
@@ -64,7 +83,7 @@ void PlayerManager::Update() {
 
 void PlayerManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(player_->GetWorldTransformHead(), camera, false);
-
+	particle_->Draw(camera);
 	if (player_->IsAttack()) {
 		HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);
 
@@ -113,6 +132,11 @@ void PlayerManager::OnCollision(const WorldTransform& worldTransform) {
 	}
 	
 };
+
+void PlayerManager::SetParticlePos(Vector3 pos) {
+	particle_->SetTranslate(pos);
+	isParticle_ = true;
+}
 
 
 const WorldTransform& PlayerManager::GetWorldTransform() { return player_->GetWorldTransform(); }

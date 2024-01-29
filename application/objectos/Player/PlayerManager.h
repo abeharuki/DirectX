@@ -1,6 +1,7 @@
 #pragma once
 #include "Player.h"
 #include "Model.h"
+#include <Particle.h>
 
 class PlayerManager {
 public:
@@ -21,8 +22,7 @@ public:
 	void OnRCollision();
 	void OnTCollision();
 	void OnCollision(const WorldTransform& worldTransform);
-
-	
+	void SetParticlePos(Vector3 pos);
 
 	bool IsAttack() { return player_->IsAttack(); }
 	bool IsOver() { return player_->IsOver(); }
@@ -39,7 +39,10 @@ private:
 	std::unique_ptr<Sprite> spriteHP_[6];
 	std::unique_ptr<Sprite> spriteHPG_[6];
 
-	
+	//パーティクル
+	std::unique_ptr<Particle> particle_;
+	Emitter emitter_{};
+	bool isParticle_ = false;
 	
 	Transform HpTransform_;
 
