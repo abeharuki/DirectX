@@ -162,6 +162,14 @@ void Model::LightDraw(Vector4 color, Vector3 direction, float intensity) {
 	
 }
 
+void Model::LightDraw(Vector4 color, Vector3 direction, float intensity) {
+
+	directionalLightData->color = color;
+	directionalLightData->direction = Math::Normalize(direction);
+	directionalLightData->intensity = intensity;
+
+}
+
 void Model::PostDraw() {}
 
 

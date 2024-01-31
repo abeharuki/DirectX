@@ -66,6 +66,7 @@ public:
 	/// <param name="commandList">描画コマンドリスト</param>
 	//光の色　向き　明るさ
 	static void LightDraw(Vector4 color, Vector3 direction, float intensity);
+	void LightDraw(Vector4 color, Vector3 direction, float intensity);
 
 	
 	static void PostDraw();
