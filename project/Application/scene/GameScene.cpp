@@ -22,17 +22,20 @@ void GameScene::Initialize() {
 	worldTransformSphere_.scale = {3.0f, 3.0f, 3.0f};
 
 	viewProjection_.Initialize();
-	viewProjection_.translation_ = {0.0f, 0.0f, -10.0f};
+	viewProjection_.rotation_.x = 0.28f;
+	viewProjection_.translation_ = {0.0f, 10.0f, -25.0f};
+
 	
 	worldTransform_.translate.x = {0.0f};
 	worldTransform_.translate.z = {0.0f};
 	worldTransform_.scale = {1.0f, 1.0f, 1.0f};
 	for (int i = 0; i < 2; i++) {
 		worldTransformFence_[i].Initialize();
-		modelFence_[i].reset(
-		    Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
+		
 	}
-	
+	worldTransformFence_[0].rotate.y = 1.58f;
+	modelFence_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
+
 	//板ポリ
 	modelplane_.reset(
 	    Model::CreateModelFromObj("resources/plane.obj", "resources/uvChecker.png"));
@@ -171,7 +174,7 @@ void GameScene::Update() {
 	if (ImGui::TreeNode("bunny")) {
 
 		ImGui::SliderFloat3("transletion", &worldTransformFence_[0].translate.x, -1.0f, 10.0f);
-		ImGui::SliderFloat3("rotate", &worldTransformFence_[0].rotate.x, -1.0f, 10.0f);
+		ImGui::DragFloat3("rotate", &worldTransformFence_[0].rotate.x, 0.01f);
 
 		ImGui::TreePop();
 	}
@@ -217,19 +220,19 @@ void GameScene::Update() {
 void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
-	Model::LightDraw(color_,direction_, intensity_);
+	modelFence_->LightDraw(color_,direction_, intensity_);
 
 	// 天球
 	skydome_->Draw(viewProjection_,false);
 	//sphere_->Draw(worldTransform_, viewProjection_,true);
 	//フェンス
-	modelFence_[0]->Draw(worldTransformFence_[0], viewProjection_, true);
+	modelFence_->Draw(worldTransformFence_[0], viewProjection_, true);
 	//板ポリ
 	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
 	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	//パーティクル
-	particle_->Draw(viewProjection_);
-	particle2_->Draw(viewProjection_);
+	//particle_->Draw(viewProjection_);
+	//particle2_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

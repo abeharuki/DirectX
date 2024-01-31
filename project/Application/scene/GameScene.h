@@ -48,7 +48,7 @@ private: // メンバ変数
 	//板ポリ
 	std::unique_ptr<Model> modelplane_;
 	//フェンス
-	std::unique_ptr<Model> modelFence_[2];
+	std::unique_ptr<Model> modelFence_;
 	//パーティクル
 	std::unique_ptr<Particle> particle_;
 	// パーティクル
