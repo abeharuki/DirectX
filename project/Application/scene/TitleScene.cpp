@@ -32,11 +32,11 @@ void TitleScene::Update() {
 	viewProjection_.UpdateMatrix();
 
 	ImGui::Begin("Setting");
-	if (ImGui::TreeNode("Sphere")) {
+	if (ImGui::TreeNode("Bunny")) {
 
-		ImGui::SliderFloat3("SpritePos", &worldTransformSphere_.translate.x, -10.0f, 10.0f);
-		ImGui::SliderFloat3("SpriteRotate", &worldTransformSphere_.rotate.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("SpriteSize", &worldTransformSphere_.scale.x, -10.0f, 10.0f);
+		ImGui::SliderFloat3("BunnyPos", &worldTransformSphere_.translate.x, -10.0f, 10.0f);
+		ImGui::SliderFloat3("BunnyRotate", &worldTransformSphere_.rotate.x, -1.0f, 1.0f);
+		ImGui::SliderFloat3("BunnySize", &worldTransformSphere_.scale.x, -10.0f, 10.0f);
 		ImGui::TreePop();
 	}
 
