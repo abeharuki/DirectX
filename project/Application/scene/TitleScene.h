@@ -6,6 +6,7 @@
 #include <Sprite.h>
 #include <Sphere.h>
 #include <Model.h>
+#include <numbers>
 
 class TitleScene : public IScene {
 public:
@@ -22,16 +23,28 @@ private : // 基本変数
 	DirectionLight directionLight_{
 		{1.0f, 1.0f, 1.0f, 1.0f},
 		{0.0f, -2.0f, 0.0f},
-		1.0f
+		1.0f,
+		
 	};
 
 	PointLight pointLight_ = {
 		{1.0f, 1.0f, 1.0f, 1.0f},
 		{ 0.0f,3.0f,0.0 },
-		5.0f,
+		1.0f,
 		5.0f,
 		1.0f,
 		true,
+	};
+
+	SpotLight spotLight_ = {
+			{1.0f, 1.0f, 1.0f, 1.0f},
+			{ 2.0f,1.25f,0.0 },
+			7.0f,
+			{1.0f, -1.0f, 0.0f},
+			4.0f,
+			2.0f,
+			std::cos(std::numbers::pi_v<float>/3.0f),
+			true
 	};
 
 private:

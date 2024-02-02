@@ -51,7 +51,7 @@ void TitleScene::Update() {
 	worldTransformGround_.UpdateMatrix();
 	viewProjection_.UpdateMatrix();
 
-	const char* items[] = { "DirectionLight", "PointLight", "Item 3" };
+	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
 	static int currentItem = 0; // 初期選択アイテムのインデックス
 
 
@@ -60,6 +60,9 @@ void TitleScene::Update() {
 	}
 	else if (currentItem == 1) {
 		Model::PointLightDraw(pointLight_,directionLight_.direction);
+	}
+	else if (currentItem == 2) {
+		Model::SpotLightDraw(spotLight_);
 	}
 
 	ImGui::Begin("Setting");
@@ -74,9 +77,12 @@ void TitleScene::Update() {
 	if (ImGui::TreeNode("Light")) {
 		// LightLight
 		ImGui::Combo("##combo", &currentItem, items, IM_ARRAYSIZE(items));
-		ImGui::SliderFloat4("DirectionLightColor", &directionLight_.color.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("DirectionLightDirecton", &directionLight_.direction.x, -5.0f, 5.0f);
-		ImGui::DragFloat("DirectionIntensity", &directionLight_.intensity, 0.1f);
+		if (ImGui::TreeNode("DirectionLight")) {
+			ImGui::SliderFloat4("DirectionLightColor", &directionLight_.color.x, -1.0f, 1.0f);
+			ImGui::SliderFloat3("DirectionLightDirecton", &directionLight_.direction.x, -5.0f, 5.0f);
+			ImGui::DragFloat("DirectionIntensity", &directionLight_.intensity, 0.1f);
+			ImGui::TreePop();
+		}
 		
 		if (ImGui::TreeNode("PointLight")) {
 			// LightLight

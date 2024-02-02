@@ -1,14 +1,14 @@
-#include "GameManager.h"
+#include "Framework.h"
 
-void GameManager::Initialize() { sceneManager_ = SceneManager::GetInstance(); }
+void Framework::Initialize() { sceneManager_ = SceneManager::GetInstance(); }
 
-void GameManager::Update() { sceneManager_->Update(); }
+void Framework::Update() { sceneManager_->Update(); }
 
-void GameManager::Draw() { sceneManager_->Draw(); }
+void Framework::Draw() { sceneManager_->Draw(); }
 
-void GameManager::Finalize() { delete sceneFactory_; }
+void Framework::Finalize() { delete sceneFactory_; }
 
-void GameManager::Run() {
+void Framework::Run() {
 	int32_t windowWidth = 1280;
 	int32_t windowHeight = 720;
 	Engine::Initialize(L"自作エンジン", windowWidth, windowHeight);

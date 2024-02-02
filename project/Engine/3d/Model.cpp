@@ -159,15 +159,23 @@ void Model::DirectionalLightDraw(DirectionLight directionLight) {
 	lightData->directionLight_.color = directionLight.color;
 	lightData->directionLight_.direction = Math::Normalize(directionLight.direction);
 	lightData->directionLight_.intensity = directionLight.intensity;
-	lightData->pointLight_.isEnable_ = false;
 	
+	lightData->pointLight_.isEnable_ = false;
+	lightData->spotLight_.isEnable = false;
 }
-
 void Model::PointLightDraw(PointLight pointLight, Vector3 direction) {
 	lightData->pointLight_ = pointLight;
 	lightData->directionLight_.direction = Math::Normalize(direction);
 	lightData->pointLight_.isEnable_ = true;
+	lightData->spotLight_.isEnable = false;
 	lightData->directionLight_.intensity = 0.0f;
+}
+void Model::SpotLightDraw(SpotLight spotLight) {
+	lightData->spotLight_ = spotLight;
+	lightData->spotLight_.direction = Math::Normalize(spotLight.direction);
+	lightData->spotLight_.isEnable = true;
+	lightData->pointLight_.isEnable_ = false;
+
 }
 
 void Model::DirectionalLight(Vector4 color, Vector3 direction, float intensity) {

@@ -16,10 +16,21 @@ struct PointLight {
 	int32_t isEnable;
 };
 
+struct SpotLight {
+	float32_t4 color; //ライトの色
+	float32_t3 position;//ライトの位置
+	float intensity; //輝度
+	float32_t3 direction; // 方向
+	float distance;//ライトの届く距離
+	float decay;//減衰
+	float cosAngle;//
+	int32_t isEnable;
+};
+
 struct WritingStyle {
 	DirectionLight directionLight;
 	PointLight pointLight;
-
+	SpotLight spotLight;
 };
 
 
@@ -48,6 +59,7 @@ PixelShaderOutput main(VertexShaderOutput input) {
 		float NdotL = dot(normalize(input.normal), -gLight.directionLight.direction);
 		float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
 		float32_t3 diffuse = gMaterial.color.rbg * textureColor.rgb * gLight.directionLight.color.rgb * cos * gLight.directionLight.intensity;
+
 		// 鏡面反射
 		//float32_t3 reflectLight = reflect(gLight.directionLight.direction, normalize(input.normal));
 		float32_t3 halfVector = normalize(-gLight.directionLight.direction + toEye);
@@ -77,13 +89,39 @@ PixelShaderOutput main(VertexShaderOutput input) {
 			float32_t3 pHalfVector = normalize(-pointLightDirection + toEye);
 			float pNdotH = dot(normalize(input.normal), pHalfVector);
 			float pSpecularPow = pow(saturate(pNdotH), gMaterial.shininess);
-			float32_t3 pSpecular = pointLightColor * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
+			float32_t3 pSpecular = pointLightColor * pSpecularPow * float32_t3(1.0f, 1.0f, 1.0f);
 
 			// 拡散反射＋鏡面反射
 			output.color.rgb = diffuse + specular+pDiffuse + pSpecular;
 			
 		}
- 
+
+		//SpotLight
+		//if (gLight.spotLight.isEnable != 0) {
+		//	float32_t3 spotLightDirectionOnSurface = normalize(input.worldPosition - gLight.spotLight.position);
+		//	float32_t3 cosAngle = dot(spotLightDirectionOnSurface, gLight.spotLight.direction);
+		//	float32_t3 falloffFactor = saturate((cosAngle - gLight.spotLight.cosAngle) / (1.0f - gLight.spotLight.cosAngle));
+		//	float32_t distance = length(gLight.spotLight.position - input.worldPosition);
+		//	float32_t factor = pow(-distance, gLight.spotLight.decay);
+		//	float32_t3 spotLightColor = gLight.spotLight.color.rgb * gLight.spotLight.intensity*factor*falloffFactor;
+
+
+
+		//	// 拡散反射
+		//	float sNdotL = dot(normalize(input.normal), -gLight.spotLight.direction);
+		//	float sCos = pow(sNdotL * 0.5f + 0.5f, 2.0f);
+		//	float32_t3 sDiffuse = gMaterial.color.rgb * textureColor.rgb * spotLightColor * sCos;
+
+		//	// 鏡面反射
+		//	//float32_t3 reflectLight = reflect(pointLightDirection, normalize(input.normal));
+		//	float32_t3 sHalfVector = normalize(-gLight.spotLight.direction + toEye);
+		//	float sNdotH = dot(normalize(input.normal), sHalfVector);
+		//	float sSpecularPow = pow(saturate(sNdotH), gMaterial.shininess);
+		//	float32_t3 sSpecular = spotLightColor * sSpecularPow * float32_t3(1.0f, 1.0f, 1.0f);
+
+		//	// 拡散反射＋鏡面反射
+		//	output.color.rgb = sDiffuse + sSpecular;
+		//////}
 
 	} else {
 	   output.color.rgb = gMaterial.color.rgb * textureColor.rgb;

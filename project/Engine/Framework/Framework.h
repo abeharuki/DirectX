@@ -3,7 +3,7 @@
 #include "SceneManager.h"
 
 
-class GameManager {
+class Framework {
 public:
 	
 	virtual void Initialize();

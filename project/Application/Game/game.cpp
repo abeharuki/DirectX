@@ -1,7 +1,7 @@
 #include "Game.h"
 
 void Game::Initialize() { 
-	GameManager::Initialize(); 
+	Framework::Initialize();
 
 
 	//シーンファクトを生成し、マネージャーにセット
@@ -14,10 +14,10 @@ void Game::Initialize() {
 
 void Game::Update() {
 	// 基底クラスの更新
-	GameManager::Update();
+	Framework::Update();
 }
 
 void Game::Draw() {
 	// 基底クラスの描画
-	GameManager::Draw();
+	Framework::Draw();
 }

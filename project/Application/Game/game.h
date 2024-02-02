@@ -1,8 +1,8 @@
 #pragma once
-#include "Framework/GameManager.h"
+#include "Framework/Framework.h"
 #include "SceneFactory.h"
 
-class Game : public GameManager {
+class Game : public Framework {
 public:
 	/// <summary>
 	/// 初期化

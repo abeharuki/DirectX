@@ -131,10 +131,22 @@ struct PointLight {
 	bool isEnable_ = false;
 };
 
+struct SpotLight {
+	Vector4 color; //ライトの色
+	Vector3 position;//ライトの位置
+	float intensity; //輝度
+	Vector3 direction; // 方向
+	float distance;//ライトの届く距離
+	float decay;//減衰
+	float cosAngle;//
+	bool isEnable = false;
+};
+
+
 struct WritingStyle {
 	DirectionLight directionLight_;
 	PointLight pointLight_;
-
+	SpotLight spotLight_;
 };
 
 

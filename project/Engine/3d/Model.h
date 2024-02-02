@@ -68,6 +68,9 @@ public:
 	static void DirectionalLightDraw(DirectionLight directionLight);
 	//ポイントライトの詳細　向き
 	static void PointLightDraw(PointLight pointLight, Vector3 direction);
+	//スポットライト
+	static void SpotLightDraw(SpotLight spotLight);
+
 	void DirectionalLight(Vector4 color, Vector3 direction, float intensity);
 
 	

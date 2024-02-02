@@ -2,9 +2,8 @@
 
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-	GameManager* game = new Game();
+	std::unique_ptr<Framework> game = std::make_unique<Game>();
 	game->Run();
-	delete game;
 	return 0;
 }
 
