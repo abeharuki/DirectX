@@ -147,7 +147,7 @@ private: // メンバ変数
 	uint32_t* indexData_;
 
 	Material* materialDataSprite;
-	DirectionalLight* directionalLightData = nullptr;
+	DirectionLight* directionalLightData = nullptr;
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
 
 	/*Transform* uvTransformSprite{

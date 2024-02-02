@@ -40,11 +40,6 @@ struct Material {
 	float32_t shininess;
 };
 
-struct DirectionalLight {
-	float32_t4 color;     // 
-	float32_t3 direction; // 
-	float intensity;      // 
-};
 
 struct Camera {
 	float32_t3 worldPosition;
@@ -53,3 +48,6 @@ struct Camera {
 struct PixelShaderOutput {
 	float32_t4 color : SV_TARGET0;
 };
+
+
+

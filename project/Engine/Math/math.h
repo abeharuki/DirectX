@@ -115,11 +115,29 @@ struct CameraForGPU {
 	Vector3 worldPos;
 };
 
-struct DirectionalLight {
+struct DirectionLight {
 	Vector4 color;     // ライトの色
 	Vector3 direction; // ライトの向き
 	float intensity;   // 輝度
+	
 };
+
+struct PointLight {
+	Vector4 color_;     // ライトの色
+	Vector3 position_;//ライトの位置
+	float intensity_;   // 輝度
+	float radius_;//ライトの届く距離
+	float decay_;//減衰
+	bool isEnable_ = false;
+};
+
+struct WritingStyle {
+	DirectionLight directionLight_;
+	PointLight pointLight_;
+
+};
+
+
 
 struct Particle_ {
 	Transform transform;

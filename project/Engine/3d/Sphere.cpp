@@ -9,7 +9,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> Sphere::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::pixelShaderBlob_;
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Sphere::lightResource_;
-DirectionalLight* Sphere::directionalLightData;
+DirectionLight* Sphere::directionalLightData;
 
 
 void Sphere::Initialize(const std::string& texturePath) {
@@ -108,7 +108,7 @@ void Sphere::CreateVertexResource() {
 	cameraData->worldPos = {0.0f, 0.0f, -10.0f};
 
 	// ライティング
-	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DirectionalLight));
+	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DirectionLight));
 	// 頂点リソースにデータを書き込む
 	// 書き込むためのアドレスを取得
 	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));

@@ -5,7 +5,7 @@
 
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
-DirectionalLight* Model::directionalLightData;
+WritingStyle* Model::lightData;
 
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
 	
@@ -107,15 +107,17 @@ void Model::CreateVertexResource() {
 	materialData->uvTransform = Math::MakeIdentity4x4();
 
 	// ライティング
-	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DirectionalLight));
+	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));
 	// 頂点リソースにデータを書き込む
 	// 書き込むためのアドレスを取得
-	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&lightData));
 
 	// デフォルト値
-	directionalLightData->color = {1.0f, 1.0f, 1.0f, 1.0f};
-	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
-	directionalLightData->intensity = 1.0f;
+	lightData->directionLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
+	lightData->directionLight_.direction = {0.0f, -1.0f, 0.0f};
+	lightData->directionLight_.intensity = 1.0f;
+	
+	
 
 	//カメラ
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
@@ -150,23 +152,29 @@ void Model::LoadTexture(const std::string& filename, const std::string& textureP
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize();
 	texture_ = textureManager_->Load(texturePath);
-	
 }
 
 
-void Model::LightDraw(Vector4 color, Vector3 direction, float intensity) {
-	
-	directionalLightData->color = color;
-	directionalLightData->direction = Math::Normalize(direction);
-	directionalLightData->intensity = intensity;
+void Model::DirectionalLightDraw(DirectionLight directionLight) {
+	lightData->directionLight_.color = directionLight.color;
+	lightData->directionLight_.direction = Math::Normalize(directionLight.direction);
+	lightData->directionLight_.intensity = directionLight.intensity;
+	lightData->pointLight_.isEnable_ = false;
 	
 }
 
-void Model::Light(Vector4 color, Vector3 direction, float intensity) {
+void Model::PointLightDraw(PointLight pointLight, Vector3 direction) {
+	lightData->pointLight_ = pointLight;
+	lightData->directionLight_.direction = Math::Normalize(direction);
+	lightData->pointLight_.isEnable_ = true;
+	lightData->directionLight_.intensity = 0.0f;
+}
 
-	directionalLightData->color = color;
-	directionalLightData->direction = Math::Normalize(direction);
-	directionalLightData->intensity = intensity;
+void Model::DirectionalLight(Vector4 color, Vector3 direction, float intensity) {
+
+	lightData->directionLight_.color = color;
+	lightData->directionLight_.direction = Math::Normalize(direction);
+	lightData->directionLight_.intensity = intensity;
 
 }
 

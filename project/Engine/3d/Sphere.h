@@ -29,7 +29,7 @@ public:
 
 	// ライティング
 	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
-	static DirectionalLight* directionalLightData;
+	static DirectionLight* directionalLightData;
 
 public:
 	/// <summary>

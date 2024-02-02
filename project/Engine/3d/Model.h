@@ -33,7 +33,7 @@ public: // 静的メンバ変数
 	
 	// ライティング
 	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
-	static DirectionalLight* directionalLightData;
+	static WritingStyle* lightData;
 
 	BlendMode blendMode_ = BlendMode::kNormal;
 
@@ -65,8 +65,10 @@ public:
 	/// </summary>
 	/// <param name="commandList">描画コマンドリスト</param>
 	//光の色　向き　明るさ
-	static void LightDraw(Vector4 color, Vector3 direction, float intensity);
-	void Light(Vector4 color, Vector3 direction, float intensity);
+	static void DirectionalLightDraw(DirectionLight directionLight);
+	//ポイントライトの詳細　向き
+	static void PointLightDraw(PointLight pointLight, Vector3 direction);
+	void DirectionalLight(Vector4 color, Vector3 direction, float intensity);
 
 	
 	static void PostDraw();
@@ -103,6 +105,7 @@ private:
 
 	// カメラ用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
+
 
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
