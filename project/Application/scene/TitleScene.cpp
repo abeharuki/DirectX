@@ -68,9 +68,9 @@ void TitleScene::Update() {
 	ImGui::Begin("Setting");
 	if (ImGui::TreeNode("Bunny")) {
 
-		ImGui::SliderFloat3("BunnyPos", &worldTransformSphere_.translate.x, -10.0f, 10.0f);
-		ImGui::SliderFloat3("BunnyRotate", &worldTransformSphere_.rotate.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("BunnySize", &worldTransformSphere_.scale.x, -10.0f, 10.0f);
+		ImGui::DragFloat3("BunnyPos", &worldTransformSphere_.translate.x, 0.1f);
+		ImGui::DragFloat3("BunnyRotate", &worldTransformSphere_.rotate.x, 0.01f);
+		ImGui::DragFloat3("BunnySize", &worldTransformSphere_.scale.x, 0.1f);
 		
 		ImGui::TreePop();
 	}

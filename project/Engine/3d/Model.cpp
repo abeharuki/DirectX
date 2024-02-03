@@ -36,11 +36,7 @@ void Model::sPipeline() {
 
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection ,bool light) {
-	ImGui::Begin("Light");
-	ImGui::Text("DirectionLight%d", lightData->directionLight_.isEnable_);
-	ImGui::Text("PointLight%d", lightData->pointLight_.isEnable_);
-	ImGui::Text("SpotLight%d", lightData->spotLight_.isEnable_);
-	ImGui::End();
+	
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
 
