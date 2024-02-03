@@ -52,7 +52,7 @@ void TitleScene::Update() {
 	viewProjection_.UpdateMatrix();
 
 	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
-	static int currentItem = 0; // 初期選択アイテムのインデックス
+	static int currentItem = 1; // 初期選択アイテムのインデックス
 
 
 	if (currentItem == 0) {
@@ -71,6 +71,7 @@ void TitleScene::Update() {
 		ImGui::SliderFloat3("BunnyPos", &worldTransformSphere_.translate.x, -10.0f, 10.0f);
 		ImGui::SliderFloat3("BunnyRotate", &worldTransformSphere_.rotate.x, -1.0f, 1.0f);
 		ImGui::SliderFloat3("BunnySize", &worldTransformSphere_.scale.x, -10.0f, 10.0f);
+		
 		ImGui::TreePop();
 	}
 
@@ -79,15 +80,16 @@ void TitleScene::Update() {
 		ImGui::Combo("##combo", &currentItem, items, IM_ARRAYSIZE(items));
 		if (ImGui::TreeNode("DirectionLight")) {
 			ImGui::SliderFloat4("DirectionLightColor", &directionLight_.color.x, -1.0f, 1.0f);
-			ImGui::SliderFloat3("DirectionLightDirecton", &directionLight_.direction.x, -5.0f, 5.0f);
+			ImGui::DragFloat3("DirectionLightDirecton", &directionLight_.direction.x, 0.1f);
 			ImGui::DragFloat("DirectionIntensity", &directionLight_.intensity, 0.1f);
+			//ImGui::Checkbox("DirectionLight%d", &directionLight_.isEnable_);
 			ImGui::TreePop();
 		}
 		
 		if (ImGui::TreeNode("PointLight")) {
 			// LightLight
 			ImGui::SliderFloat4("PointLightColor", &pointLight_.color_.x, -1.0f, 1.0f);
-			ImGui::SliderFloat3("PointLightPosition", &pointLight_.position_.x, -1.0f, 5.0f);
+			ImGui::DragFloat3("PointLightPosition", &pointLight_.position_.x, 0.1f);
 			ImGui::DragFloat("PointRadius", &pointLight_.radius_, 0.1f);
 			ImGui::DragFloat("pointDecay", &pointLight_.decay_, 0.1f);
 			ImGui::DragFloat("PointIntensity", &pointLight_.intensity_, 0.1f);
@@ -95,7 +97,18 @@ void TitleScene::Update() {
 			ImGui::TreePop();
 		}
 
-		
+		if (ImGui::TreeNode("spotLight")) {
+			// LightLight
+			ImGui::SliderFloat4("SpotLightColor", &spotLight_.color_.x, -1.0f, 1.0f);
+			ImGui::DragFloat3("SpotLightPosition", &spotLight_.position_.x, 0.1f);
+			ImGui::DragFloat3("SpotLightDirecton", &spotLight_.direction_.x, 0.1f);
+			ImGui::DragFloat("SpotDistance", &spotLight_.distance_, 0.1f);
+			ImGui::DragFloat("SpotDecay", &spotLight_.cosAngle_, 0.1f);
+			ImGui::DragFloat("SpotAngle", &spotLight_.decay_, 0.1f);
+			ImGui::DragFloat("SpotIntensity", &spotLight_.intensity_, 0.1f);
+
+			ImGui::TreePop();
+		}
 
 
 		

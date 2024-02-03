@@ -24,7 +24,7 @@ private : // 基本変数
 		{1.0f, 1.0f, 1.0f, 1.0f},
 		{0.0f, -2.0f, 0.0f},
 		1.0f,
-		
+		true,
 	};
 
 	PointLight pointLight_ = {
@@ -37,14 +37,14 @@ private : // 基本変数
 	};
 
 	SpotLight spotLight_ = {
-			{1.0f, 1.0f, 1.0f, 1.0f},
-			{ 2.0f,1.25f,0.0 },
-			7.0f,
-			{1.0f, -1.0f, 0.0f},
-			4.0f,
-			2.0f,
-			std::cos(std::numbers::pi_v<float>/3.0f),
-			true
+		{1.0f, 1.0f, 1.0f, 1.0f},
+		{ -2.0f,1.25f,0.0 },
+		7.0f,
+		{1.0f, -1.0f, 0.0f},
+		4.0f,
+		2.0f,
+		std::cos(std::numbers::pi_v<float>/3.0f),
+		true
 	};
 
 private:

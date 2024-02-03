@@ -36,6 +36,11 @@ void Model::sPipeline() {
 
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection ,bool light) {
+	ImGui::Begin("Light");
+	ImGui::Text("DirectionLight%d", lightData->directionLight_.isEnable_);
+	ImGui::Text("PointLight%d", lightData->pointLight_.isEnable_);
+	ImGui::Text("SpotLight%d", lightData->spotLight_.isEnable_);
+	ImGui::End();
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
 
@@ -116,7 +121,7 @@ void Model::CreateVertexResource() {
 	lightData->directionLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
 	lightData->directionLight_.direction = {0.0f, -1.0f, 0.0f};
 	lightData->directionLight_.intensity = 1.0f;
-	
+	//lightData->directionLight_.isEnable_ = true;
 	
 
 	//カメラ
@@ -159,23 +164,29 @@ void Model::DirectionalLightDraw(DirectionLight directionLight) {
 	lightData->directionLight_.color = directionLight.color;
 	lightData->directionLight_.direction = Math::Normalize(directionLight.direction);
 	lightData->directionLight_.intensity = directionLight.intensity;
-	
+	lightData->directionLight_.isEnable_ = true;
 	lightData->pointLight_.isEnable_ = false;
-	lightData->spotLight_.isEnable = false;
+	lightData->spotLight_.isEnable_ = false;
+
+	
+
 }
 void Model::PointLightDraw(PointLight pointLight, Vector3 direction) {
 	lightData->pointLight_ = pointLight;
 	lightData->directionLight_.direction = Math::Normalize(direction);
 	lightData->pointLight_.isEnable_ = true;
-	lightData->spotLight_.isEnable = false;
+	lightData->spotLight_.isEnable_ = false;
+	lightData->directionLight_.isEnable_ = false;
 	lightData->directionLight_.intensity = 0.0f;
+
 }
 void Model::SpotLightDraw(SpotLight spotLight) {
 	lightData->spotLight_ = spotLight;
-	lightData->spotLight_.direction = Math::Normalize(spotLight.direction);
-	lightData->spotLight_.isEnable = true;
+	lightData->spotLight_.direction_ = Math::Normalize(spotLight.direction_);
+	lightData->spotLight_.isEnable_ = true;
 	lightData->pointLight_.isEnable_ = false;
-
+	lightData->directionLight_.isEnable_ = false;
+	
 }
 
 void Model::DirectionalLight(Vector4 color, Vector3 direction, float intensity) {
