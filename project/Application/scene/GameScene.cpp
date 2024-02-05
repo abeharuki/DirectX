@@ -133,6 +133,10 @@ void GameScene::Update() {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
 	}
 
+	if (KeyInput::PushKey(DIK_O)) {
+		SceneManager::GetInstance()->ChangeScene("OverScene");
+	}
+
 	
 
 	worldTransform_.rotate.y += 0.02f;
@@ -148,53 +152,9 @@ void GameScene::Update() {
 	
 	
 	ImGui::Begin("Setting");
-	if (ImGui::TreeNode("plane")) {
-		ImGui::SliderFloat4("Color", &colorPlane.x, -1.0f, 1.0f);
-		if (ImGui::BeginCombo("BlendMode", EnumToString(blendMode_))) {
-			if (ImGui::Selectable("kNone", blendMode_ == BlendMode::kNone)) {
-				blendMode_ = BlendMode::kNone;
-				
-			}
-			if (ImGui::Selectable("kNormal", blendMode_ == BlendMode::kNormal)) {
-				blendMode_ = BlendMode::kNormal;
-			}
-			if (ImGui::Selectable("kAdd", blendMode_ == BlendMode::kAdd)) {
-				blendMode_ = BlendMode::kAdd;
-			}
-			if (ImGui::Selectable("kSubtract", blendMode_ == BlendMode::kSubtract)) {
-				blendMode_ = BlendMode::kSubtract;
-
-			}
-			
-			ImGui::EndCombo();
-		}
-		ImGui::TreePop();
-	}
-
-	if (ImGui::TreeNode("bunny")) {
-
-		ImGui::SliderFloat3("transletion", &worldTransformFence_[0].translate.x, -1.0f, 10.0f);
-		ImGui::DragFloat3("rotate", &worldTransformFence_[0].rotate.x, 0.01f);
-
-		ImGui::TreePop();
-	}
 	
-	if (ImGui::TreeNode("Sphere")) {
-		
-		ImGui::SliderFloat3("Sprite", &worldTransformSphere_.translate.x, -10.0f, 10.0f);
 
-		ImGui::TreePop();
-	}
-
-	if (ImGui::TreeNode("Sprite")) {
-		// LightLight
-		ImGui::SliderFloat3("UVTransform.scale", &uvTransform_.scale.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("UVTransform.translate", &uvTransform_.translate.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("Sprite", &worldTransform_.scale.x, -1.0f, 10.0f);
-		
-
-		ImGui::TreePop();
-	}
+	
 	if (ImGui::TreeNode("Particle")) {
 		ImGui::Checkbox("move", &particle);
 		ImGui::Checkbox("area", &area);
@@ -203,17 +163,14 @@ void GameScene::Update() {
 		ImGui::SliderFloat4("Color", &particleColor.x, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
-	if (ImGui::TreeNode("Light")) {
-		// LightLight
-		ImGui::SliderFloat3("LightColor", &color_.x, -1.0f, 1.0f);
-		ImGui::SliderFloat3("LightDirecton", &direction_.x, -1.0f, 1.0f);
-		ImGui::DragFloat("Intensity", &intensity_, 0.1f);
-
-		ImGui::TreePop();
-	}
+	
 	
 	ImGui::End();
 	
+	ImGui::Begin("GameScene");
+	ImGui::Text("GameClearScene : push::P");
+	ImGui::Text("GameOverScene : push::O");
+	ImGui::End();
 }
 
 
@@ -224,28 +181,20 @@ void GameScene::Draw() {
 
 	// 天球
 	skydome_->Draw(viewProjection_,false);
-	//sphere_->Draw(worldTransform_, viewProjection_,true);
+	
 	//フェンス
 	modelFence_->Draw(worldTransformFence_[0], viewProjection_, true);
-	//板ポリ
-	//modelplane_->Draw(worldTransformp_, viewProjection_, true);
-	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
+	
 	//パーティクル
-	//particle_->Draw(viewProjection_);
-	//particle2_->Draw(viewProjection_);
+	particle_->Draw(viewProjection_);
+	particle2_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
 
 #pragma region 前景スプライト描画
 	// 前景スプライト描画前処理
-	Sprite::PreDraw();
-	
-
-	//sprite_->Draw(worldTransform_,uvTransform_);
-	
-	//sprite2_->Draw(worldTransformB_);
-	
+	Sprite::PreDraw();	
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

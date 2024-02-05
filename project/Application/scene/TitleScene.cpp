@@ -19,7 +19,10 @@ void TitleScene::Initialize() {
 	
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
-
+	isSprite_ = false;
+	uv.scale = { 0.0f, 0.0f, 0.0f };
+	uv.rotate = { 0.0f, 0.0f, 0.0f };
+	uv.translate = { 0.0f, 0.0f };
 }
 
 void TitleScene::Update() {
@@ -28,8 +31,8 @@ void TitleScene::Update() {
 	if (KeyInput::PushKey(DIK_P)) {
 		SceneManager::GetInstance()->ChangeScene("GameScene");
 	}
-
-	sphere_->SetShininess(70.0f);
+	sprite_->SetSize(spriteSize_);
+	sprite_->SetPosition(spritePos_);
 
 	if (KeyInput::GetKey(DIK_A)) {
 		pointLight_.position_.x += -0.1f;
@@ -65,6 +68,16 @@ void TitleScene::Update() {
 	}
 
 	ImGui::Begin("Setting");
+
+	if (ImGui::TreeNode("Sprite")) {
+		ImGui::Checkbox("DrawSprite", &isSprite_);
+		ImGui::DragFloat2("SpritePos", &spritePos_.x, 0.1f);
+		ImGui::DragFloat2("SprirteSize", &spriteSize_.x, 0.01f);
+	
+		ImGui::TreePop();
+	}
+
+
 	if (ImGui::TreeNode("Bunny")) {
 
 		ImGui::DragFloat3("BunnyPos", &worldTransformSphere_.translate.x, 0.1f);
@@ -115,6 +128,11 @@ void TitleScene::Update() {
 	}
 
 	ImGui::End();
+
+	ImGui::Begin("TitleScene");
+	ImGui::Text("GameScene : push::P");
+	ImGui::End();
+
 }
 
 void TitleScene::Draw() {
@@ -122,15 +140,12 @@ void TitleScene::Draw() {
 
 
 
-	Transform uv;
-	uv.scale = {0.0f, 0.0f, 0.0f};
-	uv.rotate = {0.0f, 0.0f, 0.0f};
-	uv.translate = {0.0f, 0.0f};
+	
 	modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
-	ImGui::Begin("scene");
-	ImGui::SliderFloat3("s", &uv.scale.x, 0.0f, 10.0f);
-	ImGui::End();
-	sprite_->Draw(uv);
+	if (isSprite_) {
+		sprite_->Draw(uv);
+	}
+	
 	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 }

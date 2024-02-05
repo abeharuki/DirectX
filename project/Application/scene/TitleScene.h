@@ -62,5 +62,10 @@ private:
 	std::unique_ptr<Model> modelGround_;
 
 	
-	Vector2 size;
+	//スプライト
+	Vector2 spritePos_;
+	Vector2 spriteSize_ = { 250.0f,250.0f };
+	bool isSprite_;
+	Transform uv;
+
 };
