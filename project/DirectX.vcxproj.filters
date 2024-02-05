@@ -234,6 +234,9 @@
     <ClCompile Include="Application\Game\game.cpp">
       <Filter>ソース ファイル\Application\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\CollisionManager\CollisionManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\hlsl\Particle.VS.hlsl">
@@ -375,6 +378,15 @@
     </ClInclude>
     <ClInclude Include="Application\Game\game.h">
       <Filter>ヘッダー ファイル\Application\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionManager\CollisionManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionManager\CollisionConfig.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionManager\Collider.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -61,9 +61,23 @@ struct Matrix4x4 final {
 	float m[4][4];
 };
 
+
+struct Sphere
+{
+	Vector3 center;//中心点
+	float radius;
+};
+
 struct AABB {
 	Vector3 min; // 最小点
 	Vector3 max; // 最大点
+};
+
+struct OBB
+{
+	Vector3 center;//中心点
+	Vector3 orientations[3];//座標軸。正規化・直交必須
+	Vector3 size;//座標軸方向の長さの半分。中心から面までの距離
 };
 
 struct Transform {
@@ -183,6 +197,8 @@ struct AccelerationField {
 
 class Math {
 public:
+
+	static float Dot(const Vector3& v1, const Vector3& v2);
 
 	// 正規化
 	static Vector3 Normalize(const Vector3& v);
