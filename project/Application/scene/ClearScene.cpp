@@ -6,7 +6,7 @@ void ClearScene::Initialize() {}
 
 void ClearScene::Update() {
 
-	if (KeyInput::PushKey(DIK_P)) {
+	if (Input::PushKey(DIK_P)) {
 		SceneManager::GetInstance()->ChangeScene("TitleScene");
 	}
 

@@ -1,13 +1,13 @@
-#include "KeyInput.h"
+#include "Input.h"
 #include "WinApp.h"
 #include <cassert>
 
-KeyInput* KeyInput::GetInstance() {
-	static KeyInput instance;
+Input* Input::GetInstance() {
+	static Input instance;
 	return &instance;
 }
 
-void KeyInput::Initialize() {
+void Input::Initialize() {
 	HRESULT result;
 	//	DirectInputの初期化
 	directInput = nullptr;
@@ -37,9 +37,9 @@ void KeyInput::Initialize() {
 	result == ERROR_SUCCESS ? isConnectPad = true : isConnectPad = false;
 }
 
-void KeyInput::InputInitialize() { KeyInput::GetInstance()->Initialize(); }
+void Input::InputInitialize() { Input::GetInstance()->Initialize(); }
 
-void KeyInput::Update() {
+void Input::Update() {
 
 	//キーボード情報の取得開始
 	keyboard->Acquire();
@@ -78,36 +78,36 @@ void KeyInput::Update() {
 
 }
 
-bool KeyInput::GetKey(uint8_t keynumber) { return KeyInput::GetInstance()->key[keynumber]; }
+bool Input::PressKey(uint8_t keynumber) { return Input::GetInstance()->key[keynumber]; }
 
-bool KeyInput::PushKey(uint8_t keynumber) {
-	return KeyInput::GetInstance()->key[keynumber] && !KeyInput::GetInstance()->oldKey[keynumber];
+bool Input::PushKey(uint8_t keynumber) {
+	return Input::GetInstance()->key[keynumber] && !Input::GetInstance()->oldKey[keynumber];
 }
 
-bool KeyInput::ReleaseKey(uint8_t keynumber) {
-	return !KeyInput::GetInstance()->key[keynumber] && KeyInput::GetInstance()->oldKey[keynumber];
+bool Input::ReleaseKey(uint8_t keynumber) {
+	return !Input::GetInstance()->key[keynumber] && Input::GetInstance()->oldKey[keynumber];
 }
 
-bool KeyInput::GetPadConnect() { return isConnectPad; }
+bool Input::GetPadConnect() { return isConnectPad; }
 
-bool KeyInput::GetPadButton(UINT button) { return xInputState.Gamepad.wButtons == button; }
+bool Input::GetPadButton(UINT button) { return xInputState.Gamepad.wButtons == button; }
 
-bool KeyInput::GetPadButtonUp(UINT button) {
+bool Input::GetPadButtonUp(UINT button) {
 	return xInputState.Gamepad.wButtons != button && oldXInputState.Gamepad.wButtons == button;
 }
 
-bool KeyInput::GetPadButtonDown(UINT button) {
+bool Input::GetPadButtonDown(UINT button) {
 	return xInputState.Gamepad.wButtons == button && oldXInputState.Gamepad.wButtons != button;
 }
 
-Vector2 KeyInput::GetPadLStick() {
+Vector2 Input::GetPadLStick() {
 	SHORT x = xInputState.Gamepad.sThumbLX;
 	SHORT y = xInputState.Gamepad.sThumbLY;
 
 	return Vector2(static_cast<float>(x) / 32767.0f, static_cast<float>(y) / 32767.0f);
 }
 
-Vector2 KeyInput::GetPadRStick() {
+Vector2 Input::GetPadRStick() {
 	SHORT x = xInputState.Gamepad.sThumbRX;
 	SHORT y = xInputState.Gamepad.sThumbRY;
 
@@ -115,7 +115,7 @@ Vector2 KeyInput::GetPadRStick() {
 }
 
 
-bool KeyInput::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const {
+bool Input::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const {
 	DWORD result;
 	result = XInputGetState(stickNo, &out);
 
@@ -127,7 +127,7 @@ bool KeyInput::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const {
 	}
 }
 
-void KeyInput::SetJoyStickDeadZone(int32_t stickNo, XINPUT_STATE& out) const {
+void Input::SetJoyStickDeadZone(int32_t stickNo, XINPUT_STATE& out) const {
 	int LstickX = static_cast<int>(out.Gamepad.sThumbLX);
 	int LstickY = static_cast<int>(out.Gamepad.sThumbLY);
 	int RstickX = static_cast<int>(out.Gamepad.sThumbRX);
@@ -148,4 +148,5 @@ void KeyInput::SetJoyStickDeadZone(int32_t stickNo, XINPUT_STATE& out) const {
 		RstickY = 0;
 		out.Gamepad.sThumbRY = RstickY;
 	}
+
 }

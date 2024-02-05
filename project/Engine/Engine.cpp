@@ -13,7 +13,7 @@
 #include <imgui_impl_win32.h>
 #include "Model.h"
 #include "ImGuiManager.h"
-#include "KeyInput.h"
+#include "Input.h"
 #include <GlobalVariables.h>
 #include "Audio/Audio.h"
 
@@ -21,7 +21,7 @@
 WinApp* win = nullptr;
 DirectXCommon* dxCommon = nullptr;
 ImGuiManager* imguiManager = nullptr;
-KeyInput* keyInput = nullptr;
+Input* keyInput = nullptr;
 Audio* audio = nullptr;
 
 Engine* Engine::GetInstance() {
@@ -42,7 +42,7 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 	imguiManager->Initialize(win, dxCommon);	
 
 	//	Inputの初期化処理
-	keyInput = KeyInput::GetInstance();
+	keyInput = Input::GetInstance();
 	keyInput->Initialize();
 	
 	audio = Audio::GetInstance();
