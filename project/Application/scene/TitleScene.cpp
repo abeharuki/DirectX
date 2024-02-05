@@ -5,8 +5,7 @@ void TitleScene::Initialize() {
 	audio_ = Audio::GetInstance();
 	audioData_ = audio_->SoundLoadWave("resources/audio/fanfare.wav");
 	//audio_->SoundPlayWave(audioData_, true, 3.0f);
-	sprite_.reset(Sprite::Create("resources/clear.png"));
-	size = {1.0f, 1.0f};
+	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
 
 	viewProjection_.Initialize();
 	viewProjection_.rotation_.x = 0.28f;
@@ -29,7 +28,7 @@ void TitleScene::Update() {
 	if (KeyInput::PushKey(DIK_P)) {
 		SceneManager::GetInstance()->ChangeScene("GameScene");
 	}
-	sprite_->SetSize(size);
+
 	sphere_->SetShininess(70.0f);
 
 	if (KeyInput::GetKey(DIK_A)) {

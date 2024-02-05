@@ -16,8 +16,10 @@ Sprite* Sprite::GetInstance() {
 
 void Sprite::Initialize(const std::string& fileName) {
 	LoadTexture(fileName);
+	AdjustTextureSize();
 	CreateVertexResource();
 	sPipeline();
+	
 }
 
 
@@ -64,10 +66,7 @@ void Sprite::Draw(Transform& uvTransform ) {
     };
 	
 	// Sprite用のworldViewProjectionMatrixを作る
-	Matrix4x4 matWorld_ = Math::MakeAffineMatrix(
-	    {size_.x,size_.y, 1.0f}, {0.0f, 0.0f,rotation_},
-	    {position_.x, position_.y, 0.5f});
-
+	Matrix4x4 matWorld_ = Math::MakeAffineMatrix({size_.x,size_.y, 1.0f}, {0.0f, 0.0f,rotation_},{position_.x, position_.y, 0.5f});
 	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
 	Matrix4x4 projectionMatrixSprite = Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
 	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
@@ -131,16 +130,30 @@ void Sprite::CreateVertexResource() {
 	// 1頂点あたりのサイズ
 	vbView_.StrideInBytes = sizeof(VertexData);
 	
-	
+	float left = (0.0f - anchorPoint_.x);
+	float right = (1.0f - anchorPoint_.x);
+	float top = (0.0f - anchorPoint_.y);
+	float bottom = (1.0f - anchorPoint_.y);
 
-	// 1枚目の三角形
-	vertexData_[0].position = {0.0f, 360.0f, 0.0f, 1.0f}; // 左下0
+	//左右反転
+	if (isFlipX_) {
+		left = -left;
+		right = -right;
+	}
+	//上下反転
+	if (isFlipY_) {
+		top = -top;
+		bottom = -bottom;
+	}
+
+	// 
+	vertexData_[0].position = { left , bottom, 0.0f, 1.0f}; // 左下0
 	vertexData_[0].texcoord = {0.0f, 1.0f};
-	vertexData_[1].position = {0.0f, 0.0f, 0.0f, 1.0f}; // 左上1
+	vertexData_[1].position = { left , top, 0.0f, 1.0f}; // 左上1
 	vertexData_[1].texcoord = {0.0f, 0.0f};
-	vertexData_[2].position = {360.0f, 360.0f, 0.0f, 1.0f}; // 右下2
+	vertexData_[2].position = { right, bottom, 0.0f, 1.0f}; // 右下2
 	vertexData_[2].texcoord = {1.0f, 1.0f};
-	vertexData_[3].position = {360.0f, 0.0f, 0.0f, 1.0f}; // 右上3
+	vertexData_[3].position = {right, top, 0.0f, 1.0f}; // 右上3
 	vertexData_[3].texcoord = {1.0f, 0.0f};
 
 	//vertexData_[0].normal = {0.0f, 0.0f, -1.0f};
@@ -199,6 +212,12 @@ void Sprite::LoadTexture(const std::string& fileName) {
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize();
 	texture_ = textureManager_->Load(fileName);
+}
+
+void Sprite::AdjustTextureSize()
+{
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(texture_);
+	size_ = { static_cast<float>(metadata.width),static_cast<float>(metadata.height) };
 }
 
 
