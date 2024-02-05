@@ -20,7 +20,7 @@ void FollowCamera::Update() {
 	XINPUT_STATE joyState;
 
 	// ジョイスティックの状態取得
-	if (KeyInput::GetInstance()->GetJoystickState(0, joyState)) {
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 		// 回転速度
 		float kCharacterSpeed = 0.05f;
 
@@ -32,15 +32,15 @@ void FollowCamera::Update() {
 		}
 	}
 
-	if (KeyInput::GetKey(DIK_UPARROW)) {
+	if (Input::PressKey(DIK_UPARROW)) {
 		destinationAngleX_ -= 0.1f;
-	} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
+	} else if (Input::PressKey(DIK_DOWNARROW)) {
 		destinationAngleX_ += 0.1f;
 	}
 
-	if (KeyInput::GetKey(DIK_LEFTARROW)) {
+	if (Input::PressKey(DIK_LEFTARROW)) {
 		destinationAngleY_ -= 0.1f;
-	} else if (KeyInput::GetKey(DIK_RIGHTARROW)) {
+	} else if (Input::PressKey(DIK_RIGHTARROW)) {
 		destinationAngleY_ += 0.1f;
 	}
 

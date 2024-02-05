@@ -1,5 +1,5 @@
 #pragma once
-#include "KeyInput.h"
+#include "Input.h"
 #include "Model.h"
 #include "WorldTransform.h"
 #include <list>

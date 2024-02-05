@@ -78,34 +78,34 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	if (KeyInput::GetKey(DIK_W)) {
+	if (Input::PressKey(DIK_W)) {
 		viewProjection_.rotation_.x -= 0.1f;
 
 		//worldTransformp_.translate.z += 0.1f;
-	} else if (KeyInput::GetKey(DIK_S)) {
+	} else if (Input::PressKey(DIK_S)) {
 		viewProjection_.rotation_.x += 0.1f;
 		//worldTransformp_.translate.z -= 0.1f;
 	}
 
-	if (KeyInput::GetKey(DIK_A)) {
+	if (Input::PressKey(DIK_A)) {
 		worldTransformp_.translate.x -= 0.1f;
-	} else if (KeyInput::GetKey(DIK_D)) {
+	} else if (Input::PressKey(DIK_D)) {
 		worldTransformp_.translate.x += 0.1f;
 	}
 
-	if (KeyInput::GetKey(DIK_RIGHTARROW)) {
+	if (Input::PressKey(DIK_RIGHTARROW)) {
 		//colorPlane.w += 0.01f;
 		viewProjection_.translation_.x += 0.1f;
-	} else if (KeyInput::GetKey(DIK_LEFTARROW)) {
+	} else if (Input::PressKey(DIK_LEFTARROW)) {
 		viewProjection_.translation_.x -= 0.1f;
 		//colorPlane.w -= 0.01f;
 	}
 
 
-	if (KeyInput::GetKey(DIK_UPARROW)) {
+	if (Input::PressKey(DIK_UPARROW)) {
 		
 		viewProjection_.translation_.y += 0.1f;
-	} else if (KeyInput::GetKey(DIK_DOWNARROW)) {
+	} else if (Input::PressKey(DIK_DOWNARROW)) {
 		viewProjection_.translation_.y -= 0.1f;
 		
 	}
@@ -125,15 +125,15 @@ void GameScene::Update() {
 		particle_->StopParticles();
 	}
 	
-	particle2_->SetTranslate({pos});
+	particle2_->SetTranslate({-10.0f,10.0});
 	particle2_->SetSpeed(float(num));
 	particle2_->Update();
 
-	if (KeyInput::PushKey(DIK_P)) {
+	if (Input::PushKey(DIK_P)) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
 	}
 
-	if (KeyInput::PushKey(DIK_O)) {
+	if (Input::PushKey(DIK_O)) {
 		SceneManager::GetInstance()->ChangeScene("OverScene");
 	}
 

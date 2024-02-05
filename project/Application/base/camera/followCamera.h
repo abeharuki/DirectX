@@ -1,5 +1,5 @@
 #pragma once
-#include "KeyInput.h"
+#include "Input.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "math.h"
@@ -36,7 +36,7 @@ private:
 	ViewProjection viewProjection_;
 	const WorldTransform* target_ = nullptr;
 
-	KeyInput* input_ = nullptr;
+
 
 	// 追跡対象の残像座標
 	Vector3 interTarget_ = {};

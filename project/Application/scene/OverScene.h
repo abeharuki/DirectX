@@ -1,6 +1,6 @@
 #pragma once
 #include "Framework/IScene.h"
-#include "KeyInput.h"
+#include "Input.h"
 
 
 class OverScene : public IScene {

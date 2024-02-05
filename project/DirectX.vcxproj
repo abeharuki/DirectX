@@ -135,7 +135,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Engine\base\GraphisPipeline\GraphicsPipeline.cpp" />
     <ClCompile Include="Engine\Manager\ImGuiManager.cpp" />
-    <ClCompile Include="Engine\Manager\Input\KeyInput.cpp" />
+    <ClCompile Include="Engine\Manager\Input\Input.cpp" />
     <ClCompile Include="Application\base\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\particle\Particle.cpp" />
@@ -216,7 +216,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="Engine\base\GraphisPipeline\GraphicsPipeline.h" />
     <ClInclude Include="Engine\Manager\ImGuiManager.h" />
-    <ClInclude Include="Engine\Manager\Input\KeyInput.h" />
+    <ClInclude Include="Engine\Manager\Input\Input.h" />
     <ClInclude Include="Engine\particle\Particle.h" />
     <ClInclude Include="Application\objectos\Player.h" />
     <ClInclude Include="Engine\base\StringUtility.h" />

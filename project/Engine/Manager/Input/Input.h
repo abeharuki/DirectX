@@ -13,13 +13,13 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "xinput.lib")
 
-class KeyInput {
+class Input {
 public:
-	KeyInput() = default;
-	~KeyInput() = default;
+	Input() = default;
+	~Input() = default;
 
 	
-	static KeyInput* GetInstance();
+	static Input* GetInstance();
 
 private:
 	
@@ -50,7 +50,7 @@ private: // 変数
 
 public:
 	// キーが押されているか
-	static bool GetKey(uint8_t keynumber);
+	static bool PressKey(uint8_t keynumber);
 
 	//	キーを押した瞬間
 	static bool PushKey(uint8_t keynumber);
@@ -82,15 +82,4 @@ public:
 	// パッドの右スティック
 	Vector2 GetPadRStick();
 
-	// 左トリガーを押し込んだ瞬間か
-	bool GetLTriggerDown();
-
-	// 右トリガーを押し込んだ瞬間か
-	bool GetRTriggerDown();
-
-	// 左トリガーが押されているか
-	bool GetLTrigger();
-
-	// 右トリガーが押されているか
-	bool GetRTrigger();
 };

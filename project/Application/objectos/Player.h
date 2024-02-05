@@ -1,7 +1,7 @@
 #pragma once
 #include "DirectXCommon.h"
 #include "Engine.h"
-#include "KeyInput.h"
+#include "Input.h"
 #include "Model.h"
 #include "Sprite.h"
 #include "ViewProjection.h"

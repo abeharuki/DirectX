@@ -28,22 +28,22 @@ void TitleScene::Initialize() {
 void TitleScene::Update() {
 	
 
-	if (KeyInput::PushKey(DIK_P)) {
+	if (Input::PushKey(DIK_P)) {
 		SceneManager::GetInstance()->ChangeScene("GameScene");
 	}
 	sprite_->SetSize(spriteSize_);
 	sprite_->SetPosition(spritePos_);
 
-	if (KeyInput::GetKey(DIK_A)) {
+	if (Input::PressKey(DIK_A)) {
 		pointLight_.position_.x += -0.1f;
 	}
-	else if (KeyInput::GetKey(DIK_D)) {
+	else if (Input::PressKey(DIK_D)) {
 		pointLight_.position_.x += 0.1f;
 	}
-	if (KeyInput::GetKey(DIK_S)) {
+	if (Input::PressKey(DIK_S)) {
 		pointLight_.position_.y += -0.1f;
 	}
-	else if (KeyInput::GetKey(DIK_W)) {
+	else if (Input::PressKey(DIK_W)) {
 		pointLight_.position_.y += 0.1f;
 	}
 
