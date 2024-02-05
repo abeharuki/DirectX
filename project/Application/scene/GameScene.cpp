@@ -125,7 +125,7 @@ void GameScene::Update() {
 		particle_->StopParticles();
 	}
 	
-	particle2_->SetTranslate({pos});
+	particle2_->SetTranslate({-10.0f,10.0});
 	particle2_->SetSpeed(float(num));
 	particle2_->Update();
 
