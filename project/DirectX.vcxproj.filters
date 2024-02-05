@@ -100,6 +100,24 @@
     <Filter Include="ソース ファイル\Application\scene">
       <UniqueIdentifier>{d4d56d79-e68f-4726-9b83-19b59d32faec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\Framework">
+      <UniqueIdentifier>{8aebdd01-7c18-4b37-b43c-afa6fd6630ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\Audio">
+      <UniqueIdentifier>{44122d48-4c33-41a9-b534-e1f00a4714e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\Game">
+      <UniqueIdentifier>{94d1d508-6cc7-4cf9-95e2-16b50e54fea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\Framework">
+      <UniqueIdentifier>{f4e60804-dd66-4819-827d-ad2389cd930d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\Audio">
+      <UniqueIdentifier>{6870d67d-cd03-4879-b34b-30580066a7ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\Game">
+      <UniqueIdentifier>{1534bb5b-8595-40c8-ac3c-4bbd0a6ba973}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -201,33 +219,41 @@
     <ClCompile Include="Application\base\BaseCharacter.cpp">
       <Filter>ソース ファイル\Application\base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Audio\Audio.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Framework\Framework.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\Game\game.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Engine\Framework</Filter>
     </ClCompile>
     <ClCompile Include="Application\scene\SceneFactory.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Engine\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Audio\Audio.cpp">
+      <Filter>ソース ファイル\Engine\Audio</Filter>
     </ClCompile>
     <ClCompile Include="Application\scene\OverScene.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Application\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\Game\game.cpp">
+      <Filter>ソース ファイル\Application\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="resources\hlsl\Object3d.VS.hlsl" />
-    <FxCompile Include="resources\hlsl\Object3d.PS.hlsl" />
     <FxCompile Include="resources\hlsl\Particle.VS.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\hlsl\Particle.PS.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="resources\hlsl\SpriteVS.hlsl" />
-    <FxCompile Include="resources\hlsl\SpritePS.hlsl" />
+    <FxCompile Include="resources\hlsl\Object3d.VS.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\Object3d.PS.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\SpritePS.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\SpriteVS.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -326,29 +352,29 @@
     <ClInclude Include="Engine\Framework\SceneManager.h">
       <Filter>ヘッダー ファイル\Engine\Maneger</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Audio\Audio.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\base\BaseCharacter.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\base\Skydome.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Engine\Framework\AbstractSceneFactory.h">
+      <Filter>ヘッダー ファイル\Engine\Framework</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Framework\Framework.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\Game\game.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Framework\AbstractSceneFactory.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Engine\Framework</Filter>
     </ClInclude>
     <ClInclude Include="Application\scene\SceneFactory.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Engine\Framework</Filter>
     </ClInclude>
     <ClInclude Include="Application\scene\OverScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\base\BaseCharacter.h">
+      <Filter>ヘッダー ファイル\Application\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\base\Skydome.h">
+      <Filter>ヘッダー ファイル\Application\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Audio\Audio.h">
+      <Filter>ヘッダー ファイル\Engine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Game\game.h">
+      <Filter>ヘッダー ファイル\Application\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -357,10 +383,14 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\hlsl\Object3d.hlsli" />
     <None Include="resources\hlsl\Particle.hlsli">
       <Filter>リソース ファイル</Filter>
     </None>
-    <None Include="resources\hlsl\Sprite.hlsli" />
+    <None Include="resources\hlsl\Object3d.hlsli">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="resources\hlsl\Sprite.hlsli">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>
