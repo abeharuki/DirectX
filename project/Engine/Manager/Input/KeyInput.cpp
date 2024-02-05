@@ -114,36 +114,6 @@ Vector2 KeyInput::GetPadRStick() {
 	return Vector2(static_cast<float>(x) / 32767.0f, static_cast<float>(y) / 32767.0f);
 }
 
-bool KeyInput::GetLTriggerDown() {
-	//	デッドラインの設定必須
-	if (oldXInputState.Gamepad.bLeftTrigger < 128 && xInputState.Gamepad.bLeftTrigger >= 128) {
-		return true;
-	}
-	return false;
-}
-
-bool KeyInput::GetRTriggerDown() {
-	//	デッドラインの設定必須
-	if (oldXInputState.Gamepad.bRightTrigger < 128 && xInputState.Gamepad.bRightTrigger >= 128) {
-		return true;
-	}
-	return false;
-}
-bool KeyInput::GetLTrigger() {
-	//	デッドラインの設定必須
-	if (xInputState.Gamepad.bLeftTrigger >= 128) {
-		return true;
-	}
-	return false;
-}
-
-bool KeyInput::GetRTrigger() {
-	//	デッドラインの設定必須
-	if (xInputState.Gamepad.bRightTrigger >= 128) {
-		return true;
-	}
-	return false;
-}
 
 bool KeyInput::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const {
 	DWORD result;
