@@ -61,12 +61,13 @@ public: // 静的メンバ関数
 	/// </summary>
 	static void PostDraw();
 
-	
-	
-	void SetColor(Vector4 color);
+	static Sprite* Create(
+		const std::string& fileName /* Vector4 color = {1, 1, 1, 1},
+		Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false*/);
 
-	// ブレンドモード
-	void SetBlendMode(BlendMode blendMode);
+
+	
+	
 
 public: // 静的メンバ変数
 	// 頂点数
@@ -117,16 +118,27 @@ public: // メンバ関数
 
 	const Vector2& GetPosition() const { return position_; }
 
-	
+
+	//アンカーポイント
+	const Vector2& GetAncohrPoint() const { return anchorPoint_; }
+	void SetAnchorPoint(const Vector2& anchorPoint) { this->anchorPoint_ = anchorPoint; }
+
+	//フリップ
+	const bool& GetFlipX() const { return isFlipX_; }
+	const bool& GetFlipY() const { return isFlipY_; }
+	void SetFlipX(const bool& flipX) { this->isFlipX_ = flipX; }
+	void SetFlipY(const bool& flipY) { this->isFlipY_ = flipY; }
+
+
 	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw(Transform& uvTransform);
 
+	void SetColor(Vector4 color);
 
-	static Sprite* Create(
-	    const std::string& fileName /* Vector4 color = {1, 1, 1, 1},
-	    Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false*/);
+	// ブレンドモード
+	void SetBlendMode(BlendMode blendMode);
 
 
 private: // メンバ変数
@@ -150,14 +162,6 @@ private: // メンバ変数
 	DirectionLight* directionalLightData = nullptr;
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
 
-	/*Transform* uvTransformSprite{
-	    {1.0f, 1.0f, 1.0f},
-	    {0.0f, 0.0f, 0.0f},
-	    {0.0f, 0.0f, 0.0f},
-	};*/
-	
-
-	
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView_;
 	D3D12_INDEX_BUFFER_VIEW ibView_;
@@ -186,13 +190,15 @@ private: // メンバ変数
 	// 座標
 	Vector2 position_{};
 	// スプライト幅、高さ
-	Vector2 size_ = {1.0f, 1.0f};
+	Vector2 size_ = {0.0f, 0.0f};
 	// アンカーポイント
 	Vector2 anchorPoint_ = {0, 0};
 	// ワールド行列
 	Matrix4x4 matWorld_{};
-	
-	
+	//左右クリップ
+	bool isFlipX_ = false;
+	//上下フリップ
+	bool isFlipY_ = false;
 
 private: // メンバ関数
 	/// <summary>
@@ -202,4 +208,5 @@ private: // メンバ関数
 
 	void CreateVertexResource();
 	void LoadTexture(const std::string& fileName);
+	void AdjustTextureSize();
 };

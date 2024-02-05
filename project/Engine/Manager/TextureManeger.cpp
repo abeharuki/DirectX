@@ -75,15 +75,15 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 
 	DirectX::ScratchImage mipImage = LoadTexture(filePath);
-	const DirectX::TexMetadata& metadata = mipImage.GetMetadata();
-	textureResource[index] = CreateTextureResource(Engine::GetDevice().Get(), metadata);
+	metadata[index] = mipImage.GetMetadata();
+	textureResource[index] = CreateTextureResource(Engine::GetDevice().Get(), metadata[index]);
 	UploadTextureData(textureResource[index].Get(), mipImage);
 	// metaDataを元にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
+	srvDesc.Format = metadata[index].format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+	srvDesc.Texture2D.MipLevels = UINT(metadata[index].mipLevels);
 
 	// SRVを作成するDescripterHeapの場所を決める
 	textureSrvHandleGPU_[index] = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+1); // direct_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
@@ -112,6 +112,9 @@ void TextureManager::CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource
 	instancingSrvHandelGPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	Engine::GetDevice()->CreateShaderResourceView(pResource, &instancingSrvDesc, instancingSrvHandelCPU[index]);
 }
+
+
+
 
 
 // TextureResourceの作成
@@ -167,6 +170,13 @@ void TextureManager::UploadTextureData(
 		);
 		assert(SUCCEEDED(hr));
 	}
+}
+
+const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
+{
+	//(textureIndex > 256);
+
+	return metadata[textureIndex];
 }
 
 
