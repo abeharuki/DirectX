@@ -53,9 +53,9 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 		//コライダーBのワールド座標を取得
 		Vector3 posB = colliderB->GetWorldPosition();
 		//コライダーAのSphereを作成
-		Sphere sphereA = { .center{posA},.radius{colliderA->GetRadius()} };
+		sphere sphereA = { .center{posA},.radius{colliderA->GetRadius()} };
 		//コライダーBのSphereを作成
-		Sphere sphereB = { .center{posB},.radius{colliderB->GetRadius()} };
+		sphere sphereB = { .center{posB},.radius{colliderB->GetRadius()} };
 		//衝突判定
 		if (CheckCollisionSphere(sphereA, sphereB))
 		{
@@ -101,7 +101,7 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 		if (colliderA->GetCollisionPrimitive() & kCollisionPrimitiveSphere)
 		{
 			//コライダーAのSphereを作成
-			Sphere sphere = { .center{posA},.radius{colliderA->GetRadius()} };
+			sphere sphere = { .center{posA},.radius{colliderA->GetRadius()} };
 			//コライダーBのAABBを取得
 			AABB aabb = { .min{posB + colliderB->GetAABB().min},.max{posB + colliderB->GetAABB().max} };
 			//衝突判定
@@ -116,7 +116,7 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 		else if (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveSphere)
 		{
 			//コライダーAのSphereを作成
-			Sphere sphere = { .center{posB},.radius{colliderB->GetRadius()} };
+			sphere sphere = { .center{posB},.radius{colliderB->GetRadius()} };
 			//コライダーBのAABBを取得
 			AABB aabb = { .min{posA + colliderA->GetAABB().min},.max{posA + colliderA->GetAABB().max} };
 			//衝突判定
@@ -171,7 +171,7 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 	}
 }
 
-bool CollisionManager::CheckCollisionSphere(const Sphere& sphereA, const Sphere& sphereB)
+bool CollisionManager::CheckCollisionSphere(const sphere& sphereA, const sphere& sphereB)
 {
 	//コライダーAとコライダーBの距離を計算
 	float distance = Math::Length(sphereA.center - sphereB.center);
@@ -183,7 +183,7 @@ bool CollisionManager::CheckCollisionSphere(const Sphere& sphereA, const Sphere&
 	return false;
 }
 
-bool CollisionManager::CheckCollisionSphereAABB(const Sphere& sphere, const AABB& aabb)
+bool CollisionManager::CheckCollisionSphereAABB(const sphere& sphere, const AABB& aabb)
 {
 	//最近接点を求める
 	Vector3 closestPoint{

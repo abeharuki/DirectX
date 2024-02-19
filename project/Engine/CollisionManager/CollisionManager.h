@@ -15,9 +15,9 @@ public:
 private:
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
-	bool CheckCollisionSphere(const Sphere& sphereA, const Sphere& sphereB);
+	bool CheckCollisionSphere(const sphere& sphereA, const sphere& sphereB);
 
-	bool CheckCollisionSphereAABB(const Sphere& sphere, const AABB& aabb);
+	bool CheckCollisionSphereAABB(const sphere& sphere, const AABB& aabb);
 
 	bool CheckCollisionAABB(const AABB& aabbA, const AABB& aabbB);
 

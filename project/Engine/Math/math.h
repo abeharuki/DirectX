@@ -62,12 +62,6 @@ struct Matrix4x4 final {
 };
 
 
-struct Sphere
-{
-	Vector3 center;//中心点
-	float radius;
-};
-
 struct AABB {
 	Vector3 min; // 最小点
 	Vector3 max; // 最大点
