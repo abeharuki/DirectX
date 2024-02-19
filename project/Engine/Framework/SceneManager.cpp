@@ -5,6 +5,7 @@
 SceneManager* SceneManager::instance_ = nullptr;
 
 SceneManager* SceneManager::GetInstance() {
+	
 	if (instance_ == nullptr) {
 		instance_ = new SceneManager();
 	}
@@ -12,7 +13,7 @@ SceneManager* SceneManager::GetInstance() {
 }
 
 void SceneManager::Update() {
-	
+
 	//つぎのシーンの予約があるなら
 	if (nextScene_) {
 		//旧シーンの終了
@@ -30,20 +31,50 @@ void SceneManager::Update() {
 		//次のシーンを初期化
 		currentScene_->Initialize();
 
+		load_ = false;
+
+		//delete loadScene_;
 	}
-
-
+	
 	currentScene_->Update();
 
 }
 
-void SceneManager::Draw() { currentScene_->Draw(); }
+void SceneManager::Draw() { 
+	if (!load_) {
+		currentScene_->Draw();
+	}
+	
+}
+
+void SceneManager::ChangeLoadScene(const std::string& sceneName) {
+	loadScene_ = sceneFactory_->CreateScene(sceneName);
+	loadScene_->Initialize();
+}
+
+void SceneManager::LoadingScreenUpdate() { 
+	loadScene_->Update();
+	
+}
+
+void SceneManager::LoadingScreenDraw() {
+	loadScene_->Draw();
+}
 
 void SceneManager::ChangeScene(const std::string& sceneName) {
+
 	assert(sceneFactory_);
 	assert(nextScene_ == nullptr);
-	nextScene_ = sceneFactory_->CreateScene(sceneName);
+	if (!load_) {
+		load_ = true;
+		nextScene_ = sceneFactory_->CreateScene(sceneName);
+		//loadScene_->Initialize();
+	}
+	
+	
 }
+
+
 
 SceneManager::~SceneManager() { delete currentScene_; }
 

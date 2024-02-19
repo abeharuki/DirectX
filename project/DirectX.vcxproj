@@ -110,6 +110,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\Game\game.cpp" />
     <ClCompile Include="Application\scene\ClearScene.cpp" />
     <ClCompile Include="Application\scene\GameScene.cpp" />
+    <ClCompile Include="Application\scene\LoadScene.cpp" />
     <ClCompile Include="Application\scene\OverScene.cpp" />
     <ClCompile Include="Application\scene\SceneFactory.cpp" />
     <ClCompile Include="Application\scene\TitleScene.cpp" />
@@ -189,6 +190,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\Game\game.h" />
     <ClInclude Include="Application\scene\ClearScene.h" />
     <ClInclude Include="Application\scene\GameScene.h" />
+    <ClInclude Include="Application\scene\LoadScene.h" />
     <ClInclude Include="Application\scene\OverScene.h" />
     <ClInclude Include="Application\scene\SceneFactory.h" />
     <ClInclude Include="Application\scene\TitleScene.h" />
