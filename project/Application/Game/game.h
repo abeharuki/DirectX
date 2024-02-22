@@ -8,9 +8,6 @@ public:
 	/// 初期化
 	/// </summary>
 	void Initialize() override;
-
-	
-
 	/// <summary>
 	/// 更新
 	/// </summary>
@@ -20,6 +17,8 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw() override;
+
+
 
 private:
 };

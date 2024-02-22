@@ -28,6 +28,10 @@ public:
 
 	static void EndFrame();
 
+	static void PostDraw();
+
+	static void PreDraw();
+
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(
 	    ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(

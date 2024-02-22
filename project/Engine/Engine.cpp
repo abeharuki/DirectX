@@ -67,8 +67,7 @@ void Engine::BeginFrame() {
 	//	Input初期の更新
 	keyInput->Update();
 
-	// 描画開始
-	dxCommon->PreDraw();
+
 	
 }
 
@@ -88,6 +87,15 @@ void Engine::Finalize(){
 void Engine::EndFrame() {
 	// ImGui受付終了
 	imguiManager->End();
+
+}
+
+void Engine::PreDraw() {
+	// 描画開始
+	dxCommon->PreDraw();
+}
+
+void Engine::PostDraw() {
 #ifdef _DEBUG
 	// ImGui描画
 	imguiManager->Draw();
@@ -95,6 +103,7 @@ void Engine::EndFrame() {
 	// 描画終了
 	dxCommon->PostDraw();
 }
+
 
 D3D12_CPU_DESCRIPTOR_HANDLE Engine::GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
