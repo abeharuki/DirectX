@@ -31,11 +31,11 @@ void SceneManager::Update() {
 		//次のシーンを初期化
 		currentScene_->Initialize();
 
-		load_ = false;
-
-		//delete loadScene_;
 	}
 	
+	
+
+
 	currentScene_->Update();
 
 }
@@ -65,13 +65,8 @@ void SceneManager::ChangeScene(const std::string& sceneName) {
 
 	assert(sceneFactory_);
 	assert(nextScene_ == nullptr);
-	if (!load_) {
-		load_ = true;
-		nextScene_ = sceneFactory_->CreateScene(sceneName);
-		//loadScene_->Initialize();
-	}
-	
-	
+	nextScene_ = sceneFactory_->CreateScene(sceneName);
+	load_ = true;
 }
 
 

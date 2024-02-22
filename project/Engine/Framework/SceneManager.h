@@ -25,6 +25,8 @@ public:
 
 	bool ChangeScene() { return load_; }
 
+	void SetChangeLoad(bool load) { load_ = load; }
+
 private:
 	static SceneManager* instance_;
 

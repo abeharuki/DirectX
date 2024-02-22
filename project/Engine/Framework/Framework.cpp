@@ -6,34 +6,27 @@ void Framework::Initialize() { sceneManager_ = SceneManager::GetInstance(); }
 void Framework::Update() { 
 	Engine::BeginFrame();
 	sceneManager_->Update(); 
-	//sceneManager_->LoadingScreenUpdate();
+
 	Engine::EndFrame();
 }
 
 void Framework::Draw() { 
 	Engine::PreDraw();
-	if (nowLoading) {
-		//sceneManager_->LoadingScreenDraw();
-		
-	}
-	if(loadingFinished) {
-		
-	}
 	sceneManager_->Draw();
 	Engine::PostDraw();
 }
 
 void Framework::LoadingScreenUpdate() { 
 	Engine::BeginFrame();
-	
+	sceneManager_->LoadingScreenUpdate();
 	Engine::EndFrame();
 }
 
 void Framework::LoadingScreenDraw() { 
 	Engine::PreDraw();
-	
+	sceneManager_->LoadingScreenDraw();
 	Engine::PostDraw();
-	}
+}
 
 void Framework::Finalize() { delete sceneFactory_; }
 
@@ -43,6 +36,7 @@ void Framework::Run() {
 	std::mutex mutex;
 	std::condition_variable condition;
 	std::queue<int>q;
+	bool exit = false;
 	Engine::Initialize(L"自作エンジン", windowWidth, windowHeight);
 	Initialize();
 
@@ -50,21 +44,21 @@ void Framework::Run() {
 
 	//バックグラウンドループ
 	std::thread backgroundThread([&]() {
-		{
-			//std::unique_lock<std::mutex>uniqueLock(mutex);
-			//condition.wait(uniqueLock, [&]() {return !q.empty(); });
-			//q.pop();
-			std::unique_lock<std::mutex> uniqueLock(mutex);
-			condition.wait(uniqueLock, [&]() { return nowLoading; });
-			if (!sceneManager_->ChangeScene()) {
-				loadingFinished = true;
+		
+		while (!exit) {
+		
+			{
+				
+				std::unique_lock<std::mutex> uniqueLock(mutex);
+				condition.wait(uniqueLock, [&]() { return true; });
+				if (sceneManager_->ChangeScene()) {
+					//LoadingScreenUpdate();
+					//LoadingScreenDraw();
+					sceneManager_->SetChangeLoad(false);
+				}
+
+
 			}
-
-
-		}
-		while (true) {
-			//std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-			
 			
 			
 		}
@@ -83,33 +77,13 @@ void Framework::Run() {
 			break;
 		}
 
-		
-		
-		//LoadingScreenUpdate();
 		Update();
-		if (nowLoading) {
-			//LoadingScreenDraw();
-		}	
-	
-		Draw();
-		
-		
-
-		if (sceneManager_->ChangeScene()) {
-
-			{
-				std::lock_guard<std::mutex> lock(mutex);
-				loadingFinished = false; // ロードフラグをリセット	
-				nowLoading = true;
-				condition.notify_all();
-			}
-			
-		}
+		Draw();		
 		
 	}
 
 	
-
+	exit = true;
 	// バックグラウンドスレッドの終了
 	backgroundThread.join();
 

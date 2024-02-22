@@ -23,6 +23,6 @@ protected:
 	SceneManager* sceneManager_ = nullptr;
 	AbstractSceneFactory* sceneFactory_ = nullptr;
 
-	bool loadingFinished = false;
+	bool loadingFinished = true;
 	bool nowLoading = false;
 };
