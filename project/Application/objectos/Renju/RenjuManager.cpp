@@ -42,7 +42,7 @@ void RenjuManager::Update() {
 };
 
 void RenjuManager::Draw(const ViewProjection& camera) {
-	Model_->Draw(worldTransformBase_, camera, false);
+	Model_->Draw(renju_->GetWorldTransformHead(), camera, false);
 	renju_->Draw(camera);
 	
 	for (RenjuParticle* particle : particles_) {

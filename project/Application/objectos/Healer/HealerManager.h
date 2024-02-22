@@ -8,11 +8,11 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& camera);
-
+	Healer* GetHealer() { return healer_.get(); };
 	const WorldTransform& GetWorldTransform();
 	void SetViewProjection(const ViewProjection& viewProjection);
 
-	Vector3 GetWorldPos() { return healer_->GetWorldTransform().GetWorldPos(); }
+
 	Vector3 GetCanePos() { return healer_->GetWorldTransformCane().GetWorldPos(); }
 
 	bool IsAttack() { return healer_->IsAttack(); }
@@ -25,7 +25,7 @@ public:
 	
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
-	void OnCollision(const WorldTransform& worldTransform);
+
 	void SetParticlePos(Vector3 pos);
 
 private:

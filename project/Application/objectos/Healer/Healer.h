@@ -6,11 +6,12 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include <CollisionManager/Collider.h>
 
 /// <summary>
 /// ゲームシーン
 /// </summary>
-class Healer {
+class Healer : public Collider {
 
 public: // メンバ関数
 	/// <summary>
@@ -55,22 +56,26 @@ public: // メンバ関数
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
 	void OnCollision(const WorldTransform& worldTransform);
+	void OnCollision(Collider* collider) override;
 
-
-	Vector3 GetWorldPosition();
+	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
-	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
+	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
+	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
 	WorldTransform& GetWorldTransformCane() { return worldTransformCane_; }
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
 	bool IsAttack() { return workAttack_.isAttack; }
-
+	bool IsHit() { return hitCount_; }
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
 
+	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
+
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformCane_;
 	WorldTransform worldTransformCollision_;
 	ViewProjection viewProjection_;
@@ -124,4 +129,13 @@ private: // メンバ変数
 	Vector3 enemyPos_;
 
 	uint32_t nockTime_;
+
+	//体力
+	bool hitCount_;
+
+	bool preHit_;
+	bool isHit_;
+
+	//敵の攻撃フラグ
+	bool isEnemyAttack_;
 };

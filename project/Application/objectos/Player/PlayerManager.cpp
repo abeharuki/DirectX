@@ -129,7 +129,6 @@ void PlayerManager::OnCollision() {
 	if (player_->IsHit()) {
 		--hitCount_;
 	}
-	
 };
 
 void PlayerManager::SetParticlePos(Vector3 pos) {

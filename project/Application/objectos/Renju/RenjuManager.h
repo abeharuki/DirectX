@@ -9,11 +9,10 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& camera);
-
+	Renju* GetRenju() { return renju_.get(); };
 	const WorldTransform& GetWorldTransform();
 	void SetViewProjection(const ViewProjection& viewProjection);
-	Vector3 GetWorldPos() { return renju_->GetWorldTransform().GetWorldPos(); }
-
+	
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
 	//敵の位置を検索

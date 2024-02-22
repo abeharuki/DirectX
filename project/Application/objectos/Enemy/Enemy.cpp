@@ -23,6 +23,8 @@ void Enemy::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
+	
+	
 }
 
 void Enemy::Update() { 
@@ -108,7 +110,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() { 
 	
-	int num = RandomGenerator::GetRandomInt(1, 2);
+	int num = RandomGenerator::GetRandomInt(1, 1);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kDash;
 	} else if (num == 2) {
@@ -154,8 +156,8 @@ void Enemy::AttackUpdata() {
 
 //ダッシュ攻撃
 void Enemy::DashAttackInitialize() {
-	//num_ = rand() % 4 + 1;
-	num_ = 1;
+	num_ = rand() % 4 + 1;
+	num_ = 3;
 	time_ = 60*2;
 }
 void Enemy::DashAttackUpdata() {
@@ -257,7 +259,7 @@ void Enemy::DashAttackUpdata() {
 		}
 	}
 
-	if (time_ <= 40) {
+	if (time_ <= 30) {
 		worldTransformRock_.translate.z = 5;
 		behaviorRequest_ = Behavior::kRoot;
 	}

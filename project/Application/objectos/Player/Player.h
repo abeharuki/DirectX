@@ -80,9 +80,8 @@ public: // メンバ関数
 	void Relationship();
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnAllyCollision(const WorldTransform& worldTransform);
 	void OnCollision(Collider* collider) override;
-
+	void OnCollision(const WorldTransform& worldTransform);
 	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
 	WorldTransform& GetWorldTransformHammer() { return worldTransformHammer_; }
