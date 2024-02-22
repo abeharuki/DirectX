@@ -17,6 +17,7 @@
 #include <Healer/HealerManager.h>
 #include <Tank/TankManager.h>
 #include <Renju/RenjuManager.h>
+#include "CollisionManager/CollisionManager.h"
 
 /// <summary>
 /// ゲームシーン
@@ -42,6 +43,9 @@ private://基本変数
 	float intensity_ = 1.0f;
 
 private: // メンバ変数
+
+	//衝突マネージャー
+	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
 	ViewProjection viewProjection_;
 	
 	// 天球

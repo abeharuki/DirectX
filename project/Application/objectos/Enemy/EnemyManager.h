@@ -8,7 +8,7 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& camera);
-
+	Enemy* GetEnemy() { return enemy_.get(); };
 	void DrawUI();
 
 	bool IsAttack() { return enemy_->isAttack(); }
@@ -20,7 +20,6 @@ public:
 	void SetTankPos(Vector3 pos) { enemy_->SetTankPos(pos); };
 
 	const WorldTransform& GetWorldTransform();
-	Vector3 GetWorldPos();
 	Vector3 GetRockWorldPos();
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();

@@ -28,20 +28,21 @@ void PlayerManager::Initialize() {
 	isParticle_ = false;
 	HpTransform_.scale = {0.2f, 0.2f, 0.1f};
 	HpTransform_.translate = {650.0f, 550.0f, 1.0f};
-	hitCount_ = 6;
 	
+	hitCount_ = 6;
 }
 
 void PlayerManager::Update() {
 	// 前のフレームの当たり判定のフラグを取得
-	preHit_ = isHit_;
-	isHit_ = false;
 	preHitH_ = isHitH_;
 	isHitH_ = false;
 	preHitR_ = isHitR_;
 	isHitR_ = false;
 	preHitT_ = isHitT_;
 	isHitT_ = false;
+
+	OnCollision();
+
 	for (int i = 0; i < 6; i++) {
 		spriteHP_[i]->SetSize({HpTransform_.scale.x, HpTransform_.scale.y});
 		spriteHPG_[i]->SetSize({HpTransform_.scale.x, HpTransform_.scale.y});
@@ -124,13 +125,10 @@ void PlayerManager::OnTCollision() {
 	}
 	
 }
-void PlayerManager::OnCollision(const WorldTransform& worldTransform) {
-	isHit_ = true;
-	if (isHit_ != preHit_) {
+void PlayerManager::OnCollision() {
+	if (player_->IsHit()) {
 		--hitCount_;
-		player_->OnCollision(worldTransform);
 	}
-	
 };
 
 void PlayerManager::SetParticlePos(Vector3 pos) {
@@ -140,7 +138,6 @@ void PlayerManager::SetParticlePos(Vector3 pos) {
 
 
 const WorldTransform& PlayerManager::GetWorldTransform() { return player_->GetWorldTransform(); }
-Vector3 PlayerManager::GetWorldPos() { return player_->GetWorldTransform().GetWorldPos(); }
 Vector3 PlayerManager::katanaPos() { return player_->GetWorldTransformCollision().GetWorldPos(); }
 void PlayerManager::SetViewProjection(const ViewProjection* viewProjection) {
 	player_->SetViewProjection(viewProjection);

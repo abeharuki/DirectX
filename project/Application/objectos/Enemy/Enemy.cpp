@@ -1,19 +1,29 @@
 #include "Enemy.h"
 #include <numbers>
+#include <CollisionManager/CollisionConfig.h>
 
 void Enemy::Initialize() {
 
 	// 初期化
 	worldTransformBase_.Initialize();
-	worldTransformBase_.rotate.x = 1.65f;
 	worldTransformBase_.translate.z = 10.0f;
+	worldTransformBody_.Initialize();
 	worldTransformRock_.Initialize();
 	worldTransformRock_.scale = {0.0f, 0.0f, 0.0f};
 	worldTransformRock_.translate.z = -15000.0f;
 	clear_ = false;
 	time_ = 120;
+
 	worldTransformBase_.UpdateMatrix();
-	worldTransformRock_.UpdateMatrix();
+	Relationship();
+	
+
+	AABB aabbSize{ .min{-1.0f,-3.0f,-0.525f},.max{1.0f,3.0f,0.525f} };
+	SetAABB(aabbSize);
+	SetCollisionPrimitive(kCollisionPrimitiveAABB);
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	SetCollisionMask(kCollisionMaskEnemy);
+	
 	
 }
 
@@ -59,11 +69,14 @@ void Enemy::Update() {
 	
 	
 	worldTransformBase_.UpdateMatrix();
+	worldTransformBody_.TransferMatrix();
+	Relationship();
 	if (isAttack_) {
 		worldTransformRock_.UpdateMatrix();
 	} else {
-		Relationship();
+	
 		worldTransformRock_.TransferMatrix();
+	
 	}
 	
 
@@ -72,7 +85,7 @@ void Enemy::Update() {
 	ImGui::End();
 
 	ImGui::Begin("Enemy");
-	ImGui::SliderFloat3("rotato", &worldTransformBase_.rotate.x, -2.0f, 2.0f);
+	ImGui::SliderFloat3("rotato", &worldTransformBody_.rotate.x, -2.0f, 2.0f);
 	ImGui::Text("time%d", time_);
 	ImGui::End();
 }
@@ -83,7 +96,7 @@ void Enemy::Update() {
 void Enemy::MoveInitialize() { 
 	time_ = 60*2;
 	isAttack_ = false;
-	worldTransformBase_.rotate.x = 1.65f;
+	
 	
 };
 void Enemy::MoveUpdata() {
@@ -97,7 +110,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() { 
 	
-	int num = RandomGenerator::GetRandomInt(1, 2);
+	int num = RandomGenerator::GetRandomInt(1, 1);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kDash;
 	} else if (num == 2) {
@@ -144,11 +157,12 @@ void Enemy::AttackUpdata() {
 //ダッシュ攻撃
 void Enemy::DashAttackInitialize() {
 	num_ = rand() % 4 + 1;
-	time_ = 60*3;
+	num_ = 3;
+	time_ = 60*2;
 }
 void Enemy::DashAttackUpdata() {
 	time_--;
-	if (time_ > 120) {
+	if (time_ > 60) {
 		worldTransformBase_.rotate.y += 0.5f;
 	} else {
 		isAttack_ = true;
@@ -245,12 +259,13 @@ void Enemy::DashAttackUpdata() {
 		}
 	}
 
-
-	if (time_ <= 0) {
+	if (time_ <= 30) {
 		worldTransformRock_.translate.z = 5;
-		worldTransformBase_.rotate.y = 0.0f;
 		behaviorRequest_ = Behavior::kRoot;
 	}
+
+
+
 
 	worldTransformBase_.translate.y = 0.0f;
 	
@@ -258,7 +273,7 @@ void Enemy::DashAttackUpdata() {
 
 //投擲攻撃
 void Enemy::ThrowingAttackInitialize() { 
-	worldTransformRock_.translate = {0.0f, 0.0f, -15.0f};
+	worldTransformRock_.translate = {0.0f, 15.0f, 0.0f};
 	worldTransformRock_.scale = {0.0f, 0.0f, 0.0f};
 	shakeTimer_ = 60.0f;
 	isAttack_ = false;
@@ -272,7 +287,7 @@ void Enemy::ThrowingAttackUpdata() {
 			randX = RandomGenerator::GetRandomFloat(-0.1f, 0.1f);
 			randZ = RandomGenerator::GetRandomFloat(-0.1f, 0.1f);
 
-			worldTransformBase_.translate += Vector3{randX, 0.0f, randZ};
+			worldTransformBody_.translate += Vector3{randX, 0.0f, randZ};
 
 			worldTransformRock_.scale.x += 0.1f;
 			worldTransformRock_.scale.y += 0.1f;
@@ -281,8 +296,8 @@ void Enemy::ThrowingAttackUpdata() {
 			--shakeTimer_;
 			worldTransformRock_.scale = {2.0f, 2.0f, 2.0f};
 			if (shakeTimer_ >= 0) {
-				if (worldTransformBase_.rotate.x < 2.0f) {
-					worldTransformBase_.rotate.x += 0.01f;
+				if (worldTransformBody_.rotate.x < 2.0f) {
+					worldTransformBody_.rotate.x += 0.01f;
 				}
 
 			} else {
@@ -290,10 +305,10 @@ void Enemy::ThrowingAttackUpdata() {
 				if (worldTransformBase_.rotate.x <= 1.2f) {
 					isAttack_ = true;
 					worldTransformRock_.rotate = {0.0f, 0.0f, 0.0f};
-					worldTransformRock_.translate = worldTransformBase_.translate;
+					worldTransformRock_.translate = worldTransformBody_.translate;
 					worldTransformRock_.translate.y = 15.0f;
 				} else {
-					worldTransformBase_.rotate.x -= 0.08f;
+					worldTransformBody_.rotate.x -= 0.08f;
 				}
 
 			
@@ -384,10 +399,10 @@ void Enemy::ThrowingAttackUpdata() {
 
 	if (worldTransformRock_.translate.y <= 0.6f && isAttack_) {
 
-		if (worldTransformBase_.rotate.x <= 1.65f) {
-			worldTransformBase_.rotate.x += 0.05f;
+		if (worldTransformBody_.rotate.x >= 0.0f) {
+			worldTransformBody_.rotate.x -= 0.05f;
 		} else {
-			worldTransformBase_.rotate.x = 1.65f;
+			worldTransformBody_.rotate.x = 0.0f;
 			worldTransformRock_.scale = {0.0f, 0.0f, 0.0f};
 			behaviorRequest_ = Behavior::kRoot;
 		}
@@ -399,7 +414,9 @@ void Enemy::ThrowingAttackUpdata() {
 
 
 
+void Enemy::OnCollision(Collider* collider) {
 
+}
 
 
 
@@ -415,14 +432,19 @@ void Enemy::DeadUpdata(){
 };
 
 void Enemy::Relationship() {
+	worldTransformBody_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformBody_.scale, worldTransformBody_.rotate, worldTransformBody_.translate),
+		worldTransformBase_.matWorld_);
+
 	worldTransformRock_.matWorld_ = Math::Multiply(
 	    Math::MakeAffineMatrix(
 	        worldTransformRock_.scale, worldTransformRock_.rotate, worldTransformRock_.translate),
-		worldTransformBase_.matWorld_);
+		worldTransformBody_.matWorld_);
 }
 
 
-Vector3 Enemy::GetWorldPosition() {
+const Vector3 Enemy::GetWorldPosition() const{
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）

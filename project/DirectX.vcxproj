@@ -134,6 +134,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Audio\Audio.cpp" />
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="Engine\base\WinApp.cpp" />
+    <ClCompile Include="Engine\CollisionManager\CollisionManager.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Engine\Framework\GameManager.cpp" />
     <ClCompile Include="Engine\Framework\SceneManager.cpp" />
@@ -213,6 +214,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Audio\Audio.h" />
     <ClInclude Include="Engine\base\DirectXCommon.h" />
     <ClInclude Include="Engine\base\WinApp.h" />
+    <ClInclude Include="Engine\CollisionManager\Collider.h" />
+    <ClInclude Include="Engine\CollisionManager\CollisionConfig.h" />
+    <ClInclude Include="Engine\CollisionManager\CollisionManager.h" />
     <ClInclude Include="Engine\Engine.h" />
     <ClInclude Include="Engine\Framework\AbstractSceneFactory.h" />
     <ClInclude Include="Engine\Framework\GameManager.h" />

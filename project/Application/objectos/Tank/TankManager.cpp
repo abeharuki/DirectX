@@ -18,10 +18,7 @@ void TankManager::Initialize() {
 	tank_ = std::make_unique<Tank>();
 	tank_->Initialize();
 
-	worldTransformBase_.Initialize();
-	worldTransformBase_.translate.x = 2;
-	worldTransformBase_.rotate.y = 3.14f;
-	worldTransformBase_.UpdateMatrix();
+	
 }
 
 void TankManager::Update() { 
@@ -41,13 +38,12 @@ void TankManager::Update() {
 	}
 
 	tank_->Update();
-	worldTransformBase_ = tank_->GetWorldTransform();
 	tank_->followPlayer(playerPos_);
 	tank_->searchTarget(enemyPos_);
 };
 
 void TankManager::Draw(const ViewProjection& camera) {
-	Model_->Draw(worldTransformBase_, camera, false);
+	Model_->Draw(tank_->GetWorldTransformHead(), camera, false);
 	particle_->Draw(camera);
 };
 

@@ -1,5 +1,6 @@
 #include "Tank.h"
 #include <numbers>
+#include <CollisionManager/CollisionConfig.h>
 
 Tank::~Tank(){};
 
@@ -9,7 +10,14 @@ Tank::~Tank(){};
 void Tank::Initialize() {
 	// 初期化
 	worldTransformBase_.Initialize();
-
+	worldTransformHead_.Initialize();
+	worldTransformHead_.rotate.y = 3.14f;
+	Relationship();
+	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
+	SetAABB(aabbSize);
+	SetCollisionPrimitive(kCollisionPrimitiveAABB);
+	SetCollisionAttribute(kCollisionAttributeTank);
+	SetCollisionMask(kCollisionMaskTank);
 };
 
 /// <summary>
@@ -19,6 +27,7 @@ void Tank::Update() {
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
+	hitCount_ = false;
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -64,11 +73,14 @@ void Tank::Update() {
 		break;
 	}
 
+	Relationship();
+
 	// 回転
 	worldTransformBase_.rotate.y =
-	    Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_ + 3.14f, 0.2f);
+	    Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
 	worldTransformBase_.UpdateMatrix();
+	worldTransformHead_.TransferMatrix();
 };
 
 // 移動
@@ -235,29 +247,78 @@ void Tank::searchTarget(Vector3 enemyPos) {
 	}
 }
 
+void Tank::Relationship() {
+	worldTransformHead_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformHead_.scale, worldTransformHead_.rotate, worldTransformHead_.translate),
+		worldTransformBase_.matWorld_);
+}
+
 // 衝突を検出したら呼び出されるコールバック関数
 void Tank::OnAllyCollision(const WorldTransform& worldTransform){
-	const float kSpeed = 0.4f;
-	float sub = worldTransformBase_.matWorld_.m[3][0] - GetWorldPosition().x;
-	if (sub < 0) {
-		allyVelocity = {kSpeed, 0.0f, kSpeed};
-	} else {
-		allyVelocity = {-kSpeed, 0.0f, kSpeed};
-	}
 	
-	allyVelocity = Math::TransformNormal(allyVelocity, worldTransform.matWorld_);
-	worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
 };
 void Tank::OnCollision(const WorldTransform& worldTransform) {
-	const float kSpeed = 8.0f;
-	velocity_ = {0.0f, 0.0f, kSpeed};
+	const float kSpeed = 3.0f;
+	velocity_ = {0.0f, 0.0f, -kSpeed};
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	behaviorRequest_ = Behavior::knock;
+	if (isHit_ != preHit_) {
+		hitCount_ = true;
 
+	}
 	
 };
 
-Vector3 Tank::GetWorldPosition() {
+void Tank::OnCollision(Collider* collider) {
+
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+		if (isEnemyAttack_) {
+			const float kSpeed = 3.0f;
+			velocity_ = { 0.0f, 0.0f, -kSpeed };
+			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
+			behaviorRequest_ = Behavior::knock;
+
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				hitCount_ = true;
+
+			}
+
+		}
+
+	}
+
+
+	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer||
+		collider->GetCollisionAttribute() == kCollisionAttributeHealer||
+		collider->GetCollisionAttribute() == kCollisionAttributeRenju) {
+		const float kSpeed = 0.01f;
+		float subX = collider->GetWorldTransform().matWorld_.m[3][0] - GetWorldPosition().x;
+		float subZ = collider->GetWorldTransform().matWorld_.m[3][2] - GetWorldPosition().z;
+		if (subX <= 0) {
+			allyVelocity.x = kSpeed;
+		}
+		else {
+			allyVelocity.x = -kSpeed;
+		}
+
+		if (subZ <= 0) {
+			allyVelocity.z = kSpeed;
+		}
+		else {
+			allyVelocity.z = -kSpeed;
+		}
+
+	
+		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
+	}
+
+
+}
+
+const Vector3 Tank::GetWorldPosition() const{
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）

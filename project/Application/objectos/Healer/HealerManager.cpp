@@ -46,7 +46,7 @@ void HealerManager::Update() {
 };
 
 void HealerManager::Draw(const ViewProjection& camera) {
-	Model_->Draw(healer_->GetWorldTransform(), camera, false);
+	Model_->Draw(healer_->GetWorldTransformHead(), camera, false);
 	particle_->Draw(camera);
 	if (healer_->IsAttack()) {
 		CaneModel_->Draw(healer_->GetWorldTransformCane(), camera, false);
@@ -65,13 +65,7 @@ void HealerManager::OnAllyCollision(const WorldTransform& worldTransform) {
 	
 	
 }
-// 衝突を検出したら呼び出されるコールバック関数
-void HealerManager::OnCollision(const WorldTransform& worldTransform) {
-	isHitE_ = true;
-	if (isHitE_ != preHitE_) {
-		healer_->OnCollision(worldTransform);
-	}
-};
+
 
 
 void HealerManager::SetParticlePos(Vector3 pos) {

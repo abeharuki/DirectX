@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <numbers>
+#include <CollisionManager/CollisionConfig.h>
 
 // コンボ定数表
 const std::array<Player::ConstAttack, Player::ComboNum> Player::kConstAttacks_ = {
@@ -25,14 +26,25 @@ void Player::Initialize() {
 	a = 0.0f;
 	isOver_ = false;
 
-	Relationship();
+	
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
+
+	Relationship();
+
+	AABB aabbSize{ .min{-0.3f,-0.2f,-0.1f},.max{0.3f,0.2f,0.1f} };
+	SetAABB(aabbSize);
+	SetCollisionPrimitive(kCollisionPrimitiveAABB);
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	SetCollisionMask(kCollisionMaskPlayer);
 }
 
 void Player::Update() { 
 	
-
+	// 前のフレームの当たり判定のフラグを取得
+	preHit_ = isHit_;
+	isHit_ = false;
+	hitCount_ = false;
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -469,18 +481,50 @@ void Player::Relationship() {
 }
 
 // 衝突を検出したら呼び出されるコールバック関数
-void Player::OnAllyCollision(const WorldTransform& worldTransform){
-};
 void Player::OnCollision(const WorldTransform& worldTransform){
-	const float kSpeed = 8.0f;
-	velocity_ = {0.0f, 0.0f, kSpeed};
+	const float kSpeed = 3.0f;
+	velocity_ = { 0.0f, 0.0f, kSpeed };
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	behaviorRequest_ = Behavior::knock;
 
-	
+	isHit_ = true;
+	if (isHit_ != preHit_) {
+		hitCount_ = true;
+		
+	}
+
 };
 
-Vector3 Player::GetWorldPosition() {
+
+
+void Player::OnCollision(Collider* collider) {
+	
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+		if (isEnemyAttack_) {
+			const float kSpeed = 3.0f;
+			velocity_ = { 0.0f, 0.0f, -kSpeed };
+			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
+			behaviorRequest_ = Behavior::knock;
+
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				hitCount_ = true;
+
+			}
+
+		}
+	
+		
+	}
+
+	
+	
+
+}
+
+
+const Vector3 Player::GetWorldPosition() const {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）

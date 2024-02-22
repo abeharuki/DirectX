@@ -7,11 +7,11 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Utilities/RandomGenerator.h"
-
+#include "CollisionManager/Collider.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
-class Enemy {
+class Enemy : public Collider {
 
 public: // メンバ関数
 	/// <summary>
@@ -49,10 +49,11 @@ public: // メンバ関数
 	void ThrowingAttackInitialize();
 	void ThrowingAttackUpdata();
 
+	void OnCollision(Collider* collider) override;
 
-
-	Vector3 GetWorldPosition();
-	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
+	const Vector3 GetWorldPosition() const override;
+	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
+	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }
 	WorldTransform& GetWorldTransformRock() { return worldTransformRock_; }
 
 	void SetPlayerPos(Vector3 pos) { playerPos_ = pos; };
@@ -75,6 +76,7 @@ public: // メンバ関数
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformRock_;
 	
 	Vector3 playerPos_ = {};

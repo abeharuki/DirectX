@@ -8,9 +8,8 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& camera);
-
+	Tank* GetTank() { return tank_.get(); };
 	const WorldTransform& GetWorldTransform();
-	Vector3 GetWorldPos() { return tank_->GetWorldTransform().GetWorldPos(); }
 	void SetViewProjection(const ViewProjection& viewProjection);
 
 	// プレイヤーに追従
@@ -26,7 +25,7 @@ public:
 	bool GetAttack() { return tank_->GetAttack(); }
 
 private:
-	WorldTransform worldTransformBase_;
+	
 	std::unique_ptr<Model> Model_;
 	std::unique_ptr<Tank> tank_;
 
