@@ -8,9 +8,9 @@ void Game::Initialize() {
 	sceneFactory_ = new SceneFactory();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_);
 	//ロード画面の設定
-	SceneManager::GetInstance()->ChangeLoadScene("LoadScene");
+	SceneManager::GetInstance()->LoadScene();
 	//シーンマネージャーに最初のシーンをセット
-	SceneManager::GetInstance()->ChangeScene("TitleScene");
+	SceneManager::GetInstance()->FirstScene("TitleScene");
 	
 }
 
@@ -24,10 +24,3 @@ void Game::Draw() {
 	Framework::Draw();
 }
 
-void Game::LoadingScreenUpdate() {
-	Framework::LoadingScreenUpdate();
-}
-
-void Game::LoadingScreenDraw() {
-	Framework::LoadingScreenDraw();
-}

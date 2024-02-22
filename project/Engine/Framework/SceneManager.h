@@ -13,19 +13,17 @@ public:
 
 	void Draw();	
 
+	void Loading();
 
-	void ChangeLoadScene(const std::string& sceneName);
+	void LoadScene();
 
-	void LoadingScreenUpdate();
-	void LoadingScreenDraw();
+	void FirstScene(const std::string& sceneName);
 	
 	void ChangeScene(const std::string& sceneName);
 
 	void SetSceneFactory(AbstractSceneFactory* sceneFactory) { sceneFactory_ = sceneFactory; };
 
 	bool ChangeScene() { return load_; }
-
-	void SetChangeLoad(bool load) { load_ = load; }
 
 private:
 	static SceneManager* instance_;

@@ -12,8 +12,6 @@ public:
 
 	virtual void Draw();
 
-	virtual void LoadingScreenUpdate();
-	virtual void LoadingScreenDraw();
 
 	void Finalize();
 
@@ -23,6 +21,5 @@ protected:
 	SceneManager* sceneManager_ = nullptr;
 	AbstractSceneFactory* sceneFactory_ = nullptr;
 
-	bool loadingFinished = true;
 	bool nowLoading = false;
 };

@@ -18,8 +18,7 @@ public:
 	/// </summary>
 	void Draw() override;
 
-	void LoadingScreenUpdate() override;
-	void LoadingScreenDraw() override;
+
 
 private:
 };

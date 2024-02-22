@@ -5,8 +5,11 @@ void Framework::Initialize() { sceneManager_ = SceneManager::GetInstance(); }
 
 void Framework::Update() { 
 	Engine::BeginFrame();
+	if (sceneManager_->ChangeScene()) {
+		nowLoading = true;
+	}
 	sceneManager_->Update(); 
-
+	
 	Engine::EndFrame();
 }
 
@@ -16,26 +19,17 @@ void Framework::Draw() {
 	Engine::PostDraw();
 }
 
-void Framework::LoadingScreenUpdate() { 
-	Engine::BeginFrame();
-	sceneManager_->LoadingScreenUpdate();
-	Engine::EndFrame();
-}
 
-void Framework::LoadingScreenDraw() { 
-	Engine::PreDraw();
-	sceneManager_->LoadingScreenDraw();
-	Engine::PostDraw();
+void Framework::Finalize() { 
+	Engine::Finalize();
+	delete sceneFactory_; 
 }
-
-void Framework::Finalize() { delete sceneFactory_; }
 
 void Framework::Run() {
 	int32_t windowWidth = 1280;
 	int32_t windowHeight = 720;
 	std::mutex mutex;
 	std::condition_variable condition;
-	std::queue<int>q;
 	bool exit = false;
 	Engine::Initialize(L"自作エンジン", windowWidth, windowHeight);
 	Initialize();
@@ -51,10 +45,9 @@ void Framework::Run() {
 				
 				std::unique_lock<std::mutex> uniqueLock(mutex);
 				condition.wait(uniqueLock, [&]() { return true; });
-				if (sceneManager_->ChangeScene()) {
-					//LoadingScreenUpdate();
-					//LoadingScreenDraw();
-					sceneManager_->SetChangeLoad(false);
+				if (nowLoading) {
+					sceneManager_->Loading();
+					nowLoading = false;
 				}
 
 
@@ -78,6 +71,7 @@ void Framework::Run() {
 		}
 
 		Update();
+		
 		Draw();		
 		
 	}
@@ -88,7 +82,7 @@ void Framework::Run() {
 	backgroundThread.join();
 
 	Finalize();
-	Engine::Finalize();
+	
 
 
 }

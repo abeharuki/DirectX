@@ -7,11 +7,13 @@ void LoadScene::Initialize() {
 	uv.scale = { 0.0f, 0.0f, 0.0f };
 	uv.rotate = { 0.0f, 0.0f, 0.0f };
 	uv.translate = { 0.0f, 0.0f };
+	spritePos_.x = 0.0f;
 }
 
 void LoadScene::Update() {
-
-
+	
+	spritePos_.x += 10.0f;
+	sprite_->SetPosition(spritePos_);
 	//sprite_->SetSize({ 5.0f, 5.0f });
 
 	ImGui::Begin("LoadScene");

@@ -31,6 +31,8 @@ void TitleScene::Update() {
 	if (Input::PushKey(DIK_P)) {
 		SceneManager::GetInstance()->ChangeScene("GameScene");
 	}
+	
+
 	sprite_->SetSize(spriteSize_);
 	sprite_->SetPosition(spritePos_);
 
