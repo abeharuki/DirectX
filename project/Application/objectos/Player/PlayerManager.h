@@ -9,11 +9,11 @@ public:
 	void Update();
 	void Draw(const ViewProjection& camera);
 	void DrawUI();
-
+	Player* GetPlayer() { return player_.get(); };
 	const WorldTransform& GetWorldTransform();
 	void SetViewProjection(const ViewProjection* viewProjection);
 
-	Vector3 GetWorldPos();
+
 	Vector3 katanaPos();
 
 	// 衝突を検出したら呼び出されるコールバック関数
@@ -21,7 +21,7 @@ public:
 	void OnHCollision();
 	void OnRCollision();
 	void OnTCollision();
-	void OnCollision(const WorldTransform& worldTransform);
+	void OnCollision();
 	void SetParticlePos(Vector3 pos);
 
 	bool IsAttack() { return player_->IsAttack(); }
@@ -49,9 +49,6 @@ private:
 	bool isDead_ = false;
 
 	int hitCount_;
-
-	bool preHit_;
-	bool isHit_;
 
 	bool preHitH_;
 	bool isHitH_;

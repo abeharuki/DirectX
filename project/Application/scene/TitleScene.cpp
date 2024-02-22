@@ -74,8 +74,12 @@ void TitleScene::Update() {
 	spriteRule_->SetPosition(pos_);
 	if (KeyInput::GetInstance()->GetPadConnect()) {
 		if (KeyInput::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
-			rule_ = true;
+			
 		}
+	}
+
+	if (KeyInput::PushKey(DIK_G)) {
+		rule_ = true;
 	}
 
 	if (rule_) {
@@ -90,6 +94,9 @@ void TitleScene::Update() {
 					
 				}
 			}
+			else if (KeyInput::PushKey(DIK_G)) {
+				isFadeOut_ = true;
+			}
 
 		}
 		
@@ -101,9 +108,7 @@ void TitleScene::Update() {
 	ground_->Update();
 
 
-	if (KeyInput::PushKey(DIK_G)) {
-		sceneManager_->ChangeScene("GameScene");
-	}
+
 	
 	if (KeyInput::PushKey(DIK_P)) {
 		sceneManager_->ChangeScene("ClearScene");

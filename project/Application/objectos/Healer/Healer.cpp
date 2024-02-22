@@ -270,8 +270,8 @@ void Healer::OnAllyCollision(const WorldTransform& worldTransform) {
 	worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
 }
 void Healer::OnCollision(const WorldTransform& worldTransform) {
-	const float kSpeed = 8.0f;
-	velocity_ = {0.0f, 0.0f, kSpeed};
+	const float kSpeed = 3.0f;
+	velocity_ = {0.0f, 0.0f, -kSpeed};
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	behaviorRequest_ = Behavior::knock;
 

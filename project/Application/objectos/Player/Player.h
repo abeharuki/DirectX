@@ -7,9 +7,9 @@
 #include "WorldTransform.h"
 #include <array>
 #include <optional>
+#include "CollisionManager/Collider.h"
 
-
-class Player {
+class Player : public Collider {
 public:
 
 	// 攻撃用定数
@@ -81,19 +81,18 @@ public: // メンバ関数
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
-	void OnCollision(const WorldTransform& worldTransform);
+	void OnCollision(Collider* collider) override;
 
-
-	Vector3 GetWorldPosition();
+	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
 	WorldTransform& GetWorldTransformHammer() { return worldTransformHammer_; }
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
-	WorldTransform& GetWorldTransform() { return worldTransformBase_; }
+	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
-
+	
 	bool IsAttack() { return workAttack_.isAttack; }
-	bool IsOver() { return isOver_; };
-
+	bool IsOver() { return isOver_; }
+	bool IsHit() { return hitCount_; }
 	void IsDead(bool dead) {
 		if (dead) {
 			behavior_ = Behavior::kDead;
@@ -103,6 +102,8 @@ public: // メンバ関数
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
 	}
+
+	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
@@ -162,4 +163,13 @@ private: // メンバ変数
 
 	bool isOver_;
 	float a;
+
+	//体力
+	bool hitCount_;
+
+	bool preHit_;
+	bool isHit_;
+
+	//敵の攻撃フラグ
+	bool isEnemyAttack_;
 };

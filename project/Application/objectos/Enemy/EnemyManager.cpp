@@ -52,7 +52,7 @@ void EnemyManager::Update() {
 };
 
 void EnemyManager::Draw(const ViewProjection& camera) {
-	Model_->Draw(enemy_->GetWorldTransform(), camera, false);
+	Model_->Draw(enemy_->GetWorldTransformBody(), camera, false);
 	rockModel_->Draw(enemy_->GetWorldTransformRock(), camera, false);
 };
 
@@ -110,7 +110,6 @@ void EnemyManager::OnRenjuCollision(){
 	}
 };
 
-Vector3 EnemyManager::GetWorldPos() { return enemy_->GetWorldTransform().GetWorldPos(); }
 Vector3 EnemyManager::GetRockWorldPos() { return enemy_->GetWorldTransformRock().GetWorldPos(); }
 
 const WorldTransform& EnemyManager::GetWorldTransform() { return enemy_->GetWorldTransform(); }
