@@ -57,7 +57,7 @@ void Sprite::PostDraw(){};
 
 void Sprite::Draw(Transform& uvTransform ) {
 	
-	
+	UpdateVertexBuffer();
 	
 	Transform cameraTransform{
 	    {1.0f, 1.0f, 1.0f  },
@@ -114,22 +114,8 @@ void Sprite::Draw(Transform& uvTransform ) {
 	
 }
 
+void Sprite::UpdateVertexBuffer() {
 
-void Sprite::CreateVertexResource() {
-
-
-	//VertexData* vertexData = nullptr;
-	vertexResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData)*4);
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-	
-
-	//  リソースの先頭のアドレスから使う
-	vbView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vbView_.SizeInBytes = sizeof(VertexData) * 4;
-	// 1頂点あたりのサイズ
-	vbView_.StrideInBytes = sizeof(VertexData);
-	
 	float left = (0.0f - anchorPoint_.x);
 	float right = (1.0f - anchorPoint_.x);
 	float top = (0.0f - anchorPoint_.y);
@@ -147,14 +133,32 @@ void Sprite::CreateVertexResource() {
 	}
 
 	// 
-	vertexData_[0].position = { left , bottom, 0.0f, 1.0f}; // 左下0
-	vertexData_[0].texcoord = {0.0f, 1.0f};
-	vertexData_[1].position = { left , top, 0.0f, 1.0f}; // 左上1
-	vertexData_[1].texcoord = {0.0f, 0.0f};
-	vertexData_[2].position = { right, bottom, 0.0f, 1.0f}; // 右下2
-	vertexData_[2].texcoord = {1.0f, 1.0f};
-	vertexData_[3].position = {right, top, 0.0f, 1.0f}; // 右上3
-	vertexData_[3].texcoord = {1.0f, 0.0f};
+	vertexData_[0].position = { left , bottom, 0.0f, 1.0f }; // 左下0
+	vertexData_[0].texcoord = { 0.0f, 1.0f };
+	vertexData_[1].position = { left , top, 0.0f, 1.0f }; // 左上1
+	vertexData_[1].texcoord = { 0.0f, 0.0f };
+	vertexData_[2].position = { right, bottom, 0.0f, 1.0f }; // 右下2
+	vertexData_[2].texcoord = { 1.0f, 1.0f };
+	vertexData_[3].position = { right, top, 0.0f, 1.0f }; // 右上3
+	vertexData_[3].texcoord = { 1.0f, 0.0f };
+}
+
+
+void Sprite::CreateVertexResource() {
+
+
+	//VertexData* vertexData = nullptr;
+	vertexResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData)*4);
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	
+
+	//  リソースの先頭のアドレスから使う
+	vbView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	// 使用するリソースのサイズは頂点3つ分のサイズ
+	vbView_.SizeInBytes = sizeof(VertexData) * 4;
+	// 1頂点あたりのサイズ
+	vbView_.StrideInBytes = sizeof(VertexData);
+	
 
 	//vertexData_[0].normal = {0.0f, 0.0f, -1.0f};
 	

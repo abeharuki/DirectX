@@ -107,7 +107,7 @@ public: // メンバ関数
 	/// <returns>成否</returns>
 	void Initialize(const std::string& fileName);
 
-
+	void  UpdateVertexBuffer();
 	/// <summary>
 	/// 座標の設定
 	/// </summary>
