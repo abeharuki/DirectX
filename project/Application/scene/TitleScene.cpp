@@ -1,157 +1,186 @@
 #include "TitleScene.h"
 #include "Framework/SceneManager.h"
 
-void TitleScene::Initialize() { 
+
+void TitleScene::Initialize() {
+	viewProjection_.Initialize();
+	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
+
+
 	audio_ = Audio::GetInstance();
 	audioData_ = audio_->SoundLoadWave("resources/audio/fanfare.wav");
-	//audio_->SoundPlayWave(audioData_, true, 3.0f);
-	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
 
-	viewProjection_.Initialize();
-	viewProjection_.rotation_.x = 0.28f;
-	viewProjection_.translation_ = { 0.0f, 7.0f, -18.0f };
-	worldTransformSphere_.Initialize();
-	worldTransformGround_.Initialize();
-	worldTransformGround_.rotate.y = 1.58f;
-	// スフィア
-	sphere_ = std::make_unique<Sphere>();
-	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
-	
-	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
-	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
-	isSprite_ = false;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f };
+	// 天球
+	skydome_ = std::make_unique<Skydome>();
+	// 3Dモデルの生成
+	modelSkydome_.reset(
+		Model::CreateModelFromObj("resources/skydome/skydome.obj", "resources/skydome/sky.png"));
+	skydome_->Initialize(modelSkydome_.get());
+
+	// 地面
+	ground_ = std::make_unique<Ground>();
+	// 3Dモデルの生成
+	modelGround_.reset(
+		Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
+	ground_->Initialize(
+		Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
+
+	// プレイヤー
+	playerManager_ = std::make_unique<PlayerManager>();
+	playerManager_->Initialize();
+
+	// 追従カメラ
+	followCamera_ = std::make_unique<FollowCamera>();
+	followCamera_->Initialize();
+	// 自キャラのワールドトランスフォームを追従カメラにセット
+	followCamera_->SetTarget(&playerManager_->GetWorldTransform());
+
+	// 自キャラの生成と初期化処理
+	playerManager_->SetViewProjection(&followCamera_->GetViewProjection());
+
+	// 敵
+	//enemyManager_ = std::make_unique<EnemyManager>();
+	//enemyManager_->Initialize();
+
+	//// タンク
+	//tankManager_ = std::make_unique<TankManager>();
+	//tankManager_->Initialize();
+	//// レンジャー
+	//renjuManager_ = std::make_unique<RenjuManager>();
+	//renjuManager_->Initialize();
+	//// ヒーラー
+	//healerManager_ = std::make_unique<HealerManager>();
+	//healerManager_->Initialize();
+
+	alpha_ = 1.0f;
+	// フェードイン・フェードアウト用スプライト
+	spriteBack_.reset(Sprite::Create("resources/Player/B.png"));
+	spriteBack_->SetSize({ 10.0f, 10.0f });
+	spriteTitle_.reset(Sprite::Create("resources/Title/title.png"));
+	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
+	spriteRule_.reset(Sprite::Create("resources/Title/rule.png"));
+	rule_ = false;
+	pos_.x = 1280.0f;
+	spriteTitle_->SetPosition({-250,0.0f});
+	//spritePushA_->SetSize({ 3.6f, 2.0f });
+	spriteRule_->SetSize({ 1280.0f, 720.0f });
+	spriteBack_->SetSize({ 1280.0f,720.0f });
+	isFadeIn_ = true;
+	isFadeOut_ = false;
+	isFede_ = false;
 }
 
 void TitleScene::Update() {
-	
+	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
+	spriteRule_->SetPosition(pos_);
+	if (Input::GetInstance()->GetPadConnect()) {
+		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
 
-	if (Input::PushKey(DIK_P)) {
-		SceneManager::GetInstance()->ChangeScene("GameScene");
-	}
-
-	if (Input::PushKey(DIK_L)) {
-		SceneManager::GetInstance()->ChangeScene("LoadScene");
-	}
-	
-
-	sprite_->SetSize(spriteSize_);
-	sprite_->SetPosition(spritePos_);
-
-	if (Input::PressKey(DIK_A)) {
-		pointLight_.position_.x += -0.1f;
-	}
-	else if (Input::PressKey(DIK_D)) {
-		pointLight_.position_.x += 0.1f;
-	}
-	if (Input::PressKey(DIK_S)) {
-		pointLight_.position_.y += -0.1f;
-	}
-	else if (Input::PressKey(DIK_W)) {
-		pointLight_.position_.y += 0.1f;
-	}
-
-
-
-	worldTransformSphere_.UpdateMatrix();
-	worldTransformGround_.UpdateMatrix();
-	viewProjection_.UpdateMatrix();
-
-	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
-	static int currentItem = 1; // 初期選択アイテムのインデックス
-
-
-	if (currentItem == 0) {
-		Model::DirectionalLightDraw(directionLight_);
-	}
-	else if (currentItem == 1) {
-		Model::PointLightDraw(pointLight_,directionLight_.direction);
-	}
-	else if (currentItem == 2) {
-		Model::SpotLightDraw(spotLight_);
-	}
-
-	ImGui::Begin("Setting");
-
-	if (ImGui::TreeNode("Sprite")) {
-		ImGui::Checkbox("DrawSprite", &isSprite_);
-		ImGui::DragFloat2("SpritePos", &spritePos_.x, 0.1f);
-		ImGui::DragFloat2("SprirteSize", &spriteSize_.x, 0.01f);
-	
-		ImGui::TreePop();
-	}
-
-
-	if (ImGui::TreeNode("Bunny")) {
-
-		ImGui::DragFloat3("BunnyPos", &worldTransformSphere_.translate.x, 0.1f);
-		ImGui::DragFloat3("BunnyRotate", &worldTransformSphere_.rotate.x, 0.01f);
-		ImGui::DragFloat3("BunnySize", &worldTransformSphere_.scale.x, 0.1f);
-		
-		ImGui::TreePop();
-	}
-
-	if (ImGui::TreeNode("Light")) {
-		// LightLight
-		ImGui::Combo("##combo", &currentItem, items, IM_ARRAYSIZE(items));
-		if (ImGui::TreeNode("DirectionLight")) {
-			ImGui::SliderFloat4("DirectionLightColor", &directionLight_.color.x, -1.0f, 1.0f);
-			ImGui::DragFloat3("DirectionLightDirecton", &directionLight_.direction.x, 0.1f);
-			ImGui::DragFloat("DirectionIntensity", &directionLight_.intensity, 0.1f);
-			//ImGui::Checkbox("DirectionLight%d", &directionLight_.isEnable_);
-			ImGui::TreePop();
 		}
-		
-		if (ImGui::TreeNode("PointLight")) {
-			// LightLight
-			ImGui::SliderFloat4("PointLightColor", &pointLight_.color_.x, -1.0f, 1.0f);
-			ImGui::DragFloat3("PointLightPosition", &pointLight_.position_.x, 0.1f);
-			ImGui::DragFloat("PointRadius", &pointLight_.radius_, 0.1f);
-			ImGui::DragFloat("pointDecay", &pointLight_.decay_, 0.1f);
-			ImGui::DragFloat("PointIntensity", &pointLight_.intensity_, 0.1f);
+	}
 
-			ImGui::TreePop();
+	if (Input::PushKey(DIK_G)) {
+		rule_ = true;
+	}
+
+	if (rule_) {
+		const float speed = 30.0f;
+		if (pos_.x > 0.0f) {
+			pos_.x -= speed;
+		}
+		else {
+			pos_.x = 0.0f;
+			if (Input::GetInstance()->GetPadConnect()) {
+				if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
+					isFadeOut_ = true;
+
+				}
+			}
+			else if (Input::PushKey(DIK_G)) {
+				isFadeOut_ = true;
+			}
+
 		}
 
-		if (ImGui::TreeNode("spotLight")) {
-			// LightLight
-			ImGui::SliderFloat4("SpotLightColor", &spotLight_.color_.x, -1.0f, 1.0f);
-			ImGui::DragFloat3("SpotLightPosition", &spotLight_.position_.x, 0.1f);
-			ImGui::DragFloat3("SpotLightDirecton", &spotLight_.direction_.x, 0.1f);
-			ImGui::DragFloat("SpotDistance", &spotLight_.distance_, 0.1f);
-			ImGui::DragFloat("SpotDecay", &spotLight_.cosAngle_, 0.1f);
-			ImGui::DragFloat("SpotAngle", &spotLight_.decay_, 0.1f);
-			ImGui::DragFloat("SpotIntensity", &spotLight_.intensity_, 0.1f);
-
-			ImGui::TreePop();
-		}
-
-
-		
-		ImGui::TreePop();
 	}
 
-	ImGui::End();
+	Fade();
+	cameraMove();
+	skydome_->Update();
+	ground_->Update();
 
-	ImGui::Begin("TitleScene");
-	ImGui::Text("GameScene : push::P");
-	ImGui::End();
+
+
+
+	if (Input::PushKey(DIK_C)) {
+		SceneManager::GetInstance()->ChangeScene("ClearScene");
+	}
+
+	if (Input::PushKey(DIK_O)) {
+		SceneManager::GetInstance()->ChangeScene("OverScene");
+	}
 
 }
 
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
+	//Model::LightDraw(color_, direction_, intensity_);
+
+	// 天球
+	skydome_->Draw(viewProjection_, false);
+	// 地面
+	ground_->Draw(viewProjection_, false);
+
+	// プレイヤー
+	playerManager_->Draw(viewProjection_);
+	// 敵
+	//enemyManager_->Draw(viewProjection_);
+	//// タンク
+	//tankManager_->Draw(viewProjection_);
+	//// ヒーラー
+	//healerManager_->Draw(viewProjection_);
+	//// レンジャー
+	//renjuManager_->Draw(viewProjection_);
+
+	Transform uv;
+	uv.scale = { 0.0f, 0.0f, 0.0f };
+	uv.rotate = { 0.0f, 0.0f, 0.0f };
+	uv.translate = { 0.0f, 0.0f, 0.0f };
+	spriteTitle_->Draw(uv);
+	spritePushA_->Draw(uv);
+	spriteRule_->Draw(uv);
+	spriteBack_->Draw(uv);
+}
+
+void TitleScene::cameraMove() {
+
+	// 追従カメラの更新
+	followCamera_->TitleUpdate();
+	viewProjection_.matView = followCamera_->GetViewProjection().matView;
+	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+	viewProjection_.TransferMatrix();
+
+}
 
 
-
-	
-	modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
-	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
-	if (isSprite_) {
-		sprite_->Draw(uv);
+void TitleScene::Fade() {
+	if (isFadeIn_) {
+		if (alpha_ > 0.0f) {
+			alpha_ -= 0.02f;
+		}
+		else {
+			alpha_ = 0.0f;
+			isFadeIn_ = false;
+		}
 	}
-	
-	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
+
+	if (isFadeOut_) {
+		if (alpha_ < 1) {
+			alpha_ += 0.02f;
+		}
+		else {
+			alpha_ = 1.0f;
+			SceneManager::GetInstance()->ChangeScene("GameScene");
+		}
+	}
 }

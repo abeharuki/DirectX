@@ -3,9 +3,10 @@
 #include <imgui.h>
 
 void LoadScene::Initialize() {
-	backSprite_.reset(Sprite::Create("resources/load/backGround.png"));
+	backSprite_.reset(Sprite::Create("resources/Player/B.png"));
 	nowLoadingSprite_.reset(Sprite::Create("resources/load/NowLoading.png"));
 	loadSprite_.reset(Sprite::Create("resources/load/LoadSprite.png"));
+	backSprite_->SetSize({ 1280.0f,720.0f });
 	loadSprite_->SetAnchorPoint({ 0.5f, 0.5f });
 	loadSprite_->SetPosition({ 1280.0f / 2.0f, 720.0f / 2.0f });
 	//loadSprite_.reset(Sprite::Create("resources/uvChecker.png"));

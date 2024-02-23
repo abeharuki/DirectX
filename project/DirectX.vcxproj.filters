@@ -156,7 +156,7 @@
     <ClCompile Include="Engine\Manager\Input\Input.cpp">
       <Filter>ソース ファイル\Engine\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Application\objectos\Player.cpp">
+    <ClCompile Include="Application\objectos\Player\Player.cpp">
       <Filter>ソース ファイル\Application\objects</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\StringUtility.cpp">
@@ -238,6 +238,15 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Application\scene\LoadScene.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\base\Ground.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Utilities\RandomGenerator.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Player\PlayerManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -340,7 +349,7 @@
     <ClInclude Include="Application\base\GlobalVariables\GlobalVariables.h">
       <Filter>ヘッダー ファイル\Application\base\GlobalVariables</Filter>
     </ClInclude>
-    <ClInclude Include="Application\objectos\Player.h">
+    <ClInclude Include="Application\objectos\Player\Player.h">
       <Filter>ヘッダー ファイル\Application\objects</Filter>
     </ClInclude>
     <ClInclude Include="Application\base\camera\followCamera.h">
@@ -392,6 +401,15 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Application\scene\LoadScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\base\Ground.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Utilities\RandomGenerator.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Player\PlayerManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

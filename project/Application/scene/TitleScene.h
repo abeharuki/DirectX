@@ -4,9 +4,17 @@
 #include <memory>
 #include "Audio/Audio.h"
 #include <Sprite.h>
-#include <Sphere.h>
 #include <Model.h>
-#include <numbers>
+#include <Ground.h>
+#include <Skydome.h>
+#include <camera/followCamera.h>
+#include <Player/PlayerManager.h>
+//#include <Enemy/EnemyManager.h>
+//#include <Healer/HealerManager.h>
+//#include <Tank/TankManager.h>
+//#include <Renju/RenjuManager.h>
+
+
 
 class TitleScene : public IScene {
 public:
@@ -14,58 +22,61 @@ public:
 	void Update() override;
 	void Draw() override;
 
-	//const char* items[3] = { "DirectionLight", "PointLight", "Item 3"};
-	//static const int currentItem = 0; // 初期選択アイテムのインデックス
+	void Fade();
 
+	void cameraMove();
 
-private : // 基本変数
+private: // 基本変数
 	// 光の数値
-	DirectionLight directionLight_{
-		{1.0f, 1.0f, 1.0f, 1.0f},
-		{0.0f, -2.0f, 0.0f},
-		1.0f,
-		true,
-	};
+	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0 };
+	Vector3 direction_ = { 0.0f, -2.0f, 0.0f };
+	float intensity_ = 1.0f;
 
-	PointLight pointLight_ = {
-		{1.0f, 1.0f, 1.0f, 1.0f},
-		{ 0.0f,3.0f,0.0 },
-		1.0f,
-		5.0f,
-		1.0f,
-		true,
-	};
-
-	SpotLight spotLight_ = {
-		{1.0f, 1.0f, 1.0f, 1.0f},
-		{ -2.0f,1.25f,0.0 },
-		7.0f,
-		{1.0f, -1.0f, 0.0f},
-		4.0f,
-		2.0f,
-		std::cos(std::numbers::pi_v<float>/3.0f),
-		true
-	};
 
 private:
-
 	Audio* audio_ = nullptr;
 	uint32_t audioData_;
-	std::unique_ptr<Sprite> sprite_;
+	std::unique_ptr<Sprite> spriteTitle_;
+	std::unique_ptr<Sprite> spritePushA_;
+	std::unique_ptr<Sprite> spriteRule_;
+
+	// フェードイン・フェードアウト用スプライト
+	std::unique_ptr<Sprite> spriteBack_;
+
+
 	ViewProjection viewProjection_;
-	WorldTransform worldTransformSphere_;
-	WorldTransform worldTransformGround_;
-	// 球
-	std::unique_ptr<Sphere> sphere_;
-	// バニー
-	std::unique_ptr<Model> modelBunny_;
+
+	// 天球
+	std::unique_ptr<Skydome> skydome_;
+	// 天球3Dモデル
+	std::unique_ptr<Model> modelSkydome_;
+	// 地面
+	std::unique_ptr<Ground> ground_;
+	// 地面3Dモデル
 	std::unique_ptr<Model> modelGround_;
 
-	
-	//スプライト
-	Vector2 spritePos_;
-	Vector2 spriteSize_ = { 250.0f,250.0f };
-	bool isSprite_;
-	Transform uv;
+	// 追従カメラ
+	std::unique_ptr<FollowCamera> followCamera_;
 
+	//// プレイヤー
+	std::unique_ptr<PlayerManager> playerManager_;
+	//// 敵
+	//std::unique_ptr<EnemyManager> enemyManager_;
+
+	//// タンク
+	//std::unique_ptr<TankManager> tankManager_;
+	//// ヒーラー
+	//std::unique_ptr<HealerManager> healerManager_;
+	//// レンジャー
+	//std::unique_ptr<RenjuManager> renjuManager_;
+
+
+
+	Vector2 pos_;
+	bool rule_;
+
+	bool isFadeOut_;
+	bool isFadeIn_;
+	bool isFede_;
+	float alpha_;
 };
