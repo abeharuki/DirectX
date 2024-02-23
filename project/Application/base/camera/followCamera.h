@@ -17,6 +17,7 @@ public:
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
+	void TitleUpdate();
 
 	void SetTarget(const WorldTransform* target);
 
@@ -26,6 +27,8 @@ public:
 
 	// 追従対象からのオフセット計算
 	Vector3 calculateOffset() const;
+	// 追従対象からのオフセット計算
+	Vector3 titleCalculateOffset() const;
 
 	Vector3 GetTargetWordPos();
 
@@ -36,7 +39,7 @@ private:
 	ViewProjection viewProjection_;
 	const WorldTransform* target_ = nullptr;
 
-
+	Input* input_ = nullptr;
 
 	// 追跡対象の残像座標
 	Vector3 interTarget_ = {};
