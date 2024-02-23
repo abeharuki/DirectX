@@ -7,9 +7,11 @@ void Game::Initialize() {
 	//シーンファクトを生成し、マネージャーにセット
 	sceneFactory_ = new SceneFactory();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_);
+	//ロード画面の設定
+	SceneManager::GetInstance()->LoadScene();
 	//シーンマネージャーに最初のシーンをセット
-	SceneManager::GetInstance()->ChangeScene("TitleScene");
-
+	SceneManager::GetInstance()->FirstScene("TitleScene");
+	
 }
 
 void Game::Update() {
@@ -21,3 +23,4 @@ void Game::Draw() {
 	// 基底クラスの描画
 	Framework::Draw();
 }
+

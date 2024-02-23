@@ -12,6 +12,7 @@ public:
 
 	virtual void Draw();
 
+
 	void Finalize();
 
 	void Run();
@@ -19,4 +20,6 @@ public:
 protected:
 	SceneManager* sceneManager_ = nullptr;
 	AbstractSceneFactory* sceneFactory_ = nullptr;
+
+	bool nowLoading = false;
 };

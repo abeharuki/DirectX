@@ -4,6 +4,7 @@
 #include "TitleScene.h"
 #include "ClearScene.h"
 #include "OverScene.h"
+#include "LoadScene.h"
 
 class SceneFactory : public AbstractSceneFactory {
 public:
