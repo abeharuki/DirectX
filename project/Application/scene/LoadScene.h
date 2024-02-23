@@ -51,16 +51,11 @@ private:
 
 	Audio* audio_ = nullptr;
 	uint32_t audioData_;
-	std::unique_ptr<Sprite> sprite_;
+	std::unique_ptr<Sprite> backSprite_;
+	std::unique_ptr<Sprite> nowLoadingSprite_;
+	std::unique_ptr<Sprite> loadSprite_;
 	ViewProjection viewProjection_;
-	WorldTransform worldTransformSphere_;
-	WorldTransform worldTransformGround_;
-	// 球
-	std::unique_ptr<Sphere> sphere_;
-	// バニー
-	std::unique_ptr<Model> modelBunny_;
-	std::unique_ptr<Model> modelGround_;
-
+	
 
 	//スプライト
 	Vector2 spritePos_;
