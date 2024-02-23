@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 	alpha_ = 1.0f;
 	//フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Player/B.png"));
-	spriteBack_->SetSize({ 10.0f, 10.0f });
+	spriteBack_->SetSize({ 1280.0f, 720.0f });
 
 	//プレイヤー
 	playerManager_ = std::make_unique<PlayerManager>();
