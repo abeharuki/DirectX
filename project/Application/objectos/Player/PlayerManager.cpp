@@ -26,7 +26,7 @@ void PlayerManager::Initialize() {
 	particle_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 	particle_->SetSpeed(8.0f);
 	isParticle_ = false;
-	HpTransform_.scale = { 0.2f, 0.2f, 0.1f };
+	//HpTransform_.scale = { 0.2f, 0.2f, 0.1f };
 	HpTransform_.translate = { 650.0f, 550.0f, 1.0f };
 
 	hitCount_ = 6;
@@ -44,8 +44,8 @@ void PlayerManager::Update() {
 	OnCollision();
 
 	for (int i = 0; i < 6; i++) {
-		spriteHP_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
-		spriteHPG_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
+		//spriteHP_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
+		//spriteHPG_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
 	}
 	for (int i = 0; i < 6; i++) {
 		spriteHP_[i]->SetPosition({ HpTransform_.translate.x - 20 * i, HpTransform_.translate.y });

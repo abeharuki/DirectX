@@ -10,7 +10,14 @@
 #include "Skydome.h"
 #include "Sphere.h"
 #include "Particle.h"
-
+#include "Ground.h"
+#include <Player/PlayerManager.h>
+#include "camera/followCamera.h"
+#include <Enemy/EnemyManager.h>
+#include <Healer/HealerManager.h>
+#include <Tank/TankManager.h>
+#include <Renju/RenjuManager.h>
+#include "CollisionManager/CollisionManager.h"
 
 /// <summary>
 /// ゲームシーン
@@ -20,67 +27,57 @@ public: // メンバ関数
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
-	
+
 	GameScene();
 	~GameScene();
 
-	static GameScene* GetInstance();
+	//static GameScene* GetInstance();
+	void CheckAllCollision();
+
+	void Fade();
 
 private://基本変数
 	//光の数値
-	Vector4 color_ = {1.0f,1.0f,1.0f,1.0};
-	Vector3 direction_ = {0.0f,-2.0f,0.0f};
+	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0 };
+	Vector3 direction_ = { 0.0f,-2.0f,0.0f };
 	float intensity_ = 1.0f;
 
 private: // メンバ変数
+
+	//衝突マネージャー
+	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
 	ViewProjection viewProjection_;
-	WorldTransform worldTransform_;
-	WorldTransform worldTransformp_;
-	WorldTransform worldTransformFence_[2];
-	WorldTransform worldTransformSphere_;
-	//球
-	std::unique_ptr<Sphere> sphere_;
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
 	// 天球3Dモデル
 	std::unique_ptr<Model> modelSkydome_;
-	//板ポリ
-	std::unique_ptr<Model> modelplane_;
-	//フェンス
-	std::unique_ptr<Model> modelFence_;
-	//パーティクル
-	std::unique_ptr<Particle> particle_;
-	// パーティクル
-	std::unique_ptr<Particle> particle2_;
-	Emitter emitter_{};
-	AccelerationField accelerationField_;
+	// 地面
+	std::unique_ptr<Ground> ground_;
+	// 地面3Dモデル
+	std::unique_ptr<Model> modelGround_;
 
-	//std::unique_ptr<Sprite> sprite_;
+	//フェードイン・フェードアウト用スプライト
+	std::unique_ptr<Sprite> spriteBack_;
 
-	Transform uvTransform_;
-	Vector4 colorPlane;
-	BlendMode blendMode_;
-	const char* EnumToString(BlendMode value) {
-		switch (value) {
-		case BlendMode::kNone:
-			return "kNone"; 
-		case BlendMode::kNormal:
-			return "kNormal";
-		case BlendMode::kAdd:
-			return "kAdd";
-		case BlendMode::kSubtract:
-			return "kSubtract";
-		default:
-			return "Unknown";
-		}
-	}
+	//追従カメラ
+	std::unique_ptr<FollowCamera> followCamera_;
 
-	const float kDeltaTime = 1.0f / 60.0f;
-	Vector3 velo = {0.0f, 1.0f, 0.0f};
-	Vector3 pos = {0.0f, 1.0f, 0.0f};
-	bool particle;
-	bool area;
-	Vector4 particleColor;
-	int num = 5;
+
+	//プレイヤー
+	std::unique_ptr<PlayerManager> playerManager_;
+	// 敵
+	std::unique_ptr<EnemyManager> enemyManager_;
+
+	//タンク
+	std::unique_ptr<TankManager> tankManager_;
+	//ヒーラー
+	std::unique_ptr<HealerManager> healerManager_;
+	//レンジャー
+	std::unique_ptr<RenjuManager> renjuManager_;
+
+	bool isFadeOut_;
+	bool isFadeIn_;
+	float alpha_;
+
 };

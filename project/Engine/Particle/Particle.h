@@ -30,8 +30,8 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-	//BlendMode blendMode_ = BlendMode::kAdd;
-	BlendMode blendMode_ = BlendMode::kNone;
+	BlendMode blendMode_ = BlendMode::kAdd;
+	//BlendMode blendMode_ = BlendMode::kNone;
 	
 
 public:

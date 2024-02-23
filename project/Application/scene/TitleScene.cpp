@@ -39,18 +39,18 @@ void TitleScene::Initialize() {
 	playerManager_->SetViewProjection(&followCamera_->GetViewProjection());
 
 	// 敵
-	//enemyManager_ = std::make_unique<EnemyManager>();
-	//enemyManager_->Initialize();
+	enemyManager_ = std::make_unique<EnemyManager>();
+	enemyManager_->Initialize();
 
-	//// タンク
-	//tankManager_ = std::make_unique<TankManager>();
-	//tankManager_->Initialize();
-	//// レンジャー
-	//renjuManager_ = std::make_unique<RenjuManager>();
-	//renjuManager_->Initialize();
-	//// ヒーラー
-	//healerManager_ = std::make_unique<HealerManager>();
-	//healerManager_->Initialize();
+	// タンク
+	tankManager_ = std::make_unique<TankManager>();
+	tankManager_->Initialize();
+	// レンジャー
+	renjuManager_ = std::make_unique<RenjuManager>();
+	renjuManager_->Initialize();
+	// ヒーラー
+	healerManager_ = std::make_unique<HealerManager>();
+	healerManager_->Initialize();
 
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
@@ -134,13 +134,13 @@ void TitleScene::Draw() {
 	// プレイヤー
 	playerManager_->Draw(viewProjection_);
 	// 敵
-	//enemyManager_->Draw(viewProjection_);
-	//// タンク
-	//tankManager_->Draw(viewProjection_);
-	//// ヒーラー
-	//healerManager_->Draw(viewProjection_);
-	//// レンジャー
-	//renjuManager_->Draw(viewProjection_);
+	enemyManager_->Draw(viewProjection_);
+	// タンク
+	tankManager_->Draw(viewProjection_);
+	// ヒーラー
+	healerManager_->Draw(viewProjection_);
+	// レンジャー
+	renjuManager_->Draw(viewProjection_);
 
 	Transform uv;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
