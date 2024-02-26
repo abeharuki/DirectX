@@ -73,7 +73,6 @@ void SceneManager::ChangeScene(const std::string& sceneName) {
 
 	assert(sceneFactory_);
 	assert(nextScene_ == nullptr);
-
 	nextScene_ = sceneFactory_->CreateScene(sceneName);
 	load_ = true;
 }

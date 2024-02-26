@@ -8,7 +8,7 @@ void OverScene::Initialize() {
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Player/B.png"));
-	spriteBack_->SetSize({ 1280.0f, 720.0f });
+	spriteBack_->SetSize({ 1290.0f, 720.0f });
 
 	isFadeIn_ = true;
 	isFadeOut_ = false;

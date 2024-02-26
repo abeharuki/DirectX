@@ -72,6 +72,8 @@ void Framework::Run() {
 
 		Update();
 		
+
+
 		Draw();		
 		
 	}

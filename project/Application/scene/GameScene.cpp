@@ -97,9 +97,12 @@ void GameScene::Update() {
 	}
 
 	playerManager_->Update();
-	healerManager_->Update();
-	renjuManager_->Update();
-	tankManager_->Update();
+	if (!enemyManager_->IsClear()) {
+		healerManager_->Update();
+		renjuManager_->Update();
+		tankManager_->Update();
+	}
+	
 	enemyManager_->Update();
 
 	// 追従カメラの更新
