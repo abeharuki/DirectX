@@ -122,6 +122,8 @@ void Player::Update() {
 void Player::MoveInitialize() {
 	worldTransformBase_.translate.y = 0.0f;
 	workAttack_.isAttack = false;
+	dash_ = false;
+	combo_ = false;
 };
 void Player::MoveUpdata() {
 	// ゲームパッドの状態を得る変数(XINPUT)
@@ -287,6 +289,7 @@ void Player::JumpUpdata() {
 void Player::DashInitialize() {
 	workDash_.dashParameter_ = 0;
 	worldTransformBase_.rotate.y = destinationAngleY_;
+	dash_ = true;
 }
 void Player::DashUpdata() {
 	// dashTimer -= 4;
@@ -326,6 +329,9 @@ void Player::AttackInitialize() {
 }
 void Player::AttackUpdata() {
 	float speed = 1.0f;
+	if (workAttack_.comboIndex >= 1) {
+		combo_ = true;
+	}
 
 	// コンボ上限に達していない
 	if (workAttack_.comboIndex < ComboNum - 1) {

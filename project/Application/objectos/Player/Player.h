@@ -90,6 +90,8 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
 	bool IsAttack() { return workAttack_.isAttack; }
+	bool IsCombo() { return combo_; }
+	bool IsDash() { return dash_; }
 	bool IsOver() { return isOver_; }
 	bool IsHit() { return hitCount_; }
 	void IsDead(bool dead) {
@@ -151,6 +153,9 @@ private: // メンバ変数
 	};
 
 	WorkAttack workAttack_;
+
+	bool dash_;
+	bool combo_;
 
 	// 攻撃の時間
 	const uint32_t behaviorAttackTime = 15;

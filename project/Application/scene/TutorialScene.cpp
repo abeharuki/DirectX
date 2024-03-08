@@ -1,8 +1,7 @@
-#include "TitleScene.h"
+#include "TutorialScene.h"
 #include "Framework/SceneManager.h"
 
-
-void TitleScene::Initialize() {
+void TutorialScene::Initialize() {
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 
@@ -28,7 +27,7 @@ void TitleScene::Initialize() {
 	// プレイヤー
 	playerManager_ = std::make_unique<PlayerManager>();
 	playerManager_->Initialize();
-
+	initialPos_ = playerManager_->GetPlayer()->GetWorldPosition();
 	// 追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
@@ -55,58 +54,88 @@ void TitleScene::Initialize() {
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Player/B.png"));
-	spriteBack_->SetSize({ 10.0f, 10.0f });
-	spriteTitle_.reset(Sprite::Create("resources/Title/title.png"));
-	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
-	spriteRule_.reset(Sprite::Create("resources/Title/rule.png"));
-	rule_ = false;
-	pos_.x = 1280.0f;
-	spriteTitle_->SetPosition({-250,0.0f});
-	//spritePushA_->SetSize({ 3.6f, 2.0f });
-	spriteRule_->SetSize({ 1280.0f, 720.0f });
 	spriteBack_->SetSize({ 1280.0f,720.0f });
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 	isFede_ = false;
+	//チュートリアルフラグ
+	move_ = false;
+	dash_ = false;
+	jump_ = false;
+	attack_ = false;
+	combo_ = false;
+	step2_ = false;
+	call_ = false;
+	order_ = false;
 }
 
-void TitleScene::Update() {
+void TutorialScene::Update() {
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-	spriteRule_->SetPosition(pos_);
 	if (Input::GetInstance()->GetPadConnect()) {
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
-			rule_ = true;
+		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
+			if (call_ && order_) {
+				isFadeOut_ = true;
+			}
+
 		}
 	}
 
 	if (Input::PushKey(DIK_G)) {
-		rule_ = true;
+		if (call_ && order_) {
+			isFadeOut_ = true;
+		}
+		
 	}
 
-	if (rule_) {
-		const float speed = 30.0f;
-		if (pos_.x > 0.0f) {
-			pos_.x -= speed;
-		}
-		else {
-			pos_.x = 0.0f;
-			if (Input::GetInstance()->GetPadConnect()) {
-				if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
-					isFadeOut_ = true;
-
-				}
-			}
-			
-			if (Input::PushKey(DIK_G)) {
-				isFadeOut_ = true;
-			}
-
-
-		}
-
-	}
-
+	
 	Fade();
+	playerManager_->Update();
+	//チュートリアルの確認
+	//移動
+	if (playerManager_->GetPlayer()->GetWorldPosition().x != initialPos_.x ||
+		playerManager_->GetPlayer()->GetWorldPosition().z != initialPos_.z) {
+		move_ = true;
+	}
+	if (playerManager_->GetPlayer()->IsDash()) {
+		dash_ = true;
+	}
+	//ジャンプ
+	if (playerManager_->GetPlayer()->GetWorldPosition().y != initialPos_.y) {
+		jump_ = true;
+	}
+	//攻撃
+	if (playerManager_->GetPlayer()->IsAttack()) {
+		attack_ = true;
+	}
+	//コンボ
+	if (playerManager_->GetPlayer()->IsCombo()) {
+		combo_ = true;
+	}
+
+	if (move_ && jump_ && attack_ && combo_) {
+		step2_ = true;
+	}
+
+
+	if (step2_ && Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X)) {
+		call_ = true;
+		
+	}
+
+
+	if (step2_ && Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_Y)) {
+		order_ = true;
+		
+	}
+
+	if (step2_) {
+		if (call_ || order_) {
+			healerManager_->Update();
+			renjuManager_->Update();
+			tankManager_->Update();
+		}
+	}
+
 	cameraMove();
 	skydome_->Update();
 	ground_->Update();
@@ -122,9 +151,20 @@ void TitleScene::Update() {
 		SceneManager::GetInstance()->ChangeScene("OverScene");
 	}
 
+
+	ImGui::Begin("step");
+	ImGui::Text("move%d", move_);
+	ImGui::Text("dash%d", dash_);
+	ImGui::Text("jump%d", jump_);
+	ImGui::Text("attack%d", attack_);
+	ImGui::Text("combo%d", combo_);
+	ImGui::Text("call%d", call_);
+	ImGui::Text("order%d", order_);
+	ImGui::End();
+
 }
 
-void TitleScene::Draw() {
+void TutorialScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	//Model::LightDraw(color_, direction_, intensity_);
 
@@ -136,28 +176,28 @@ void TitleScene::Draw() {
 	// プレイヤー
 	playerManager_->Draw(viewProjection_);
 	// 敵
-	enemyManager_->Draw(viewProjection_);
-	// タンク
-	tankManager_->Draw(viewProjection_);
-	// ヒーラー
-	healerManager_->Draw(viewProjection_);
-	// レンジャー
-	renjuManager_->Draw(viewProjection_);
+	//enemyManager_->Draw(viewProjection_);
+	if (step2_) {
+		// タンク
+		tankManager_->Draw(viewProjection_);
+		// ヒーラー
+		healerManager_->Draw(viewProjection_);
+		// レンジャー
+		renjuManager_->Draw(viewProjection_);
 
+	}
+	
 	Transform uv;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
 	uv.rotate = { 0.0f, 0.0f, 0.0f };
 	uv.translate = { 0.0f, 0.0f, 0.0f };
-	spriteTitle_->Draw(uv);
-	spritePushA_->Draw(uv);
-	spriteRule_->Draw(uv);
 	spriteBack_->Draw(uv);
 }
 
-void TitleScene::cameraMove() {
+void TutorialScene::cameraMove() {
 
 	// 追従カメラの更新
-	followCamera_->TitleUpdate();
+	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
@@ -165,7 +205,7 @@ void TitleScene::cameraMove() {
 }
 
 
-void TitleScene::Fade() {
+void TutorialScene::Fade() {
 	if (isFadeIn_) {
 		if (alpha_ > 0.0f) {
 			alpha_ -= 0.02f;
@@ -182,7 +222,7 @@ void TitleScene::Fade() {
 		}
 		else {
 			alpha_ = 1.0f;
-			SceneManager::GetInstance()->ChangeScene("TutorialScene");
+			SceneManager::GetInstance()->ChangeScene("GameScene");
 		}
 	}
 }
