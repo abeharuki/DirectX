@@ -165,7 +165,7 @@
     <ClCompile Include="Engine\Manager\TextureManeger.cpp">
       <Filter>ソース ファイル\Engine\Maneger</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\particle\Particle.cpp">
+    <ClCompile Include="Engine\Effects\Particle\Particle.cpp">
       <Filter>ソース ファイル\Engine\particle</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\DirectXCommon.cpp">
@@ -225,7 +225,7 @@
     <ClCompile Include="Application\scene\SceneFactory.cpp">
       <Filter>ソース ファイル\Engine\Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Audio\Audio.cpp">
+    <ClCompile Include="Engine\Effects\Audio\Audio.cpp">
       <Filter>ソース ファイル\Engine\Audio</Filter>
     </ClCompile>
     <ClCompile Include="Application\scene\OverScene.cpp">
@@ -238,6 +238,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Application\scene\LoadScene.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Effects\PostEffects\PostEffects.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -298,7 +301,7 @@
     <ClInclude Include="Engine\Manager\Input\Input.h">
       <Filter>ヘッダー ファイル\Engine\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\particle\Particle.h">
+    <ClInclude Include="Engine\Effects\Particle\Particle.h">
       <Filter>ヘッダー ファイル\Engine\particle</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\StringUtility.h">
@@ -376,7 +379,7 @@
     <ClInclude Include="Application\base\Skydome.h">
       <Filter>ヘッダー ファイル\Application\base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Audio\Audio.h">
+    <ClInclude Include="Engine\Effects\Audio\Audio.h">
       <Filter>ヘッダー ファイル\Engine\Audio</Filter>
     </ClInclude>
     <ClInclude Include="Application\Game\game.h">
@@ -392,6 +395,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Application\scene\LoadScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Effects\PostEffects\PostEffects.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

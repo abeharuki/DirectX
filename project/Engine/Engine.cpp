@@ -15,7 +15,7 @@
 #include "ImGuiManager.h"
 #include "Input.h"
 #include <GlobalVariables.h>
-#include "Audio/Audio.h"
+#include "Effects/Audio/Audio.h"
 
 
 WinApp* win = nullptr;
@@ -123,9 +123,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE Engine::GetGPUDescriptorHandle(
 
 Microsoft::WRL::ComPtr<ID3D12Device> Engine::GetDevice() { return dxCommon->GetDevice(); }
 
-Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> Engine::GetList() {
-	return dxCommon->GetCommandList();
-}
+Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> Engine::GetList() {return dxCommon->GetCommandList();}
 
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Engine::GetSRV() { return dxCommon->GetSRV(); }
 
