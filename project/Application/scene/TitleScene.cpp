@@ -182,7 +182,8 @@ void TitleScene::Fade() {
 		}
 		else {
 			alpha_ = 1.0f;
-			SceneManager::GetInstance()->ChangeScene("TutorialScene");
+			//SceneManager::GetInstance()->ChangeScene("TutorialScene");
+			SceneManager::GetInstance()->ChangeScene("GameScene");
 		}
 	}
 }

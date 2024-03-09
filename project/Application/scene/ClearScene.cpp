@@ -23,7 +23,7 @@ void ClearScene::Update() {
 		}
 	}
 
-	if (Input::PushKey(DIK_P)) {
+	if (Input::PushKey(DIK_P) && !isFadeIn_) {
 		isFadeOut_ = true;
 
 	}

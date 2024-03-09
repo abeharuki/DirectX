@@ -2,11 +2,7 @@
 #include "StringUtility.h"
 #include "Math/math.h"
 #include "Engine.h"
-#include <cassert>
-#include <format>
-#include <wrl.h>
 #include <DirectXTex.h>
-#include <d3dx12.h>
 
 class TextureManager {
 public:
@@ -35,22 +31,39 @@ public:
 	static ModelData LoadObjFile(const std::string& filename);
 
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(uint32_t textureHandle);
+	//SRVインデックスの開始番号
+	uint32_t GetTextureIndexByFilePath(const std::string& filename);
 
 	uint32_t ParticleLoad(ID3D12Resource* pResource, uint32_t instanceCount);
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetParticleGPUHandle(uint32_t textureHandle);
 
 
+	static const int maxtex = 512;
 
-	static const int maxtex = 256;
+private:
+
+	//構造体
+	struct TextureData {
+		std::string filePath;
+		DirectX::TexMetadata metadata;
+		Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU_;
+		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU_;
+	};
+
+
+private:
+
 
 	
-private:
 	
 	void LoadTexture(const std::string& filePath, uint32_t index);
 
 	void CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource, uint32_t instanceCount);
 
+	
 
+	std::vector<TextureData>textureDatas;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[maxtex];
 	uint32_t descriptorSizeSRV;
