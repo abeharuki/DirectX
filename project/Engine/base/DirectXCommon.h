@@ -94,7 +94,8 @@ public: // メンバ関数
 
 	ID3D12DescriptorHeap* GetDSV() const { return dsvHeap_.Get(); }
 
-	
+	static const uint32_t kMaxSRVCount;
+
 
 private: // メンバ変数
 	// ウィンドウズアプリケーション管理

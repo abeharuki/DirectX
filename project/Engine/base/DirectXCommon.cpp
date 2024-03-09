@@ -8,7 +8,7 @@
 
 
 using namespace Microsoft::WRL;
-
+const uint32_t DirectXCommon::kMaxSRVCount = 512;
 
 ID3D12DescriptorHeap* CreateDescriptorHeap(
     ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
@@ -348,7 +348,7 @@ void DirectXCommon::InitializeCommand() {
 void DirectXCommon::CreateFinalRenderTargets() {
 	HRESULT hr_ = S_FALSE;
 	rtvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
-	srvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	srvHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
 	
 	swapChainResources.resize(2);
 	// SwapChainからResourceを引っ張ってくる
