@@ -25,7 +25,8 @@ uint32_t TextureManager::Load(const std::string& filePath) {
 	
 	textureIndex_++;
 	LoadTexture(filePath, textureIndex_);
-	return GetTextureIndexByFilePath(filePath);
+	return textureIndex_++;
+	//return GetTextureIndexByFilePath(filePath);
 }
 
 uint32_t TextureManager::ParticleLoad(ID3D12Resource* pResource, uint32_t instanceCount) {
@@ -36,12 +37,12 @@ uint32_t TextureManager::ParticleLoad(ID3D12Resource* pResource, uint32_t instan
 }
 
 const D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetGPUHandle(uint32_t textureHandle) {
-	//D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle = textureSrvHandleGPU_[textureHandle];
-	//return GPUHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle = textureSrvHandleGPU_[textureHandle];
+	return GPUHandle;
 
-	assert(textureHandle < DirectXCommon::kMaxSRVCount);
-	TextureData& textureData = textureDatas.back();
-	return textureData.srvHandleGPU_;
+	//assert(textureHandle < DirectXCommon::kMaxSRVCount);
+	//TextureData& textureData = textureDatas.back();
+	//return textureData.srvHandleGPU_;
 
 }
 
@@ -90,6 +91,7 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 
 
 void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
+	/*
 	//読み込み済みテクスチャを検索
 	auto it = std::find_if(
 		textureDatas.begin(),
@@ -130,8 +132,8 @@ void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
 	Engine::GetDevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU_);
-
-	/*
+	*/
+	
 	DirectX::ScratchImage mipImage = LoadTexture(filePath);
 	metadata[index] = mipImage.GetMetadata();
 	textureResource[index] = CreateTextureResource(Engine::GetDevice().Get(), metadata[index]);
@@ -153,7 +155,7 @@ void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(metadata[index].mipLevels);
 	Engine::GetDevice()->CreateShaderResourceView(textureResource[index].Get(), &srvDesc, textureSrvHandleCPU_[index]);
-	*/
+	
 }
 
 
@@ -233,7 +235,10 @@ void TextureManager::UploadTextureData(
 
 const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
 {
-	//(textureIndex > 256);
+	
+	//assert(textureIndex < DirectXCommon::kMaxSRVCount);
+	//TextureData& textureData = textureDatas.back();
+	//return textureData.metadata;
 
 	return metadata[textureIndex];
 }

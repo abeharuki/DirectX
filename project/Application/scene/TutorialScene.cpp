@@ -58,6 +58,31 @@ void TutorialScene::Initialize() {
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 	isFede_ = false;
+
+	spriteStep1_.reset(Sprite::Create("resources/Tutorial/step1.png"));
+	spriteCombo_.reset(Sprite::Create("resources/Tutorial/comb.png"));
+	spriteStep2_.reset(Sprite::Create("resources/Tutorial/step2.png"));
+	spriteTu_.reset(Sprite::Create("resources/Tutorial/tu.png"));
+	spriteSta_.reset(Sprite::Create("resources/Tutorial/sta.png"));
+	size_[0] = 268.0f;
+	size_[1] = 133.0f;
+	size_[2] = 181.0f;
+	size_[3] = 219.0f;
+	size_[4] = 232.0f;
+	size_[5] = 200.0f;
+	size_[6] = 219.0f;
+	for (int i = 0; i < 7; i++) {
+		spriteSen_[i].reset(Sprite::Create("resources/Tutorial/sen.png"));
+		spriteSen_[i]->SetSize(Vector2(size_[i], 10.0f));
+	}
+	
+	spriteSen_[0]->SetPosition(Vector2(100.0f, 122.0f));//268.0f 10.0f
+	spriteSen_[1]->SetPosition(Vector2(135.0f, 159.0f));//133.0f
+	spriteSen_[2]->SetPosition(Vector2(117.0f, 202.0f));//181.0f
+	spriteSen_[3]->SetPosition(Vector2(101.0f, 245.0f));//219.0f
+	spriteSen_[4]->SetPosition(Vector2(119.0f, 136.0f));//232.0f
+	spriteSen_[5]->SetPosition(Vector2(133.0f, 177.0f));//200.0f
+	spriteSen_[6]->SetPosition(Vector2(128.0f, 290.0f));//200.0f
 	//チュートリアルフラグ
 	move_ = false;
 	dash_ = false;
@@ -71,6 +96,7 @@ void TutorialScene::Initialize() {
 
 void TutorialScene::Update() {
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
+	
 	if (Input::GetInstance()->GetPadConnect()) {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
 			if (call_ && order_) {
@@ -112,7 +138,7 @@ void TutorialScene::Update() {
 		combo_ = true;
 	}
 
-	if (move_ && jump_ && attack_ && combo_) {
+	if (move_ && jump_ && attack_ && combo_ && dash_) {
 		step2_ = true;
 	}
 
@@ -135,6 +161,16 @@ void TutorialScene::Update() {
 			tankManager_->Update();
 		}
 	}
+
+	//プレイヤーに追従
+	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+
+	//敵の座標の取得
+	healerManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
+	renjuManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
+	tankManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
 
 	cameraMove();
 	skydome_->Update();
@@ -162,6 +198,8 @@ void TutorialScene::Update() {
 	ImGui::Text("order%d", order_);
 	ImGui::End();
 
+
+
 }
 
 void TutorialScene::Draw() {
@@ -178,6 +216,8 @@ void TutorialScene::Draw() {
 	// 敵
 	//enemyManager_->Draw(viewProjection_);
 	if (step2_) {
+		//敵
+		enemyManager_->Draw(viewProjection_);
 		// タンク
 		tankManager_->Draw(viewProjection_);
 		// ヒーラー
@@ -191,6 +231,50 @@ void TutorialScene::Draw() {
 	uv.scale = { 0.0f, 0.0f, 0.0f };
 	uv.rotate = { 0.0f, 0.0f, 0.0f };
 	uv.translate = { 0.0f, 0.0f, 0.0f };
+	if (!step2_) {
+		spriteStep1_->Draw(uv);
+		spriteCombo_->Draw(uv);
+	}
+	else {
+		if (!call_ || !order_) {
+			spriteStep2_->Draw(uv);
+		}
+		
+	}
+
+	
+	spriteTu_->Draw(uv);
+	if (call_ && order_) {
+		spriteSta_->Draw(uv);
+	}
+	else {
+		if (call_) {
+			spriteSen_[4]->Draw(uv);
+		}
+		if (order_) {
+			spriteSen_[5]->Draw(uv);
+		}
+	}
+	if (!step2_) {
+		if (move_) {
+			spriteSen_[0]->Draw(uv);
+		}
+		if (attack_) {
+			spriteSen_[1]->Draw(uv);
+		}
+		if (jump_) {
+			spriteSen_[2]->Draw(uv);
+		}
+		if (dash_) {
+			spriteSen_[3]->Draw(uv);
+		}
+		if (combo_) {
+			spriteSen_[6]->Draw(uv);
+		}
+	}
+	
+	
+
 	spriteBack_->Draw(uv);
 }
 

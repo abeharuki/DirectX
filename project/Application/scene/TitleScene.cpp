@@ -57,7 +57,7 @@ void TitleScene::Initialize() {
 	spriteBack_.reset(Sprite::Create("resources/Player/B.png"));
 	spriteBack_->SetSize({ 10.0f, 10.0f });
 	spriteTitle_.reset(Sprite::Create("resources/Title/title.png"));
-	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
+	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));
 	spriteRule_.reset(Sprite::Create("resources/Title/rule.png"));
 	rule_ = false;
 	pos_.x = 1280.0f;
@@ -75,14 +75,14 @@ void TitleScene::Update() {
 	spriteRule_->SetPosition(pos_);
 	if (Input::GetInstance()->GetPadConnect()) {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
-			rule_ = true;
+			//rule_ = true;
 		}
 	}
 
 	if (Input::PushKey(DIK_G)) {
-		rule_ = true;
+		//rule_ = true;
 	}
-
+	/*
 	if (rule_) {
 		const float speed = 30.0f;
 		if (pos_.x > 0.0f) {
@@ -90,21 +90,34 @@ void TitleScene::Update() {
 		}
 		else {
 			pos_.x = 0.0f;
-			if (Input::GetInstance()->GetPadConnect()) {
-				if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
-					isFadeOut_ = true;
-
-				}
-			}
 			
-			if (Input::PushKey(DIK_G)) {
-				isFadeOut_ = true;
-			}
+		}
 
+	}*/
 
+	if (Input::GetInstance()->GetPadConnect()) {
+		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
+			isFadeOut_ = true;
+		}
+
+		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B) && !isFadeIn_) {
+			rule_ = true;
+			isFadeOut_ = true;
 		}
 
 	}
+
+	if (Input::PushKey(DIK_G) && !isFadeIn_) {
+		isFadeOut_ = true;
+	}
+
+	if (Input::PushKey(DIK_H) && !isFadeIn_) {
+		rule_ = true;
+		isFadeOut_ = true;
+	}
+
+
+
 
 	Fade();
 	cameraMove();
@@ -182,8 +195,13 @@ void TitleScene::Fade() {
 		}
 		else {
 			alpha_ = 1.0f;
-			//SceneManager::GetInstance()->ChangeScene("TutorialScene");
-			SceneManager::GetInstance()->ChangeScene("GameScene");
+			if (rule_) {
+				SceneManager::GetInstance()->ChangeScene("TutorialScene");
+			}
+			else {
+				SceneManager::GetInstance()->ChangeScene("GameScene");
+			}
+			
 		}
 	}
 }

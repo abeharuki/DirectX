@@ -36,9 +36,12 @@ private: // 基本変数
 private:
 	Audio* audio_ = nullptr;
 	uint32_t audioData_;
-	std::unique_ptr<Sprite> spriteTitle_;
-	std::unique_ptr<Sprite> spritePushA_;
-	std::unique_ptr<Sprite> spriteRule_;
+	std::unique_ptr<Sprite> spriteStep1_;
+	std::unique_ptr<Sprite> spriteCombo_;
+	std::unique_ptr<Sprite> spriteStep2_;
+	std::unique_ptr<Sprite> spriteTu_;
+	std::unique_ptr<Sprite> spriteSta_;
+	std::unique_ptr<Sprite> spriteSen_[7];
 
 	// フェードイン・フェードアウト用スプライト
 	std::unique_ptr<Sprite> spriteBack_;
@@ -72,6 +75,7 @@ private:
 
 
 	Vector2 pos_;
+	float size_[7];
 	bool rule_;
 
 	bool isFadeOut_;
