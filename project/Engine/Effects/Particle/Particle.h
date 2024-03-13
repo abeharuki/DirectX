@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Engine.h"
 #include "GraphicsPipeline.h"
 #include "Mesh.h"
@@ -8,13 +7,6 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <DirectXTex.h>
-#include <d3d12.h>
-#include <d3dx12.h>
-#include <dxcapi.h>
-#include <fstream>
-#include <memory>
-#include <sstream>
-#include <wrl.h>
 #include <random>
 
 class Particle {
@@ -30,9 +22,9 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-	//BlendMode blendMode_ = BlendMode::kAdd;
-	BlendMode blendMode_ = BlendMode::kNone;
-	
+	BlendMode blendMode_ = BlendMode::kAdd;
+	//BlendMode blendMode_ = BlendMode::kNone;
+
 
 public:
 	/// <summary>
@@ -59,7 +51,7 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	static Particle*Create(const std::string& filename, Emitter emitter);
+	static Particle* Create(const std::string& filename, Emitter emitter);
 
 	Particle_ MakeNewParticle(std::mt19937& randomEngine, const Transform transform);
 
@@ -106,7 +98,7 @@ private:
 	ModelData modelData;
 	Material* materialData = nullptr;
 
-	TextureManager* textureManager_;
+	//TextureManager* textureManager_;
 	uint32_t texture_;
 	uint32_t instancing_;
 
@@ -117,7 +109,7 @@ private:
 	AccelerationField accelerationField_;
 
 	float kDeltaTime = 1.0f / 60.0f;
-	
+
 	bool loop_ = false;
 	bool particle = false;
 
@@ -131,5 +123,5 @@ private:
 	// DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	void LoadTexture(const std::string& filename);
 
-	
+
 };

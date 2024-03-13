@@ -7,36 +7,36 @@
 Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
 WritingStyle* Model::lightData;
 
-void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
-	
+void Model::Initialize(const std::string& filename, const std::string& texturePath) {
+
 	LoadTexture(filename, texturePath);
 	CreateVertexResource();
 	sPipeline();
-	
-	
+
+
 }
 
 
 
 void Model::sPipeline() {
-	
+
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
 	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
-	
-	
+
+
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
 
-	
 
 
 
-	
+
+
 };
 
 
-void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection ,bool light) {
-	
+void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light) {
+
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
 
@@ -53,13 +53,13 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
-	
-	
+
+
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
-    // wvp用のCBufferの場所を設定
+	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
@@ -70,7 +70,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
-	
+
 }
 
 //頂点データの設定
@@ -81,15 +81,15 @@ void Model::CreateVertexResource() {
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
 
 	// 頂点バッファビューを作成する
-	vertexBufferView.BufferLocation =vertexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
+	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
 	vertexBufferView.SizeInBytes = UINT(
-	    sizeof(VertexData) * modelData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
+		sizeof(VertexData) * modelData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
 
-	
-	std::memcpy( vertexData, modelData.vertices.data(),sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
-	
-	
+
+	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
+
+
 
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
@@ -114,11 +114,11 @@ void Model::CreateVertexResource() {
 	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&lightData));
 
 	// デフォルト値
-	lightData->directionLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
-	lightData->directionLight_.direction = {0.0f, -1.0f, 0.0f};
+	lightData->directionLight_.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	lightData->directionLight_.direction = { 0.0f, -1.0f, 0.0f };
 	lightData->directionLight_.intensity = 1.0f;
 	//lightData->directionLight_.isEnable_ = true;
-	
+
 
 	//カメラ
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
@@ -127,13 +127,13 @@ void Model::CreateVertexResource() {
 };
 
 void Model::SetColor(Vector4 color) {
-	materialData->color.rgb = {color.x, color.y, color.z};
+	materialData->color.rgb = { color.x, color.y, color.z };
 	materialData->color.a = color.w;
 }
 
-void Model::SetBlendMode(BlendMode blendMode) { 
-	blendMode_ = blendMode; 
-	
+void Model::SetBlendMode(BlendMode blendMode) {
+	blendMode_ = blendMode;
+
 
 }
 
@@ -150,9 +150,10 @@ Model* Model::CreateModelFromObj(const std::string& filename, const std::string&
 
 void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
 	modelData = TextureManager::LoadObjFile(filename);
-	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize();
-	texture_ = textureManager_->Load(texturePath);
+	TextureManager::GetInstance()->Load(texturePath);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
+	//textureManager_->Initialize();
+	//texture_ = textureManager_->Load(texturePath);
 }
 
 
@@ -164,7 +165,7 @@ void Model::DirectionalLightDraw(DirectionLight directionLight) {
 	lightData->pointLight_.isEnable_ = false;
 	lightData->spotLight_.isEnable_ = false;
 
-	
+
 
 }
 void Model::PointLightDraw(PointLight pointLight, Vector3 direction) {
@@ -182,7 +183,7 @@ void Model::SpotLightDraw(SpotLight spotLight) {
 	lightData->spotLight_.isEnable_ = true;
 	lightData->pointLight_.isEnable_ = false;
 	lightData->directionLight_.isEnable_ = false;
-	
+
 }
 
 void Model::DirectionalLight(Vector4 color, Vector3 direction, float intensity) {
@@ -194,5 +195,3 @@ void Model::DirectionalLight(Vector4 color, Vector3 direction, float intensity) 
 }
 
 void Model::PostDraw() {}
-
-

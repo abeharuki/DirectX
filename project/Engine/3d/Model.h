@@ -17,20 +17,20 @@
 
 class Model {
 public: // 静的メンバ変数
-	
-	
+
+
 
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
-	
+
 	// ルートシグネチャ
-    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
-	
+
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
-	
+
 	// ライティング
 	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
 	static WritingStyle* lightData;
@@ -48,7 +48,7 @@ public:
 	static void StaticInitialize();
 	void Initialize(const std::string& filename, const std::string& texturePath);
 
-	
+
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
@@ -73,17 +73,17 @@ public:
 
 	void DirectionalLight(Vector4 color, Vector3 direction, float intensity);
 
-	
+
 	static void PostDraw();
 
-	
-	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
-	
-	
 
-	
+	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
+
+
+
+
 	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
-	
+
 	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 
 	//色とアルファ値
@@ -96,8 +96,8 @@ public:
 	void SetShininess(float i);
 
 private:
-	
-	
+
+
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
@@ -114,15 +114,15 @@ private:
 	ModelData modelData;
 	Material* materialData = nullptr;
 	CameraForGPU* cameraData = nullptr;
-	
-	TextureManager* textureManager_;
+
+	//TextureManager* textureManager_;
 	uint32_t texture_;
 
 	uint16_t instanceCount = 10;
- private:
-	
+private:
+
 	void LoadTexture(const std::string& filename, const std::string& texturePath);
 
-	 // objファイルの読み込み
-	
+	// objファイルの読み込み
+
 };

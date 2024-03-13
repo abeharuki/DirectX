@@ -1,38 +1,39 @@
 #include "TextureManeger.h"
-#include <cassert>
-#include <winerror.h>
-#include <combaseapi.h>
-#include <dxcapi.h>
-#include <format>
-#include <cstdlib>
-#include <d3d12.h>
-#include <wrl.h>
 #include <fstream>
 #include <sstream>
 #include <filesystem>
 
 #pragma comment(lib, "dxcompiler.lib")
 
+TextureManager* TextureManager::instance_ = nullptr;
+uint32_t TextureManager::kSRVIndexTop_ = 1;
+
 void TextureManager::Initialize()
 {
-	
 	descriptorSizeDSV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	descriptorSizeRTV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	descriptorSizeSRV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	
+	textureDatas.reserve(DirectXCommon::kMaxSRVCount);
 }
-
 
 TextureManager* TextureManager::GetInstance() {
-	static TextureManager instance;
-	return &instance;
+	if (instance_ == nullptr)
+	{
+		instance_ = new TextureManager();
+	}
+	return instance_;
+}
+void TextureManager::Destroy()
+{
+	if (instance_)
+	{
+		delete instance_;
+		instance_ = nullptr;
+	}
 }
 
-uint32_t TextureManager::Load(const std::string& filePath) {
-	
-	textureIndex_++;
-	LoadTexture(filePath, textureIndex_);
-	return textureIndex_;
+void TextureManager::Load(const std::string& filename) {
+	TextureManager::GetInstance()->LoadInternal(filename);
 }
 
 uint32_t TextureManager::ParticleLoad(ID3D12Resource* pResource, uint32_t instanceCount) {
@@ -43,8 +44,13 @@ uint32_t TextureManager::ParticleLoad(ID3D12Resource* pResource, uint32_t instan
 }
 
 const D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetGPUHandle(uint32_t textureHandle) {
-	D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle = textureSrvHandleGPU_[textureHandle];
-	return GPUHandle;
+	//D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle = textureSrvHandleGPU_[textureHandle];
+	//return GPUHandle;
+
+	assert(textureHandle < DirectXCommon::kMaxSRVCount);
+	TextureData& textureData = textureDatas[textureHandle];
+	return textureData.srvHandleGPU_;
+
 }
 
 const D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetParticleGPUHandle(uint32_t textureHandle) {
@@ -52,38 +58,51 @@ const D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetParticleGPUHandle(uint32_t 
 	return GPUHandle;
 }
 
+uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath) {
+	//読み込み済みテクスチャを検索
+	auto it = std::find_if(
+		textureDatas.begin(),
+		textureDatas.end(),
+		[&](TextureData& textureData) {return textureData.filePath == filePath; }
+	);
+
+	if (it != textureDatas.end()) {
+		//読み込み済みなら要素番号を返す
+		uint32_t textureIndex = static_cast<uint32_t>(std::distance(textureDatas.begin(), it));
+		return textureIndex;
+	}
+
+	assert(0);
+	return 0;
+}
+
 // Textureデータの読み込み
 DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
+
 	// テクスチャファイルを読み込んでプログラムを扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = Utility::ConvertString(filePath);
 	HRESULT hr =
-	    DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+		DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	assert(SUCCEEDED(hr));
 
 	// ミニマップの作成
 	DirectX::ScratchImage mipImages{};
 	hr = DirectX::GenerateMipMaps(
-	    image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0,
-	    mipImages);
+		image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0,
+		mipImages);
 
 	// ミニマップ付きのデータを返す
 	return mipImages;
 };
 
-
+/*
 void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
-
 	DirectX::ScratchImage mipImage = LoadTexture(filePath);
 	metadata[index] = mipImage.GetMetadata();
 	textureResource[index] = CreateTextureResource(Engine::GetDevice().Get(), metadata[index]);
 	UploadTextureData(textureResource[index].Get(), mipImage);
-	// metaDataを元にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata[index].format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata[index].mipLevels);
+
 
 	// SRVを作成するDescripterHeapの場所を決める
 	textureSrvHandleGPU_[index] = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+1); // direct_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
@@ -91,12 +110,65 @@ void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 	// 先頭はIMGUIが使ってるからその次を使う
 	textureSrvHandleCPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	textureSrvHandleGPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+
+	// metaDataを元にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = metadata[index].format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = UINT(metadata[index].mipLevels);
 	Engine::GetDevice()->CreateShaderResourceView(textureResource[index].Get(), &srvDesc, textureSrvHandleCPU_[index]);
+
+}*/
+
+void TextureManager::LoadInternal(const std::string& filePath) {
+	//読み込み済みテクスチャを検索
+	auto it = std::find_if(
+		textureDatas.begin(),
+		textureDatas.end(),
+		[&](TextureData& textureData) {return textureData.filePath == filePath; }
+	);
+
+	if (it != textureDatas.end()) {
+		//読み込み済みなら早期return
+		return;
+	}
+	assert(textureDatas.size() + 1 < DirectXCommon::kMaxSRVCount);
+
+	DirectX::ScratchImage mipImage = LoadTexture(filePath);
+	//テクスチャーデータの追加
+	textureDatas.resize(textureDatas.size() + 1);
+	//追加したテクスチャーサイズの参照を取得
+	TextureData& textureData = textureDatas.back();
+
+	textureData.filePath = filePath;
+	textureData.metadata = mipImage.GetMetadata();
+	textureData.resource = CreateTextureResource(Engine::GetDevice().Get(), textureData.metadata);
+	UploadTextureData(textureData.resource.Get(), mipImage);
+
+	//テクスチャーデータの要素数番号をSRVのインデックスとする
+	uint32_t srvIndex = static_cast<uint32_t>(textureDatas.size() - 1) + kSRVIndexTop_;
+
+
+	textureData.srvHandleCPU_ = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, srvIndex);
+	textureData.srvHandleGPU_ = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, srvIndex);
+	//textureData.srvHandleCPU_.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//textureData.srvHandleGPU_.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+
+	// metaDataを元にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = textureData.metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
+	Engine::GetDevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU_);
+
 }
 
+void TextureManager::CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource, uint32_t instanceCount) {
 
-void TextureManager::CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource,uint32_t instanceCount) {
-	
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
 	instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -106,20 +178,17 @@ void TextureManager::CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	instancingSrvDesc.Buffer.NumElements = instanceCount;
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-	instancingSrvHandelCPU[index] =Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, index+1);
-	instancingSrvHandelGPU[index] =Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, index+1);
-	instancingSrvHandelCPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	instancingSrvHandelCPU[index] = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, index + 100);
+	instancingSrvHandelGPU[index] = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, index + 100);
+	instancingSrvHandelCPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	instancingSrvHandelGPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	Engine::GetDevice()->CreateShaderResourceView(pResource, &instancingSrvDesc, instancingSrvHandelCPU[index]);
 }
 
 
-
-
-
 // TextureResourceの作成
 ID3D12Resource* TextureManager::CreateTextureResource(
-    ID3D12Device* device, const DirectX::TexMetadata& metadata) {
+	ID3D12Device* device, const DirectX::TexMetadata& metadata) {
 	// metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = UINT(metadata.width);                  // Textureの幅
@@ -129,31 +198,31 @@ ID3D12Resource* TextureManager::CreateTextureResource(
 	resourceDesc.Format = metadata.format;                      // TextureのFormat
 	resourceDesc.SampleDesc.Count = 1; // サンプリングカウント。1固定。
 	resourceDesc.Dimension =
-	    D3D12_RESOURCE_DIMENSION(metadata.dimension); // Textureの次元数。普段使ってるのは2次元
+		D3D12_RESOURCE_DIMENSION(metadata.dimension); // Textureの次元数。普段使ってるのは2次元
 
 	// 利用するHeapの設定
 	D3D12_HEAP_PROPERTIES heapProperties{};
 	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM; // 細かい設定を行う
 	heapProperties.CPUPageProperty =
-	    D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; // WriteBackポリシーでCPUアクセス可能
+		D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; // WriteBackポリシーでCPUアクセス可能
 	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0; // プロセッサの近くに配置
 
 	// Resourceを生成する
 	ID3D12Resource* resource = nullptr;
 	HRESULT hr = device->CreateCommittedResource(
-	    &heapProperties,                   // Heapの設定
-	    D3D12_HEAP_FLAG_NONE,              // Heapの特殊な設定。特になし。
-	    &resourceDesc,                     // Resourceの設定
-	    D3D12_RESOURCE_STATE_GENERIC_READ, // 初回のResourceState。Textureは基本読むだけ
-	    nullptr,
-	    IID_PPV_ARGS(&resource)); // 作成するResourceポインタへのポインタ
+		&heapProperties,                   // Heapの設定
+		D3D12_HEAP_FLAG_NONE,              // Heapの特殊な設定。特になし。
+		&resourceDesc,                     // Resourceの設定
+		D3D12_RESOURCE_STATE_GENERIC_READ, // 初回のResourceState。Textureは基本読むだけ
+		nullptr,
+		IID_PPV_ARGS(&resource)); // 作成するResourceポインタへのポインタ
 	assert(SUCCEEDED(hr));
 	return resource;
 }
 
 // TextureResourceにデータ転送
 void TextureManager::UploadTextureData(
-    Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+	Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
 	// Meta情報を取得
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	// 全MipMapについて
@@ -162,11 +231,11 @@ void TextureManager::UploadTextureData(
 		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
 		// Textureに転送
 		HRESULT hr = texture->WriteToSubresource(
-		    UINT(mipLevel),
-		    nullptr,              // 全領域へコピー
-		    img->pixels,          // 元データアドレ
-		    UINT(img->rowPitch),  // 1ランサイズ
-		    UINT(img->slicePitch) // 1枚サイズ
+			UINT(mipLevel),
+			nullptr,              // 全領域へコピー
+			img->pixels,          // 元データアドレ
+			UINT(img->rowPitch),  // 1ランサイズ
+			UINT(img->slicePitch) // 1枚サイズ
 		);
 		assert(SUCCEEDED(hr));
 	}
@@ -174,9 +243,12 @@ void TextureManager::UploadTextureData(
 
 const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
 {
-	//(textureIndex > 256);
 
-	return metadata[textureIndex];
+	assert(textureIndex < DirectXCommon::kMaxSRVCount);
+	TextureData& textureData = textureDatas.back();
+	return textureData.metadata;
+
+	//return metadata[textureIndex];
 }
 
 
@@ -233,7 +305,7 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 
 	std::filesystem::path ps = std::filesystem::path(filename);
 	std::string directryPath = ps.parent_path().string();
-	
+
 	// ファイルを読み,ModelDataを構築
 	while (std::getline(file, line)) {
 		std::string identifier;
@@ -243,22 +315,25 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 		// identfierの応じた処理
 		// 頂点情報を読み込む
 		if (identifier == "v") {
-			Vector4 position = {0.0f, 0.0f, 0.0f, 0.0f};
+			Vector4 position = { 0.0f, 0.0f, 0.0f, 0.0f };
 			s >> position.x >> position.y >> position.z;
 			position.z *= -1.0f; // 位置の反転
 			position.w = 1.0f;
 			positions.push_back(position);
-		} else if (identifier == "vt") {
-			Vector2 texcoord = {0.0f, 0.0f};
+		}
+		else if (identifier == "vt") {
+			Vector2 texcoord = { 0.0f, 0.0f };
 			s >> texcoord.x >> texcoord.y;
 			texcoord.y = 1.0f - texcoord.y;
 			texcoords.push_back(texcoord);
-		} else if (identifier == "vn") {
-			Vector3 normal = {0.0f, 0.0f, 0.0f};
+		}
+		else if (identifier == "vn") {
+			Vector3 normal = { 0.0f, 0.0f, 0.0f };
 			normal.z *= -1.0f; // 法線の反転
 			s >> normal.x >> normal.y >> normal.z;
 			normals.push_back(normal);
-		} else if (identifier == "f") {
+		}
+		else if (identifier == "f") {
 			VertexData triangle[3];
 			// 面は三角形減退。その他は未対応
 			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
@@ -279,14 +354,15 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 				Vector3 normal = normals[elementIndices[2] - 1];
 				// VertexData vertex = { position,texcoord,normal };
 				// modelData.vertices.push_back(vertex);
-				triangle[faceVertex] = {position, texcoord, normal};
+				triangle[faceVertex] = { position, texcoord, normal };
 			}
 
 			modelData.vertices.push_back(triangle[2]);
 			modelData.vertices.push_back(triangle[1]);
 			modelData.vertices.push_back(triangle[0]);
 
-		} else if (identifier == "mtllib") {
+		}
+		else if (identifier == "mtllib") {
 			// materialTemplateLibraryファイルの名前を取得
 			std::string materialFilename;
 			s >> materialFilename;
@@ -298,6 +374,3 @@ ModelData TextureManager::LoadObjFile(const std::string& filename) {
 	}
 	return modelData;
 }
-
-
-

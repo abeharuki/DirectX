@@ -10,7 +10,7 @@ public:
 
 	static void Destroy();
 
-	void Initialize();
+	//void Initialize();
 
 	void Update();
 

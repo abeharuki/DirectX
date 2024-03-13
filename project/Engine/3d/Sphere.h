@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include <wrl.h>
 #include <d3d12.h>
 #include <memory>
@@ -15,8 +16,8 @@
 #include "ViewProjection.h"
 #include "GraphicsPipeline.h"
 
-class Sphere{
- // 静的メンバ変数
+class Sphere {
+	// 静的メンバ変数
 public:
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
@@ -58,7 +59,7 @@ public:
 	/// <param name="commandList">描画コマンドリスト</param>
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
-	
+
 	//光の色　向き　明るさ
 	static void LightDraw(Vector4 color, Vector3 direction, float intensity);
 

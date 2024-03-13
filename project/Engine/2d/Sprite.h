@@ -42,7 +42,7 @@ public: // 静的メンバ関数
 	/// <param name="window_width">画面幅</param>
 	/// <param name="window_height">画面高さ</param>
 	void StaticInitialize(
-	    ID3D12Device* device, int window_width, int window_height);
+		ID3D12Device* device, int window_width, int window_height);
 
 	/// <summary>
 	/// シングルトンインスタンスの取得
@@ -66,13 +66,13 @@ public: // 静的メンバ関数
 		Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false*/);
 
 
-	
-	
+
+
 
 public: // 静的メンバ変数
 	// 頂点数
 	static const int kVertNum = 4;
-	
+
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
 
@@ -83,8 +83,8 @@ public: // 静的メンバ変数
 
 	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
-	
-	
+
+
 	// 射影行列
 	static Matrix4x4 sMatProjection_;
 
@@ -95,7 +95,7 @@ public: // 静的メンバ変数
 	BlendMode blendMode_ = BlendMode::kNormal;
 
 public: // メンバ関数
-	
+
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
@@ -142,7 +142,7 @@ public: // メンバ関数
 
 
 private: // メンバ変数
-	TextureManager* textureManager_;
+	//TextureManager* textureManager_;
 	uint32_t texture_;
 
 
@@ -154,7 +154,7 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
 	VertexData* vertexData_;
 
-	
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	uint32_t* indexData_;
 
@@ -166,15 +166,15 @@ private: // メンバ変数
 	D3D12_VERTEX_BUFFER_VIEW vbView_;
 	D3D12_INDEX_BUFFER_VIEW ibView_;
 	// 頂点
-	
+
 	// ライティング
 	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
 	//座標
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_; 
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_;
 
 	// マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
-	
+
 	// 頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertBuff_;
 	// 定数バッファ
@@ -190,9 +190,9 @@ private: // メンバ変数
 	// 座標
 	Vector2 position_{};
 	// スプライト幅、高さ
-	Vector2 size_ = {0.0f, 0.0f};
+	Vector2 size_ = { 0.0f, 0.0f };
 	// アンカーポイント
-	Vector2 anchorPoint_ = {0, 0};
+	Vector2 anchorPoint_ = { 0, 0 };
 	// ワールド行列
 	Matrix4x4 matWorld_{};
 	//左右クリップ
@@ -204,7 +204,7 @@ private: // メンバ関数
 	/// <summary>
 	/// 頂点データ転送
 	/// </summary>
-	
+
 
 	void CreateVertexResource();
 	void LoadTexture(const std::string& fileName);

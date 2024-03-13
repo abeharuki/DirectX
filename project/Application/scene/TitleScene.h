@@ -2,7 +2,7 @@
 #include "Framework/IScene.h"
 #include "Input.h"
 #include <memory>
-#include "Audio/Audio.h"
+#include "Effects/Audio/Audio.h"
 #include <Sprite.h>
 #include <Sphere.h>
 #include <Model.h>

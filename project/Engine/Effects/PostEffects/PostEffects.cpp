@@ -1,5 +1,5 @@
 #include "PostEffects.h"
-
+/*
 
 
 PostEffects* PostEffects::instance_ = nullptr;
@@ -25,8 +25,9 @@ void PostEffects::Destroy()
 }
 
 void PostEffects::Initialize() {
+	/*
 	HRESULT result;
-
+	
 	CD3DX12_RESOURCE_DESC texresDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
 		WinApp::kWindowWidth,
@@ -53,4 +54,5 @@ void PostEffects::Initialize() {
 	result = vertexBuffer->WriteToSubresource(0, nullptr, img, rowPitch, depthPitch);
 	assert(SUCCEEDED(result));
 	delete[] img;
-}
+	
+}*/

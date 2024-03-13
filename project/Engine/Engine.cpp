@@ -17,6 +17,7 @@
 #include <GlobalVariables.h>
 #include "Effects/Audio/Audio.h"
 
+#include "TextureManeger.h"
 
 WinApp* win = nullptr;
 DirectXCommon* dxCommon = nullptr;
@@ -32,19 +33,21 @@ Engine* Engine::GetInstance() {
 void Engine::Initialize(const wchar_t* title, int width, int height) {
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
-	win->CreateGameWindow(title,width,height);
+	win->CreateGameWindow(title, width, height);
 
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win, 1280, 720);
 
+	TextureManager::GetInstance()->Initialize();
+
 	imguiManager = ImGuiManager::GetInstance();
-	imguiManager->Initialize(win, dxCommon);	
+	imguiManager->Initialize(win, dxCommon);
 
 	//	Inputの初期化処理
 	keyInput = Input::GetInstance();
 	keyInput->Initialize();
-	
+
 	audio = Audio::GetInstance();
 	audio->Initialize();
 }
@@ -58,7 +61,7 @@ bool Engine::ProcessMessage() {
 }
 
 
-void Engine::BeginFrame() { 
+void Engine::BeginFrame() {
 	// ImGui受付開始
 	imguiManager->Begin();
 	// グローバル変数の更新
@@ -68,20 +71,22 @@ void Engine::BeginFrame() {
 	keyInput->Update();
 
 
-	
+
 }
 
-void Engine::Finalize(){
-	
+void Engine::Finalize() {
+
 	audio->Finalize();
 
 	//  DirectX終了処理
 	dxCommon->Finalize();
-	
+
 	// ゲームウィンドウの破棄
 	win->TerminateGameWindow();
 
 	//dxCommon->Debug();
+
+	TextureManager::GetInstance()->Destroy();
 }
 
 void Engine::EndFrame() {
@@ -112,14 +117,11 @@ D3D12_CPU_DESCRIPTOR_HANDLE Engine::GetCPUDescriptorHandle(ID3D12DescriptorHeap*
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE Engine::GetGPUDescriptorHandle(
-    ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+	ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += (descriptorSize * index);
 	return handleGPU;
 }
-
-
-
 
 Microsoft::WRL::ComPtr<ID3D12Device> Engine::GetDevice() { return dxCommon->GetDevice(); }
 

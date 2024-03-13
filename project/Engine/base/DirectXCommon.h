@@ -94,12 +94,13 @@ public: // メンバ関数
 
 	ID3D12DescriptorHeap* GetDSV() const { return dsvHeap_.Get(); }
 
-	
+	static const uint32_t kMaxSRVCount;
+
 
 private: // メンバ変数
 	// ウィンドウズアプリケーション管理
 	WinApp* winApp_;
-	
+
 	// Direct3D関連
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	Microsoft::WRL::ComPtr<ID3D12Device> device_;
@@ -173,5 +174,5 @@ private: // メンバ関数
 };
 
 ID3D12DescriptorHeap* CreateDescriptorHeap(
-    ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
-    bool shaderVisible);
+	ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
+	bool shaderVisible);
