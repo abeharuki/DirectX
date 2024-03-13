@@ -106,7 +106,7 @@ private:
 	ModelData modelData;
 	Material* materialData = nullptr;
 
-	TextureManager* textureManager_;
+	//TextureManager* textureManager_;
 	uint32_t texture_;
 	uint32_t instancing_;
 

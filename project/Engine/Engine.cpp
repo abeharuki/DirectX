@@ -16,7 +16,7 @@
 #include "Input.h"
 #include <GlobalVariables.h>
 #include "Audio/Audio.h"
-
+#include "TextureManeger.h"
 
 WinApp* win = nullptr;
 DirectXCommon* dxCommon = nullptr;
@@ -37,6 +37,8 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win, 1280, 720);
+
+	TextureManager::GetInstance()->Initialize();
 
 	imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win, dxCommon);	
@@ -82,6 +84,8 @@ void Engine::Finalize(){
 	win->TerminateGameWindow();
 
 	//dxCommon->Debug();
+
+	TextureManager::GetInstance()->Destroy();
 }
 
 void Engine::EndFrame() {

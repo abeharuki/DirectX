@@ -102,7 +102,7 @@ void Sprite::Draw(Transform& uvTransform ) {
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	// TransformationMatrixCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
@@ -213,9 +213,11 @@ void Sprite::CreateVertexResource() {
 
 // 画像の読み込み
 void Sprite::LoadTexture(const std::string& fileName) {
-	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize();
-	texture_ = textureManager_->Load(fileName);
+	TextureManager::Load(fileName);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(fileName);
+	//textureManager_ = TextureManager::GetInstance();
+	//textureManager_->Initialize();
+	//texture_ = textureManager_->Load(fileName);
 }
 
 void Sprite::AdjustTextureSize()

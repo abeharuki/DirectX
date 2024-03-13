@@ -38,7 +38,7 @@ private:
 	uint32_t audioData_;
 	std::unique_ptr<Sprite> spriteTitle_;
 	std::unique_ptr<Sprite> spritePushA_;
-	std::unique_ptr<Sprite> spriteRule_;
+	//std::unique_ptr<Sprite> spriteRule_;
 
 	// フェードイン・フェードアウト用スプライト
 	std::unique_ptr<Sprite> spriteBack_;

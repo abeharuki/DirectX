@@ -115,7 +115,7 @@ private:
 	Material* materialData = nullptr;
 	CameraForGPU* cameraData = nullptr;
 	
-	TextureManager* textureManager_;
+	//TextureManager* textureManager_;
 	uint32_t texture_;
 
 	uint16_t instanceCount = 10;

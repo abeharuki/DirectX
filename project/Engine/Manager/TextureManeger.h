@@ -13,13 +13,15 @@ public:
 	/// <returns></returns>
 	static TextureManager* GetInstance();
 
+	static void Destroy();
+
+	static void Load(const std::string& filename);
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	void Initialize();
 	
-
-	uint32_t Load(const std::string& fileName);
 
 	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	static ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
@@ -34,6 +36,7 @@ public:
 	//SRVインデックスの開始番号
 	uint32_t GetTextureIndexByFilePath(const std::string& filename);
 
+	//パーティクル用
 	uint32_t ParticleLoad(ID3D12Resource* pResource, uint32_t instanceCount);
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetParticleGPUHandle(uint32_t textureHandle);
 
@@ -54,14 +57,13 @@ private:
 
 private:
 
-
-	
-	
-	void LoadTexture(const std::string& filePath, uint32_t index);
+	//void LoadTexture(const std::string& filePath, uint32_t index);
+	void LoadInternal(const std::string& filePath);
 
 	void CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource, uint32_t instanceCount);
 
-	
+	static TextureManager* instance_;
+	static uint32_t kSRVIndexTop_;
 
 	std::vector<TextureData>textureDatas;
 
