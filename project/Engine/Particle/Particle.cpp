@@ -96,7 +96,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(1, textureManager_->GetParticleGPUHandle(instancing_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetParticleGPUHandle(instancing_));
 	//Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
 
 
@@ -106,7 +106,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	    0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
 	    4, viewProjection.constBuff_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
@@ -180,14 +180,15 @@ Particle* Particle::Create(const std::string& filename, Emitter emitter) {
 
 void Particle::LoadTexture(const std::string& filename) {
 	modelData = TextureManager::LoadObjFile("resources/plane.obj");
-	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize();
-	texture_ = textureManager_->Load(filename);
+	TextureManager::GetInstance()->Load(filename);
+	//textureManager_->Initialize();
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
+
 }
 
 void Particle::CreateInstanceSRV() {
 
-	instancing_ = textureManager_->ParticleLoad(instancingResouce_.Get(), instanceCount);
+	instancing_ = TextureManager::GetInstance()->ParticleLoad(instancingResouce_.Get(), instanceCount);
 
 	//descriptorSizeSRV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(
 	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);

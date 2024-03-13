@@ -142,7 +142,7 @@ public: // メンバ関数
 
 
 private: // メンバ変数
-	TextureManager* textureManager_;
+	//TextureManager* textureManager_;
 	uint32_t texture_;
 
 

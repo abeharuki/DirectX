@@ -58,12 +58,12 @@ void TitleScene::Initialize() {
 	spriteBack_->SetSize({ 10.0f, 10.0f });
 	spriteTitle_.reset(Sprite::Create("resources/Title/title.png"));
 	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));
-	spriteRule_.reset(Sprite::Create("resources/Title/rule.png"));
+	//spriteRule_.reset(Sprite::Create("resources/Title/rule.png"));
 	rule_ = false;
 	pos_.x = 1280.0f;
 	spriteTitle_->SetPosition({-250,0.0f});
 	//spritePushA_->SetSize({ 3.6f, 2.0f });
-	spriteRule_->SetSize({ 1280.0f, 720.0f });
+	//spriteRule_->SetSize({ 1280.0f, 720.0f });
 	spriteBack_->SetSize({ 1280.0f,720.0f });
 	isFadeIn_ = true;
 	isFadeOut_ = false;
@@ -72,7 +72,6 @@ void TitleScene::Initialize() {
 
 void TitleScene::Update() {
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-	spriteRule_->SetPosition(pos_);
 	if (Input::GetInstance()->GetPadConnect()) {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
 			//rule_ = true;
@@ -163,7 +162,7 @@ void TitleScene::Draw() {
 	uv.translate = { 0.0f, 0.0f, 0.0f };
 	spriteTitle_->Draw(uv);
 	spritePushA_->Draw(uv);
-	spriteRule_->Draw(uv);
+	//spriteRule_->Draw(uv);
 	spriteBack_->Draw(uv);
 }
 
