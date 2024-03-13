@@ -96,31 +96,6 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 	return mipImages;
 };
 
-/*
-void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
-	DirectX::ScratchImage mipImage = LoadTexture(filePath);
-	metadata[index] = mipImage.GetMetadata();
-	textureResource[index] = CreateTextureResource(Engine::GetDevice().Get(), metadata[index]);
-	UploadTextureData(textureResource[index].Get(), mipImage);
-
-
-	// SRVを作成するDescripterHeapの場所を決める
-	textureSrvHandleGPU_[index] = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+1); // direct_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
-	textureSrvHandleCPU_[index] = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+1);
-	// 先頭はIMGUIが使ってるからその次を使う
-	textureSrvHandleCPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-
-	// metaDataを元にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata[index].format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata[index].mipLevels);
-	Engine::GetDevice()->CreateShaderResourceView(textureResource[index].Get(), &srvDesc, textureSrvHandleCPU_[index]);
-	
-}*/
 
 void TextureManager::LoadInternal(const std::string& filePath) {
 	//読み込み済みテクスチャを検索
@@ -251,8 +226,6 @@ const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
 	//return metadata[textureIndex];
 }
 
-
-
 MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& filename) {
 	// 宣言
 	MaterialData materialData; // 構築するMaterialData
@@ -276,20 +249,11 @@ MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& filenam
 			s >> textureFilename;
 			// 連結しているファイルパス
 			materialData.textureFilePath = directryPath + "/" + textureFilename;
-		} //else if (identifier == "mtllib") {
-		//	// materialTemplateLibraryファイルの名前を取得する
-		//	std::string materialFilename;
-		//	s >> materialFilename;
-
-		//	// 基本的にobjファイルと同じ一階層にmtlは存在させるので、ディレクション名などファイル名を渡す
-		//	modelData.material = LoadMaterialTemplateFile(materialFilename);
-		//}
+		}
 	}
 
 	return materialData;
 }
-
-
 
 ModelData TextureManager::LoadObjFile(const std::string& filename) {
 	// 必要な変数の宣言
