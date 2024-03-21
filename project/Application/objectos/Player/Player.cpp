@@ -46,6 +46,10 @@ void Player::Update() {
 	preHit_ = isHit_;
 	isHit_ = false;
 	hitCount_ = false;
+
+	preNoAttack_ = noAttack_;
+	noAttack_ = false;
+
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -115,6 +119,8 @@ void Player::Update() {
 
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
+	ImGui::Text("%d", noAttack_);
+	ImGui::Text("%d", preNoAttack_);
 	ImGui::End();
 }
 
@@ -129,7 +135,7 @@ void Player::MoveUpdata() {
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
 
-
+	//noAttack_ = false;
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 
 		const float value = 0.7f;
@@ -178,7 +184,7 @@ void Player::MoveUpdata() {
 		}
 
 		// 攻撃
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B)) {
+		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B) && !preNoAttack_) {
 			behaviorRequest_ = Behavior::kAttack;
 		}
 
@@ -187,6 +193,23 @@ void Player::MoveUpdata() {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
 			behaviorRequest_ = Behavior::kDash;
 		}
+
+
+		if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)&& preNoAttack_) {
+			//復活時間
+			revivalCount_++;
+
+			
+		}
+		else {
+			revivalCount_--;
+			
+			if (revivalCount_ <= 0) {
+				revivalCount_ = 0;
+			}
+			
+		}
+
 
 	}
 	else {
@@ -531,7 +554,33 @@ void Player::OnCollision(Collider* collider) {
 
 	}
 
+	if (collider->GetCollisionAttribute() == kCollisionAttributeTank) {
+		if (tankDead_) {
+			noAttack_ = true;
+		}
+		else {
+			revivalCount_ = 0;
+			
+		}
+	}
 
+	if (collider->GetCollisionAttribute() == kCollisionAttributeRenju) {
+		if (renjuDead_) {
+			noAttack_ = true;
+		}
+		else {
+			revivalCount_ = 0;
+		}
+	}
+
+	if (collider->GetCollisionAttribute() == kCollisionAttributeHealer) {
+		if (healerDead_) {
+			noAttack_ = true;
+		}
+		else {
+			revivalCount_ = 0;
+		}
+	}
 
 
 }

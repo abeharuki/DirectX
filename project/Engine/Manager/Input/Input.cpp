@@ -90,7 +90,12 @@ bool Input::ReleaseKey(uint8_t keynumber) {
 
 bool Input::GetPadConnect() { return isConnectPad; }
 
-bool Input::GetPadButton(UINT button) { return xInputState.Gamepad.wButtons == button; }
+bool Input::GetPadButton(UINT button) { 
+	if (xInputState.Gamepad.wButtons & button) {
+		return true;
+	}
+	return false;
+}
 
 bool Input::GetPadButtonUp(UINT button) {
 	return xInputState.Gamepad.wButtons != button && oldXInputState.Gamepad.wButtons == button;

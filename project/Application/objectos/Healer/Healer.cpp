@@ -11,6 +11,12 @@ void Healer::Initialize() {
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = 4.0f;
+	for (int i = 0; i < 3; i++) {
+		worldTransformHp_[i].Initialize();
+		worldTransformHp_[i].translate.y = 1.5f;
+		worldTransformHp_[i].translate.x = (float(i) * 0.5f)-0.5f;
+		worldTransformHp_[i].scale = { 0.5f,0.5f,0.5f };
+	}
 	worldTransformHead_.Initialize();
 	worldTransformCane_.Initialize();
 	worldTransformCane_.translate = { -0.63f, 0.54f, 0.0f };
@@ -26,6 +32,8 @@ void Healer::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 	
+	hitCount_ = 3;
+
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
@@ -40,7 +48,9 @@ void Healer::Update() {
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
-	hitCount_ = false;
+
+	preHitPlayer_ = isHitPlayer_;
+	isHitPlayer_ = false;
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -61,7 +71,7 @@ void Healer::Update() {
 			AttackInitialize();
 			break;
 		case Behavior::kDead:
-
+			DeadInitialize();
 			break;
 		}
 
@@ -85,6 +95,7 @@ void Healer::Update() {
 		AttackUpdata();
 		break;
 	case Behavior::kDead:
+		DeadUpdate();
 		break;
 	}
 
@@ -97,7 +108,11 @@ void Healer::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformCane_.TransferMatrix();
+	for (int i = 0; i < 3; i++) {
+		worldTransformHp_[i].TransferMatrix();
+	}
 
+	
 
 };
 
@@ -126,7 +141,13 @@ void Healer::knockUpdata() {
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
-		behaviorRequest_ = Behavior::kRoot;
+		if (hitCount_ == 0) {
+			behaviorRequest_ = Behavior::kDead;
+		}
+		else {
+			behaviorRequest_ = Behavior::kRoot;
+		}
+		
 	}
 };
 
@@ -184,6 +205,55 @@ void Healer::AttackUpdata() {
 		searchTarget_ = false;
 	}
 };
+
+void Healer::DeadInitialize() {
+	//復活時間
+	revivalCount_ = 0;
+	isDead_ = true;
+}
+void Healer::DeadUpdate(){
+	if (isHitPlayer_ != preHitPlayer_) {
+		if (Input::GetInstance()->GetPadConnect()) {
+			if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)) {
+				//復活時間
+				revivalCount_++;
+			}
+			else {
+				revivalCount_--;
+			}
+		}
+		else {
+			if (Input::GetInstance()->PressKey(DIK_B)) {
+				//復活時間
+				revivalCount_++;
+			}
+			else {
+				revivalCount_--;
+			}
+		}
+
+	}
+	else {
+		revivalCount_--;
+	}
+
+	if (revivalCount_ <= 0) {
+		revivalCount_ = 0;
+	}
+
+	if (revivalCount_ >= 60) {
+		hitCount_ = 1;
+		behaviorRequest_ = Behavior::kRoot;
+		isDead_ = false;
+	}
+
+	ImGui::Begin("revival");
+	ImGui::Text("T%d", revivalCount_);
+	ImGui::Text("%d", isHitPlayer_);
+	ImGui::Text("%d", preHitPlayer_);
+	ImGui::End();
+
+}
 
 //追従
 void Healer::followPlayer(Vector3 playerPos) {
@@ -273,6 +343,18 @@ void Healer::Relationship() {
 			worldTransformCane_.translate),
 		worldTransformBase_.matWorld_);
 
+	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;
+
+	for (int i = 0; i < 3; i++) {
+		worldTransformHp_[i].matWorld_ = Math::MakeScaleMatrix(worldTransformHp_[i].scale) * billboardMatrix * Math::MakeTranslateMatrix(Vector3(worldTransformBase_.translate.x + worldTransformHp_[i].translate.x, worldTransformBase_.translate.y + worldTransformHp_[i].translate.y, worldTransformBase_.translate.z));
+
+	}
+
+
 	worldTransformCollision_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(
 			worldTransformCollision_.scale, worldTransformCollision_.rotate,
@@ -288,11 +370,13 @@ void Healer::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
 	velocity_ = { 0.0f, 0.0f, -kSpeed };
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
-	behaviorRequest_ = Behavior::knock;
+	if (hitCount_ > 0) {
+		behaviorRequest_ = Behavior::knock;
+	}
 	isHit_ = true;
 
 	if (isHit_ != preHit_) {
-		hitCount_ = true;
+		--hitCount_;
 
 	}
 
@@ -306,12 +390,13 @@ void Healer::OnCollision(Collider* collider) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			behaviorRequest_ = Behavior::knock;
-
+			if (hitCount_ > 0) {
+				behaviorRequest_ = Behavior::knock;
+			}
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hitCount_ = true;
+				--hitCount_;
 
 			}
 
@@ -342,7 +427,9 @@ void Healer::OnCollision(Collider* collider) {
 		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
 	}
 
-
+	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {
+		isHitPlayer_ = true;
+	}
 }
 
 

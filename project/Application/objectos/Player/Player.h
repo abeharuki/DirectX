@@ -106,6 +106,24 @@ public: // メンバ関数
 
 	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
 
+	//死亡フラグ
+	void SetTankDead(bool dead) { tankDead_ = dead; }
+	void SetRenjuDead(bool dead) { renjuDead_ = dead; }
+	void SetHealerDead(bool dead) { healerDead_ = dead; }
+
+	int Revival() { return revivalCount_; }
+
+	bool GetIsDead() {
+		if(tankDead_ || renjuDead_ || healerDead_){
+			if (preNoAttack_) {
+				return true;
+			}
+			
+		}
+		
+		return false; 
+	}
+
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
@@ -156,11 +174,14 @@ private: // メンバ変数
 
 	bool dash_;
 	bool combo_;
+	bool noAttack_;
+	bool preNoAttack_;
 
 	// 攻撃の時間
 	const uint32_t behaviorAttackTime = 15;
 
 	uint32_t nockTime_;
+
 
 	// 速度
 	Vector3 velocity_ = {};
@@ -176,4 +197,10 @@ private: // メンバ変数
 
 	//敵の攻撃フラグ
 	bool isEnemyAttack_;
+
+	//味方の死亡フラグ
+	bool tankDead_;
+	bool healerDead_;
+	bool renjuDead_;
+	int revivalCount_;
 };

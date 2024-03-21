@@ -14,6 +14,10 @@ void TankManager::Initialize() {
 	particle_->SetSpeed(5.0f);
 	isParticle_ = false;
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
+	for (int i = 0; i < 3; i++) {
+		nHpModel_[i].reset(Model::CreateModelFromObj("resources/plane.obj", "resources/Player/life0.png"));
+		HpModel_[i].reset(Model::CreateModelFromObj("resources/plane.obj", "resources/Player/life1.png"));
+	}
 
 	tank_ = std::make_unique<Tank>();
 	tank_->Initialize();
@@ -45,6 +49,28 @@ void TankManager::Update() {
 
 void TankManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(tank_->GetWorldTransformHead(), camera, false);
+	
+	if (tank_->GetHitCount() >= 3) {
+		HpModel_[0]->Draw(tank_->GetWorldTransfromHp(0), camera, false);
+
+	}
+	else {
+		nHpModel_[0]->Draw(tank_->GetWorldTransfromHp(0), camera, false);
+	}
+	if (tank_->GetHitCount() >= 2) {
+		HpModel_[1]->Draw(tank_->GetWorldTransfromHp(1), camera, false);
+
+	}
+	else {
+		nHpModel_[1]->Draw(tank_->GetWorldTransfromHp(1), camera, false);
+	}
+	if (tank_->GetHitCount() >= 1) {
+		HpModel_[2]->Draw(tank_->GetWorldTransfromHp(2), camera, false);
+
+	}
+	else {
+		nHpModel_[2]->Draw(tank_->GetWorldTransfromHp(2), camera, false);
+	}
 	particle_->Draw(camera);
 };
 

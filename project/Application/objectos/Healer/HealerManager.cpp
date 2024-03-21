@@ -1,12 +1,15 @@
 #include "HealerManager.h"
 
 void HealerManager::Initialize() {
+	
 
-	Model_.reset(
-		Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
+	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 
+	for (int i = 0; i < 3; i++) {
+		nHpModel_[i].reset(Model::CreateModelFromObj("resources/plane.obj", "resources/Player/life0.png"));
+		HpModel_[i].reset(Model::CreateModelFromObj("resources/plane.obj", "resources/Player/life1.png"));
+	}
 	CaneModel_.reset(Model::CreateModelFromObj("resources/cane/cane.obj", "resources/cane/cane.png"));
-
 
 	healer_ = std::make_unique<Healer>();
 	healer_->Initialize();
@@ -44,10 +47,33 @@ void HealerManager::Update() {
 	healer_->Update();
 	healer_->followPlayer(playerPos_);
 	healer_->searchTarget(enemyPos_);
+	
+
+	
 };
 
 void HealerManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(healer_->GetWorldTransformHead(), camera, false);
+
+	if (healer_->GetHitCount() >= 3) {
+		HpModel_[0]->Draw(healer_->GetWorldTransfromHp(0), camera, false);
+	}
+	else {
+		nHpModel_[0]->Draw(healer_->GetWorldTransfromHp(0), camera, false);
+	}
+	if (healer_->GetHitCount() >= 2) {
+		HpModel_[1]->Draw(healer_->GetWorldTransfromHp(1), camera, false);
+	}
+	else {
+		nHpModel_[1]->Draw(healer_->GetWorldTransfromHp(1), camera, false);
+	}
+	if (healer_->GetHitCount() >= 1) {
+		HpModel_[2]->Draw(healer_->GetWorldTransfromHp(2), camera, false);
+	}
+	else {
+		nHpModel_[2]->Draw(healer_->GetWorldTransfromHp(2), camera, false);
+	}
+
 	particle_->Draw(camera);
 	if (healer_->IsAttack()) {
 		CaneModel_->Draw(healer_->GetWorldTransformCane(), camera, false);

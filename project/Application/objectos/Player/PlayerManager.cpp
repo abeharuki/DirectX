@@ -5,10 +5,14 @@ void PlayerManager::Initialize() {
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 	HammerModel_.reset(Model::CreateModelFromObj("resources/katana/katana.obj", "resources/katana/kata.png"));
 
+	spriteRevival_.reset(Sprite::Create("resources/enemy/HP.png"));
+	spriteRevivalG_.reset(Sprite::Create("resources/HPG.png"));
+
 	for (int i = 0; i < 6; i++) {
 		spriteHP_[i].reset(Sprite::Create("resources/Player/life1.png"));
 		spriteHPG_[i].reset(Sprite::Create("resources/Player/life0.png"));
-
+		spriteHP_[i]->SetAnchorPoint({ 0.5f,0.5f });
+		spriteHPG_[i]->SetAnchorPoint({ 0.5f,0.5f });
 	}
 
 	player_ = std::make_unique<Player>();
@@ -26,9 +30,14 @@ void PlayerManager::Initialize() {
 	particle_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 	particle_->SetSpeed(8.0f);
 	isParticle_ = false;
-	//HpTransform_.scale = { 0.2f, 0.2f, 0.1f };
-	HpTransform_.translate = { 650.0f, 550.0f, 1.0f };
+	HpTransform_.scale = { 70.0f, 70.0f, 70.0f };
+	HpTransform_.translate = { 690.0f, 600.0f, 1.0f };
 
+	revivalTransform_.scale = { 137.0f,22.0f,70.0f };
+	revivalTransform_.translate = { 571.0f,650.0f,1.0f };
+	spriteRevivalG_->SetSize(Vector2(120.0f, revivalTransform_.scale.y));
+	spriteRevivalG_->SetPosition(Vector2(revivalTransform_.translate.x, revivalTransform_.translate.y));
+	spriteRevival_->SetPosition(Vector2(revivalTransform_.translate.x, revivalTransform_.translate.y));
 	hitCount_ = 6;
 }
 
@@ -44,8 +53,8 @@ void PlayerManager::Update() {
 	OnCollision();
 
 	for (int i = 0; i < 6; i++) {
-		//spriteHP_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
-		//spriteHPG_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
+		spriteHP_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
+		spriteHPG_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
 	}
 	for (int i = 0; i < 6; i++) {
 		spriteHP_[i]->SetPosition({ HpTransform_.translate.x - 20 * i, HpTransform_.translate.y });
@@ -79,7 +88,16 @@ void PlayerManager::Update() {
 	player_->IsDead(isDead_);
 	player_->Update();
 
-
+	Revival();
+	if (revivalTransform_.scale.x >= 120.0f) {
+		revivalTransform_.scale.x = 120.0f;
+	}
+	spriteRevival_->SetSize(Vector2(revivalTransform_.scale.x, revivalTransform_.scale.y));
+	
+	ImGui::Begin("Sprite");
+	ImGui::DragFloat3("size", &revivalTransform_.scale.x, 1.0f);
+	ImGui::DragFloat3("pos", &revivalTransform_.translate.x, 1.0f);
+	ImGui::End();
 
 };
 
@@ -103,25 +121,31 @@ void PlayerManager::DrawUI() {
 		spriteHP_[i]->Draw(uv);
 	}
 
+	if (player_->GetIsDead()) {
+		spriteRevivalG_->Draw(uv);
+		spriteRevival_->Draw(uv);
+
+	}
+	
 }
 
 // 衝突を検出したら呼び出されるコールバック関数
 void PlayerManager::OnHCollision() {
 	isHitH_ = true;
 	if (isHitH_ != preHitH_) {
-		--hitCount_;
+		//--hitCount_;
 	}
 }
 void PlayerManager::OnRCollision() {
 	isHitR_ = true;
 	if (isHitR_ != preHitR_) {
-		--hitCount_;
+		//--hitCount_;
 	}
 }
 void PlayerManager::OnTCollision() {
 	isHitT_ = true;
 	if (isHitT_ != preHitT_) {
-		--hitCount_;
+		//--hitCount_;
 
 	}
 

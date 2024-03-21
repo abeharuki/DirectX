@@ -13,10 +13,18 @@ void Tank::Initialize() {
 	worldTransformHead_.Initialize();
 	worldTransformHead_.rotate.y = 3.14f;
 	
+	for (int i = 0; i < 3; i++) {
+		worldTransformHp_[i].Initialize();
+		worldTransformHp_[i].translate.y = 1.5f;
+		worldTransformHp_[i].translate.x = (float(i) * 0.5f) - 0.5f;
+		worldTransformHp_[i].scale = { 0.5f,0.5f,0.5f };
+	}
+
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 
+	hitCount_ = 0;
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
@@ -32,7 +40,11 @@ void Tank::Update() {
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
-	hitCount_ = false;
+
+	
+	preHitPlayer_ = isHitPlayer_;
+	isHitPlayer_ = false;
+
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -52,7 +64,7 @@ void Tank::Update() {
 		case Behavior::kAttack:
 			AttackInitialize();
 		case Behavior::kDead:
-
+			DeadInitialize();
 			break;
 		}
 
@@ -75,6 +87,7 @@ void Tank::Update() {
 	case Behavior::kAttack:
 		AttackUpdata();
 	case Behavior::kDead:
+		DeadUpdate();
 		break;
 	}
 
@@ -86,6 +99,9 @@ void Tank::Update() {
 
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
+	for (int i = 0; i < 3; i++) {
+		worldTransformHp_[i].TransferMatrix();
+	}
 };
 
 // 移動
@@ -101,6 +117,11 @@ void Tank::MoveUpdata() {
 	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_Y)) {
 		searchTarget_ = true;
 	}
+
+
+	if (hitCount_ <= 0) {
+		behaviorRequest_ = Behavior::kDead;
+	}
 };
 
 // ジャンプ
@@ -114,7 +135,12 @@ void Tank::knockUpdata() {
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
-		behaviorRequest_ = Behavior::kRoot;
+		if (hitCount_ <= 0) {
+			behaviorRequest_ = Behavior::kDead;
+		}
+		else {
+			behaviorRequest_ = Behavior::kRoot;
+		}
 	}
 };
 
@@ -183,6 +209,54 @@ void Tank::AttackUpdata() {
 	}
 };
 
+void Tank::DeadInitialize() {
+	//復活時間
+	revivalCount_ = 0;
+	isDead_ = true;
+}
+void Tank::DeadUpdate() {
+	if (isHitPlayer_ != preHitPlayer_) {
+		if (Input::GetInstance()->GetPadConnect()) {
+			if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)) {
+				//復活時間
+				revivalCount_++;
+			}
+			else {
+				revivalCount_--;
+			}
+		}
+		else {
+			if (Input::GetInstance()->PressKey(DIK_B)) {
+				//復活時間
+				revivalCount_++;
+			}
+			else {
+				revivalCount_--;
+			}
+		}
+		
+		
+	}
+	else {
+		revivalCount_--;
+	}
+	
+	if (revivalCount_ <= 0) {
+		revivalCount_ = 0;
+	}
+
+	if (revivalCount_ >= 60) {
+		hitCount_ = 1;
+		behaviorRequest_ = Behavior::kRoot;
+		isDead_ = false;
+	}
+
+	ImGui::Begin("revival");
+	ImGui::Text("T%d", revivalCount_);
+	ImGui::Text("%d", isHitPlayer_);
+	ImGui::Text("%d", preHitPlayer_);
+	ImGui::End();
+}
 
 // プレイヤーに追従
 void Tank::followPlayer(Vector3 playerPos) {
@@ -264,6 +338,17 @@ void Tank::Relationship() {
 		Math::MakeAffineMatrix(
 			worldTransformHead_.scale, worldTransformHead_.rotate, worldTransformHead_.translate),
 		worldTransformBase_.matWorld_);
+
+	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;
+
+	for (int i = 0; i < 3; i++) {
+		worldTransformHp_[i].matWorld_ = Math::MakeScaleMatrix(worldTransformHp_[i].scale) * billboardMatrix * Math::MakeTranslateMatrix(Vector3(worldTransformBase_.translate.x + worldTransformHp_[i].translate.x, worldTransformBase_.translate.y + worldTransformHp_[i].translate.y, worldTransformBase_.translate.z));
+
+	}
 }
 
 // 衝突を検出したら呼び出されるコールバック関数
@@ -274,14 +359,18 @@ void Tank::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
 	velocity_ = { 0.0f, 0.0f, -kSpeed };
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
-	behaviorRequest_ = Behavior::knock;
+	if (hitCount_ > 0) {
+		behaviorRequest_ = Behavior::knock;
+	}
+	
+
+	isHit_ = true;
 	if (isHit_ != preHit_) {
-		hitCount_ = true;
+		--hitCount_;
 
 	}
 
 };
-
 void Tank::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
@@ -289,12 +378,13 @@ void Tank::OnCollision(Collider* collider) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			behaviorRequest_ = Behavior::knock;
-
+			if (hitCount_ > 0) {
+				behaviorRequest_ = Behavior::knock;
+			}
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hitCount_ = true;
+				--hitCount_;
 
 			}
 
@@ -302,11 +392,14 @@ void Tank::OnCollision(Collider* collider) {
 
 	}
 
+	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {
+		isHitPlayer_ = true;
+	}
 
-	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer ||
+	if (
 		collider->GetCollisionAttribute() == kCollisionAttributeHealer ||
 		collider->GetCollisionAttribute() == kCollisionAttributeRenju) {
-		const float kSpeed = 0.01f;
+		const float kSpeed = 0.02f;
 		float subX = collider->GetWorldTransform().matWorld_.m[3][0] - GetWorldPosition().x;
 		float subZ = collider->GetWorldTransform().matWorld_.m[3][2] - GetWorldPosition().z;
 		if (subX <= 0) {
@@ -325,9 +418,7 @@ void Tank::OnCollision(Collider* collider) {
 
 
 		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
-	}
-
-
+	}	
 }
 
 const Vector3 Tank::GetWorldPosition() const {

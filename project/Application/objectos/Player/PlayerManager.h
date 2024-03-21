@@ -27,6 +27,12 @@ public:
 	bool IsAttack() { return player_->IsAttack(); }
 	bool IsOver() { return player_->IsOver(); }
 
+	void Revival() { 
+		revivalCount_ = player_->Revival();
+
+		revivalTransform_.scale.x = revivalCount_*2.0f;
+	}
+
 private:
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
@@ -38,7 +44,11 @@ private:
 
 	std::unique_ptr<Sprite> spriteHP_[6];
 	std::unique_ptr<Sprite> spriteHPG_[6];
-
+	std::unique_ptr<Sprite> spriteRevival_;
+	std::unique_ptr<Sprite> spriteRevivalG_;
+	
+	Transform revivalTransform_;
+	
 	//パーティクル
 	std::unique_ptr<Particle> particle_;
 	Emitter emitter_{};
@@ -47,6 +57,7 @@ private:
 	Transform HpTransform_;
 
 	bool isDead_ = false;
+	int revivalCount_;
 
 	int hitCount_;
 

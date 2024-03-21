@@ -47,6 +47,9 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdata();
 
+	//死亡
+	void DeadInitialize();
+	void DeadUpdate();
 
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
@@ -65,10 +68,23 @@ public: // メンバ関数
 	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
+	WorldTransform& GetWorldTransfromHp(int i) {
+		if (i == 0) {
+			return worldTransformHp_[0];
+		}
+		else if (i == 1) {
+			return worldTransformHp_[1];
+		}
+		else if (i == 2) {
+			return worldTransformHp_[2];
+		}
+
+		return worldTransformHp_[0];
+	}
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
-	bool IsHit() { return hitCount_; }
+	int GetHitCount() { return hitCount_; }
 
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
@@ -76,8 +92,11 @@ public: // メンバ関数
 
 	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
 
+	bool IsDead() { return isDead_; }
+
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformHp_[3];
 	WorldTransform worldTransformHead_;
 	ViewProjection viewProjection_;
 
@@ -108,7 +127,7 @@ private: // メンバ変数
 	// プレイヤー座標
 	float minDistance_ = 10.0f;
 	bool followPlayer_ = false;
-
+	
 	//敵を探すフラグ
 	bool searchTarget_ = false;
 
@@ -121,10 +140,17 @@ private: // メンバ変数
 	uint32_t nockTime_;
 
 	//体力
-	bool hitCount_;
+	int hitCount_ = 3;
+	//復活時間
+	int revivalCount_ = 0;
 
 	bool preHit_;
 	bool isHit_;
+	bool isHitPlayer_ = false;
+	bool preHitPlayer_ = false;
+
+	//死亡フラグ
+	bool isDead_ = false;
 
 	//敵の攻撃フラグ
 	bool isEnemyAttack_;

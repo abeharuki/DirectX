@@ -2,14 +2,15 @@
 
 void RenjuManager::Initialize() {
 
-	Model_.reset(
-		Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
+	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
+	for (int i = 0; i < 3; i++) {
+		nHpModel_[i].reset(Model::CreateModelFromObj("resources/plane.obj", "resources/Player/life0.png"));
+		HpModel_[i].reset(Model::CreateModelFromObj("resources/plane.obj", "resources/Player/life1.png"));
+	}
 
 	renju_ = std::make_unique<Renju>();
 	renju_->Initialize();
 
-	worldTransformBase_.Initialize();
-	worldTransformBase_ = renju_->GetWorldTransform();
 
 	emitter_.transform = {
 		{0.8f, 0.8f, 0.8f},
@@ -36,13 +37,34 @@ void RenjuManager::Update() {
 		particle->Update();
 	}
 	renju_->Update();
-	worldTransformBase_ = renju_->GetWorldTransform();
 	renju_->followPlayer(playerPos_);
 	renju_->searchTarget(enemyPos_);
 };
 
 void RenjuManager::Draw(const ViewProjection& camera) {
 	Model_->Draw(renju_->GetWorldTransformHead(), camera, false);
+
+	if (renju_->GetHitCount() >= 3) {
+		HpModel_[0]->Draw(renju_->GetWorldTransfromHp(0), camera, false);
+
+	}
+	else {
+		nHpModel_[0]->Draw(renju_->GetWorldTransfromHp(0), camera, false);
+	}
+	if (renju_->GetHitCount() >= 2) {
+		HpModel_[1]->Draw(renju_->GetWorldTransfromHp(1), camera, false);
+
+	}
+	else {
+		nHpModel_[1]->Draw(renju_->GetWorldTransfromHp(1), camera, false);
+	}
+	if (renju_->GetHitCount() >= 1) {
+		HpModel_[2]->Draw(renju_->GetWorldTransfromHp(2), camera, false);
+
+	}
+	else {
+		nHpModel_[2]->Draw(renju_->GetWorldTransfromHp(2), camera, false);
+	}
 	renju_->Draw(camera);
 
 	for (RenjuParticle* particle : particles_) {

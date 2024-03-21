@@ -27,6 +27,8 @@ class TankManager {
 	private:
 
 		std::unique_ptr<Model> Model_;
+		std::unique_ptr<Model> HpModel_[3];
+		std::unique_ptr<Model> nHpModel_[3];
 		std::unique_ptr<Tank> tank_;
 
 		std::unique_ptr<Particle> particle_;

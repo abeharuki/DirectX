@@ -103,7 +103,7 @@ void GameScene::Update() {
 		tankManager_->Update();
 	}
 	
-	enemyManager_->Update();
+	//enemyManager_->Update();
 
 	// 追従カメラの更新
 	followCamera_->Update();
@@ -129,6 +129,9 @@ void GameScene::Update() {
 
 	}
 
+	healerManager_->SetViewProjection(viewProjection_);
+	renjuManager_->SetViewProjection(viewProjection_);
+	tankManager_->SetViewProjection(viewProjection_);
 	CheckAllCollision();
 }
 
@@ -161,7 +164,7 @@ void GameScene::Draw() {
 	// 前景スプライト描画前処理
 	Sprite::PreDraw();
 
-	enemyManager_->DrawUI();
+	//enemyManager_->DrawUI();
 	playerManager_->DrawUI();
 
 	Transform uv;
@@ -200,6 +203,7 @@ void GameScene::Fade() {
 }
 
 void GameScene::CheckAllCollision() {
+	//コリジョン関係
 	collisionManager_->ClearColliderList();
 	collisionManager_->SetColliderList(playerManager_->GetPlayer());
 	collisionManager_->SetColliderList(enemyManager_->GetEnemy());
@@ -208,19 +212,16 @@ void GameScene::CheckAllCollision() {
 	collisionManager_->SetColliderList(tankManager_->GetTank());
 	collisionManager_->CheckAllCollisions();
 
+	//敵の攻撃フラグの受け取り
 	playerManager_->GetPlayer()->SetEnemyAttack(enemyManager_->IsAttack());
 	healerManager_->GetHealer()->SetEnemyAttack(enemyManager_->IsAttack());
 	renjuManager_->GetRenju()->SetEnemyAttack(enemyManager_->IsAttack());
 	tankManager_->GetTank()->SetEnemyAttack(enemyManager_->IsAttack());
-	if (healerManager_->GetHealer()->IsHit()) {
-		playerManager_->OnHCollision();
-	}
-	if (renjuManager_->GetRenju()->IsHit()) {
-		playerManager_->OnRCollision();
-	}
-	if (tankManager_->GetTank()->IsHit()) {
-		playerManager_->OnTCollision();
-	}
+	
+	//死亡フラグの受け取り
+	playerManager_->GetPlayer()->SetTankDead(tankManager_->GetTank()->IsDead());
+	playerManager_->GetPlayer()->SetRenjuDead(renjuManager_->GetRenju()->IsDead());
+	playerManager_->GetPlayer()->SetHealerDead(healerManager_->GetHealer()->IsDead());
 
 
 	// 判定対象AとBの座標

@@ -14,6 +14,7 @@ void LoadScene::Initialize() {
 	uv.rotate = { 0.0f, 0.0f, 0.0f };
 	uv.translate = { 0.0f, 0.0f };
 	spritePos_.x = 0.0f;
+	loadSprite_->SetSize(Vector2(100.0f, 100.0f));
 }
 
 void LoadScene::Update() {
