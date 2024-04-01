@@ -55,7 +55,7 @@ void Sprite::PreDraw() {
 
 void Sprite::PostDraw(){};
 
-void Sprite::Draw(Transform& uvTransform ) {
+void Sprite::Draw() {
 	
 	UpdateVertexBuffer();
 	
@@ -73,17 +73,16 @@ void Sprite::Draw(Transform& uvTransform ) {
 	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite,matWorld_);
 
 	
-
 	// UVTransform用の行列
 	Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
-	    {
-	        uvTransform.scale.x+1,
-	        uvTransform.scale.y+1,
-	        uvTransform.scale.z+1,
-	    },
-	    uvTransform.rotate, uvTransform.translate);
-	
-	 materialDataSprite->uvTransform = uvTransformMatrix;
+		{
+			uv_.scale.x + 1,
+			uv_.scale.y + 1,
+			uv_.scale.z + 1,
+		},
+		uv_.rotate, uv_.translate);
+
+	materialDataSprite->uvTransform = uvTransformMatrix;
 
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -221,6 +220,9 @@ void Sprite::AdjustTextureSize()
 {
 	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData(texture_);
 	size_ = { static_cast<float>(metadata.width),static_cast<float>(metadata.height) };
+	uv_.scale = { 0.0f, 0.0f, 0.0f };
+	uv_.rotate = { 0.0f, 0.0f, 0.0f };
+	uv_.translate = { 0.0f, 0.0f };
 }
 
 

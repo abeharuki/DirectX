@@ -115,7 +115,7 @@ public: // メンバ関数
 	void SetPosition(const Vector2& position) { position_ = position; }
 	void SetSize(const Vector2& size) { size_ = size; }
 	void SetRotation(const float& rotation) { rotation_ = rotation; }
-
+	void SetUVTransform(Transform& uv) { uv_ = uv; }
 	const Vector2& GetPosition() const { return position_; }
 
 
@@ -133,7 +133,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(Transform& uvTransform);
+	void Draw();
 
 	void SetColor(Vector4 color);
 
@@ -189,6 +189,7 @@ private: // メンバ変数
 	float rotation_ = 0.0f;
 	// 座標
 	Vector2 position_{};
+	Transform uv_{};
 	// スプライト幅、高さ
 	Vector2 size_ = { 0.0f, 0.0f };
 	// アンカーポイント

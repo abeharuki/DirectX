@@ -42,6 +42,7 @@ private:
 private:
 	static PostEffects* instance_;
 
+	Microsoft::WRL::ComPtr<ID3D12Device> device_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descHeapSRV;
 	bool isEnable_ = false;

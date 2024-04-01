@@ -150,7 +150,7 @@ void TitleScene::Draw() {
 	modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	if (isSprite_) {
-		sprite_->Draw(uv);
+		sprite_->Draw();
 	}
 	
 	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);

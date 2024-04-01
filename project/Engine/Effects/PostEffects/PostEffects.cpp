@@ -23,8 +23,11 @@ void PostEffects::Destroy()
 	//GaussianBlur::Destroy();
 }
 
+/*
 void PostEffects::Initialize() {
 	
+	device_ = DirectXCommon::GetInstance()->GetDevice();
+
 	HRESULT result;
 	
 	CD3DX12_RESOURCE_DESC texresDesc = CD3DX12_RESOURCE_DESC::Tex2D(
@@ -83,8 +86,35 @@ void PostEffects::Draw() {
 	ID3D12GraphicsCommandList* commandList = DirectXCommon::GetInstance()->GetCommandList();
 
 
+	
 
 
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
+	commandList->SetGraphicsRootSignature(rootSignature_.Get());
+	commandList->SetPipelineState(sPipelineState_.Get());
+
+	// Spriteをインデックス描画。
+	//commandList->IASetVertexBuffers(0, 1, &vbView_); // VBVを設定
+	//commandList->IASetIndexBuffer(&ibView_);         // IBVを設定
+
+
+
+	//commandList->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+	// TransformationMatrixCBufferの場所を設定
+	commandList->SetGraphicsRootDescriptorTable(1, descHeapSRV->GetGPUDescriptorHandleForHeapStart());
+
+	// マテリアルCBufferの場所を設定
+	//commandList->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	//commandList->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
+
+
+	// 描画
+	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 
 }
+*/

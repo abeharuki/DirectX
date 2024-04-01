@@ -16,7 +16,7 @@
 #include "Input.h"
 #include <GlobalVariables.h>
 #include "Effects/Audio/Audio.h"
-
+#include "Effects/PostEffects/PostEffects.h"
 #include "TextureManeger.h"
 
 WinApp* win = nullptr;
@@ -24,6 +24,7 @@ DirectXCommon* dxCommon = nullptr;
 ImGuiManager* imguiManager = nullptr;
 Input* keyInput = nullptr;
 Audio* audio = nullptr;
+PostEffects* postEffects = nullptr;
 
 Engine* Engine::GetInstance() {
 	static Engine instance;
@@ -50,6 +51,9 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 
 	audio = Audio::GetInstance();
 	audio->Initialize();
+
+	//postEffects = PostEffects::GetInstance();
+	//postEffects->Initialize();
 }
 
 bool Engine::ProcessMessage() {
@@ -70,7 +74,7 @@ void Engine::BeginFrame() {
 	//	Input初期の更新
 	keyInput->Update();
 
-
+//	postEffects->Update();
 
 }
 
@@ -87,6 +91,8 @@ void Engine::Finalize() {
 	//dxCommon->Debug();
 
 	TextureManager::GetInstance()->Destroy();
+
+//	postEffects->Destroy();
 }
 
 void Engine::EndFrame() {
@@ -98,6 +104,9 @@ void Engine::EndFrame() {
 void Engine::PreDraw() {
 	// 描画開始
 	dxCommon->PreDraw();
+
+	//ポストエフェクトの描画
+//	postEffects->Draw();
 }
 
 void Engine::PostDraw() {
