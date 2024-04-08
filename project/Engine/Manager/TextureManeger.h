@@ -8,6 +8,7 @@
 #include <DirectXTex.h>
 #include <d3dx12.h>
 
+
 class TextureManager {
 public:
 	
@@ -64,4 +65,5 @@ private:
 	DirectX::TexMetadata metadata[maxtex];
 	//0がImGui1がパーティクルで使ってるから
 	uint32_t textureIndex_;
+
 };
