@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
-
+#include <d3dx12.h>
 #pragma comment(lib, "dxcompiler.lib")
 
 TextureManager* TextureManager::instance_ = nullptr;
@@ -96,33 +96,11 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 	return mipImages;
 };
 
-/*
-void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
-	DirectX::ScratchImage mipImage = LoadTexture(filePath);
-	metadata[index] = mipImage.GetMetadata();
-	textureResource[index] = CreateTextureResource(Engine::GetDevice().Get(), metadata[index]);
-	UploadTextureData(textureResource[index].Get(), mipImage);
 
-
-	// SRVを作成するDescripterHeapの場所を決める
-	textureSrvHandleGPU_[index] = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+1); // direct_->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
-	textureSrvHandleCPU_[index] = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV,index+1);
-	// 先頭はIMGUIが使ってるからその次を使う
-	textureSrvHandleCPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU_[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-
-	// metaDataを元にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata[index].format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata[index].mipLevels);
-	Engine::GetDevice()->CreateShaderResourceView(textureResource[index].Get(), &srvDesc, textureSrvHandleCPU_[index]);
-
-}*/
 
 void TextureManager::LoadInternal(const std::string& filePath) {
+	
+
 	//読み込み済みテクスチャを検索
 	auto it = std::find_if(
 		textureDatas.begin(),
@@ -146,6 +124,8 @@ void TextureManager::LoadInternal(const std::string& filePath) {
 	textureData.metadata = mipImage.GetMetadata();
 	textureData.resource = CreateTextureResource(Engine::GetDevice().Get(), textureData.metadata);
 	UploadTextureData(textureData.resource.Get(), mipImage);
+	
+
 
 	//テクスチャーデータの要素数番号をSRVのインデックスとする
 	uint32_t srvIndex = static_cast<uint32_t>(textureDatas.size() - 1) + kSRVIndexTop_;
@@ -202,10 +182,9 @@ ID3D12Resource* TextureManager::CreateTextureResource(
 
 	// 利用するHeapの設定
 	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM; // 細かい設定を行う
-	heapProperties.CPUPageProperty =
-		D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; // WriteBackポリシーでCPUアクセス可能
-	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0; // プロセッサの近くに配置
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT; // 細かい設定を行う
+	//heapProperties.CPUPageProperty =D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; // WriteBackポリシーでCPUアクセス可能
+	//heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0; // プロセッサの近くに配置
 
 	// Resourceを生成する
 	ID3D12Resource* resource = nullptr;
@@ -213,7 +192,7 @@ ID3D12Resource* TextureManager::CreateTextureResource(
 		&heapProperties,                   // Heapの設定
 		D3D12_HEAP_FLAG_NONE,              // Heapの特殊な設定。特になし。
 		&resourceDesc,                     // Resourceの設定
-		D3D12_RESOURCE_STATE_GENERIC_READ, // 初回のResourceState。Textureは基本読むだけ
+		D3D12_RESOURCE_STATE_COPY_DEST, // 初回のResourceState。Textureは基本読むだけ
 		nullptr,
 		IID_PPV_ARGS(&resource)); // 作成するResourceポインタへのポインタ
 	assert(SUCCEEDED(hr));
@@ -221,8 +200,10 @@ ID3D12Resource* TextureManager::CreateTextureResource(
 }
 
 // TextureResourceにデータ転送
+[[nodiscard]]
 void TextureManager::UploadTextureData(
 	Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+	/*
 	// Meta情報を取得
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	// 全MipMapについて
@@ -238,7 +219,51 @@ void TextureManager::UploadTextureData(
 			UINT(img->slicePitch) // 1枚サイズ
 		);
 		assert(SUCCEEDED(hr));
+	}*/
+	
+	ID3D12GraphicsCommandList* commandList = Engine::GetList().Get();
+	ID3D12CommandQueue* commandQueue = Engine::GetQueue().Get();
+	ID3D12CommandAllocator* commandAllocator = Engine::GetAllocator().Get();
+
+	std::vector<D3D12_SUBRESOURCE_DATA> subresourses;
+	DirectX::PrepareUpload(Engine::GetDevice().Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresourses);
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(), 0, UINT(subresourses.size()));
+
+	ID3D12Resource* intermediateResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), intermediateSize);
+	UpdateSubresources(commandList, texture.Get(), intermediateResource, 0, 0, UINT(subresourses.size()), subresourses.data());
+
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = texture.Get();
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	commandList->ResourceBarrier(1, &barrier);
+	
+	commandList->Close();
+	ID3D12CommandList* commandLists[] = { commandList };
+	commandQueue->ExecuteCommandLists(1, commandLists);
+
+	// フェンスを作成する
+	// フェンスをシグナルする
+	commandQueue->Signal(fence_.Get(), ++fenceVal_);
+
+	// フェンスがシグナルされるまで待機する
+	if (fence_->GetCompletedValue() < fenceVal_) {
+		HANDLE fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		fence_->SetEventOnCompletion(fenceVal_, fenceEvent);
+		WaitForSingleObject(fenceEvent, INFINITE);
+		CloseHandle(fenceEvent);
 	}
+
+	HRESULT hr = S_FALSE;
+	// 次のフレーム用のコマンドリストを準備
+	hr = commandAllocator->Reset();
+	assert(SUCCEEDED(hr));
+	hr = commandList->Reset(commandAllocator, nullptr);
+	assert(SUCCEEDED(hr));
+	
 }
 
 const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)

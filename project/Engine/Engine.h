@@ -40,7 +40,8 @@ public:
 public:
 	static Microsoft::WRL::ComPtr<ID3D12Device> GetDevice();
 	static Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetList();
-	
+	static Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetQueue();
+	static Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetAllocator();
 	// SRV用のヒープ
 	static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSRV();
 	 // RTV用のヒープ

@@ -2,6 +2,9 @@
 #include "WinApp.h"
 #include "DirectXCommon.h"
 #include "GraphicsPipeline.h"
+#include <Math/math.h>
+#include <Mesh.h>
+#include <Engine.h>
 
 class PostEffects
 {
@@ -28,7 +31,6 @@ public:
 	void Draw();
 
 
-
 private:
 	PostEffects() = default;
 	~PostEffects() = default;
@@ -39,11 +41,16 @@ private:
 
 	void CreatePipelineState();
 
+	BlendMode blendMode_ = BlendMode::kNone;
 private:
 	static PostEffects* instance_;
 
 	Microsoft::WRL::ComPtr<ID3D12Device> device_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descHeapSRV;
+
+
+	D3D12_VERTEX_BUFFER_VIEW vbView_;
+	VertexData* vertexData_;
 	bool isEnable_ = false;
 };

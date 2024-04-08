@@ -3,6 +3,8 @@
 #include "Math/math.h"
 #include "Engine.h"
 #include <DirectXTex.h>
+#include "3d/Mesh.h"
+#include "DirectXCommon.h"
 
 class TextureManager {
 public:
@@ -25,7 +27,7 @@ public:
 
 	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	static ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
-	static void UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+	void UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 	const DirectX::TexMetadata& GetMetaData(uint32_t textureIndex);
 
 	//objファイルの読み込み
@@ -66,6 +68,9 @@ private:
 	static uint32_t kSRVIndexTop_;
 
 	std::vector<TextureData>textureDatas;
+
+	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
+	uint64_t fenceVal_ = 0;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[maxtex];
 	uint32_t descriptorSizeSRV;

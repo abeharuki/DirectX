@@ -74,7 +74,7 @@ void Engine::BeginFrame() {
 	//	Input初期の更新
 	keyInput->Update();
 
-//	postEffects->Update();
+	//postEffects->Update();
 
 }
 
@@ -92,7 +92,7 @@ void Engine::Finalize() {
 
 	TextureManager::GetInstance()->Destroy();
 
-//	postEffects->Destroy();
+	//postEffects->Destroy();
 }
 
 void Engine::EndFrame() {
@@ -106,7 +106,7 @@ void Engine::PreDraw() {
 	dxCommon->PreDraw();
 
 	//ポストエフェクトの描画
-//	postEffects->Draw();
+	//postEffects->Draw();
 }
 
 void Engine::PostDraw() {
@@ -135,6 +135,10 @@ D3D12_GPU_DESCRIPTOR_HANDLE Engine::GetGPUDescriptorHandle(
 Microsoft::WRL::ComPtr<ID3D12Device> Engine::GetDevice() { return dxCommon->GetDevice(); }
 
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> Engine::GetList() {return dxCommon->GetCommandList();}
+
+Microsoft::WRL::ComPtr<ID3D12CommandQueue> Engine::GetQueue() { return dxCommon->GetCommandQueue(); }
+
+Microsoft::WRL::ComPtr<ID3D12CommandAllocator> Engine::GetAllocator() { return dxCommon->GetCommandAllocator(); }
 
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Engine::GetSRV() { return dxCommon->GetSRV(); }
 

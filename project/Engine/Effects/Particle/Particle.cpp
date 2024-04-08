@@ -31,20 +31,9 @@ void Particle::sPipeline() {
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
 };
 
-void Particle::Update() { particle = true; }
-
-void Particle::StopParticles() { particle = false; }
-
-void Particle::Draw(const ViewProjection& viewProjection) {
-	// 乱数生成
-	std::mt19937 randomEngine(seedGenerator());
-	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);
-	billboardMatrix.m[3][0] = 0.0f;
-	billboardMatrix.m[3][1] = 0.0f;
-	billboardMatrix.m[3][2] = 0.0f;
-
-	uint32_t numInstance = 0;
+void Particle::Update() { particle = true;
+// 乱数生成
+	std::mt19937 randomEngine(seedGenerator());	
 
 	emitter_.frequencyTime += kDeltaTime;
 	if (particle) {
@@ -54,36 +43,13 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 		}
 	}
 
-	for (std::list<Particle_>::iterator particleIterator = particles.begin();
-		particleIterator != particles.end();) {
+}
 
-		if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
-			particleIterator = particles.erase(particleIterator);
-			continue;
-		}
+void Particle::StopParticles() { particle = false; }
 
-		if (IsCollision(accelerationField_.area, (*particleIterator).transform.translate)) {
-			(*particleIterator).velocity += accelerationField_.acceleration * kDeltaTime;
-		}
-
-		(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
-		(*particleIterator).currentTime += kDeltaTime;
-
-		if (numInstance < instanceCount) {
-			Matrix4x4 worldMatrix =
-				Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
-				Math::MakeTranslateMatrix((*particleIterator).transform.translate);
-
-			instancingData[numInstance].World = worldMatrix;
-
-			float alph = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
-			instancingData[numInstance].color = (*particleIterator).color;
-			instancingData[numInstance].color.w = alph;
-			numInstance++;
-		}
-
-		++particleIterator;
-	}
+void Particle::Draw(const ViewProjection& viewProjection) {
+	
+	UpdateInstancingResoutrce(viewProjection);
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
@@ -95,20 +61,13 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetParticleGPUHandle(instancing_));
-	//Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
-
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootConstantBufferView(
-		0, materialResorce_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(
-		4, viewProjection.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
-
-	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
-	numInstance = 0;
 }
 
 // 頂点データの設定
@@ -225,6 +184,46 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform 
 	particle.lifeTime = distTime(randomEngine);
 	particle.currentTime = 0;
 	return particle;
+}
+
+void Particle::UpdateInstancingResoutrce(const ViewProjection& viewProjection) {
+	numInstance = 0;
+	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;
+
+	for (std::list<Particle_>::iterator particleIterator = particles.begin();
+		particleIterator != particles.end();) {
+
+		if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
+			particleIterator = particles.erase(particleIterator);
+			continue;
+		}
+
+		if (IsCollision(accelerationField_.area, (*particleIterator).transform.translate)) {
+			(*particleIterator).velocity += accelerationField_.acceleration * kDeltaTime;
+		}
+
+		(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
+		(*particleIterator).currentTime += kDeltaTime;
+
+		if (numInstance < instanceCount) {
+			Matrix4x4 worldMatrix =
+				Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
+				Math::MakeTranslateMatrix((*particleIterator).transform.translate);
+
+			instancingData[numInstance].World = worldMatrix;
+
+			float alph = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
+			instancingData[numInstance].color = (*particleIterator).color;
+			instancingData[numInstance].color.w = alph;
+			numInstance++;
+		}
+
+		++particleIterator;
+	}
 }
 
 std::list<Particle_> Particle::Emission(const Emitter& emitter, std::mt19937& randomEngine) {

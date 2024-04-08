@@ -72,7 +72,8 @@ public: // メンバ関数
 	/// </summary>
 	/// <returns>描画コマンドリスト</returns>
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
-
+	ID3D12CommandQueue* GetCommandQueue() const {return commandQueue_.Get();}
+	ID3D12CommandAllocator* GetCommandAllocator() const { return commandAllocator_.Get(); }
 	/// <summary>
 	/// バックバッファの幅取得
 	/// </summary>
@@ -93,6 +94,12 @@ public: // メンバ関数
 	ID3D12DescriptorHeap* GetRTV() const { return rtvHeap_.Get(); }
 
 	ID3D12DescriptorHeap* GetDSV() const { return dsvHeap_.Get(); }
+
+	void ResourceBarrier(D3D12_RESOURCE_BARRIER barrier);
+	void Close();
+	void ExecuteCommandLists(ID3D12CommandList* commandList[]);
+	void WaitForFence();
+	void Reset();
 
 	static const uint32_t kMaxSRVCount;
 

@@ -130,23 +130,18 @@ void DirectXCommon::PreDraw() {
 
 }
 
-void DirectXCommon::PostDraw() {
-	HRESULT hr_ = S_FALSE;
-
-	// 今回はRenderTargetからPresentにする
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-	// TransitionBarrierを練る
+void DirectXCommon::ResourceBarrier(D3D12_RESOURCE_BARRIER barrier) {
 	commandList_->ResourceBarrier(1, &barrier);
+}
+void DirectXCommon::Close() {
 	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからcloseすること
-	commandList_->Close();
-
-	// GPUにコマンドの実行を行わせる
-	ID3D12CommandList* commandLists[] = { commandList_.Get() };
-	commandQueue_->ExecuteCommandLists(1, commandLists);
-	// GPUとOSに画像の交換を行うよう通知する
-	hr_ = swapChain_->Present(1, 0);
-
+	HRESULT hr = commandList_->Close();
+	assert(SUCCEEDED(hr));;
+}
+void DirectXCommon::ExecuteCommandLists(ID3D12CommandList* commandList[]) {
+	commandQueue_->ExecuteCommandLists(1, commandList);
+}
+void DirectXCommon::WaitForFence() {
 	// Fenceの値を更新
 	// GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにsignalを送る
 	commandQueue_->Signal(fence_.Get(), ++fenceVal_);
@@ -160,15 +155,41 @@ void DirectXCommon::PostDraw() {
 		WaitForSingleObject(fenceEvent_, INFINITE);
 		CloseHandle(fenceEvent_);
 	}
+}
+void DirectXCommon::Reset() {
+	// 次のフレーム用のコマンドリストを準備
+	HRESULT hr_ = commandAllocator_->Reset();
+	assert(SUCCEEDED(hr_));
+	hr_ = commandList_->Reset(commandAllocator_.Get(), nullptr);
+	assert(SUCCEEDED(hr_));
+}
+
+void DirectXCommon::PostDraw() {
+	HRESULT hr_ = S_FALSE;
+
+	// 今回はRenderTargetからPresentにする
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+	// TransitionBarrierを練る
+	ResourceBarrier(barrier);
+	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからcloseすること
+	Close();
+
+	// GPUにコマンドの実行を行わせる
+	ID3D12CommandList* commandLists[] = { commandList_.Get() };
+	ExecuteCommandLists(commandLists);
+	// GPUとOSに画像の交換を行うよう通知する
+	hr_ = swapChain_->Present(1, 0);
+
+	// Fenceの値を更新
+	WaitForFence();
 
 	//FPS固定
 	UpdateFixFPS();
 
 	// 次のフレーム用のコマンドリストを準備
-	hr_ = commandAllocator_->Reset();
-	assert(SUCCEEDED(hr_));
-	hr_ = commandList_->Reset(commandAllocator_.Get(), nullptr);
-	assert(SUCCEEDED(hr_));
+	Reset();
+	
 }
 
 //指定した色で画面全体をクリア

@@ -1,6 +1,7 @@
 #include "PostEffects.h"
 
 
+
 PostEffects* PostEffects::instance_ = nullptr;
 
 PostEffects* PostEffects::GetInstance()
@@ -19,13 +20,14 @@ void PostEffects::Destroy()
 		delete instance_;
 		instance_ = nullptr;
 	}
-	//GaussianBlurの開放
-	//GaussianBlur::Destroy();
-}
 
+}
 /*
 void PostEffects::Initialize() {
 	
+	CreateVertexBuffer();
+	CreatePipelineState();
+
 	device_ = DirectXCommon::GetInstance()->GetDevice();
 
 	HRESULT result;
@@ -33,12 +35,13 @@ void PostEffects::Initialize() {
 	CD3DX12_RESOURCE_DESC texresDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
 		WinApp::kWindowWidth,
-		WinApp::kWindowHeight,
+		(UINT)WinApp::kWindowHeight,
 		1,0,1,0,D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
 	);
 
 	result = DirectXCommon::GetInstance()->GetDevice()->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK,D3D12_MEMORY_POOL_L0),
+		&CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK,
+			D3D12_MEMORY_POOL_L0),
 		D3D12_HEAP_FLAG_NONE,
 		&texresDesc,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
@@ -87,34 +90,55 @@ void PostEffects::Draw() {
 
 
 	
-
-
-	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	commandList->SetGraphicsRootSignature(rootSignature_.Get());
 	commandList->SetPipelineState(sPipelineState_.Get());
 
-	// Spriteをインデックス描画。
-	//commandList->IASetVertexBuffers(0, 1, &vbView_); // VBVを設定
-	//commandList->IASetIndexBuffer(&ibView_);         // IBVを設定
+	// インデックス描画。
+	commandList->IASetVertexBuffers(0, 1, &vbView_); // VBVを設定
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
-
-	//commandList->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	// TransformationMatrixCBufferの場所を設定
 	commandList->SetGraphicsRootDescriptorTable(1, descHeapSRV->GetGPUDescriptorHandleForHeapStart());
 
-	// マテリアルCBufferの場所を設定
-	//commandList->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
-	//commandList->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
-
+	
 
 	// 描画
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 
 }
+
+void PostEffects::CreateVertexBuffer() {
+
+	vertexData_[0].position = { 0.0f , 1.0f, 0.0f, 1.0f }; // 左下0
+	vertexData_[0].texcoord = { 0.0f, 1.0f };
+	vertexData_[1].position = { 0.0f , 0.0f, 0.0f, 1.0f }; // 左上1
+	vertexData_[1].texcoord = { 0.0f, 0.0f };
+	vertexData_[2].position = { 1.0f, 1.0f, 0.0f, 1.0f }; // 右下2
+	vertexData_[2].texcoord = { 1.0f, 1.0f };
+	vertexData_[3].position = { 1.0f, 0.0f, 0.0f, 1.0f }; // 右上3
+	vertexData_[3].texcoord = { 1.0f, 0.0f };
+
+	vertexBuffer = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) * 4);
+	vertexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+
+
+	//  リソースの先頭のアドレスから使う
+	vbView_.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
+	// 使用するリソースのサイズは頂点3つ分のサイズ
+	vbView_.SizeInBytes = sizeof(VertexData) * 4;
+	// 1頂点あたりのサイズ
+	vbView_.StrideInBytes = sizeof(VertexData);
+}
+
+
+void PostEffects::CreatePipelineState() {
+	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateSpritePipeline(blendMode_);
+}
+
+
 */

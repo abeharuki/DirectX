@@ -41,6 +41,8 @@ public:
 
 	void sPipeline();
 
+	void UpdateInstancingResoutrce(const ViewProjection& viewProjection);
+
 	/// <summary>
 	/// 3Dモデル生成
 	/// </summary>
@@ -119,6 +121,7 @@ private:
 	std::random_device seedGenerator;
 	uint32_t descriptorSizeSRV;
 
+	uint32_t numInstance;
 private:
 	// DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	void LoadTexture(const std::string& filename);
