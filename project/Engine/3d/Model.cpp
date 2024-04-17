@@ -4,6 +4,7 @@
 #include <imgui.h>
 
 
+
 Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
 WritingStyle* Model::lightData;
 
@@ -149,7 +150,7 @@ Model* Model::CreateModelFromObj(const std::string& filename, const std::string&
 }
 
 void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
-	modelData = TextureManager::LoadObjFile(filename);
+	modelData = ModelManager::LoadObjFile(filename);
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize();
 	texture_ = textureManager_->Load(texturePath);

@@ -7,6 +7,7 @@
 #include <Sphere.h>
 #include <Model.h>
 #include <numbers>
+#include "Animation/Animation.h"
 
 class TitleScene : public IScene {
 public:
@@ -54,6 +55,7 @@ private:
 	std::unique_ptr<Sprite> sprite_;
 	ViewProjection viewProjection_;
 	WorldTransform worldTransformSphere_;
+	WorldTransform worldTransformBox_;
 	WorldTransform worldTransformGround_;
 	// 球
 	std::unique_ptr<Sphere> sphere_;
@@ -61,6 +63,7 @@ private:
 	std::unique_ptr<Model> modelBunny_;
 	std::unique_ptr<Model> modelGround_;
 
+	std::unique_ptr<Animations>animation_;
 	
 	//スプライト
 	Vector2 spritePos_;

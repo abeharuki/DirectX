@@ -3,6 +3,7 @@
 #include <cassert>
 #include <format>
 #include <numbers>
+#include <ModelManager.h>
 
 bool IsCollision(const AABB& aabb, const Vector3& point) {
 	if ((aabb.min.x <= point.x && point.x <= aabb.max.x) &&
@@ -181,7 +182,7 @@ Particle* Particle::Create(const std::string& filename, Emitter emitter) {
 }
 
 void Particle::LoadTexture(const std::string& filename) {
-	modelData = TextureManager::LoadObjFile("resources/plane.obj");
+	modelData = ModelManager::LoadObjFile("resources/plane.obj");
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize();
 	texture_ = textureManager_->Load(filename);

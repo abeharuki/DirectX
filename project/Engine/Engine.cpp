@@ -17,12 +17,12 @@
 #include <GlobalVariables.h>
 #include "Audio/Audio.h"
 
-
 WinApp* win = nullptr;
 DirectXCommon* dxCommon = nullptr;
 ImGuiManager* imguiManager = nullptr;
 Input* keyInput = nullptr;
 Audio* audio = nullptr;
+
 
 Engine* Engine::GetInstance() {
 	static Engine instance;
@@ -40,6 +40,8 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 
 	imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win, dxCommon);	
+
+
 
 	//	Inputの初期化処理
 	keyInput = Input::GetInstance();
