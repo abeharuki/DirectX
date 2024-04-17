@@ -11,12 +11,17 @@ void TitleScene::Initialize() {
 	viewProjection_.rotation_.x = 0.28f;
 	viewProjection_.translation_ = { 0.0f, 7.0f, -18.0f };
 	worldTransformSphere_.Initialize();
+	worldTransformBox_.Initialize();
 	worldTransformGround_.Initialize();
 	worldTransformGround_.rotate.y = 1.58f;
 	// スフィア
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 	
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png"));
+
+
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
 	isSprite_ = false;
@@ -54,10 +59,13 @@ void TitleScene::Update() {
 	}
 
 
-
+	animation_->Update(worldTransformBox_);
 	worldTransformSphere_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
 	viewProjection_.UpdateMatrix();
+
+
+	
 
 	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
 	static int currentItem = 1; // 初期選択アイテムのインデックス
@@ -146,7 +154,7 @@ void TitleScene::Draw() {
 
 
 
-	
+	animation_->Draw(worldTransformBox_, viewProjection_);
 	modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	if (isSprite_) {

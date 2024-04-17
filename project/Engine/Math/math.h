@@ -2,8 +2,7 @@
 #include <cassert>
 #include <format>
 #include <vector>
-
-
+#include "Quaternion.h"
 
 struct Vector2 final {
 	float x;
@@ -57,8 +56,28 @@ struct Matrix3x3 final {
 	float m[3][3];
 };
 
-struct Matrix4x4 final {
-	float m[4][4];
+struct Matrix4x4 final{
+	float m[4][4];	
+
+	bool operator==(const Matrix4x4& rhs) const
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				if (m[i][j] != rhs.m[i][j])
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	bool operator!=(const Matrix4x4& rhs) const
+	{
+		return !(*this == rhs);
+	}
 };
 
 
@@ -104,6 +123,14 @@ struct Material {
 	float shininess;
 };
 
+//ノード構造体
+struct Node {
+	Matrix4x4 localMatrix{};
+	std::string name;
+	std::vector<Node> children;
+};
+
+
 struct MaterialData {
 
 	std::string textureFilePath;
@@ -112,6 +139,7 @@ struct MaterialData {
 struct ModelData {
 	std::vector<VertexData> vertices;
 	MaterialData material;
+	Node rootNode;
 };
 
 struct TransformationMatrix {
@@ -221,6 +249,10 @@ public:
 	// Z
 	static Matrix4x4 MakeRotateZMatrix(float theta = 0);
 
+	//クォータニオン
+	static Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
+	
+
 	static Matrix4x4 MakeScaleMatrix(Vector3 scale);
 
 	static Matrix4x4 MakeTranslateMatrix(Vector3 translate);
@@ -228,9 +260,12 @@ public:
 	// スカラー倍
 	static Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
 
-	// アフィン変換
+	// アフィン変換 Vector3
 	static Matrix4x4 MakeAffineMatrix(
 	    const Vector3& scale, const Vector3& rotate, const Vector3& translate);
+
+	//アフィン変換　クォータニオン
+	static Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& quaternion, const Vector3& translation);
 
 	static Matrix4x4
 	    MakeAffineRotateMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate);
@@ -264,7 +299,7 @@ public:
 	    const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
 	    const Vector3 size2);
 
-	
+	static Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 };
 
 /*--------------------演算子オーバーロード---------------------------*/

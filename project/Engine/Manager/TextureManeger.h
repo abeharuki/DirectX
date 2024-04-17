@@ -3,10 +3,21 @@
 #include "Math/math.h"
 #include "Engine.h"
 #include <cassert>
+#include <winerror.h>
+#include <combaseapi.h>
+#include <dxcapi.h>
 #include <format>
+#include <cstdlib>
+#include <d3d12.h>
 #include <wrl.h>
+#include <fstream>
+#include <sstream>
+#include <filesystem>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include <DirectXTex.h>
-#include <d3dx12.h>
+
 
 
 class TextureManager {
@@ -30,10 +41,6 @@ public:
 	static ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 	static void UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 	const DirectX::TexMetadata& GetMetaData(uint32_t textureIndex);
-
-	//objファイルの読み込み
-	static MaterialData LoadMaterialTemplateFile(const std::string& filename);
-	static ModelData LoadObjFile(const std::string& filename);
 
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(uint32_t textureHandle);
 
