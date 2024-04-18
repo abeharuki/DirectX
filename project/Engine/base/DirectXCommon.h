@@ -11,7 +11,7 @@
 #include <wrl.h>
 #include <vector>
 #include <dxgidebug.h>
-
+#include "Math/math.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -49,8 +49,14 @@ public: // メンバ関数
 	void PostDraw();
 
 	/// <summary>
+	/// 描画後処理
+	/// </summary>
+	void RenderPreDraw();
+
+	/// <summary>
 	/// レンダーターゲットのクリア
 	/// </summary>
+	void ClearRenderTargetSWAP();
 	void ClearRenderTarget();
 
 	/// <summary>
@@ -58,9 +64,15 @@ public: // メンバ関数
 	/// </summary>
 	void ClearDepthBuffer();
 
+	/// <summary>
+	/// レンダーテクスチャの作成
+	/// </summary>
+	void CreateRenderTexture();
+
 	//リソースリークチェック
 	void Debug();
 
+	
 	/// <summary>
 	/// デバイスの取得
 	/// </summary>
@@ -74,6 +86,7 @@ public: // メンバ関数
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
 	ID3D12CommandQueue* GetCommandQueue() const {return commandQueue_.Get();}
 	ID3D12CommandAllocator* GetCommandAllocator() const { return commandAllocator_.Get(); }
+
 	/// <summary>
 	/// バックバッファの幅取得
 	/// </summary>
@@ -135,6 +148,7 @@ private: // メンバ変数
 	D3D12_RECT scissorRect;
 	// RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles;
 	D3D12_RESOURCE_BARRIER barrier{};
 
 	std::chrono::steady_clock::time_point reference_;
@@ -183,3 +197,4 @@ private: // メンバ関数
 ID3D12DescriptorHeap* CreateDescriptorHeap(
 	ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
 	bool shaderVisible);
+

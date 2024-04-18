@@ -109,6 +109,11 @@ void Engine::PreDraw() {
 	//postEffects->Draw();
 }
 
+
+void Engine::RenderPreDraw() {
+	dxCommon->RenderPreDraw();
+}
+
 void Engine::PostDraw() {
 #ifdef _DEBUG
 	// ImGui描画
@@ -121,14 +126,14 @@ void Engine::PostDraw() {
 
 D3D12_CPU_DESCRIPTOR_HANDLE Engine::GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	handleCPU.ptr += (descriptorSize * index);
+	handleCPU.ptr += 1+(descriptorSize * index);
 	return handleCPU;
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE Engine::GetGPUDescriptorHandle(
 	ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	handleGPU.ptr += (descriptorSize * index);
+	handleGPU.ptr += 1+(descriptorSize * index);
 	return handleGPU;
 }
 
