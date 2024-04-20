@@ -2,6 +2,7 @@
 #include <cassert>
 #include <format>
 #include <vector>
+#include "Quaternion.h"
 
 
 
@@ -104,6 +105,22 @@ struct Material {
 	float shininess;
 };
 
+struct QuaternionTransform {
+	Vector3 scale;
+	Quaternion rotate;
+	Vector3 translate;
+};
+
+//ノード構造体
+struct Node {
+	QuaternionTransform transform;
+	Matrix4x4 localMatrix{};
+	std::string name;
+	std::vector<Node> children;
+};
+
+
+
 struct MaterialData {
 
 	std::string textureFilePath;
@@ -112,6 +129,7 @@ struct MaterialData {
 struct ModelData {
 	std::vector<VertexData> vertices;
 	MaterialData material;
+	Node rootNode;
 };
 
 struct TransformationMatrix {
@@ -221,6 +239,10 @@ public:
 	// Z
 	static Matrix4x4 MakeRotateZMatrix(float theta = 0);
 
+	//クォータニオン
+	static Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
+
+
 	static Matrix4x4 MakeScaleMatrix(Vector3 scale);
 
 	static Matrix4x4 MakeTranslateMatrix(Vector3 translate);
@@ -234,6 +256,10 @@ public:
 
 	static Matrix4x4
 	    MakeAffineRotateMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate);
+
+	//アフィン変換　クォータニオン
+	static Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& quaternion, const Vector3& translation);
+
 
 	// 透視投影行列
 	static Matrix4x4

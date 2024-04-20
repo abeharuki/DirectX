@@ -192,6 +192,29 @@ Matrix4x4 Math::MakeRotateZMatrix(float theta) {
 	return MakeRotateMatrix;
 }
 
+Matrix4x4 Math::MakeRotateMatrix(const Quaternion& quaternion)
+{
+	Matrix4x4 result{};
+	result.m[0][0] = quaternion.w * quaternion.w + quaternion.x * quaternion.x - quaternion.y * quaternion.y - quaternion.z * quaternion.z;
+	result.m[0][1] = 2.0f * (quaternion.x * quaternion.y + quaternion.w * quaternion.z);
+	result.m[0][2] = 2.0f * (quaternion.x * quaternion.z - quaternion.w * quaternion.y);
+	result.m[0][3] = 0.0f;
+	result.m[1][0] = 2.0f * (quaternion.x * quaternion.y - quaternion.w * quaternion.z);
+	result.m[1][1] = quaternion.w * quaternion.w - quaternion.x * quaternion.x + quaternion.y * quaternion.y - quaternion.z * quaternion.z;
+	result.m[1][2] = 2.0f * (quaternion.y * quaternion.z + quaternion.w * quaternion.x);
+	result.m[1][3] = 0.0f;
+	result.m[2][0] = 2.0f * (quaternion.x * quaternion.z + quaternion.w * quaternion.y);
+	result.m[2][1] = 2.0f * (quaternion.y * quaternion.z - quaternion.w * quaternion.x);
+	result.m[2][2] = quaternion.w * quaternion.w - quaternion.x * quaternion.x - quaternion.y * quaternion.y + quaternion.z * quaternion.z;
+	result.m[2][3] = 0.0f;
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
+	return result;
+}
+
+
 Matrix4x4 Math::MakeScaleMatrix(Vector3 scale) {
 	Matrix4x4 MakeAffineMatrix;
 	MakeAffineMatrix.m[0][0] = scale.x;
@@ -333,6 +356,17 @@ Matrix4x4
 	MakeAffineMatrix.m[3][3] = 1;
 	return MakeAffineMatrix;
 }
+
+Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Quaternion& quaternion, const Vector3& translation)
+{
+	Matrix4x4 result{};
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+	Matrix4x4 rotateMatrix = MakeRotateMatrix(quaternion);
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(translation);
+	result = scaleMatrix * rotateMatrix;// +translateMatrix;
+	return result;
+}
+
 
 // 透視投影行列
 Matrix4x4
