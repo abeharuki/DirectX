@@ -16,6 +16,7 @@
 #include <sstream>
 #include <wrl.h>
 #include <random>
+#include "ModelManager.h"
 
 class Particle {
 public: // 静的メンバ変数

@@ -149,7 +149,7 @@ Model* Model::CreateModelFromObj(const std::string& filename, const std::string&
 }
 
 void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
-	modelData = TextureManager::LoadObjFile(filename);
+	modelData = ModelManager::LoadObjFile(filename);
 	TextureManager::GetInstance()->Load(texturePath);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
 	//textureManager_->Initialize();

@@ -14,6 +14,7 @@
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include "GraphicsPipeline.h"
+#include "ModelManager.h"
 
 class Model {
 public: // 静的メンバ変数

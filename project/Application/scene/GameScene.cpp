@@ -164,7 +164,7 @@ void GameScene::Draw() {
 	// 前景スプライト描画前処理
 	Sprite::PreDraw();
 
-	//enemyManager_->DrawUI();
+	enemyManager_->DrawUI();
 	playerManager_->DrawUI();
 
 	Transform uv;

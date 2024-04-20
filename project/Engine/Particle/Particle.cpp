@@ -179,7 +179,7 @@ Particle* Particle::Create(const std::string& filename, Emitter emitter) {
 }
 
 void Particle::LoadTexture(const std::string& filename) {
-	modelData = TextureManager::LoadObjFile("resources/plane.obj");
+	modelData = ModelManager::LoadObjFile("resources/plane.obj");
 	TextureManager::GetInstance()->Load(filename);
 	//textureManager_->Initialize();
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);

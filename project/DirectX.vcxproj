@@ -62,13 +62,15 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Manager;$(ProjectDir)Engine\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\objectos;$(ProjectDir)Application\scene;$(ProjectDir)Engine\Manager\Input;$(ProjectDir)Engine\base\GraphisPipeline;$(ProjectDir)Application\base\GlobalVariables;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Manager;$(ProjectDir)Engine\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\objectos;$(ProjectDir)Application\scene;$(ProjectDir)Engine\Manager\Input;$(ProjectDir)Engine\base\GraphisPipeline;$(ProjectDir)Application\base\GlobalVariables;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\lib\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
@@ -87,7 +89,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Manager;$(ProjectDir)Engine\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\objectos;$(ProjectDir)Application\scene;$(ProjectDir)Engine\Manager\Input;$(ProjectDir)Engine\base\GraphisPipeline;$(ProjectDir)Application\base\GlobalVariables;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Manager;$(ProjectDir)Engine\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\objectos;$(ProjectDir)Application\scene;$(ProjectDir)Engine\Manager\Input;$(ProjectDir)Engine\base\GraphisPipeline;$(ProjectDir)Application\base\GlobalVariables;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,6 +99,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/ignore:4049 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\lib\Relese</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
@@ -140,6 +145,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Engine\Framework\Framework.cpp" />
     <ClCompile Include="Engine\Framework\SceneManager.cpp" />
+    <ClCompile Include="Engine\Manager\ModelManager.cpp" />
     <ClCompile Include="Engine\Math\math.cpp" />
     <ClCompile Include="Engine\Utilities\RandomGenerator.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -238,6 +244,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Framework\Framework.h" />
     <ClInclude Include="Engine\Framework\IScene.h" />
     <ClInclude Include="Engine\Framework\SceneManager.h" />
+    <ClInclude Include="Engine\Manager\ModelManager.h" />
     <ClInclude Include="Engine\Math\math.h" />
     <ClInclude Include="Engine\Math\Quaternion.h" />
     <ClInclude Include="Engine\Utilities\RandomGenerator.h" />

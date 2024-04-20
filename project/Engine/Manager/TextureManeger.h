@@ -28,9 +28,7 @@ public:
 	static void UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 	const DirectX::TexMetadata& GetMetaData(uint32_t textureIndex);
 
-	//objファイルの読み込み
-	static MaterialData LoadMaterialTemplateFile(const std::string& filename);
-	static ModelData LoadObjFile(const std::string& filename);
+	
 
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(uint32_t textureHandle);
 	//SRVインデックスの開始番号
