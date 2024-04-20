@@ -144,8 +144,6 @@ Model* Model::CreateModelFromObj(const std::string& filename, const std::string&
 	Model* model = new Model;
 	model->Initialize(filename, texturePath);
 	return model;
-
-
 }
 
 void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {

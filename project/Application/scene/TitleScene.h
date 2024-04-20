@@ -13,6 +13,7 @@
 #include <Healer/HealerManager.h>
 #include <Tank/TankManager.h>
 #include <Renju/RenjuManager.h>
+#include <Animation/Animation.h>
 
 
 
@@ -43,7 +44,7 @@ private:
 	// フェードイン・フェードアウト用スプライト
 	std::unique_ptr<Sprite> spriteBack_;
 
-
+	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
 	// 天球
@@ -69,7 +70,7 @@ private:
 	// レンジャー
 	std::unique_ptr<RenjuManager> renjuManager_;
 
-
+	std::unique_ptr<Animations>animation_;
 
 	Vector2 pos_;
 	bool rule_;

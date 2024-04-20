@@ -623,6 +623,37 @@ bool Math::IsAABBCollision(
 	return collision;
 }
 
+Quaternion Math::Slerp(const Quaternion& q0, const Quaternion& q1, float t)
+{
+
+	Quaternion result{};
+	Quaternion localQ0 = q0;
+	Quaternion localQ1 = q1;
+	float dot = localQ0.x * localQ1.x + localQ0.y * localQ1.y + localQ0.z * localQ1.z + localQ0.w * localQ1.w;
+	if (dot < 0.0f)
+	{
+		localQ0 = { -localQ0.x,-localQ0.y,-localQ0.z,-localQ0.w };
+		dot = -dot;
+	}
+	if (dot >= 1.0f - std::numeric_limits<float>::epsilon())
+	{
+		result.x = (1.0f - t) * localQ0.x + t * localQ1.x;
+		result.y = (1.0f - t) * localQ0.y + t * localQ1.y;
+		result.z = (1.0f - t) * localQ0.z + t * localQ1.z;
+		result.w = (1.0f - t) * localQ0.w + t * localQ1.w;
+		return result;
+	}
+	float theta = std::acos(dot);
+	float scale0 = std::sin((1 - t) * theta) / std::sin(theta);
+	float scale1 = std::sin(t * theta) / std::sin(theta);
+	result.x = scale0 * localQ0.x + scale1 * localQ1.x;
+	result.y = scale0 * localQ0.y + scale1 * localQ1.y;
+	result.z = scale0 * localQ0.z + scale1 * localQ1.z;
+	result.w = scale0 * localQ0.w + scale1 * localQ1.w;
+	return result;
+
+}
+
 
 /*--------------------演算子オーバーロード---------------------------*/
 // 二項演算子

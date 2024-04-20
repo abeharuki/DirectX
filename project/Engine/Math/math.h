@@ -290,7 +290,7 @@ public:
 	    const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
 	    const Vector3 size2);
 
-	
+	static Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 };
 
 /*--------------------演算子オーバーロード---------------------------*/

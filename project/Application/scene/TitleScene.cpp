@@ -3,9 +3,13 @@
 
 
 void TitleScene::Initialize() {
+	worldTransform_.Initialize();
+	worldTransform_.scale = { 10,10,10 };
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png", "AnimatedCube.gltf"));
 
 	audio_ = Audio::GetInstance();
 	audioData_ = audio_->SoundLoadWave("resources/audio/fanfare.wav");
@@ -124,7 +128,7 @@ void TitleScene::Update() {
 	ground_->Update();
 
 
-
+	animation_->Update(worldTransform_);
 
 	if (Input::PushKey(DIK_C)) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
@@ -155,6 +159,8 @@ void TitleScene::Draw() {
 	healerManager_->Draw(viewProjection_);
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
+
+	animation_->Draw(worldTransform_, viewProjection_);
 
 	Transform uv;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
