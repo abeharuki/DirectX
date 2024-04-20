@@ -1,6 +1,7 @@
 #include "TutorialScene.h"
 #include "Framework/SceneManager.h"
 
+
 void TutorialScene::Initialize() {
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
@@ -75,7 +76,7 @@ void TutorialScene::Initialize() {
 		spriteSen_[i].reset(Sprite::Create("resources/Tutorial/sen.png"));
 		spriteSen_[i]->SetSize(Vector2(size_[i], 10.0f));
 	}
-	
+
 	spriteSen_[0]->SetPosition(Vector2(100.0f, 122.0f));//268.0f 10.0f
 	spriteSen_[1]->SetPosition(Vector2(135.0f, 159.0f));//133.0f
 	spriteSen_[2]->SetPosition(Vector2(117.0f, 202.0f));//181.0f
@@ -96,7 +97,7 @@ void TutorialScene::Initialize() {
 
 void TutorialScene::Update() {
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-	
+
 	if (Input::GetInstance()->GetPadConnect()) {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
 			if (call_ && order_) {
@@ -110,10 +111,10 @@ void TutorialScene::Update() {
 		if (call_ && order_) {
 			isFadeOut_ = true;
 		}
-		
+
 	}
 
-	
+
 	Fade();
 	playerManager_->Update();
 	//チュートリアルの確認
@@ -145,13 +146,13 @@ void TutorialScene::Update() {
 
 	if (step2_ && Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X)) {
 		call_ = true;
-		
+
 	}
 
 
 	if (step2_ && Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_Y)) {
 		order_ = true;
-		
+
 	}
 
 	if (step2_) {
@@ -226,7 +227,7 @@ void TutorialScene::Draw() {
 		renjuManager_->Draw(viewProjection_);
 
 	}
-	
+
 	Transform uv;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
 	uv.rotate = { 0.0f, 0.0f, 0.0f };
@@ -239,10 +240,10 @@ void TutorialScene::Draw() {
 		if (!call_ || !order_) {
 			spriteStep2_->Draw(uv);
 		}
-		
+
 	}
 
-	
+
 	spriteTu_->Draw(uv);
 	if (call_ && order_) {
 		spriteSta_->Draw(uv);
@@ -272,8 +273,8 @@ void TutorialScene::Draw() {
 			spriteSen_[6]->Draw(uv);
 		}
 	}
-	
-	
+
+
 
 	spriteBack_->Draw(uv);
 }

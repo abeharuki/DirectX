@@ -1,5 +1,6 @@
 #include "PlayerManager.h"
 
+
 void PlayerManager::Initialize() {
 
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
@@ -93,7 +94,7 @@ void PlayerManager::Update() {
 		revivalTransform_.scale.x = 120.0f;
 	}
 	spriteRevival_->SetSize(Vector2(revivalTransform_.scale.x, revivalTransform_.scale.y));
-	
+
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat3("size", &revivalTransform_.scale.x, 1.0f);
 	ImGui::DragFloat3("pos", &revivalTransform_.translate.x, 1.0f);
@@ -126,7 +127,7 @@ void PlayerManager::DrawUI() {
 		spriteRevival_->Draw(uv);
 
 	}
-	
+
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

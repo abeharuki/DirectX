@@ -76,6 +76,8 @@ public: // メンバ関数
 	void DeadInitilize();
 	void DeadUpdata();
 
+	void Revival();
+
 	// パーツ親子関係
 	void Relationship();
 
@@ -111,7 +113,7 @@ public: // メンバ関数
 	void SetRenjuDead(bool dead) { renjuDead_ = dead; }
 	void SetHealerDead(bool dead) { healerDead_ = dead; }
 
-	int Revival() { return revivalCount_; }
+	int GetRevival() { return revivalCount_; }
 
 	bool GetIsDead() {
 		if(tankDead_ || renjuDead_ || healerDead_){

@@ -102,8 +102,8 @@ void GameScene::Update() {
 		renjuManager_->Update();
 		tankManager_->Update();
 	}
-	
-	//enemyManager_->Update();
+
+	enemyManager_->Update();
 
 	// 追従カメラの更新
 	followCamera_->Update();
@@ -217,7 +217,7 @@ void GameScene::CheckAllCollision() {
 	healerManager_->GetHealer()->SetEnemyAttack(enemyManager_->IsAttack());
 	renjuManager_->GetRenju()->SetEnemyAttack(enemyManager_->IsAttack());
 	tankManager_->GetTank()->SetEnemyAttack(enemyManager_->IsAttack());
-	
+
 	//死亡フラグの受け取り
 	playerManager_->GetPlayer()->SetTankDead(tankManager_->GetTank()->IsDead());
 	playerManager_->GetPlayer()->SetRenjuDead(renjuManager_->GetRenju()->IsDead());

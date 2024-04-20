@@ -328,6 +328,7 @@ void Player::DashUpdata() {
 	}
 }
 
+
 // ノックバック
 void Player::knockInitialize() { nockTime_ = 30; };
 void Player::knockUpdata() {

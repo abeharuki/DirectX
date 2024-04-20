@@ -28,7 +28,40 @@ public:
 	bool IsOver() { return player_->IsOver(); }
 
 	void Revival() { 
-		revivalCount_ = player_->Revival();
+
+		if (player_->GetIsDead()) {
+			if (Input::GetInstance()->GetPadConnect()) {
+				if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)) {
+					//復活時間
+					revivalCount_++;
+				}
+				else {
+					revivalCount_--;
+				}
+			}
+			else {
+				if (Input::GetInstance()->PressKey(DIK_B)) {
+					//復活時間
+					revivalCount_++;
+				}
+				else {
+					revivalCount_--;
+				}
+			}
+
+
+		}
+		else {
+			revivalCount_--;
+		}
+
+		if (revivalCount_ <= 0) {
+			revivalCount_ = 0;
+		}
+
+
+
+		//revivalCount_ = player_->GetRevival();
 
 		revivalTransform_.scale.x = revivalCount_*2.0f;
 	}
