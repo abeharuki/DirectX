@@ -19,7 +19,7 @@ void TitleScene::Initialize() {
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 	
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png"));
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png","AnimatedCube.gltf"));
 
 
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));

@@ -8,18 +8,7 @@
 #include <WorldTransform.h>
 #include <ViewProjection.h>
 #include <ModelManager.h>
-/*
 
-struct KeyframeVector3 {
-	Vector3 value;
-	float time;
-};
-
-struct KeyframeQuaternion {
-	Quaternion value;
-	float time;
-};
-*/
 
 template<typename tValue>
 struct Keyframe {
@@ -74,7 +63,7 @@ public:
 	
 
 	//初期化
-	void Initialize(const std::string& filename, const std::string& texturePath);
+	void Initialize(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
 
 	
 	void Update(WorldTransform& worldTransform);
@@ -82,8 +71,8 @@ public:
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
 
-	
-	static Animations* Create(const std::string& filename, const std::string& texturePath);
+	//ファイルの場所//png//gltf
+	static Animations* Create(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
 	
 
 	

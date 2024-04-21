@@ -85,9 +85,9 @@ Quaternion Animations::CalculateValue(const std::vector<KeyframeQuaternion>& key
 }
 
 
-void Animations::Initialize(const std::string& directorPath, const std::string& filename) {
+void Animations::Initialize(const std::string& directorPath, const std::string& filename, const std::string& motionPath) {
 
-	//LoadAnimation(directorPath,filename)
+	LoadAnimation(directorPath, motionPath);
 	LoadTexture(directorPath + "/" + filename);
 	CreateVertexResource();
 	sPipeline();
@@ -163,10 +163,10 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 }
 
-Animations* Animations::Create(const std::string& directorPath, const std::string& filename)
+Animations* Animations::Create(const std::string& directorPath, const std::string& filename, const std::string& motionPath)
 {
 	Animations* anime = new Animations;
-	anime->Initialize(directorPath,filename);
+	anime->Initialize(directorPath,filename,motionPath);
 	return anime;
 
 
