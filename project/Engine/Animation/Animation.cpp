@@ -11,7 +11,7 @@ Animation LoadAnimationFile(const std::string& directorPath, const std::string& 
 	animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond);//時間の単位を1秒に変換
 
 	//assimpでは個々のNodeのAnimationをchannelと呼んでいるのでchannelを回してNodeAnimationの情報を取ってくる
-	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels;++channelIndex) {
+	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
 		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
 		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
 		//位置
@@ -37,7 +37,7 @@ Animation LoadAnimationFile(const std::string& directorPath, const std::string& 
 			aiVectorKey& keyAssimp = nodeAnimationAssimp->mScalingKeys[keyIndex];
 			KeyframeVector3 keyframe{};
 			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);//秒に変換
-			keyframe.value = {keyAssimp.mValue.x,keyAssimp.mValue.y,keyAssimp.mValue.z };//右手->左手
+			keyframe.value = { keyAssimp.mValue.x,keyAssimp.mValue.y,keyAssimp.mValue.z };//右手->左手
 			nodeAnimation.scale.keyframes.push_back(keyframe);
 		}
 
@@ -84,11 +84,40 @@ Quaternion Animations::CalculateValue(const std::vector<KeyframeQuaternion>& key
 	return (*keyframes.rbegin()).value;
 }
 
+Skeleton Animations::CreateSkeleton(const Node& rootNode) {
+	Skeleton skeleton;
+	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
 
-void Animations::Initialize(const std::string& directorPath, const std::string& filename) {
+	//名前とIndexのマッピングを行いアクセスしやすくする
+	for (const Joint& joint : skeleton.joints) {
+		skeleton.jointMap.emplace(joint.name, joint.index);
+	}
+	return skeleton;
+}
 
-	//LoadAnimation(directorPath,filename)
+int32_t Animations::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
+{
+	Joint joint;
+	joint.name = node.name;
+	joint.locaalMatrix = node.localMatrix;
+	joint.skeletonSpaceMatrix = Math::MakeIdentity4x4();
+	joint.transform = node.transform;
+	joint.index = int32_t(joints.size());//現在登録されている数をIndexに
+	joint.parent = parent;
+	joints.push_back(joint);//SkeletonのJoint列に追加
+	for (const Node& child : node.children) {
+		//子Jointを作成、そのIndexを登録
+		int32_t childIndex = CreateJoint(child, joint.index, joints);
+		joints[joint.index].children.push_back(childIndex);
+	}
+	return joint.index;
+}
+
+void Animations::Initialize(const std::string& directorPath, const std::string& filename, const std::string& motionPath) {
+
+	LoadAnimation(directorPath, motionPath);
 	LoadTexture(directorPath + "/" + filename);
+	skeleton = CreateSkeleton(modelData.rootNode);
 	CreateVertexResource();
 	sPipeline();
 
@@ -101,24 +130,56 @@ void Animations::LoadAnimation(const std::string& directorPath, const std::strin
 }
 
 void Animations::LoadTexture(const std::string& filename) {
+	textureManager_ = TextureManager::GetInstance();
 	TextureManager::GetInstance()->Load(filename);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
 }
 
+void Animations::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {
+	for (Joint& joint : skeleton.joints) {
+		//対象のJointのAnimationがあれば、値の提供を行う.
+		if (auto it = animation.nodeAnimations.find(joint.name); it != animation.nodeAnimations.end()) {
+			const NodeAnimation& rootNodeAnimation = (*it).second;
+			joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+			joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+		}
+	}
+}
 
+void Animations::SkeletonUpdate(Skeleton& skeleton) {
+	//全てのJointを更新
+	for (Joint& joint : skeleton.joints) {
+		joint.locaalMatrix = Math::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+		if (joint.parent) {
+			joint.skeletonSpaceMatrix = joint.locaalMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
+		}
+		else {
+			joint.skeletonSpaceMatrix = joint.locaalMatrix;
+		}
+	}
+}
 
 void Animations::Update(WorldTransform& worldTransform) {
 	animationTime += 1.0f / 60.0f;
 	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
 	NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
 	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+
 	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 	Matrix4x4 localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
 	worldTransform.UpdateMatrix();
 	worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
 	worldTransform.TransferMatrix();
-	
+
+}
+
+void Animations::Update() {
+	animationTime += 1.0f / 60.0f;
+	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
+	ApplyAnimation(skeleton, animation, animationTime);
+	SkeletonUpdate(skeleton);
 }
 
 void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
@@ -130,7 +191,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
 
-	
+
 
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
 
@@ -146,7 +207,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -154,7 +215,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
-	
+
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
@@ -162,15 +223,14 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 }
 
-Animations* Animations::Create(const std::string& directorPath, const std::string& filename)
+Animations* Animations::Create(const std::string& directorPath, const std::string& filename, const std::string& motionPath)
 {
 	Animations* anime = new Animations;
-	anime->Initialize(directorPath,filename);
+	anime->Initialize(directorPath, filename, motionPath);
 	return anime;
 
 
 }
-
 
 
 void Animations::sPipeline() {
@@ -181,12 +241,6 @@ void Animations::sPipeline() {
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
-
-
-
-
-
-
 };
 
 //頂点データの設定
@@ -207,6 +261,30 @@ void Animations::CreateVertexResource() {
 
 
 
+
+	/*/ 頂点リソースを作る
+	uint32_t* mappedIndex = nullptr;
+	for (const Joint& joint : skeleton.joints) {
+		mappedIndex = skeleton.jointMap.;
+	}
+	for (uint32_t i = 0; i < skeleton.jointMap.max_size(), i++;) {
+		mappedIndex[i] = skeleton.jointMap;
+	}
+	indexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t) * modelData.indices.size());
+	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex)); // 書き込むためのアドレスを取得
+	//mappedIndex[]
+
+
+	// 頂点バッファビューを作成する
+	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
+	indexBufferView.SizeInBytes = sizeof(uint32_t) * modelData.indices.size(); // 使用するリソースのサイズは頂点サイズ
+	indexBufferView.Format = DXGI_FORMAT_R32_UINT; // 1頂点あたりのサイズ
+
+
+	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size()); // 頂点データをリ
+	/
+	*/
+
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
 
@@ -223,7 +301,7 @@ void Animations::CreateVertexResource() {
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 
-	
+
 
 
 	//カメラ
@@ -231,7 +309,3 @@ void Animations::CreateVertexResource() {
 	cameraResorce_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
 
 };
-
-
-
-

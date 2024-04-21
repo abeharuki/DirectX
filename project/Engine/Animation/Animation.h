@@ -8,18 +8,6 @@
 #include <WorldTransform.h>
 #include <ViewProjection.h>
 #include <ModelManager.h>
-/*
-
-struct KeyframeVector3 {
-	Vector3 value;
-	float time;
-};
-
-struct KeyframeQuaternion {
-	Quaternion value;
-	float time;
-};
-*/
 
 template<typename tValue>
 struct Keyframe {
@@ -42,10 +30,26 @@ struct NodeAnimation {
 	AnimationCurve<Vector3> scale;
 };
 
-struct Animation{
+struct Animation {
 	float duration;//アニメーション全体の尺
 	//NodeAniamtionの集合,Node名でひけるようにしておく
 	std::map<std::string, NodeAnimation> nodeAnimations;
+};
+
+struct Joint {
+	QuaternionTransform transform;//Transform情報
+	Matrix4x4 locaalMatrix;//localMatrix
+	Matrix4x4 skeletonSpaceMatrix;//skeletonSpaceでの変換行列
+	std::string name;//名前
+	std::vector<int32_t>children;//子JointnoIndexのリスト
+	int32_t index;//自身のIndex
+	std::optional<int32_t>parent;//親JointのIndex
+};
+
+struct Skeleton {
+	int32_t root;
+	std::map<std::string, int32_t>jointMap;//Joint名とIndexの辞書
+	std::vector<Joint>joints;//所属しているジョイント
 };
 
 
@@ -71,22 +75,22 @@ public: // 静的メンバ変数
 	BlendMode blendMode_ = BlendMode::kNormal;
 
 public:
-	
+
 
 	//初期化
-	void Initialize(const std::string& filename, const std::string& texturePath);
+	void Initialize(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
 
-	
+
 	void Update(WorldTransform& worldTransform);
-	
+	void Update();
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
 
-	
-	static Animations* Create(const std::string& filename, const std::string& texturePath);
-	
 
-	
+	static Animations* Create(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
+
+
+
 
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
@@ -104,6 +108,7 @@ private:
 
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
@@ -125,13 +130,17 @@ private:
 	float animationTime = 0.0f;
 
 	ModelManager* modelManager_;
-	ModelData modelData = ModelManager::LoadObjFile("./resources/AnimatedCube/AnimatedCube.gltf");
-	Animation animation = LoadAnimationFile("./resources/AnimatedCube", "AnimatedCube.gltf");
+	ModelData modelData;
+	Animation animation;
+	Skeleton skeleton;
 private:
 	void LoadAnimation(const std::string& filename, const std::string& texturePath);
 	void LoadTexture(const std::string& filename);
+	void SkeletonUpdate(Skeleton& skeleton);
+	void ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime);
 
 	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
-
+	Skeleton CreateSkeleton(const Node& rootNode);
+	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
 };
