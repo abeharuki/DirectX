@@ -208,6 +208,28 @@ void Animations::CreateVertexResource() {
 
 
 
+	uint32_t* mappedIndex = nullptr;
+	for (int i = 0; i < modelData.indices.size(); i++) {
+		mappedIndex[i] = modelData.indices[i];
+	}
+
+	/*/ 頂点リソースを作る
+
+	indexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t) * modelData.indices.size());
+	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex)); // 書き込むためのアドレスを取得
+
+
+
+	// 頂点バッファビューを作成する
+	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
+	indexBufferView.SizeInBytes = sizeof(uint32_t) * modelData.indices.size(); // 使用するリソースのサイズは頂点サイズ
+	indexBufferView.Format = DXGI_FORMAT_R32_UINT; // 1頂点あたりのサイズ
+
+
+	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size()); // 頂点データをリ
+	
+	*/
+
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
 
