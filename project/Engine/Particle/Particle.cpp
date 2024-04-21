@@ -5,10 +5,11 @@
 #include <numbers>
 #include <ModelManager.h>
 
+
 bool IsCollision(const AABB& aabb, const Vector3& point) {
 	if ((aabb.min.x <= point.x && point.x <= aabb.max.x) &&
-	    (aabb.min.y <= point.y && point.y <= aabb.max.y) &&
-	    (aabb.min.z <= point.z && point.z <= aabb.max.z)) {
+		(aabb.min.y <= point.y && point.y <= aabb.max.y) &&
+		(aabb.min.z <= point.z && point.z <= aabb.max.z)) {
 		return true;
 	}
 
@@ -18,7 +19,7 @@ bool IsCollision(const AABB& aabb, const Vector3& point) {
 void Particle::Initialize(const std::string& filename, Emitter emitter) {
 	emitter_ = emitter;
 	instanceCount = emitter_.count;
-	accelerationField_.acceleration = {0.0f, 0.0f, 0.0f};
+	accelerationField_.acceleration = { 0.0f, 0.0f, 0.0f };
 	LoadTexture(filename);
 	CreateVertexResource();
 	sPipeline();
@@ -42,9 +43,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	// 乱数生成
 	std::mt19937 randomEngine(seedGenerator());
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 cameraMatrix = Math::MakeAffineMatrix(
-	    {1.0f, 1.0f, 1.0f}, viewProjection.rotation_, viewProjection.translation_);
-	Matrix4x4 billboardMatrix = backToFrontMatrix * cameraMatrix;
+	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
@@ -60,7 +59,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	}
 
 	for (std::list<Particle_>::iterator particleIterator = particles.begin();
-	     particleIterator != particles.end();) {
+		particleIterator != particles.end();) {
 
 		if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
 			particleIterator = particles.erase(particleIterator);
@@ -76,8 +75,8 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 		if (numInstance < instanceCount) {
 			Matrix4x4 worldMatrix =
-			    Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
-			    Math::MakeTranslateMatrix((*particleIterator).transform.translate);
+				Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
+				Math::MakeTranslateMatrix((*particleIterator).transform.translate);
 
 			instancingData[numInstance].World = worldMatrix;
 
@@ -99,17 +98,17 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(1, textureManager_->GetParticleGPUHandle(instancing_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetParticleGPUHandle(instancing_));
 	//Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
 
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
-	    0, materialResorce_->GetGPUVirtualAddress());
+		0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
-	    4, viewProjection.constBuff_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+		4, viewProjection.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
@@ -119,7 +118,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 // 頂点データの設定
 void Particle::CreateVertexResource() {
 	instancingResouce_ = Mesh::CreateBufferResoure(
-	    Engine::GetDevice().Get(), sizeof(ParticleForGPU) * instanceCount);
+		Engine::GetDevice().Get(), sizeof(ParticleForGPU) * instanceCount);
 	// データを書き込む
 	instancingData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -132,20 +131,20 @@ void Particle::CreateVertexResource() {
 
 	// 頂点リソースを作る
 	vertexResource_ = Mesh::CreateBufferResoure(
-	    Engine::GetDevice().Get(), sizeof(VertexData) * modelData.vertices.size());
+		Engine::GetDevice().Get(), sizeof(VertexData) * modelData.vertices.size());
 	vertexResource_->Map(
-	    0, nullptr, reinterpret_cast<void**>(&vertexData_)); // 書き込むためのアドレスを取得
+		0, nullptr, reinterpret_cast<void**>(&vertexData_)); // 書き込むためのアドレスを取得
 
 	// 頂点バッファビューを作成する
 	vertexBufferView.BufferLocation =
-	    vertexResource_->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
+		vertexResource_->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
 	vertexBufferView.SizeInBytes = UINT(
-	    sizeof(VertexData) * modelData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
+		sizeof(VertexData) * modelData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
 
 	std::memcpy(
-	    vertexData_, modelData.vertices.data(),
-	    sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
+		vertexData_, modelData.vertices.data(),
+		sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
 
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
@@ -183,14 +182,15 @@ Particle* Particle::Create(const std::string& filename, Emitter emitter) {
 
 void Particle::LoadTexture(const std::string& filename) {
 	modelData = ModelManager::LoadObjFile("resources/plane.obj");
-	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize();
-	texture_ = textureManager_->Load(filename);
+	TextureManager::GetInstance()->Load(filename);
+	//textureManager_->Initialize();
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
+
 }
 
 void Particle::CreateInstanceSRV() {
 
-	instancing_ = textureManager_->ParticleLoad(instancingResouce_.Get(), instanceCount);
+	instancing_ = TextureManager::GetInstance()->ParticleLoad(instancingResouce_.Get(), instanceCount);
 
 	//descriptorSizeSRV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(
 	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -217,13 +217,14 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform 
 	particle.transform.rotate = transform.rotate;
 	particle.transform.translate = transform.translate + distribution(randomEngine);
 	particle.velocity = {
-	    distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
+		distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
 	if (isColor) {
 		particle.color = color_;
-	} else {
+	}
+	else {
 		particle.color = {
-		    distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),
-		    1.0f};
+			distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),
+			1.0f };
 	}
 	particle.lifeTime = distTime(randomEngine);
 	particle.currentTime = 0;

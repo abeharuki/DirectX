@@ -2,63 +2,67 @@
 #include "StringUtility.h"
 #include "Math/math.h"
 #include "Engine.h"
-#include <cassert>
-#include <winerror.h>
-#include <combaseapi.h>
-#include <dxcapi.h>
-#include <format>
-#include <cstdlib>
-#include <d3d12.h>
-#include <wrl.h>
-#include <fstream>
-#include <sstream>
-#include <filesystem>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 #include <DirectXTex.h>
-
-
 
 class TextureManager {
 public:
-	
+
 	/// <summary>
 	/// シングルトンインスタンスの取得
 	/// </summary>
 	/// <returns></returns>
 	static TextureManager* GetInstance();
 
+	static void Destroy();
+
+	void Load(const std::string& filename);
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	void Initialize();
-	
 
-	uint32_t Load(const std::string& fileName);
 
 	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	static ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 	static void UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 	const DirectX::TexMetadata& GetMetaData(uint32_t textureIndex);
 
+	
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(uint32_t textureHandle);
+	//SRVインデックスの開始番号
+	uint32_t GetTextureIndexByFilePath(const std::string& filename);
 
+	//パーティクル用
 	uint32_t ParticleLoad(ID3D12Resource* pResource, uint32_t instanceCount);
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetParticleGPUHandle(uint32_t textureHandle);
 
 
+	static const int maxtex = 512;
 
-	static const int maxtex = 256;
-
-	
 private:
-	
-	void LoadTexture(const std::string& filePath, uint32_t index);
+
+	//構造体
+	struct TextureData {
+		std::string filePath;
+		DirectX::TexMetadata metadata;
+		Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU_;
+		D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU_;
+	};
+
+
+private:
+
+	//void LoadTexture(const std::string& filePath, uint32_t index);
+	void LoadInternal(const std::string& filePath);
 
 	void CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource, uint32_t instanceCount);
 
+	static TextureManager* instance_;
+	static uint32_t kSRVIndexTop_;
 
+	std::vector<TextureData>textureDatas;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[maxtex];
 	uint32_t descriptorSizeSRV;
@@ -72,5 +76,4 @@ private:
 	DirectX::TexMetadata metadata[maxtex];
 	//0がImGui1がパーティクルで使ってるから
 	uint32_t textureIndex_;
-
 };

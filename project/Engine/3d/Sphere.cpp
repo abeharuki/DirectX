@@ -53,7 +53,7 @@ void Sphere::Draw(
 
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -143,10 +143,8 @@ void Sphere::LightDraw(Vector4 color, Vector3 direction, float intensity) {
 
 
 void Sphere::LoadTexture(const std::string& texturePath) {
-	
-	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize();
-	texture_ = textureManager_->Load(texturePath);
+	TextureManager::GetInstance()->Load(texturePath);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
 }
 
 

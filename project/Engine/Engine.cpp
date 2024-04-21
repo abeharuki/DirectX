@@ -41,7 +41,7 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 	imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win, dxCommon);	
 
-
+	TextureManager::GetInstance()->Initialize();
 
 	//	Inputの初期化処理
 	keyInput = Input::GetInstance();
@@ -84,6 +84,8 @@ void Engine::Finalize(){
 	win->TerminateGameWindow();
 
 	//dxCommon->Debug();
+
+	TextureManager::GetInstance()->Destroy();
 }
 
 void Engine::EndFrame() {

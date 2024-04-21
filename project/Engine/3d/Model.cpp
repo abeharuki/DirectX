@@ -58,7 +58,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
     // wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -151,9 +151,8 @@ Model* Model::CreateModelFromObj(const std::string& filename, const std::string&
 
 void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
 	modelData = ModelManager::LoadObjFile(filename);
-	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize();
-	texture_ = textureManager_->Load(texturePath);
+	TextureManager::GetInstance()->Load(texturePath);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
 }
 
 

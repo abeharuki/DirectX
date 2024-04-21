@@ -101,9 +101,8 @@ void Animations::LoadAnimation(const std::string& directorPath, const std::strin
 }
 
 void Animations::LoadTexture(const std::string& filename) {
-	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize();
-	texture_ = textureManager_->Load(filename);
+	TextureManager::GetInstance()->Load(filename);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
 }
 
 
@@ -147,7 +146,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
