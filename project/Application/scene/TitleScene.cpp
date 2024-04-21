@@ -3,8 +3,9 @@
 
 void TitleScene::Initialize() { 
 	audio_ = Audio::GetInstance();
-	audioData_ = audio_->SoundLoadWave("resources/audio/fanfare.wav");
-	//audio_->SoundPlayWave(audioData_, true, 3.0f);
+	//audioData_ = audio_->SoundLoadWave("resources/audio/fanfare.wav");
+	audioData_ = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
+	audio_->SoundPlayMP3(audioData_, true, 3.0f);
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
 
 	viewProjection_.Initialize();
@@ -31,6 +32,7 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Update() {
+	
 	
 
 	if (Input::PushKey(DIK_P)) {

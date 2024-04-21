@@ -1,10 +1,21 @@
 #pragma once
 #include <xaudio2.h>
-#pragma comment (lib,"xaudio2.lib")
+#include <mfapi.h>
+#include <mfidl.h>
+#include <mfreadwrite.h>
+
 #include <fstream>
 #include <wrl.h>
 #include <array>
 #include <set>
+#include <vector>
+#include <filesystem>
+
+#pragma comment (lib,"Mf.lib")
+#pragma comment (lib,"mfplat.lib")
+#pragma comment (lib,"Mfreadwrite.lib")
+#pragma comment (lib,"mfuuid.lib")
+#pragma comment (lib,"xaudio2.lib")
 
 class Audio {
 public:
@@ -33,13 +44,25 @@ public:
 	};
 
 	/// 音声データ
+	struct SoundDataWav {
+		//波形フォーマット
+		WAVEFORMATEX wfex;
+		//バッファの先頭アドレス
+		BYTE* pBuffer;
+		//バッファのサイズ
+		unsigned int bufferSize;
+		//名前
+		std::string name;
+		//オーディオハンドル
+		uint32_t audioHandle;
+	};
 	struct SoundData {
 		// 波形フォーマット
 		WAVEFORMATEX wfex;
 		// バッファの先頭アドレス
-		BYTE* pBuffer;
+		std::vector<BYTE> pBuffer;
 		// バッファのサイズ
-		unsigned int bufferSize;
+		size_t bufferSize;
 		// 名前
 		std::string name;
 		// オーディオハンドル
@@ -68,14 +91,16 @@ public:
 	
 	/// 音声データの読み込み
 	uint32_t SoundLoadWave(const char* filename);
-
+	uint32_t SoundLoadMP3(const std::filesystem::path& filename);
 
 	/// 音声データ開放
 	void SoundUnload(SoundData* soundData);
+	void SoundUnload(SoundDataWav* soundData);
 
 
 	/// 音声再生
 	void SoundPlayWave(uint32_t audioHandle, bool roopFlag, float volume);
+	void SoundPlayMP3(uint32_t audioHandle, bool roopFlag, float volume);
 
 	
 	/// 音声停止
@@ -91,7 +116,9 @@ private:
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_ = nullptr;
 	IXAudio2MasteringVoice* masterVoice_ = nullptr;
 	std::array<SoundData, kMaxSoundData> soundDatas_{};
+	std::array<SoundDataWav, kMaxSoundData> soundDatasWav_{};
 	std::set<Voice*> sourceVoices_{};
+	//IXAudio2SourceVoice* sourceVoice_ = nullptr;
 	uint32_t audioHandle_ = -1;
 	uint32_t voiceHandle_ = -1;
 };
