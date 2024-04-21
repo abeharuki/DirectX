@@ -36,7 +36,7 @@ private: // 基本変数
 
 private:
 	Audio* audio_ = nullptr;
-	uint32_t audioData_;
+	uint32_t audioData_[10];
 	std::unique_ptr<Sprite> spriteTitle_;
 	std::unique_ptr<Sprite> spritePushA_;
 	//std::unique_ptr<Sprite> spriteRule_;

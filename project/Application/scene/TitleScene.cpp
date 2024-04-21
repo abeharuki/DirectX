@@ -16,7 +16,9 @@ void TitleScene::Initialize() {
 
 
 	audio_ = Audio::GetInstance();
-	audioData_ = audio_->SoundLoadWave("resources/audio/fanfare.wav");
+	audioData_[0] = audio_->SoundLoadWave("resources/audio/fanfare.wav");
+	audioData_[1] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
+	audio_->SoundPlayMP3(audioData_[1], true, 3.0f);
 
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
@@ -79,6 +81,11 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Update() {
+
+	if (Input::PushKey(DIK_SPACE)) {
+		audio_->SoundPlayWave(audioData_[0], false, 3.0f);
+	}
+
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
 	if (Input::GetInstance()->GetPadConnect()) {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {

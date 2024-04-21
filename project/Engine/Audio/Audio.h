@@ -1,24 +1,35 @@
 #pragma once
 #include <xaudio2.h>
-#pragma comment (lib,"xaudio2.lib")
+#include <mfapi.h>
+#include <mfidl.h>
+#include <mfreadwrite.h>
+
 #include <fstream>
 #include <wrl.h>
 #include <array>
 #include <set>
+#include <vector>
+#include <filesystem>
+
+#pragma comment (lib,"Mf.lib")
+#pragma comment (lib,"mfplat.lib")
+#pragma comment (lib,"Mfreadwrite.lib")
+#pragma comment (lib,"mfuuid.lib")
+#pragma comment (lib,"xaudio2.lib")
 
 class Audio {
 public:
 	// 音声データの最大数
 	static const int kMaxSoundData = 256;
 
-	
+
 	/// チャンクヘッダ
 	struct ChunkHeader {
 		char id[4];   // チャンク毎のID
 		int32_t size; // チャンクサイズ
 	};
 
-	
+
 	/// RIFFヘッダチャンク
 	struct RiffHeader {
 		ChunkHeader chunk; //"RIFF"
@@ -33,51 +44,65 @@ public:
 	};
 
 	/// 音声データ
+	struct SoundDataWav {
+		//波形フォーマット
+		WAVEFORMATEX wfex;
+		//バッファの先頭アドレス
+		BYTE* pBuffer;
+		//バッファのサイズ
+		unsigned int bufferSize;
+		//名前
+		std::string name;
+		//オーディオハンドル
+		uint32_t audioHandle;
+	};
 	struct SoundData {
 		// 波形フォーマット
 		WAVEFORMATEX wfex;
 		// バッファの先頭アドレス
-		BYTE* pBuffer;
+		std::vector<BYTE> pBuffer;
 		// バッファのサイズ
-		unsigned int bufferSize;
+		size_t bufferSize;
 		// 名前
 		std::string name;
 		// オーディオハンドル
 		uint32_t audioHandle;
 	};
 
-	
+
 	/// ボイスデータ
 	struct Voice {
 		uint32_t handle = 0;
 		IXAudio2SourceVoice* sourceVoice = nullptr;
 	};
 
-	
+
 	/// シングルトンインスタンスの取得
 	static Audio* GetInstance();
 
-	
+
 	/// 解放処理
 	void Finalize();
 
-	
+
 	/// 初期化
 	void Initialize();
 
-	
+
 	/// 音声データの読み込み
 	uint32_t SoundLoadWave(const char* filename);
-
+	uint32_t SoundLoadMP3(const std::filesystem::path& filename);
 
 	/// 音声データ開放
 	void SoundUnload(SoundData* soundData);
+	void SoundUnload(SoundDataWav* soundData);
 
 
 	/// 音声再生
 	void SoundPlayWave(uint32_t audioHandle, bool roopFlag, float volume);
+	void SoundPlayMP3(uint32_t audioHandle, bool roopFlag, float volume);
 
-	
+
 	/// 音声停止
 	void StopAudio(uint32_t audioHandle);
 
@@ -91,7 +116,9 @@ private:
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_ = nullptr;
 	IXAudio2MasteringVoice* masterVoice_ = nullptr;
 	std::array<SoundData, kMaxSoundData> soundDatas_{};
+	std::array<SoundDataWav, kMaxSoundData> soundDatasWav_{};
 	std::set<Voice*> sourceVoices_{};
+	//IXAudio2SourceVoice* sourceVoice_ = nullptr;
 	uint32_t audioHandle_ = -1;
 	uint32_t voiceHandle_ = -1;
 };
