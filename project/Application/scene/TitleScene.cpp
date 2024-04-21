@@ -5,11 +5,15 @@
 void TitleScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransform_.scale = { 10,10,10 };
+	worldTransform_.translate.y = 5;
+	worldTransform_.rotate.x = 3.14f;
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png", "AnimatedCube.gltf"));
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "AnimatedCube.gltf"));
+
+
 
 	audio_ = Audio::GetInstance();
 	audioData_ = audio_->SoundLoadWave("resources/audio/fanfare.wav");
@@ -127,7 +131,6 @@ void TitleScene::Update() {
 	skydome_->Update();
 	ground_->Update();
 
-
 	animation_->Update(worldTransform_);
 
 	if (Input::PushKey(DIK_C)) {
@@ -137,7 +140,10 @@ void TitleScene::Update() {
 	if (Input::PushKey(DIK_O)) {
 		SceneManager::GetInstance()->ChangeScene("OverScene");
 	}
-
+	ImGui::Begin("Player");
+	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
+	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 3.1415f);
+	ImGui::End();
 }
 
 void TitleScene::Draw() {
