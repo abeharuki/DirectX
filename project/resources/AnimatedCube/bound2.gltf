@@ -15,13 +15,7 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"float_Head",
-			"rotation":[
-				0.70710688829422,
-				0,
-				0,
-				0.7071066498756409
-			]
+			"name":"float_Head"
 		}
 	],
 	"animations":[
@@ -48,7 +42,7 @@
 	"materials":[
 		{
 			"doubleSided":true,
-			"name":"\u30de\u30c6\u30ea\u30a2\u30eb",
+			"name":"\u30de\u30c6\u30ea\u30a2\u30eb.002",
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
 					"index":0
@@ -60,7 +54,7 @@
 	],
 	"meshes":[
 		{
-			"name":"float_Head",
+			"name":"float_Head.002",
 			"primitives":[
 				{
 					"attributes":{

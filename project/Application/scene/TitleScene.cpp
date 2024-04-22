@@ -4,14 +4,14 @@
 
 void TitleScene::Initialize() {
 	worldTransform_.Initialize();
-	worldTransform_.scale = { 10,10,10 };
+	worldTransform_.scale = { 10.0f,10.0f,10.0f };
 	worldTransform_.translate.y = 5;
-	worldTransform_.rotate.x = 3.14f;
+	//worldTransform_.rotate = {0.7f,0.0f,3.14f};
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound.gltf"));
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
 
 
@@ -149,7 +149,7 @@ void TitleScene::Update() {
 	}
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 3.1415f);
+	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 10.0f);
 	ImGui::End();
 }
 

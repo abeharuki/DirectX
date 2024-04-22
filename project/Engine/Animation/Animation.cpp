@@ -162,7 +162,7 @@ void Animations::SkeletonUpdate(Skeleton& skeleton) {
 
 void Animations::Update(WorldTransform& worldTransform) {
 	animationTime += 1.0f / 60.0f;
-	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
+	//animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
 	NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
 	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
 	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);

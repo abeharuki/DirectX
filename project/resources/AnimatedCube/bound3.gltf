@@ -15,13 +15,7 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"float_Head",
-			"rotation":[
-				0.7071068286895752,
-				0,
-				0,
-				0.7071068286895752
-			]
+			"name":"float_Head.001"
 		}
 	],
 	"animations":[
@@ -49,7 +43,7 @@
 					}
 				}
 			],
-			"name":"Bound",
+			"name":"float_HeadAction.001",
 			"samplers":[
 				{
 					"input":4,
@@ -72,7 +66,7 @@
 	"materials":[
 		{
 			"doubleSided":true,
-			"name":"\u30de\u30c6\u30ea\u30a2\u30eb.001",
+			"name":"\u30de\u30c6\u30ea\u30a2\u30eb.006",
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
 					"index":0
@@ -84,7 +78,7 @@
 	],
 	"meshes":[
 		{
-			"name":"float_Head.001",
+			"name":"float_Head.006",
 			"primitives":[
 				{
 					"attributes":{
@@ -118,13 +112,13 @@
 			"count":24,
 			"max":[
 				0.4872469902038574,
-				0.3943060040473938,
-				-0.15559500455856323
+				0.9157119989395142,
+				0.3943060040473938
 			],
 			"min":[
 				-0.4872469902038574,
-				-0.3943060040473938,
-				-0.9157119989395142
+				0.15559500455856323,
+				-0.3943060040473938
 			],
 			"type":"VEC3"
 		},
@@ -149,31 +143,31 @@
 		{
 			"bufferView":4,
 			"componentType":5126,
-			"count":2,
+			"count":40,
 			"max":[
-				0.041666666666666664
+				1.6666666666666667
 			],
 			"min":[
-				0
+				0.041666666666666664
 			],
 			"type":"SCALAR"
 		},
 		{
 			"bufferView":5,
 			"componentType":5126,
-			"count":2,
+			"count":40,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":6,
 			"componentType":5126,
-			"count":2,
+			"count":40,
 			"type":"VEC4"
 		},
 		{
 			"bufferView":7,
 			"componentType":5126,
-			"count":2,
+			"count":40,
 			"type":"VEC3"
 		}
 	],
@@ -204,23 +198,23 @@
 		},
 		{
 			"buffer":0,
-			"byteLength":8,
+			"byteLength":160,
 			"byteOffset":840
 		},
 		{
 			"buffer":0,
-			"byteLength":24,
-			"byteOffset":848
+			"byteLength":480,
+			"byteOffset":1000
 		},
 		{
 			"buffer":0,
-			"byteLength":32,
-			"byteOffset":872
+			"byteLength":640,
+			"byteOffset":1480
 		},
 		{
 			"buffer":0,
-			"byteLength":24,
-			"byteOffset":904
+			"byteLength":480,
+			"byteOffset":2120
 		}
 	],
 	"samplers":[
@@ -231,7 +225,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":928,
+			"byteLength":2600,
 			"uri":"bound3.bin"
 		}
 	]
