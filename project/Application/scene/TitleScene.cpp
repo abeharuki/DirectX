@@ -11,14 +11,14 @@ void TitleScene::Initialize() {
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "AnimatedCube.gltf"));
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound.gltf"));
 
 
 
 	audio_ = Audio::GetInstance();
 	audioData_[0] = audio_->SoundLoadWave("resources/audio/fanfare.wav");
-	audioData_[1] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
-	audio_->SoundPlayMP3(audioData_[1], true, 3.0f);
+	//audioData_[1] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
+	//audio_->SoundPlayMP3(audioData_[1], true, 3.0f);
 
 	// 天球
 	skydome_ = std::make_unique<Skydome>();

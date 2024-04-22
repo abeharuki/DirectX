@@ -58,7 +58,7 @@ Vector3 Animations::CalculateValue(const std::vector<KeyframeVector3>& keyframes
 
 	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
 		size_t nextIndex = index + 1;
-		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time - keyframes[index].time) {
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
 			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
 			return Math::Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
 		}
@@ -75,7 +75,7 @@ Quaternion Animations::CalculateValue(const std::vector<KeyframeQuaternion>& key
 
 	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
 		size_t nextIndex = index + 1;
-		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time - keyframes[index].time) {
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
 			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
 			return Math::Slerp(keyframes[index].value, keyframes[nextIndex].value, t);
 		}
@@ -165,7 +165,6 @@ void Animations::Update(WorldTransform& worldTransform) {
 	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
 	NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
 	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
-
 	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 	Matrix4x4 localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
