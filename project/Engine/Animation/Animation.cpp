@@ -95,7 +95,7 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 }
 
 void Animations::LoadAnimation(const std::string& directorPath, const std::string& filename) {
-	modelData = modelManager_->LoadObjFile(directorPath + "/" + filename);
+	modelData = modelManager_->LoadGltfFile(directorPath + "/" + filename);
 	animation = LoadAnimationFile(directorPath, filename);
 }
 
@@ -141,7 +141,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	Engine::GetList()->IASetIndexBuffer(&indexBufferView);
 
 
@@ -192,7 +192,7 @@ void Animations::sPipeline() {
 //頂点データの設定
 void Animations::CreateVertexResource() {
 	// モデルの読み込み 
-	/*/ 頂点リソースを作る
+	// 頂点リソースを作る
 	vertexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) * modelData.vertices.size());
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
 
@@ -204,13 +204,12 @@ void Animations::CreateVertexResource() {
 
 
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
-*/
+	
 
 	// 頂点リソースを作る
 
 	indexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t) * modelData.indices.size());
-	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&modelData.indices)); // 書き込むためのアドレスを取得
-
+	
 
 
 	// 頂点バッファビューを作成する
@@ -218,8 +217,9 @@ void Animations::CreateVertexResource() {
 	indexBufferView.SizeInBytes = sizeof(uint32_t) * UINT(modelData.indices.size()); // 使用するリソースのサイズは頂点サイズ
 	indexBufferView.Format = DXGI_FORMAT_R32_UINT; // 1頂点あたりのサイズ
 
-
-	std::memcpy(&modelData.indices, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size()); // 頂点データをリ
+	uint32_t* indexData = nullptr;
+	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData)); // 書き込むためのアドレスを取得
+	std::memcpy(indexData, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size()); // 頂点データをリ
 	
 
 	// マテリアル
