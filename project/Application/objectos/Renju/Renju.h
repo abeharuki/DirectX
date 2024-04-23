@@ -7,6 +7,7 @@
 #include "WorldTransform.h"
 #include "RenjuBullet.h"
 #include <CollisionManager/Collider.h>
+#include <Animation/Animation.h>
 
 /// <summary>
 /// ゲームシーン
@@ -28,6 +29,7 @@ public: // メンバ関数
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
+
 
 	void Draw(const ViewProjection& view);
 
@@ -101,7 +103,7 @@ private: // メンバ変数
 	ViewProjection viewProjection_;
 
 	std::unique_ptr<Model> bulletModel_;
-
+	std::unique_ptr<Animations>animation_;
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
@@ -138,7 +140,7 @@ private: // メンバ変数
 
 	Vector3 enemyPos_;
 	uint32_t nockTime_;
-
+	bool nockBack_;
 	//体力
 	int hitCount_ = 3;
 	//復活時間

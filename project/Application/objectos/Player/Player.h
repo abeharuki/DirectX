@@ -184,7 +184,9 @@ private: // メンバ変数
 	// 攻撃の時間
 	const uint32_t behaviorAttackTime = 15;
 
+	//ノックバックの時間とフラグ
 	uint32_t nockTime_;
+	bool nockBack_;
 
 
 	// 速度

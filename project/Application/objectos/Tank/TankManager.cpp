@@ -48,8 +48,8 @@ void TankManager::Update() {
 };
 
 void TankManager::Draw(const ViewProjection& camera) {
-	Model_->Draw(tank_->GetWorldTransformHead(), camera, false);
-	
+	//Model_->Draw(tank_->GetWorldTransformHead(), camera, false);
+	tank_->Draw(camera);
 	if (tank_->GetHitCount() >= 3) {
 		HpModel_[0]->Draw(tank_->GetWorldTransfromHp(0), camera, false);
 

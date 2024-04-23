@@ -8,6 +8,9 @@ Healer::~Healer() {};
 /// 初期化
 /// </summary>
 void Healer::Initialize() {
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
+
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = 4.0f;
@@ -31,7 +34,9 @@ void Healer::Initialize() {
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformHead_.TransferMatrix();
-	
+	if (nockBack_) {
+		animation_->Update(worldTransformHead_, false);
+	}
 	hitCount_ = 3;
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
@@ -116,6 +121,11 @@ void Healer::Update() {
 
 };
 
+void Healer::Draw(const ViewProjection& camera) {
+	animation_->Draw(worldTransformHead_, camera);
+
+}
+
 // 移動
 void Healer::MoveInitialize() { searchTarget_ = false; };
 void Healer::MoveUpdata() {
@@ -135,12 +145,17 @@ void Healer::JumpInitialize() {};
 void Healer::JumpUpdata() {};
 
 // ノックバック
-void Healer::knockInitialize() { nockTime_ = 30; };
+void Healer::knockInitialize() { 
+	nockTime_ = 30;
+	animation_->SetAnimationTimer(0, 15.0f);
+	nockBack_ = true;
+};
 void Healer::knockUpdata() {
 
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
+		nockBack_ = false;
 		if (hitCount_ == 0) {
 			behaviorRequest_ = Behavior::kDead;
 		}

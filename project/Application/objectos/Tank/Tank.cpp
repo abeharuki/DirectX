@@ -8,6 +8,10 @@ Tank::~Tank() {};
 /// 初期化
 /// </summary>
 void Tank::Initialize() {
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
+
+
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformHead_.Initialize();
@@ -102,7 +106,15 @@ void Tank::Update() {
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
+	if (nockBack_) {
+		animation_->Update(worldTransformHead_, false);
+	}
 };
+
+void Tank::Draw(const ViewProjection& camera) {
+	animation_->Draw(worldTransformHead_, camera);
+
+}
 
 // 移動
 void Tank::MoveInitialize() { searchTarget_ = false; };
@@ -129,12 +141,17 @@ void Tank::JumpInitialize() {};
 void Tank::JumpUpdata() {};
 
 // ノックバック
-void Tank::knockInitialize() { nockTime_ = 30; };
+void Tank::knockInitialize() { 
+	nockTime_ = 30;
+	animation_->SetAnimationTimer(0, 15.0f);
+	nockBack_ = true;
+};
 void Tank::knockUpdata() {
 
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
+		nockBack_ = false;
 		if (hitCount_ <= 0) {
 			behaviorRequest_ = Behavior::kDead;
 		}

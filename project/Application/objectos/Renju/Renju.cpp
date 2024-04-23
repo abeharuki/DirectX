@@ -9,6 +9,9 @@ Renju::~Renju() {};
 /// 初期化
 /// </summary>
 void Renju::Initialize() {
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
+
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = -2.0f;
@@ -116,6 +119,9 @@ void Renju::Update() {
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
+	if (nockBack_) {
+		animation_->Update(worldTransformHead_, false);
+	}
 };
 
 void Renju::Draw(const ViewProjection& view) {
@@ -125,7 +131,10 @@ void Renju::Draw(const ViewProjection& view) {
 		bullet->Draw(view);
 	}
 
+	
+	animation_->Draw(worldTransformHead_, view);
 
+	
 }
 
 
@@ -154,12 +163,17 @@ void Renju::JumpInitialize() {};
 void Renju::JumpUpdata() {};
 
 // ノックバック
-void Renju::knockInitialize() { nockTime_ = 30; };
+void Renju::knockInitialize() { 
+	nockTime_ = 30; 
+	animation_->SetAnimationTimer(0, 15.0f);
+	nockBack_ = true;
+};
 void Renju::knockUpdata() {
 
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
+		nockBack_ = false;
 		if (hitCount_ == 0) {
 			behaviorRequest_ = Behavior::kDead;
 		}

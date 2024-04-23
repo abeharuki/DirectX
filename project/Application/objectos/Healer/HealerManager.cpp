@@ -53,8 +53,8 @@ void HealerManager::Update() {
 };
 
 void HealerManager::Draw(const ViewProjection& camera) {
-	Model_->Draw(healer_->GetWorldTransformHead(), camera, false);
-
+	//Model_->Draw(healer_->GetWorldTransformHead(), camera, false);
+	healer_->Draw(camera);
 	if (healer_->GetHitCount() >= 3) {
 		HpModel_[0]->Draw(healer_->GetWorldTransfromHp(0), camera, false);
 	}

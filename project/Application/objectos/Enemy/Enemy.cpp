@@ -163,7 +163,7 @@ void Enemy::AttackUpdata() {
 
 //ダッシュ攻撃
 void Enemy::DashAttackInitialize() {
-	num_ = rand() % 4 + 1;
+	num_ = RandomGenerator::GetRandomInt(1, 1);;
 	time_ = 60 * 2;
 }
 void Enemy::DashAttackUpdata() {
@@ -334,7 +334,7 @@ void Enemy::ThrowingAttackUpdata() {
 
 
 	if (isAttack_) {
-		int num = RandomGenerator::GetRandomInt(1, 4);
+		int num = RandomGenerator::GetRandomInt(1, 1);
 		if (num == 1) {
 			sub = playerPos_ - worldTransformRock_.GetWorldPos();
 			// y軸周りの回転

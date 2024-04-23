@@ -120,15 +120,15 @@ void Player::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
-	if (Input::PressKey(DIK_Q)) {
-		animation_->Update(worldTransformHead_, true);
+	if (nockBack_) {
+		animation_->Update(worldTransformHead_, false);
 	}
 	
 
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::Text("%d", noAttack_);
-	ImGui::Text("%d", preNoAttack_);
+	ImGui::Text("%d", nockBack_);
 	ImGui::End();
 }
 
@@ -295,6 +295,8 @@ void Player::MoveUpdata() {
 		if (Input::PushKey(DIK_F)) {
 			behaviorRequest_ = Behavior::kDash;
 		}
+
+		
 	}
 };
 
@@ -343,13 +345,17 @@ void Player::DashUpdata() {
 
 
 // ノックバック
-void Player::knockInitialize() { nockTime_ = 30; };
+void Player::knockInitialize() { 
+	nockTime_ = 30;
+	animation_->SetAnimationTimer(0, 15.0f);
+	nockBack_ = true;
+};
 void Player::knockUpdata() {
-
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
 		behaviorRequest_ = Behavior::kRoot;
+		nockBack_ = false;
 	}
 };
 
@@ -533,11 +539,14 @@ void Player::Relationship() {
 // 衝突を検出したら呼び出されるコールバック関数
 void Player::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
-	velocity_ = { 0.0f, 0.0f, kSpeed };
-	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
-	behaviorRequest_ = Behavior::knock;
+	if (!nockBack_) {
+		velocity_ = { 0.0f, 0.0f, kSpeed };
+		velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
+		behaviorRequest_ = Behavior::knock;
+	}
+	
 
-	isHit_ = true;
+	//isHit_ = true;
 	if (isHit_ != preHit_) {
 		hitCount_ = true;
 

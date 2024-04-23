@@ -6,6 +6,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <CollisionManager/Collider.h>
+#include <Animation/Animation.h>
 
 /// <summary>
 /// ゲームシーン
@@ -27,6 +28,8 @@ public: // メンバ関数
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
+
+	void Draw(const ViewProjection& camera);
 
 	// 移動
 	void MoveInitialize();
@@ -93,7 +96,7 @@ private: // メンバ変数
 	WorldTransform worldTransformHp_[3];
 	WorldTransform worldTransformHead_;
 	ViewProjection viewProjection_;
-
+	std::unique_ptr<Animations>animation_;
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 
@@ -127,6 +130,7 @@ private: // メンバ変数
 	int fireTimer_ = 40;
 
 	uint32_t nockTime_;
+	bool nockBack_;
 	Vector3 enemyPos_;
 
 	bool attack_ = false;

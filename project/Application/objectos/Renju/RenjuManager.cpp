@@ -42,8 +42,8 @@ void RenjuManager::Update() {
 };
 
 void RenjuManager::Draw(const ViewProjection& camera) {
-	Model_->Draw(renju_->GetWorldTransformHead(), camera, false);
-
+	//Model_->Draw(renju_->GetWorldTransformHead(), camera, false);
+	renju_->Draw(camera);
 	if (renju_->GetHitCount() >= 3) {
 		HpModel_[0]->Draw(renju_->GetWorldTransfromHp(0), camera, false);
 
