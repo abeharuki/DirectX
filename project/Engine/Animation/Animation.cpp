@@ -125,7 +125,7 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 }
 
 void Animations::LoadAnimation(const std::string& directorPath, const std::string& filename) {
-	modelData = modelManager_->LoadObjFile(directorPath + "/" + filename);
+	modelData = modelManager_->LoadGltfFile(directorPath + "/" + filename);
 	animation = LoadAnimationFile(directorPath, filename);
 }
 
@@ -203,7 +203,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
-
+	Engine::GetList()->IASetIndexBuffer(&indexBufferView);
 
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
@@ -218,8 +218,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
-
+	Engine::GetList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 
 }
 
@@ -260,30 +259,21 @@ void Animations::CreateVertexResource() {
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
 
 
+	// 頂点リソースを作る
 
-
-	/*/ 頂点リソースを作る
-	uint32_t* mappedIndex = nullptr;
-	for (const Joint& joint : skeleton.joints) {
-		mappedIndex = skeleton.jointMap.;
-	}
-	for (uint32_t i = 0; i < skeleton.jointMap.max_size(), i++;) {
-		mappedIndex[i] = skeleton.jointMap;
-	}
 	indexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t) * modelData.indices.size());
-	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex)); // 書き込むためのアドレスを取得
-	//mappedIndex[]
+
 
 
 	// 頂点バッファビューを作成する
 	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
-	indexBufferView.SizeInBytes = sizeof(uint32_t) * modelData.indices.size(); // 使用するリソースのサイズは頂点サイズ
+	indexBufferView.SizeInBytes = sizeof(uint32_t) * UINT(modelData.indices.size()); // 使用するリソースのサイズは頂点サイズ
 	indexBufferView.Format = DXGI_FORMAT_R32_UINT; // 1頂点あたりのサイズ
 
+	uint32_t* indexData = nullptr;
+	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData)); // 書き込むためのアドレスを取得
+	std::memcpy(indexData, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size()); // 頂点データをリ
 
-	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size()); // 頂点データをリ
-	/
-	*/
 
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));

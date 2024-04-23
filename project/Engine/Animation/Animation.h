@@ -112,6 +112,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 
