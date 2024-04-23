@@ -79,18 +79,12 @@ public:
 
 	//初期化
 	void Initialize(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
-
-
-	void Update(WorldTransform& worldTransform);
+	void Update(WorldTransform& worldTransform,bool roop);
 	void Update();
-
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
 
 
 	static Animations* Create(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
-
-
-
 
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
@@ -102,6 +96,10 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	void CreateVertexResource();
+
+
+	void SetAnimationTimer(float startTime, float flameTime);
+
 
 private:
 
@@ -128,6 +126,7 @@ private:
 	uint32_t texture_;
 
 	float animationTime = 0.0f;
+	float flameTimer_ = 0.0f;
 
 	ModelManager* modelManager_;
 	ModelData modelData;

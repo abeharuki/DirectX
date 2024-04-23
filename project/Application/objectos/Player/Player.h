@@ -8,6 +8,7 @@
 #include <array>
 #include <optional>
 #include "CollisionManager/Collider.h"
+#include <Animation/Animation.h>
 
 class Player : public Collider {
 public:
@@ -52,6 +53,7 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+	void Draw(const ViewProjection& camera);
 
 	// 移動
 	void MoveInitialize();
@@ -131,7 +133,7 @@ private: // メンバ変数
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformCollision_;
-
+	std::unique_ptr<Animations>animation_;
 	const ViewProjection* viewProjection_;
 
 	// 目標の角度

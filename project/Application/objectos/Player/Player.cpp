@@ -27,6 +27,10 @@ void Player::Initialize() {
 	isOver_ = false;
 
 
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
+
+
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformHead_.TransferMatrix();
@@ -112,16 +116,25 @@ void Player::Update() {
 
 	// 回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-
+	
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
+	if (Input::PressKey(DIK_Q)) {
+		animation_->Update(worldTransformHead_, true);
+	}
+	
 
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::Text("%d", noAttack_);
 	ImGui::Text("%d", preNoAttack_);
 	ImGui::End();
+}
+
+void Player::Draw(const ViewProjection& camera) {
+	animation_->Draw(worldTransformHead_, camera);
+
 }
 
 // 移動

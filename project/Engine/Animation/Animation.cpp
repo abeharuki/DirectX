@@ -160,15 +160,24 @@ void Animations::SkeletonUpdate(Skeleton& skeleton) {
 	}
 }
 
-void Animations::Update(WorldTransform& worldTransform) {
-	animationTime += 1.0f / 60.0f;
-	//animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
+void Animations::SetAnimationTimer(float startTimer, float flameTimer) {
+	animationTime = startTimer;
+	flameTimer_ = flameTimer;
+}
+
+void Animations::Update(WorldTransform& worldTransform,bool roop) {
+
+	if (flameTimer_ == 0.0f) {animationTime += 1.0f / 60.0f;}
+	else {animationTime += 1.0f / flameTimer_;}
+	if (roop) {
+		animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生 
+	}
 	NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
 	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
 	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 	Matrix4x4 localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
-	worldTransform.UpdateMatrix();
+	//worldTransform.UpdateMatrix();
 	worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
 	worldTransform.TransferMatrix();
 

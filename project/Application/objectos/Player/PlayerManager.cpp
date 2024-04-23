@@ -3,6 +3,11 @@
 
 void PlayerManager::Initialize() {
 
+	
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
+
+
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 	HammerModel_.reset(Model::CreateModelFromObj("resources/katana/katana.obj", "resources/katana/kata.png"));
 
@@ -18,6 +23,9 @@ void PlayerManager::Initialize() {
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
+
+	//worldTransformHead_.Initialize();
+	worldTransformHead_ = player_->GetWorldTransform();
 
 	emitter_.transform = {
 		{0.8f, 0.8f, 0.8f},
@@ -89,6 +97,9 @@ void PlayerManager::Update() {
 	player_->IsDead(isDead_);
 	player_->Update();
 
+	
+	
+
 	Revival();
 	if (revivalTransform_.scale.x >= 120.0f) {
 		revivalTransform_.scale.x = 120.0f;
@@ -103,7 +114,9 @@ void PlayerManager::Update() {
 };
 
 void PlayerManager::Draw(const ViewProjection& camera) {
-	Model_->Draw(player_->GetWorldTransformHead(), camera, false);
+	//Model_->Draw(player_->GetWorldTransformHead(), camera, false);
+	player_->Draw(camera);
+	
 	particle_->Draw(camera);
 	if (player_->IsAttack()) {
 		HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);

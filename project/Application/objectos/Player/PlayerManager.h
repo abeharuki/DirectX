@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Model.h"
 #include <Particle.h>
+#include <Animation/Animation.h>
 
 class PlayerManager {
 public:
@@ -70,6 +71,8 @@ private:
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformHammer_;
+	std::unique_ptr<Animations>animation_;
+
 	std::unique_ptr<Model> Model_;
 	std::unique_ptr<Model> HammerModel_;
 	std::unique_ptr<Player> player_;
