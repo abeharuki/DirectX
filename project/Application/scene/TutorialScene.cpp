@@ -8,8 +8,7 @@ void TutorialScene::Initialize() {
 
 
 	audio_ = Audio::GetInstance();
-	audioData_[0] = audio_->SoundLoadWave("resources/audio/fanfare.wav");
-	audioData_[1] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
+	audioData_[0] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
 	audio_->SoundPlayMP3(audioData_[1], true, 3.0f);
 
 	// 天球
