@@ -77,6 +77,25 @@ ModelData ModelManager::LoadObjFile(const std::string& filename) {
 		assert(mesh->HasNormals());
 		assert(mesh->HasTextureCoords(0));
 		modelData.vertices.resize(mesh->mNumVertices);
+		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
+			aiFace& face = mesh->mFaces[faceIndex];
+			assert(face.mNumIndices == 3);
+			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
+				uint32_t vertexIndex = face.mIndices[element];
+				aiVector3D& position = mesh->mVertices[vertexIndex];
+				aiVector3D& normal = mesh->mNormals[vertexIndex];
+				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+				VertexData vertex;
+				vertex.position = { position.x,position.y,position.z,1.0f };
+				vertex.normal = { normal.x,normal.y,normal.z };
+				vertex.texcoord = { texcoord.x,texcoord.y };
+				vertex.position.z *= -1.0f;
+				vertex.normal.x *= -1.0f;
+				modelData.vertices.push_back(vertex);
+			}
+
+		}
+		/*資料のやつでできないから一旦コメントアウト
 		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
 			aiVector3D& position = mesh->mVertices[vertexIndex];
 			aiVector3D& normal = mesh->mNormals[vertexIndex];
@@ -86,7 +105,7 @@ ModelData ModelManager::LoadObjFile(const std::string& filename) {
 			modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
 			modelData.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
 			
-		}
+		}*/
 
 		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 			aiFace& face = mesh->mFaces[faceIndex];

@@ -93,12 +93,13 @@ private:
 
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
-
 	// カメラ用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
 
