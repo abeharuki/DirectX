@@ -117,7 +117,9 @@ void Healer::Update() {
 		worldTransformHp_[i].TransferMatrix();
 	}
 
-	
+	if (nockBack_) {
+		animation_->Update(worldTransformHead_, false);
+	}
 
 };
 
