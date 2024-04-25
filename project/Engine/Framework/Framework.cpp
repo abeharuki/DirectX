@@ -1,5 +1,6 @@
 #include "Framework.h"
 #include <queue>
+#include <condition_variable>
 
 void Framework::Initialize() { sceneManager_ = SceneManager::GetInstance(); }
 
