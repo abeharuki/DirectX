@@ -94,6 +94,10 @@ void Engine::EndFrame() {
 
 }
 
+void Engine::RenderPreDraw() {
+	dxCommon->RenderPreDraw();
+}
+
 void Engine::PreDraw() {
 	// 描画開始
 	dxCommon->PreDraw();

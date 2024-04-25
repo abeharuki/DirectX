@@ -8,9 +8,11 @@
 #include <cassert>
 #include <chrono>
 #include <cstdint>
+#include <array>
 #include <wrl.h>
 #include <vector>
 #include <dxgidebug.h>
+#include <DescriptorHeap.h>
 
 
 #pragma comment(lib, "d3d12.lib")
@@ -60,6 +62,27 @@ public: // メンバ関数
 
 	//リソースリークチェック
 	void Debug();
+
+	//レンダー関連
+	/// <summary>
+	/// 描画前処理
+	/// </summary>
+	void RenderPreDraw();
+
+	/// <summary>
+	/// レンダーターゲットのクリア
+	/// </summary>
+	void ClearRenderTargetSWAP();
+
+
+	/// <summary>
+	/// レンダーテクスチャの作成
+	/// </summary>
+	void CreateRenderTexture();
+
+	DescriptorHandle AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type);
+
+	ID3D12DescriptorHeap* GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type) const { return descriptorHeaps_[type]->GetDescriptorHeap(); }
 
 	/// <summary>
 	/// デバイスの取得
@@ -125,12 +148,20 @@ private: // メンバ変数
 	int32_t refreshRate_ = 0;
 	D3D12_VIEWPORT viewport;
 	D3D12_RECT scissorRect;
+
 	// RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_;
+	D3D12_CPU_DESCRIPTOR_HANDLE srvHandle_;
 	D3D12_RESOURCE_BARRIER barrier{};
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource;
+	D3D12_RESOURCE_BARRIER renderBarrier{};
 
 	std::chrono::steady_clock::time_point reference_;
 
+	std::array<std::unique_ptr<DescriptorHeap>, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> descriptorHeaps_{};
+	std::array<const uint32_t, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> kNumDescriptors_ = { 256, 256, 256, 256, };
 private: // メンバ関数
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
@@ -169,6 +200,24 @@ private: // メンバ関数
 
 	void InitializeFixFPS();
 	void UpdateFixFPS();
+
+
+	
+
+
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+		handleCPU.ptr += (descriptorSize * index);
+		return handleCPU;
+	}
+
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(
+		ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+		handleGPU.ptr += (descriptorSize * index);
+		return handleGPU;
+	}
 
 };
 
