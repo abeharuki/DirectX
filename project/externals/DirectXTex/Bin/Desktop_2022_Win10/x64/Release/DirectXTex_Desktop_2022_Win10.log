@@ -1,6 +1,23 @@
-﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(563,5): error MSB6003: 指定されたタスク実行可能ファイル "CL.exe" を実行できませんでした。System.IO.IOException: 別のプロセスで使用されているため、プロセスはファイル 'C:\授業後期2年\CG4\DIRECTX\PROJECT\EXTERNALS\DIRECTXTEX\BIN\DESKTOP_2022_WIN10\X64\RELEASE\DIRECTXTEX.PCH' にアクセスできません。
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(563,5): error MSB6003:    場所 System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(563,5): error MSB6003:    場所 System.IO.FileInfo.Delete()
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(563,5): error MSB6003:    場所 Microsoft.Build.CPPTasks.TrackedVCToolTask.DeleteFiles(ITaskItem[] filesToDelete)
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(563,5): error MSB6003:    場所 Microsoft.Build.CPPTasks.CL.ComputeOutOfDateSources()
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(563,5): error MSB6003:    場所 Microsoft.Build.Utilities.ToolTask.Execute()
+﻿  DirectXTexUtil.cpp
+  BC.cpp
+  BC4BC5.cpp
+  BC6HBC7.cpp
+  BCDirectCompute.cpp
+  DirectXTexCompress.cpp
+  DirectXTexCompressGPU.cpp
+  DirectXTexConvert.cpp
+  DirectXTexD3D11.cpp
+  DirectXTexD3D12.cpp
+  DirectXTexDDS.cpp
+  DirectXTexFlipRotate.cpp
+  DirectXTexHDR.cpp
+  DirectXTexImage.cpp
+  DirectXTexMipMaps.cpp
+  DirectXTexMisc.cpp
+  DirectXTexNormalMaps.cpp
+  DirectXTexPMAlpha.cpp
+  DirectXTexResize.cpp
+  DirectXTexTGA.cpp
+  DirectXTexWIC.cpp
+  コードを生成中...
+  DirectXTex_Desktop_2022_Win10.vcxproj -> C:\授業後期2年\CG4\DirectX\project\externals\DirectXTex\Bin\Desktop_2022_Win10\x64\Release\DirectXTex.lib
