@@ -111,11 +111,11 @@ public: // メンバ関数
 	// バックバッファの数を取得
 	size_t GetBackBufferCount() const { return swapChainResources.size(); }
 
-	ID3D12DescriptorHeap* GetSRV() const { return srvHeap_.Get(); }
+	ID3D12DescriptorHeap* GetSRV() const { return srvHeap_->GetDescriptorHeap(); }
 
-	ID3D12DescriptorHeap* GetRTV() const { return rtvHeap_.Get(); }
+	ID3D12DescriptorHeap* GetRTV() const { return rtvHeap_->GetDescriptorHeap(); }
 
-	ID3D12DescriptorHeap* GetDSV() const { return dsvHeap_.Get(); }
+	ID3D12DescriptorHeap* GetDSV() const { return dsvHeap_->GetDescriptorHeap(); }
 
 	static const uint32_t kMaxSRVCount;
 
@@ -133,11 +133,11 @@ private: // メンバ変数
 	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources;
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthBuffer_;
 	// SRV用のヒープ
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
+	std::unique_ptr<DescriptorHeap> srvHeap_;
 	// RTV用のヒープ
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
+	std::unique_ptr<DescriptorHeap> rtvHeap_;
 	// DSV用のヒープ
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_;
+	std::unique_ptr<DescriptorHeap> dsvHeap_;
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
 	Microsoft::WRL::ComPtr <IDXGIDebug1> debug_;
 
