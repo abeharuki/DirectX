@@ -2,7 +2,11 @@
 #include <queue>
 #include <condition_variable>
 
-void Framework::Initialize() { sceneManager_ = SceneManager::GetInstance(); }
+void Framework::Initialize() {
+	sceneManager_ = SceneManager::GetInstance();
+	postEffect_ = PostEffect::GetInstance();
+	postEffect_->Initialize();
+}
 
 void Framework::Update() { 
 	Engine::BeginFrame();
@@ -15,15 +19,20 @@ void Framework::Update() {
 }
 
 void Framework::Draw() { 
+
 	Engine::RenderPreDraw();
 	sceneManager_->Draw();
+	Engine::RenderPostDraw();
+
 	Engine::PreDraw();
+	postEffect_->Draw();
 	Engine::PostDraw();
 }
 
 
 void Framework::Finalize() { 
 	Engine::Finalize();
+	postEffect_->Destroy();
 	delete sceneFactory_; 
 }
 
