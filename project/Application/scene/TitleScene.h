@@ -64,6 +64,7 @@ private:
 	std::unique_ptr<Model> modelGround_;
 
 	std::unique_ptr<Animations>animation_;
+	std::unique_ptr<Animations>human_;
 	
 	//スプライト
 	Vector2 spritePos_;

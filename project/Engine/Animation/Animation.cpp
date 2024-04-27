@@ -84,40 +84,14 @@ Quaternion Animations::CalculateValue(const std::vector<KeyframeQuaternion>& key
 	return (*keyframes.rbegin()).value;
 }
 
-Skeleton Animations::CreateSkeleton(const Node& rootNode) {
-	Skeleton skeleton;
-	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
 
-	//名前とIndexのマッピングを行いアクセスしやすくする
-	for (const Joint& joint : skeleton.joints) {
-		skeleton.jointMap.emplace(joint.name, joint.index);
-	}
-	return skeleton;
-}
-
-int32_t Animations::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
-{
-	Joint joint;
-	joint.name = node.name;
-	joint.locaalMatrix = node.localMatrix;
-	joint.skeletonSpaceMatrix = Math::MakeIdentity4x4();
-	joint.transform = node.transform;
-	joint.index = int32_t(joints.size());//現在登録されている数をIndexに
-	joint.parent = parent;
-	joints.push_back(joint);//SkeletonのJoint列に追加
-	for (const Node& child : node.children) {
-		//子Jointを作成、そのIndexを登録
-		int32_t childIndex = CreateJoint(child, joint.index, joints);
-		joints[joint.index].children.push_back(childIndex);
-	}
-	return joint.index;
-}
 
 void Animations::Initialize(const std::string& directorPath, const std::string& filename, const std::string& motionPath) {
 
 	LoadAnimation(directorPath, motionPath);
 	LoadTexture(directorPath + "/" + filename);
-	skeleton = CreateSkeleton(modelData.rootNode);
+	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
+	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(),skeleton,modelData,Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 	CreateVertexResource();
 	sPipeline();
 
@@ -147,6 +121,7 @@ void Animations::ApplyAnimation(Skeleton& skeleton, const Animation& animation, 
 	}
 }
 
+
 void Animations::SkeletonUpdate(Skeleton& skeleton) {
 	//全てのJointを更新
 	for (Joint& joint : skeleton.joints) {
@@ -157,6 +132,14 @@ void Animations::SkeletonUpdate(Skeleton& skeleton) {
 		else {
 			joint.skeletonSpaceMatrix = joint.locaalMatrix;
 		}
+	}
+}
+void Animations::SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton) {
+	//全てのJointを更新
+	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
+		assert(jointIndex < skinCluster.inverseBindPoseMatrixs.size());
+		skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix = skeleton.joints[jointIndex].skeletonSpaceMatrix;
+		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix = Math::Transpose(Math::Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
 }
 
@@ -174,20 +157,16 @@ void Animations::Update(WorldTransform& worldTransform) {
 	worldTransform.TransferMatrix();
 
 }
-
 void Animations::Update() {
 	animationTime += 1.0f / 60.0f;
 	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
 	ApplyAnimation(skeleton, animation, animationTime);
 	SkeletonUpdate(skeleton);
+	SkinningUpdate(skinCluster, skeleton);
 }
 
 void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
 
-	/*/RootのMatrixを適用
-	worldTransform.matWorld_ = modelData.rootNode.localMatrix * worldTransform.matWorld_;
-	worldTransform.TransferMatrix();
-	*/
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
 
@@ -202,7 +181,11 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
+		vertexBufferView,
+		skinCluster.influenceBufferView
+	};
+	Engine::GetList()->IASetVertexBuffers(0, 1, vbvs);
 	Engine::GetList()->IASetIndexBuffer(&indexBufferView);
 
 
@@ -231,15 +214,14 @@ Animations* Animations::Create(const std::string& directorPath, const std::strin
 
 }
 
-
 void Animations::sPipeline() {
 
-	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
+	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateAnimationVSShader();
 	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
 
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateAnimationGraphicsPipeline(blendMode_);
 };
 
 //頂点データの設定

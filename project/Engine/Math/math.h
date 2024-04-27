@@ -3,6 +3,7 @@
 #include <format>
 #include <vector>
 #include "Quaternion.h"
+#include <map>
 
 struct Vector2 final {
 	float x;
@@ -142,7 +143,22 @@ struct MaterialData {
 	std::string textureFilePath;
 };
 
+struct VertexWeightData
+{
+	float weight;
+	uint32_t vertexIndex;
+};
+
+
+struct JointWeightData {
+	Matrix4x4 inverseBindPoseMatrix;
+	std::vector<VertexWeightData> vertexWeightts;
+
+
+};
+
 struct ModelData {
+	std::map<std::string, JointWeightData> skinClusterData;
 	std::vector<VertexData> vertices;
 	std::vector<uint32_t>indices;
 	MaterialData material;
@@ -242,6 +258,8 @@ public:
 	static Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2);
 
 	static Matrix4x4 Subract(const Matrix4x4& m1, const Matrix4x4& m2);
+
+	static Matrix4x4 Transpose(const Matrix4x4& m);
 
 	static Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix);
 

@@ -22,6 +22,9 @@ void TitleScene::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png","AnimatedCube.gltf"));
 
+	human_ = std::make_unique<Animations>();
+	human_.reset(Animations::Create("./resources/human", "white.png", "sneakWalk.gltf"));
+
 
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
@@ -67,7 +70,7 @@ void TitleScene::Update() {
 	viewProjection_.UpdateMatrix();
 
 
-	
+	human_->Update();
 
 	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
 	static int currentItem = 1; // 初期選択アイテムのインデックス
@@ -155,7 +158,7 @@ void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 
 
-
+	human_->Draw(worldTransformSphere_, viewProjection_);
 	animation_->Draw(worldTransformBox_, viewProjection_);
 	modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
