@@ -34,6 +34,7 @@ public:
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> particleRootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> animationRootSignature_ = nullptr;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> spritePipelineState_ = nullptr;
@@ -66,6 +67,8 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateRootSignature();
 	// ParticleRootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateParticleRootSignature();
+	// AnimationRootSignatureの生成
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateAnimationRootSignature();
 
 	//	vertexshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateVSShader();

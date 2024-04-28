@@ -191,6 +191,8 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(6, skinCluster.paletteSrvHandle.second);
+
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -220,7 +222,7 @@ void Animations::sPipeline() {
 	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
 
 
-	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
+	rootSignature_ = GraphicsPipeline::GetInstance()->CreateAnimationRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateAnimationGraphicsPipeline(blendMode_);
 };
 
