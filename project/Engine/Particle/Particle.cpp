@@ -97,7 +97,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 
-	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+	//Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetParticleGPUHandle(instancing_));
 	//Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
 

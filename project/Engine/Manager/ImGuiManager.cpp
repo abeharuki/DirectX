@@ -16,7 +16,7 @@ ImGuiManager* ImGuiManager::GetInstance() {
 void ImGuiManager::Initialize(
     WinApp* winApp,DirectXCommon* dxCommon) {
 
-	
+	srvHandle_ = dxCommon->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	dxCommon_ = dxCommon;
 
@@ -30,8 +30,8 @@ void ImGuiManager::Initialize(
 	ImGui_ImplDX12_Init(
 	    dxCommon_->GetDevice(), static_cast<int> (dxCommon_->GetBackBufferCount()),
 	    DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, dxCommon_->GetSRV(),
-	    dxCommon_->GetSRV()->GetCPUDescriptorHandleForHeapStart(),
-	    dxCommon_->GetSRV()->GetGPUDescriptorHandleForHeapStart());
+	    srvHandle_,
+	    srvHandle_);
 
 }
 
