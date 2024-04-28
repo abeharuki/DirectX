@@ -547,7 +547,7 @@ void DirectXCommon::ClearRenderTarget() {
 
 
 	// 指定した色で画面全体をクリアする
-	float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };;
 	commandList_->ClearRenderTargetView(rtvHandle_, clearColor, 0, nullptr);
 	assert(SUCCEEDED(hr_));
 
@@ -621,7 +621,7 @@ void DirectXCommon::RenderPostDraw() {
 void DirectXCommon::CreateRenderTexture() {
 	
 	//RTVの作成
-	const Vector4 kRenderTargetClearValue{ 1.0f,0.0f,0.0f,1.0f };
+	const Vector4 kRenderTargetClearValue{ 0.1f, 0.25f, 0.5f, 1.0f };;
 	renderTextureResource = CreateRenderTextureResource(device_.Get(), WinApp::kWindowWidth, WinApp::kWindowHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, kRenderTargetClearValue);
 
 	// RTVの設定
