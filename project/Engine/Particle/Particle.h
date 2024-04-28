@@ -17,6 +17,7 @@
 #include <wrl.h>
 #include <random>
 
+
 class Particle {
 public: // 静的メンバ変数
 	// デスクリプタサイズ

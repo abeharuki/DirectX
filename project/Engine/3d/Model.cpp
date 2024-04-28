@@ -55,7 +55,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	
 	
 
-	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+	//Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
     // wvp用のCBufferの場所を設定

@@ -137,6 +137,8 @@ void DirectXCommon::PreDraw() {
 	commandList_->RSSetViewports(1, &viewport);
 	commandList_->RSSetScissorRects(1, &scissorRect);
 
+	ID3D12DescriptorHeap* heaps[] = { descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetDescriptorHeap() };
+	commandList_->SetDescriptorHeaps(_countof(heaps), heaps);
 
 }
 
@@ -597,6 +599,7 @@ void DirectXCommon::RenderPreDraw() {
 	//  コマンドを積む
 	commandList_->RSSetViewports(1, &viewport);
 	commandList_->RSSetScissorRects(1, &scissorRect);
+
 	ID3D12DescriptorHeap* heaps[] = { descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetDescriptorHeap()};
 	commandList_->SetDescriptorHeaps(_countof(heaps),heaps);
 
