@@ -111,7 +111,7 @@ void DirectXCommon::PreDraw() {
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
 
 
-	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, &dsvHandles_[1]);
+	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, &dsvHandle_);
 
 	// クライアント領域のサイズと一緒にして画面全体に表示
 	viewport.Width = WinApp::kWindowWidth;
@@ -130,9 +130,8 @@ void DirectXCommon::PreDraw() {
 	scissorRect.bottom = WinApp::kWindowHeight;
 
 	// 全画面クリア
-	ClearRenderTarget();
-	// 深度バッファクリア
-	ClearDepthBuffer();
+	ClearRenderTargetSWAP();
+	
 	
 	//  コマンドを積む
 	commandList_->RSSetViewports(1, &viewport);
@@ -184,7 +183,7 @@ void DirectXCommon::PostDraw() {
 }
 
 //指定した色で画面全体をクリア
-void DirectXCommon::ClearRenderTarget() {
+void DirectXCommon::ClearRenderTargetSWAP() {
 	HRESULT hr_ = S_FALSE;
 	// これから書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
@@ -202,17 +201,11 @@ void DirectXCommon::ClearDepthBuffer() {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvH =
 		CD3DX12_CPU_DESCRIPTOR_HANDLE(descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
 	// 深度バッファのクリア
-	commandList_->ClearDepthStencilView(dsvHandles_[1], D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 
-void DirectXCommon::RenderClearDepthBuffer() {
-	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvH =
-		CD3DX12_CPU_DESCRIPTOR_HANDLE(descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
-	// 深度バッファのクリア
-	commandList_->ClearDepthStencilView(dsvHandles_[0], D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-}
+
 
 int32_t DirectXCommon::GetBackBufferWidth() const { return backBufferWidth_; }
 
@@ -447,13 +440,11 @@ void DirectXCommon::CreateDepthBuffer() {
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // Format。基本的にはResourceに合わせる
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; // 2dTexture
 
-	dsvHandles_[0] = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	dsvHandle_ = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	// DSVHeapの先頭にDSVを作る
-	device_->CreateDepthStencilView(depthStencilResource, &dsvDesc, dsvHandles_[0]);
+	device_->CreateDepthStencilView(depthStencilResource, &dsvDesc, dsvHandle_);
 
-	dsvHandles_[1] = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-	// DSVHeapの先頭にDSVを作る
-	device_->CreateDepthStencilView(depthStencilResource, &dsvDesc,dsvHandles_[1]);
+	
 }
 
 //Fence
@@ -549,7 +540,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(Microsoft::WR
 
 
 //指定した色で画面全体をクリア
-void DirectXCommon::ClearRenderTargetSWAP() {
+void DirectXCommon::ClearRenderTarget() {
 	HRESULT hr_ = S_FALSE;
 
 
@@ -570,9 +561,9 @@ void DirectXCommon::RenderPreDraw() {
 	 //バリアを張る対象のリソース。現在のバックバッファに対して行う
 	renderBarrier.Transition.pResource = renderTextureResource.Get();
 	 //遷移前(現在)のResourceState
-	renderBarrier.Transition.StateBefore = /*D3D12_RESOURCE_STATE_RENDER_TARGET;*/D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	renderBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	 //遷移後のResourceState
-	renderBarrier.Transition.StateAfter = /*D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;*/ D3D12_RESOURCE_STATE_RENDER_TARGET;
+	renderBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	 //TransitionBarrierを練る
 	commandList_->ResourceBarrier(1, &renderBarrier);
 	
@@ -580,7 +571,7 @@ void DirectXCommon::RenderPreDraw() {
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
 
 
-	commandList_->OMSetRenderTargets(1, &rtvHandle_, false, &dsvHandles_[0]);
+	commandList_->OMSetRenderTargets(1, &rtvHandle_, false, &dsvHandle_);
 
 
 	// クライアント領域のサイズと一緒にして画面全体に表示
@@ -600,9 +591,9 @@ void DirectXCommon::RenderPreDraw() {
 	scissorRect.bottom = WinApp::kWindowHeight;
 
 	// 全画面クリア
-	ClearRenderTargetSWAP();
+	ClearRenderTarget();
 	// 深度バッファクリア
-	RenderClearDepthBuffer();
+	ClearDepthBuffer();
 	//  コマンドを積む
 	commandList_->RSSetViewports(1, &viewport);
 	commandList_->RSSetScissorRects(1, &scissorRect);

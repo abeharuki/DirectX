@@ -24,7 +24,7 @@ void PostEffect::Destroy()
 
 void PostEffect::Initialize() {
 	sPipeline();
-	CreateVertexResource();
+	//CreateVertexResource();
 }
 
 void PostEffect::Draw() {

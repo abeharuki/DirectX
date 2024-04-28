@@ -13,6 +13,7 @@
 #include <vector>
 #include <dxgidebug.h>
 #include <DescriptorHeap.h>
+#include <DescriptorHandle.h>
 
 
 #pragma comment(lib, "d3d12.lib")
@@ -60,10 +61,6 @@ public: // メンバ関数
 	/// </summary>
 	void ClearDepthBuffer();
 
-	/// <summary>
-	/// 深度バッファのクリア
-	/// </summary>
-	void RenderClearDepthBuffer();
 
 	//リソースリークチェック
 	void Debug();
@@ -161,7 +158,7 @@ private: // メンバ変数
 	D3D12_RESOURCE_BARRIER barrier{};
 
 
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandles_[2];
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource;
 	D3D12_RESOURCE_BARRIER renderBarrier{};
