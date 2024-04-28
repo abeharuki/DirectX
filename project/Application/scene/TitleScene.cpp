@@ -19,8 +19,11 @@ void TitleScene::Initialize() {
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 	
+	//animation_ = std::make_unique<Animations>();
+	//animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png","AnimatedCube.gltf"));
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png","AnimatedCube.gltf"));
+	animation_.reset(Animations::Create("./resources/human", "white.png", "walk.gltf"));
+
 
 
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
@@ -61,7 +64,8 @@ void TitleScene::Update() {
 	}
 
 
-	animation_->Update(worldTransformBox_);
+	//animation_->Update(worldTransformBox_);
+	worldTransformBox_.UpdateMatrix();
 	worldTransformSphere_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
 	viewProjection_.UpdateMatrix();
