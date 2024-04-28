@@ -27,7 +27,7 @@ namespace SkinningPace {
 		//influence用のResource確保
 		skinCluster.influenceResource = Mesh::CreateBufferResoure(device.Get(), sizeof(VertexInfluence) * modelData.vertices.size());
 		VertexInfluence* mappedInfluence = nullptr;
-		skinCluster.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(mappedInfluence));
+		skinCluster.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
 		std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData.vertices.size());
 		skinCluster.mappedInfluence = { mappedInfluence,modelData.vertices.size() };
 

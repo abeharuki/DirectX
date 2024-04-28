@@ -8,20 +8,34 @@ struct VertexShaderInput {
 	int32_t4 index : INDEX0;
 };
 
+struct TransformationMatrix {
+	float32_t4x4 matWorld;
+	float32_t4x4 WorldInverseTranspose;
+};
+
+
+
+struct ViewProjectionMatrix {
+	float32_t4x4 view;
+	float32_t4x4 projection;
+	float32_t3 worldPosition;
+};
+
+
 
 ConstantBuffer<TransformationMatrix>gTransformationMatrix : register(b0);
 ConstantBuffer<ViewProjectionMatrix> gViewProjectionMatrix : register(b1);
-StructureBuffer<Well> gMatrixPalette : register(t0);
+StructuredBuffer<Well> gMatrixPalette : register(t0);
 
 struct Well{
    float32_t4x4 skeletonSpaceMatrix;
    float32_t4x4 skeletonSpaceInverseTransposeMatrix;
-}
+};
 
 struct Skinned{
    float32_t4 position;
    float32_t3 normal;
-}
+};
 
 
 Skinned Skinning(VertexShaderInput input){
