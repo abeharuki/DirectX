@@ -23,7 +23,7 @@ void TitleScene::Initialize() {
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png","AnimatedCube.gltf"));
 
 	human_ = std::make_unique<Animations>();
-	human_.reset(Animations::Create("./resources/human", "white.png", "sneakWalk.gltf"));
+	human_.reset(Animations::Create("./resources/simpleSkin", "uvChecker.png", "simpleSkin.gltf"));
 
 
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));

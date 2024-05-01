@@ -44,7 +44,7 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 
 
 
-
+	//メッシュの解析
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals());
