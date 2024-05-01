@@ -18,9 +18,9 @@ enum class BlendMode {
 };
 
 enum class Pipeline {
-	kNormal,   
-	kParticle,      
-	
+	kNormal,
+	kParticle,
+
 };
 
 class GraphicsPipeline {
@@ -29,15 +29,17 @@ public:
 	static GraphicsPipeline* GetInstance();
 
 public:
-	
+
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> particleRootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> postEffectRootSignature_ = nullptr;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> spritePipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> particlesPipelineState_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> postEffectPipelineState_ = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_ = nullptr;
@@ -50,17 +52,22 @@ public:
 	//Particle
 	Microsoft::WRL::ComPtr<IDxcBlob> particleVertexShaderBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<IDxcBlob> particlePixelShaderBlob_ = nullptr;
+	//PostEffect
+	Microsoft::WRL::ComPtr<IDxcBlob> postEffectVertexShaderBlob_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcBlob> postEffectPixelShaderBlob_ = nullptr;
 
 public:
 	//	GraphicsPipelineの生成
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateSpritePipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleGraphicsPipeline(BlendMode blendMode_);
-	
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreatePostEffectGraphicsPipeline();
+
 	//	RootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateRootSignature();
 	// ParticleRootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateParticleRootSignature();
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreatePostEffectRootSignature();
 
 	//	vertexshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateVSShader();
@@ -77,13 +84,18 @@ public:
 	//	ParticlePixelshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateParticlePSShader();
 
+	//	vertexshaderの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreatePostEffectVSShader();
+	//	pixelshaderの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreatePostEffectPSShader();
+
 	static IDxcBlob* CompileShader(
-	    // CompilerするShaderファイルへのパス
-	    const std::wstring& filePath,
-	    // Compilerに使用するProfile
-	    const wchar_t* profile,
-	    // 初期化で生成したものを3つ
-	    IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler);
+		// CompilerするShaderファイルへのパス
+		const std::wstring& filePath,
+		// Compilerに使用するProfile
+		const wchar_t* profile,
+		// 初期化で生成したものを3つ
+		IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler);
 
 
 

@@ -32,21 +32,27 @@ public:
 
 	static void PreDraw();
 
+	static void RenderPreDraw();
+	static void RenderPostDraw();
+
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(
-	    ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
+		ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(
-	    ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
+		ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
 
 public:
 	static Microsoft::WRL::ComPtr<ID3D12Device> GetDevice();
 	static Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetList();
-	
+
 	// SRV用のヒープ
 	static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSRV();
-	 // RTV用のヒープ
+	// RTV用のヒープ
 	static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetRTV();
-	 // DSV用のヒープ
+	// DSV用のヒープ
 	static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDSV();
 
-	
+	const DescriptorHandle& GetHandle();
+
+	const D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle();
+
 };

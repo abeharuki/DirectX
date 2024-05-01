@@ -1,5 +1,5 @@
 #pragma once
-
+#include "base/DescriptorHandle.h"
 
 #include <d3d12.h>
 #include <wrl.h>
@@ -45,7 +45,9 @@ private:
 	// DirectX基盤インスタンス（借りてくる）
 	DirectXCommon* dxCommon_ = nullptr;
 	// SRV用ヒープ
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
+	//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
+
+	DescriptorHandle srvHandle_;
 
 private:
 	ImGuiManager() = default;

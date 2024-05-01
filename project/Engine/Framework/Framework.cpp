@@ -2,28 +2,38 @@
 #include <queue>
 #include <condition_variable>
 
-void Framework::Initialize() { sceneManager_ = SceneManager::GetInstance(); }
+void Framework::Initialize() {
+	sceneManager_ = SceneManager::GetInstance();
+	postEffect_ = PostEffect::GetInstance();
+	postEffect_->Initialize();
+}
 
-void Framework::Update() { 
+void Framework::Update() {
 	Engine::BeginFrame();
 	if (sceneManager_->ChangeScene()) {
 		nowLoading = true;
 	}
-	sceneManager_->Update(); 
-	
+	sceneManager_->Update();
+
 	Engine::EndFrame();
 }
 
-void Framework::Draw() { 
-	Engine::PreDraw();
+void Framework::Draw() {
+
+	Engine::RenderPreDraw();
 	sceneManager_->Draw();
+	Engine::RenderPostDraw();
+
+	Engine::PreDraw();
+	postEffect_->Draw();
 	Engine::PostDraw();
 }
 
 
-void Framework::Finalize() { 
+void Framework::Finalize() {
 	Engine::Finalize();
-	delete sceneFactory_; 
+	postEffect_->Destroy();
+	delete sceneFactory_;
 }
 
 void Framework::Run() {
@@ -35,15 +45,15 @@ void Framework::Run() {
 	Engine::Initialize(L"自作エンジン", windowWidth, windowHeight);
 	Initialize();
 
-	
+
 
 	//バックグラウンドループ
 	std::thread backgroundThread([&]() {
-		
+
 		while (!exit) {
-		
+
 			{
-				
+
 				std::unique_lock<std::mutex> uniqueLock(mutex);
 				condition.wait(uniqueLock, [&]() { return true; });
 				if (nowLoading) {
@@ -53,39 +63,37 @@ void Framework::Run() {
 
 
 			}
-			
-			
+
+
 		}
 
-		
-	});
+
+		});
 
 
 
 	// ウインドウの×ボタンが押されるまでループ
 	while (true) {
 
-	
+
 		// メッセージ処理
 		if (Engine::ProcessMessage()) {
 			break;
 		}
 
 		Update();
-		
 
+		Draw();
 
-		Draw();		
-		
 	}
 
-	
+
 	exit = true;
 	// バックグラウンドスレッドの終了
 	backgroundThread.join();
 
 	Finalize();
-	
+
 
 
 }
