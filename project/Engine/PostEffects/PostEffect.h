@@ -16,6 +16,10 @@
 #include "GraphicsPipeline.h"
 #include "ModelManager.h"
 
+struct Grayscale {
+	int32_t isEnable;
+};
+
 class PostEffect
 {
 public:
@@ -34,7 +38,7 @@ private:
 	PostEffect(const PostEffect&) = delete;
 	PostEffect& operator=(const PostEffect&) = delete;
 
-	void CreateVertexResource();
+	void CreateResource();
 
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
@@ -47,9 +51,9 @@ private:
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// 頂点
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> grayResource_;
 
-	VertexData* vertexData = nullptr;
+	Grayscale* grayData = nullptr;
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;

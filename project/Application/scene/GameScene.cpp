@@ -40,7 +40,7 @@ void GameScene::Initialize() {
 
 	alpha_ = 1.0f;
 	//フェードイン・フェードアウト用スプライト
-	spriteBack_.reset(Sprite::Create("resources/Player/B.png"));
+	spriteBack_.reset(Sprite::Create("resources/Black.png"));
 	spriteBack_->SetSize({ 1280.0f, 720.0f });
 
 	//プレイヤー

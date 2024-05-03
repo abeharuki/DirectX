@@ -63,7 +63,7 @@ void TitleScene::Initialize() {
 
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
-	spriteBack_.reset(Sprite::Create("resources/Player/B.png"));
+	spriteBack_.reset(Sprite::Create("resources/Black.png"));
 	spriteBack_->SetSize({ 10.0f, 10.0f });
 	spriteTitle_.reset(Sprite::Create("resources/Title/title.png"));
 	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));

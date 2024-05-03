@@ -24,6 +24,7 @@ void PostEffect::Destroy()
 
 void PostEffect::Initialize() {
 	sPipeline();
+	CreateResource();
 }
 
 void PostEffect::Draw() {
@@ -36,11 +37,18 @@ void PostEffect::Draw() {
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	Engine::GetList()->SetGraphicsRootDescriptorTable(0, Engine::GetInstance()->GetHandle());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, grayResource_->GetGPUVirtualAddress());
+
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(3, 1, 0, 0);
 
 }
 
+void PostEffect::CreateResource() {
+	grayResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Grayscale));
+	grayResource_->Map(0, nullptr, reinterpret_cast<void**>(&grayData));
+	grayData->isEnable = false;
+}
 
 void PostEffect::sPipeline() {
 
