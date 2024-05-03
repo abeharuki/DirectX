@@ -97,7 +97,8 @@ public: // メンバ関数
 	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }
 	bool IsOver() { return isOver_; }
-	bool IsHit() { return hitCount_; }
+	bool IsHit() { return hit_; }
+	int HitCount() { return hitCount_; }
 	void IsDead(bool dead) {
 		if (dead) {
 			behavior_ = Behavior::kDead;
@@ -196,7 +197,8 @@ private: // メンバ変数
 	float a;
 
 	//体力
-	bool hitCount_;
+	bool hit_;
+	int hitCount_;
 
 	bool preHit_;
 	bool isHit_;

@@ -97,7 +97,7 @@ void PlayerManager::Update() {
 	player_->IsDead(isDead_);
 	player_->Update();
 
-	
+	hitCount_ = player_->HitCount();
 	
 
 	Revival();
@@ -166,7 +166,7 @@ void PlayerManager::OnTCollision() {
 }
 void PlayerManager::OnCollision() {
 	if (player_->IsHit()) {
-		--hitCount_;
+		//--hitCount_;
 	}
 };
 

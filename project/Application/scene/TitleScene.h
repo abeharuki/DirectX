@@ -14,7 +14,7 @@
 #include <Tank/TankManager.h>
 #include <Renju/RenjuManager.h>
 #include <Animation/Animation.h>
-
+#include "PostEffects/PostEffect.h"
 
 
 class TitleScene : public IScene {

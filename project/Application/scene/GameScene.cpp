@@ -4,7 +4,7 @@
 #include <cassert>
 #include <imgui.h>
 #include <numbers>
-
+#include <PostEffects/PostEffect.h>
 
 GameScene::GameScene() {}
 
@@ -199,6 +199,11 @@ void GameScene::Fade() {
 			isFadeOut_ = true;
 		}
 	}
+
+	if (playerManager_->IsOver()) {
+		PostEffect::GetInstance()->isGrayscale(true);
+	}
+
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
 }
 

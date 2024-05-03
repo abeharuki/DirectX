@@ -31,7 +31,7 @@ public:
 
 	void Draw();
 
-
+	void isGrayscale(bool flag) {grayData->isEnable = flag;}
 private:
 	PostEffect() = default;
 	~PostEffect() = default;

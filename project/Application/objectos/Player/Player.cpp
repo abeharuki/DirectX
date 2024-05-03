@@ -25,7 +25,7 @@ void Player::Initialize() {
 	worldTransformCollision_.translate.y = 2.0f;
 	a = 0.0f;
 	isOver_ = false;
-
+	hitCount_ = 6;
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
@@ -49,7 +49,8 @@ void Player::Update() {
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
-	hitCount_ = false;
+	
+	hit_ = false;
 
 	preNoAttack_ = noAttack_;
 	noAttack_ = false;
@@ -114,6 +115,12 @@ void Player::Update() {
 	Relationship();
 
 
+	if (Input::PushKey(DIK_O)) {
+		isOver_ = true;
+	}
+
+	
+
 	// 回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 	
@@ -128,7 +135,7 @@ void Player::Update() {
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::Text("%d", noAttack_);
-	ImGui::Text("%d", nockBack_);
+	ImGui::Text("%d", hitCount_);
 	ImGui::End();
 }
 
@@ -349,6 +356,7 @@ void Player::knockInitialize() {
 	nockTime_ = 30;
 	animation_->SetAnimationTimer(0, 15.0f);
 	nockBack_ = true;
+	hitCount_--;
 };
 void Player::knockUpdata() {
 	worldTransformBase_.translate += velocity_;
@@ -548,7 +556,7 @@ void Player::OnCollision(const WorldTransform& worldTransform) {
 
 	//isHit_ = true;
 	if (isHit_ != preHit_) {
-		hitCount_ = true;
+		hit_ = true;
 
 	}
 
@@ -568,7 +576,7 @@ void Player::OnCollision(Collider* collider) {
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hitCount_ = true;
+				hit_ = true;
 
 			}
 

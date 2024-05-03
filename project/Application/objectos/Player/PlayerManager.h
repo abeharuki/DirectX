@@ -28,6 +28,7 @@ public:
 	bool IsAttack() { return player_->IsAttack(); }
 	bool IsOver() { return player_->IsOver(); }
 
+
 	void Revival() { 
 
 		if (player_->GetIsDead()) {

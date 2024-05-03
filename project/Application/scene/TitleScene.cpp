@@ -77,6 +77,9 @@ void TitleScene::Initialize() {
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 	isFede_ = false;
+
+
+	PostEffect::GetInstance()->isGrayscale(false);
 }
 
 void TitleScene::Update() {

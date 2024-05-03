@@ -1,5 +1,6 @@
 #include "OverScene.h"
 #include "Framework/SceneManager.h"
+#include <PostEffects/PostEffect.h>
 
 void OverScene::Initialize() {
 	spriteOver_.reset(Sprite::Create("resources/over.png"));
@@ -13,6 +14,8 @@ void OverScene::Initialize() {
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 	isFede_ = false;
+
+	PostEffect::GetInstance()->isGrayscale(true);
 }
 
 void OverScene::Update() {
