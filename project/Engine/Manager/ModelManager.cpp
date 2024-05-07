@@ -95,7 +95,7 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 			}
 
 		}
-
+		
 	}
 
 

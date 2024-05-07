@@ -134,6 +134,7 @@ void Animations::SkeletonUpdate(Skeleton& skeleton) {
 		}
 	}
 }
+
 void Animations::SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton) {
 	//全てのJointを更新
 	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
@@ -157,6 +158,7 @@ void Animations::Update(WorldTransform& worldTransform) {
 	worldTransform.TransferMatrix();
 
 }
+
 void Animations::Update() {
 	animationTime += 1.0f / 60.0f;
 	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生

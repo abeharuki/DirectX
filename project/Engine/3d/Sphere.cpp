@@ -9,7 +9,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> Sphere::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::pixelShaderBlob_;
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Sphere::lightResource_;
-DirectionLight* Sphere::directionalLightData;
+WritingStyle* Sphere::lightData;
 
 
 void Sphere::Initialize(const std::string& texturePath) {
@@ -69,7 +69,8 @@ void Sphere::Draw(
 
 // 頂点データの設定
 void Sphere::CreateVertexResource() {
-	
+	vertexIndex = (kSubdivision * kSubdivision) * 6;
+
 	
 	// モデルの読み込み
 	// 頂点リソースを作る
@@ -81,10 +82,86 @@ void Sphere::CreateVertexResource() {
 	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * vertexIndex); // 使用するリソースのサイズは頂点サイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
 
-	DrawSphere(vertexData, kSubdivision);
-	
+	//const uint32_t kSubdivision = kSubdivision_; // 分割数
+	const float pi = (float)std::numbers::pi;                 // π
+	const float kLonEvery = 2.0f * pi / kSubdivision; // 経度分割1つ分の角度(φd)
+	const float kLatEvery = pi / kSubdivision;        // 緯度分割1つ分の角度(θd)
+	float u;
+	float v;
+	// 緯度の方向に分割-π/2~π/2
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -pi / 2.0f + kLatEvery * latIndex; // 現在の緯度(θ)
+		// 経度の方向に分割
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+			float lon = lonIndex * kLonEvery; // 現在の経度(φ)
+			u = float(lonIndex) / float(kSubdivision);
+			v = 1.0f - float(latIndex) / float(kSubdivision);
+			float uv = 1.0f / float(kSubdivision);
+			// a 左下
+			vertexData[start].position.x = cos(lat) * cos(lon);
+			vertexData[start].position.y = sin(lat);
+			vertexData[start].position.z = cos(lat) * sin(lon);
+			vertexData[start].position.w = 1.0f;
+			vertexData[start].texcoord = { u, v };
+			// b 左上
+			vertexData[start + 1].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData[start + 1].position.y = sin(lat + kLatEvery);
+			vertexData[start + 1].position.z = cos(lat + kLatEvery) * sin(lon);
+			vertexData[start + 1].position.w = 1.0f;
+			vertexData[start + 1].texcoord = { u, v - uv };
+			// c 右下
+			vertexData[start + 2].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData[start + 2].position.y = sin(lat);
+			vertexData[start + 2].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData[start + 2].position.w = 1.0f;
+			vertexData[start + 2].texcoord = { u + uv, v };
 
-	
+			// b 左上
+			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
+			vertexData[start + 3].position.y = sin(lat + kLatEvery);
+			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
+			vertexData[start + 3].position.w = 1.0f;
+			vertexData[start + 3].texcoord = { u + uv, v - uv };
+			// d 右上
+			vertexData[start + 4].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData[start + 4].position.y = sin(lat);
+			vertexData[start + 4].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData[start + 4].position.w = 1.0f;
+			vertexData[start + 4].texcoord = { u + uv, v };
+			// c 右下
+			vertexData[start + 5].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData[start + 5].position.y = sin(lat + kLatEvery);
+			vertexData[start + 5].position.z = cos(lat + kLatEvery) * sin(lon);
+			vertexData[start + 5].position.w = 1.0f;
+			vertexData[start + 5].texcoord = { u, v - uv };
+
+			vertexData[start].normal.x = vertexData[start].position.x;
+			vertexData[start].normal.y = vertexData[start].position.y;
+			vertexData[start].normal.z = vertexData[start].position.z;
+
+			vertexData[start + 1].normal.x = vertexData[start + 1].position.x;
+			vertexData[start + 1].normal.y = vertexData[start + 1].position.y;
+			vertexData[start + 1].normal.z = vertexData[start + 1].position.z;
+
+			vertexData[start + 2].normal.x = vertexData[start + 2].position.x;
+			vertexData[start + 2].normal.y = vertexData[start + 2].position.y;
+			vertexData[start + 2].normal.z = vertexData[start + 2].position.z;
+
+			vertexData[start + 3].normal.x = vertexData[start + 3].position.x;
+			vertexData[start + 3].normal.y = vertexData[start + 3].position.y;
+			vertexData[start + 3].normal.z = vertexData[start + 3].position.z;
+
+			vertexData[start + 4].normal.x = vertexData[start + 4].position.x;
+			vertexData[start + 4].normal.y = vertexData[start + 4].position.y;
+			vertexData[start + 4].normal.z = vertexData[start + 4].position.z;
+
+			vertexData[start + 5].normal.x = vertexData[start + 5].position.x;
+			vertexData[start + 5].normal.y = vertexData[start + 5].position.y;
+			vertexData[start + 5].normal.z = vertexData[start + 5].position.z;
+		}
+	}
+
 
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
@@ -108,15 +185,15 @@ void Sphere::CreateVertexResource() {
 	cameraData->worldPos = {0.0f, 0.0f, -10.0f};
 
 	// ライティング
-	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DirectionLight));
+	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));
 	// 頂点リソースにデータを書き込む
 	// 書き込むためのアドレスを取得
-	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&lightData));
 
 	// デフォルト値
-	directionalLightData->color = {1.0f, 1.0f, 1.0f, 1.0f};
-	directionalLightData->direction = {0.0f, -1.0f, 0.0f};
-	directionalLightData->intensity = 1.0f;
+	lightData->directionLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
+	lightData->directionLight_.direction = {0.0f, -1.0f, 0.0f};
+	lightData->directionLight_.intensity = 1.0f;
 };
 
 void Sphere::SetColor(Vector4 color) {
@@ -136,9 +213,9 @@ Sphere* Sphere::CreateSphere(const std::string& texturePath) {
 
 void Sphere::LightDraw(Vector4 color, Vector3 direction, float intensity) {
 
-	directionalLightData->color = color;
-	directionalLightData->direction = Math::Normalize(direction);
-	directionalLightData->intensity = intensity;
+	lightData->directionLight_.color = color;
+	lightData->directionLight_.direction = Math::Normalize(direction);
+	lightData->directionLight_.intensity = intensity;
 }
 
 
