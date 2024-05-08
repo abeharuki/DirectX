@@ -1,4 +1,6 @@
 #include "Skinning.h"
+#include "base/DescriptorHandle.h"
+#include "base/DirectXCommon.h"
 
 namespace SkinningPace {
 
@@ -9,9 +11,10 @@ namespace SkinningPace {
 		WellForGPU* mappedPalette = nullptr;
 		skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 		skinCluster.mappedPalette = { mappedPalette,skeleton.joints.size() };
-		//srvhandle = Allo～()
-		skinCluster.paletteSrvHandle.first = Engine::GetCPUDescriptorHandle(descriptorHeap.Get(), descriptorSize, 3);//空いてるインデックスに入れるマネージャーがないので手動で入れてる
-		skinCluster.paletteSrvHandle.second = Engine::GetGPUDescriptorHandle(descriptorHeap.Get(), descriptorSize, 3);//posteffectのアロケータを使えばできる気がする
+		DescriptorHandle srvHandle_ = {};
+		srvHandle_ = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		skinCluster.paletteSrvHandle.first = srvHandle_;//空いてるインデックスに入れるマネージャーがないので手動で入れてる
+		skinCluster.paletteSrvHandle.second = srvHandle_;//posteffectのアロケータを使えばできる気がする
 
 		//palette用のsrvを作成
 		D3D12_SHADER_RESOURCE_VIEW_DESC paletteSrvDesc{};

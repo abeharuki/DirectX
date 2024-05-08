@@ -40,7 +40,7 @@ public:
 	uint32_t GetSRVIndex();
 
 	static const int maxtex = 512;
-	static uint32_t srvIndexNum_;;
+	//static uint32_t srvIndexNum_;;
 
 private:
 
