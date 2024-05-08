@@ -152,7 +152,7 @@ struct VertexWeightData
 
 struct JointWeightData {
 	Matrix4x4 inverseBindPoseMatrix;
-	std::vector<VertexWeightData> vertexWeightts;
+	std::vector<VertexWeightData> vertexWeights;
 
 
 };

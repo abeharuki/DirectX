@@ -781,14 +781,6 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 	descriptorRange[0].NumDescriptors = 1;                          // 数は1つ
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
-	
-	D3D12_DESCRIPTOR_RANGE Range[1] = {};
-	Range[0].BaseShaderRegister = 0;                      // 0から始まる
-	Range[0].NumDescriptors = 1;                          // 数は1つ
-	Range[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
-	Range[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
-
-
 
 	// RootSignature作成. 複数設定できるので配列。
 	D3D12_ROOT_PARAMETER rootParameters[7] = {};
@@ -805,7 +797,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 	rootParameters[2].ParameterType =D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
-	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange); // Tableで利用する数
+	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 	//Light
 	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
@@ -825,8 +817,8 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 	//Well
 	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;    // tabelを使う
 	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // Vertexhaderで使う
-	rootParameters[6].DescriptorTable.pDescriptorRanges = Range; // Tableの中身の配列を指定
-	rootParameters[6].DescriptorTable.NumDescriptorRanges =_countof(Range); // Tableで利用する数
+	rootParameters[6].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
+	rootParameters[6].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};

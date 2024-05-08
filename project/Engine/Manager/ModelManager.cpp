@@ -1,7 +1,6 @@
 #include "ModelManager.h"
 
 
-
 MaterialData ModelManager::LoadMaterialTemplateFile(const std::string& filename) {
 	// 宣言
 	MaterialData materialData; // 構築するMaterialData
@@ -30,7 +29,6 @@ MaterialData ModelManager::LoadMaterialTemplateFile(const std::string& filename)
 
 	return materialData;
 }
-
 
 //アニメーション用
 ModelData ModelManager::LoadGltfFile(const std::string& filename) {
@@ -90,8 +88,8 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 			jointWeightData.inverseBindPoseMatrix = Math::Inverse(bindPoseMatrix);
 
 			//Weight情報を取り出す
-			for (uint32_t weightIndex = 0; weightIndex = bone->mNumWeights; ++weightIndex) {
-				jointWeightData.vertexWeightts.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
 			}
 
 		}

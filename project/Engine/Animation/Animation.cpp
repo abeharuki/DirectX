@@ -1,5 +1,7 @@
 #include "Animation.h"
 
+Microsoft::WRL::ComPtr<ID3D12Resource> Animations::lightResource_;
+WritingStyle* Animations::lightData;
 
 Animation LoadAnimationFile(const std::string& directorPath, const std::string& filename) {
 	Animation animation;//今回作るアニメーション
@@ -139,7 +141,7 @@ void Animations::SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton) {
 	//全てのJointを更新
 	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
 		assert(jointIndex < skinCluster.inverseBindPoseMatrixs.size());
-		skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix = skeleton.joints[jointIndex].skeletonSpaceMatrix;
+		skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix = skinCluster.inverseBindPoseMatrixs[jointIndex] * skeleton.joints[jointIndex].skeletonSpaceMatrix;
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix = Math::Transpose(Math::Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
 }
@@ -147,35 +149,31 @@ void Animations::SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton) {
 void Animations::Update(WorldTransform& worldTransform) {
 	animationTime += 1.0f / 60.0f;
 	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
+	
 	NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
 	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
-
 	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 	Matrix4x4 localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
-	worldTransform.UpdateMatrix();
 	worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
 	worldTransform.TransferMatrix();
-
 }
+	
 
 void Animations::Update() {
 	animationTime += 1.0f / 60.0f;
 	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
 	ApplyAnimation(skeleton, animation, animationTime);
-	SkeletonUpdate(skeleton);
-	SkinningUpdate(skinCluster, skeleton);
+	
 }
 
-void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection,bool flag) {
+	SkeletonUpdate(skeleton);
+	SkinningUpdate(skinCluster, skeleton);
 
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
-
-
-
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
-
+	materialData->enableLighting = flag;
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
@@ -187,7 +185,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 		vertexBufferView,
 		skinCluster.influenceBufferView
 	};
-	Engine::GetList()->IASetVertexBuffers(0, 1, vbvs);
+	Engine::GetList()->IASetVertexBuffers(0, 2, vbvs);
 	Engine::GetList()->IASetIndexBuffer(&indexBufferView);
 
 
@@ -202,7 +200,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
-
+	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画
 	Engine::GetList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
@@ -277,11 +275,49 @@ void Animations::CreateVertexResource() {
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 
+	// ライティング
+	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));
+	// 頂点リソースにデータを書き込む
+	// 書き込むためのアドレスを取得
+	lightResource_->Map(0, nullptr, reinterpret_cast<void**>(&lightData));
 
-
+	// デフォルト値
+	lightData->directionLight_.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	lightData->directionLight_.direction = { 0.0f, -1.0f, 0.0f };
+	lightData->directionLight_.intensity = 1.0f;
 
 	//カメラ
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
 	cameraResorce_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
 
 };
+
+
+void Animations::DirectionalLightDraw(DirectionLight directionLight) {
+	lightData->directionLight_.color = directionLight.color;
+	lightData->directionLight_.direction = Math::Normalize(directionLight.direction);
+	lightData->directionLight_.intensity = directionLight.intensity;
+	lightData->directionLight_.isEnable_ = true;
+	lightData->pointLight_.isEnable_ = false;
+	lightData->spotLight_.isEnable_ = false;
+
+
+
+}
+void Animations::PointLightDraw(PointLight pointLight, Vector3 direction) {
+	lightData->pointLight_ = pointLight;
+	lightData->directionLight_.direction = Math::Normalize(direction);
+	lightData->pointLight_.isEnable_ = true;
+	lightData->spotLight_.isEnable_ = false;
+	lightData->directionLight_.isEnable_ = false;
+	lightData->directionLight_.intensity = 0.0f;
+
+}
+void Animations::SpotLightDraw(SpotLight spotLight) {
+	lightData->spotLight_ = spotLight;
+	lightData->spotLight_.direction_ = Math::Normalize(spotLight.direction_);
+	lightData->spotLight_.isEnable_ = true;
+	lightData->pointLight_.isEnable_ = false;
+	lightData->directionLight_.isEnable_ = false;
+
+}

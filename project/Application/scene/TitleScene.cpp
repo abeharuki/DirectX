@@ -12,6 +12,8 @@ void TitleScene::Initialize() {
 	viewProjection_.rotation_.x = 0.28f;
 	viewProjection_.translation_ = { 0.0f, 7.0f, -18.0f };
 	worldTransformSphere_.Initialize();
+	//worldTransformSphere_.translate = { -12.9f,-47.7922f,1224.1f };
+	//worldTransformSphere_.scale = { 10.0f,10.0f,10.0f };
 	worldTransformBox_.Initialize();
 	worldTransformGround_.Initialize();
 	worldTransformGround_.rotate.y = 1.58f;
@@ -22,8 +24,8 @@ void TitleScene::Initialize() {
 	//animation_ = std::make_unique<Animations>();
 	//animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png","AnimatedCube.gltf"));
 
-	//human_ = std::make_unique<Animations>();
-	//human_.reset(Animations::Create("./resources/simpleSkin", "uvChecker.png", "simpleSkin.gltf"));
+	human_ = std::make_unique<Animations>();
+	human_.reset(Animations::Create("./resources/human", "white.png", "walk.gltf"));
 
 
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
@@ -63,14 +65,13 @@ void TitleScene::Update() {
 		pointLight_.position_.y += 0.1f;
 	}
 
-
+	human_->Update();
 	//animation_->Update(worldTransformBox_);
 	worldTransformSphere_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
 	viewProjection_.UpdateMatrix();
-
-
-	//human_->Update();
+	//human_->Update(worldTransformSphere_);
+	
 
 	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
 	static int currentItem = 1; // 初期選択アイテムのインデックス
@@ -78,12 +79,15 @@ void TitleScene::Update() {
 
 	if (currentItem == 0) {
 		Model::DirectionalLightDraw(directionLight_);
+		Sphere::DirectionalLightDraw(directionLight_);
 	}
 	else if (currentItem == 1) {
-		Model::PointLightDraw(pointLight_,directionLight_.direction);
+		Model::PointLightDraw(pointLight_, directionLight_.direction);
+		Sphere::PointLightDraw(pointLight_, directionLight_.direction);
 	}
 	else if (currentItem == 2) {
 		Model::SpotLightDraw(spotLight_);
+		Sphere::SpotLightDraw(spotLight_);
 	}
 
 	ImGui::Begin("Setting");
@@ -103,6 +107,15 @@ void TitleScene::Update() {
 		ImGui::DragFloat3("BunnyRotate", &worldTransformSphere_.rotate.x, 0.01f);
 		ImGui::DragFloat3("BunnySize", &worldTransformSphere_.scale.x, 0.1f);
 		
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Animation")) {
+
+		ImGui::DragFloat3("AnimationPos", &worldTransformSphere_.translate.x, 0.1f);
+		ImGui::DragFloat3("AnimationRotate", &worldTransformSphere_.rotate.x, 0.01f);
+		ImGui::DragFloat3("AnimationSize", &worldTransformSphere_.scale.x, 0.1f);
+
 		ImGui::TreePop();
 	}
 
@@ -158,13 +171,13 @@ void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 
 
-	//human_->Draw(worldTransformSphere_, viewProjection_);
+	human_->Draw(worldTransformSphere_, viewProjection_,true);
 	//animation_->Draw(worldTransformBox_, viewProjection_);
-	modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
+	//modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	if (isSprite_) {
 		sprite_->Draw(uv);
 	}
 	
-	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
+	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 }

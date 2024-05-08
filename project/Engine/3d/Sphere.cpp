@@ -306,3 +306,33 @@ void Sphere::DrawSphere(VertexData* vertexData, const uint32_t kSubdivision_) {
 		}
 	}
 }
+
+
+void Sphere::DirectionalLightDraw(DirectionLight directionLight) {
+	lightData->directionLight_.color = directionLight.color;
+	lightData->directionLight_.direction = Math::Normalize(directionLight.direction);
+	lightData->directionLight_.intensity = directionLight.intensity;
+	lightData->directionLight_.isEnable_ = true;
+	lightData->pointLight_.isEnable_ = false;
+	lightData->spotLight_.isEnable_ = false;
+
+
+
+}
+void Sphere::PointLightDraw(PointLight pointLight, Vector3 direction) {
+	lightData->pointLight_ = pointLight;
+	lightData->directionLight_.direction = Math::Normalize(direction);
+	lightData->pointLight_.isEnable_ = true;
+	lightData->spotLight_.isEnable_ = false;
+	lightData->directionLight_.isEnable_ = false;
+	lightData->directionLight_.intensity = 0.0f;
+
+}
+void Sphere::SpotLightDraw(SpotLight spotLight) {
+	lightData->spotLight_ = spotLight;
+	lightData->spotLight_.direction_ = Math::Normalize(spotLight.direction_);
+	lightData->spotLight_.isEnable_ = true;
+	lightData->pointLight_.isEnable_ = false;
+	lightData->directionLight_.isEnable_ = false;
+
+}

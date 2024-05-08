@@ -60,6 +60,10 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
+	// ライティング
+	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	static WritingStyle* lightData;
+
 	BlendMode blendMode_ = BlendMode::kNormal;
 
 public:
@@ -73,12 +77,17 @@ public:
 	//skinningAnimation
 	void Update();
 
-	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
+	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection,bool flag);
 
 
 	static Animations* Create(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
 
-
+	//光の色　向き　明るさ
+	static void DirectionalLightDraw(DirectionLight directionLight);
+	//ポイントライトの詳細　向き
+	static void PointLightDraw(PointLight pointLight, Vector3 direction);
+	//スポットライト
+	static void SpotLightDraw(SpotLight spotLight);
 
 
 	/// <summary>

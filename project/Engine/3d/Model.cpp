@@ -44,9 +44,6 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	//ライティング有効化
 	materialData->enableLighting = light;
 
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
-
-
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
