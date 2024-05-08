@@ -8,6 +8,8 @@ void Enemy::Initialize() {
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.z = 10.0f;
 	worldTransformBody_.Initialize();
+	worldTransformBody_.scale = { 2.5f,2.5f,2.5f };
+	worldTransformBody_.rotate.x = -1.57075f;
 	worldTransformRock_.Initialize();
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	worldTransformRock_.translate.z = -15000.0f;
@@ -114,6 +116,7 @@ void Enemy::MoveUpdata() {
 };
 
 void Enemy::AttackInitialize() {
+	worldTransformBody_.rotate.x = -1.57075f;
 
 	int num = RandomGenerator::GetRandomInt(1, 2);
 	if (num == 1) {
@@ -424,7 +427,7 @@ void Enemy::ThrowingAttackUpdata() {
 			worldTransformBody_.rotate.x -= 0.05f;
 		}
 		else {
-			worldTransformBody_.rotate.x = 0.0f;
+			worldTransformBody_.rotate.x = -1.57075f;
 			worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 			behaviorRequest_ = Behavior::kRoot;
 		}

@@ -2,7 +2,7 @@
 
 void EnemyManager::Initialize() {
 
-	Model_.reset(Model::CreateModelFromObj("resources/enemy/enemy.obj", "resources/enemy/enemy.png"));
+	Model_.reset(Model::CreateModelFromObj("resources/Enemy2/enemy.obj", "resources/enemy/enemy.png"));
 	rockModel_.reset(Model::CreateModelFromObj("resources/rock.obj", "resources/skydome/sky.png"));
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
 
