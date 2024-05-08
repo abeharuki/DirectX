@@ -301,6 +301,19 @@ Matrix4x4 Math::Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return multiply;
 };
 
+Matrix4x4 Math::Transpose(const Matrix4x4& m) {
+	Matrix4x4 mat;
+	mat.m[0][0] = m.m[0][0], mat.m[0][1] = m.m[1][0], mat.m[0][2] = m.m[2][0],
+		mat.m[0][3] = m.m[3][0];
+	mat.m[1][0] = m.m[0][1], mat.m[1][1] = m.m[1][1], mat.m[1][2] = m.m[2][1],
+		mat.m[1][3] = m.m[3][1];
+	mat.m[2][0] = m.m[0][2], mat.m[2][1] = m.m[1][2], mat.m[2][2] = m.m[2][2],
+		mat.m[2][3] = m.m[3][2];
+	mat.m[3][0] = m.m[0][3], mat.m[3][1] = m.m[1][3], mat.m[3][2] = m.m[2][3],
+		mat.m[3][3] = m.m[3][3];
+	return mat;
+}
+
 // アフィン変換
 Matrix4x4
     Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {

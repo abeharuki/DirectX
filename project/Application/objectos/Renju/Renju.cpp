@@ -15,7 +15,7 @@ void Renju::Initialize() {
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = -2.0f;
-	worldTransformBase_.rotate.y = 3.14f;
+	//worldTransformBase_.rotate.y = 3.14f;
 	worldTransformHead_.Initialize();
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
 
@@ -112,7 +112,7 @@ void Renju::Update() {
 
 	// 回転
 	worldTransformBase_.rotate.y =
-		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_ + 3.14f, 0.2f);
+		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
@@ -132,7 +132,7 @@ void Renju::Draw(const ViewProjection& view) {
 	}
 
 	
-	animation_->Draw(worldTransformHead_, view);
+	animation_->Draw(worldTransformHead_, view,false);
 
 	
 }

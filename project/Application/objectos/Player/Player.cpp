@@ -19,7 +19,7 @@ void Player::Initialize() {
 	worldTransformHammer_.Initialize();
 	worldTransformHammer_.rotate.y = 3.14f;
 	worldTransformHead_.Initialize();
-	worldTransformHead_.rotate.y = 3.14f;
+	//worldTransformHead_.rotate.y = 3.14f;
 	worldTransformCollision_.Initialize();
 	worldTransformCollision_.scale = { 0.1f, 1.0f, 0.1f };
 	worldTransformCollision_.translate.y = 2.0f;
@@ -140,7 +140,7 @@ void Player::Update() {
 }
 
 void Player::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformHead_, camera);
+	animation_->Draw(worldTransformHead_, camera,false);
 
 }
 

@@ -29,7 +29,7 @@ void Healer::Initialize() {
 	worldTransformCollision_.scale = { 0.27f, 0.27f, 1.0f };
 	worldTransformCollision_.translate.z = 1.5f;
 
-	worldTransformBase_.rotate.y = 3.14f;
+	//worldTransformBase_.rotate.y = 3.14f;
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -108,7 +108,7 @@ void Healer::Update() {
 
 	// 回転
 	worldTransformBase_.rotate.y =
-		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_ + 3.14f, 0.2f);
+		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
@@ -124,7 +124,7 @@ void Healer::Update() {
 };
 
 void Healer::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformHead_, camera);
+	animation_->Draw(worldTransformHead_, camera,false);
 
 }
 

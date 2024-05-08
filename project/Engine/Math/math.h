@@ -3,8 +3,7 @@
 #include <format>
 #include <vector>
 #include "Quaternion.h"
-
-
+#include <map>
 
 struct Vector2 final {
 	float x;
@@ -60,6 +59,26 @@ struct Matrix3x3 final {
 
 struct Matrix4x4 final {
 	float m[4][4];
+
+	bool operator==(const Matrix4x4& rhs) const
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				if (m[i][j] != rhs.m[i][j])
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	bool operator!=(const Matrix4x4& rhs) const
+	{
+		return !(*this == rhs);
+	}
 };
 
 
@@ -119,15 +138,29 @@ struct Node {
 	std::vector<Node> children;
 };
 
-
-
 struct MaterialData {
 
 	std::string textureFilePath;
 };
 
+struct VertexWeightData
+{
+	float weight;
+	uint32_t vertexIndex;
+};
+
+
+struct JointWeightData {
+	Matrix4x4 inverseBindPoseMatrix;
+	std::vector<VertexWeightData> vertexWeights;
+
+
+};
+
 struct ModelData {
+	std::map<std::string, JointWeightData> skinClusterData;
 	std::vector<VertexData> vertices;
+	std::vector<uint32_t>indices;
 	MaterialData material;
 	Node rootNode;
 };
@@ -219,12 +252,14 @@ public:
 
 	// 減算
 	static Vector3 Subract(const Vector3& v1, const Vector3& v2);
-	
+
 	static Vector3 Multiply(float scalar, const Vector3& v);
 
 	static Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2);
 
 	static Matrix4x4 Subract(const Matrix4x4& m1, const Matrix4x4& m2);
+
+	static Matrix4x4 Transpose(const Matrix4x4& m);
 
 	static Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix);
 
@@ -250,28 +285,27 @@ public:
 	// スカラー倍
 	static Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
 
-	// アフィン変換
+	// アフィン変換 Vector3
 	static Matrix4x4 MakeAffineMatrix(
-	    const Vector3& scale, const Vector3& rotate, const Vector3& translate);
-
-	static Matrix4x4
-	    MakeAffineRotateMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate);
+		const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
 	//アフィン変換　クォータニオン
 	static Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& quaternion, const Vector3& translation);
 
+	static Matrix4x4
+		MakeAffineRotateMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate);
 
 	// 透視投影行列
 	static Matrix4x4
-	    MakePerspectiverFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
+		MakePerspectiverFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
 
 	// 正射影行列
 	static Matrix4x4 MakeOrthographicMatrix(
-	    float left, float top, float right, float bottom, float nearClip, float farClip);
+		float left, float top, float right, float bottom, float nearClip, float farClip);
 
 	// ビューポート行列
 	static Matrix4x4 MakeViewportMatrix(
-	    float left, float top, float width, float height, float minDepth, float maxDepth);
+		float left, float top, float width, float height, float minDepth, float maxDepth);
 
 	// 逆行列
 	static Matrix4x4 Inverse(const Matrix4x4& m);
@@ -287,8 +321,8 @@ public:
 
 	// 四角形の当たり判定
 	static bool IsAABBCollision(
-	    const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
-	    const Vector3 size2);
+		const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
+		const Vector3 size2);
 
 	static Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 };
@@ -308,4 +342,3 @@ Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2);
 // 単項演算子
 Vector3 operator-(const Vector3& v);
 Vector3 operator+(const Vector3& v);
-

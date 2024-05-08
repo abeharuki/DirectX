@@ -15,7 +15,7 @@ void Tank::Initialize() {
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformHead_.Initialize();
-	worldTransformHead_.rotate.y = 3.14f;
+	//worldTransformHead_.rotate.y = 3.14f;
 	
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].Initialize();
@@ -112,7 +112,7 @@ void Tank::Update() {
 };
 
 void Tank::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformHead_, camera);
+	animation_->Draw(worldTransformHead_, camera,false);
 
 }
 

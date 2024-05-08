@@ -8,6 +8,10 @@
 #include <WorldTransform.h>
 #include <ViewProjection.h>
 #include <ModelManager.h>
+#include <span>
+#include <array>
+#include "Skeleton.h"
+#include "Skinning.h"
 
 template<typename tValue>
 struct Keyframe {
@@ -36,22 +40,6 @@ struct Animation {
 	std::map<std::string, NodeAnimation> nodeAnimations;
 };
 
-struct Joint {
-	QuaternionTransform transform;//Transform情報
-	Matrix4x4 locaalMatrix;//localMatrix
-	Matrix4x4 skeletonSpaceMatrix;//skeletonSpaceでの変換行列
-	std::string name;//名前
-	std::vector<int32_t>children;//子JointnoIndexのリスト
-	int32_t index;//自身のIndex
-	std::optional<int32_t>parent;//親JointのIndex
-};
-
-struct Skeleton {
-	int32_t root;
-	std::map<std::string, int32_t>jointMap;//Joint名とIndexの辞書
-	std::vector<Joint>joints;//所属しているジョイント
-};
-
 
 Animation LoadAnimationFile(const std::string& directorPath, const std::string& filename);
 
@@ -72,6 +60,10 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
+	// ライティング
+	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	static WritingStyle* lightData;
+
 	BlendMode blendMode_ = BlendMode::kNormal;
 
 public:
@@ -79,12 +71,22 @@ public:
 
 	//初期化
 	void Initialize(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
+
+	//Animation
 	void Update(WorldTransform& worldTransform,bool roop);
-	void Update();
-	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection);
+
+	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag);
 
 
 	static Animations* Create(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
+
+	//光の色　向き　明るさ
+	static void DirectionalLightDraw(DirectionLight directionLight);
+	//ポイントライトの詳細　向き
+	static void PointLightDraw(PointLight pointLight, Vector3 direction);
+	//スポットライト
+	static void SpotLightDraw(SpotLight spotLight);
+
 
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
@@ -97,9 +99,8 @@ public:
 	/// <returns></returns>
 	void CreateVertexResource();
 
-
+	//アニメーションタイマーの設定
 	void SetAnimationTimer(float startTime, float flameTime);
-
 
 private:
 
@@ -110,6 +111,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 
@@ -132,14 +134,18 @@ private:
 	ModelData modelData;
 	Animation animation;
 	Skeleton skeleton;
+	SkinCluster skinCluster;
 private:
 	void LoadAnimation(const std::string& filename, const std::string& texturePath);
 	void LoadTexture(const std::string& filename);
-	void SkeletonUpdate(Skeleton& skeleton);
 	void ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime);
+
+	void SkeletonUpdate(Skeleton& skeleton);
+	void SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton);
 
 	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
-	Skeleton CreateSkeleton(const Node& rootNode);
-	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
+
 };
+
+	

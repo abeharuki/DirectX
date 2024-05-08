@@ -173,7 +173,7 @@ void TitleScene::Draw() {
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
 
-	animation_->Draw(worldTransform_, viewProjection_);
+	animation_->Draw(worldTransform_, viewProjection_,false);
 
 	Transform uv;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
