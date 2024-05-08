@@ -171,6 +171,8 @@ void Animations::Update(WorldTransform& worldTransform, bool roop) {
 }
 
 
+
+
 void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag) {
 	SkeletonUpdate(skeleton);
 	SkinningUpdate(skinCluster, skeleton);

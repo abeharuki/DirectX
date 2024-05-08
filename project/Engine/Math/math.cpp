@@ -376,7 +376,7 @@ Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Quaternion& quatern
 	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
 	Matrix4x4 rotateMatrix = MakeRotateMatrix(quaternion);
 	Matrix4x4 translateMatrix = MakeTranslateMatrix(translation);
-	result = scaleMatrix * rotateMatrix +translateMatrix;
+	result = scaleMatrix * rotateMatrix *translateMatrix;
 	return result;
 }
 

@@ -533,8 +533,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreatePostEffectGra
 	}
 }
 
-Microsoft::WRL::ComPtr<ID3D12PipelineState>
-GraphicsPipeline::CreateAnimationGraphicsPipeline(BlendMode blendMode_) {
+Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateAnimationGraphicsPipeline(BlendMode blendMode_) {
 	if (animationPipelineState_) {
 		return animationPipelineState_;
 	}

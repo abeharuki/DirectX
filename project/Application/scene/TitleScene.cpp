@@ -5,13 +5,13 @@
 void TitleScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransform_.scale = { 10.0f,10.0f,10.0f };
-	worldTransform_.translate.y = 5;
+	worldTransform_.translate.z = -5;
 	//worldTransform_.rotate = {0.7f,0.0f,3.14f};
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
+	animation_.reset(Animations::Create("./resources/human", "white.png", "walk.gltf"));
 
 
 
@@ -137,8 +137,8 @@ void TitleScene::Update() {
 	cameraMove();
 	skydome_->Update();
 	ground_->Update();
-
-	animation_->Update(worldTransform_,false);
+	worldTransform_.UpdateMatrix();
+	animation_->Update(worldTransform_,true);
 
 	if (Input::PushKey(DIK_C)) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
@@ -173,7 +173,7 @@ void TitleScene::Draw() {
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
 
-	animation_->Draw(worldTransform_, viewProjection_,false);
+	animation_->Draw(worldTransform_, viewProjection_,true);
 
 	Transform uv;
 	uv.scale = { 0.0f, 0.0f, 0.0f };

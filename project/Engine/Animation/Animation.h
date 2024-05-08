@@ -52,13 +52,7 @@ public: // 静的メンバ変数
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
 
-	// ルートシグネチャ
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
-	// パイプラインステートオブジェクト
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
-
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	
 
 	// ライティング
 	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
@@ -103,7 +97,13 @@ public:
 	void SetAnimationTimer(float startTime, float flameTime);
 
 private:
+	// ルートシグネチャ
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	// パイプラインステートオブジェクト
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
