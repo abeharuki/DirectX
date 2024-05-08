@@ -37,8 +37,10 @@ public:
 	uint32_t ParticleLoad(ID3D12Resource* pResource, uint32_t instanceCount);
 	const D3D12_GPU_DESCRIPTOR_HANDLE GetParticleGPUHandle(uint32_t textureHandle);
 
+	uint32_t GetSRVIndex();
 
 	static const int maxtex = 512;
+	static uint32_t srvIndexNum_;;
 
 private:
 

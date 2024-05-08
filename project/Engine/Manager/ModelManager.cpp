@@ -1,7 +1,6 @@
 #include "ModelManager.h"
 
 
-
 MaterialData ModelManager::LoadMaterialTemplateFile(const std::string& filename) {
 	// 宣言
 	MaterialData materialData; // 構築するMaterialData
@@ -31,8 +30,7 @@ MaterialData ModelManager::LoadMaterialTemplateFile(const std::string& filename)
 	return materialData;
 }
 
-
-
+//アニメーション用
 ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 
 
@@ -44,14 +42,14 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 
 
 
-
+	//メッシュの解析
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals());
 		assert(mesh->HasTextureCoords(0));
 		modelData.vertices.resize(mesh->mNumVertices);
 
-		//資料のやつでできないから一旦コメントアウト
+		//頂点の解析
 		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
 			aiVector3D& position = mesh->mVertices[vertexIndex];
 			aiVector3D& normal = mesh->mNormals[vertexIndex];
@@ -63,6 +61,7 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 
 		}
 
+		//Indexの解析
 		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 			aiFace& face = mesh->mFaces[faceIndex];
 			assert(face.mNumIndices == 3);
@@ -73,7 +72,28 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 
 		}
 
+		//SkinCluster構築用データの取得
+		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			//格納領域確保
+			aiBone* bone = mesh->mBones[boneIndex];
+			std::string jointName = bone->mName.C_Str();
+			JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
 
+			//InverseBindposeMatrixの抽出
+			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+			aiVector3D scale, translate;
+			aiQuaternion rotate;
+			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
+			Matrix4x4 bindPoseMatrix = Math::MakeAffineMatrix({ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
+			jointWeightData.inverseBindPoseMatrix = Math::Inverse(bindPoseMatrix);
+
+			//Weight情報を取り出す
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight,bone->mWeights[weightIndex].mVertexId });
+			}
+
+		}
+		
 	}
 
 
@@ -92,6 +112,8 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 	return modelData;
 
 }
+
+//普通のモデル
 ModelData ModelManager::LoadObjFile(const std::string& filename) {
 
 

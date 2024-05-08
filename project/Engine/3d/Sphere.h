@@ -29,7 +29,7 @@ public:
 
 	// ライティング
 	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
-	static DirectionLight* directionalLightData;
+	static WritingStyle* lightData;
 
 public:
 	/// <summary>
@@ -62,6 +62,12 @@ public:
 	//光の色　向き　明るさ
 	static void LightDraw(Vector4 color, Vector3 direction, float intensity);
 
+	//光の色　向き　明るさ
+	static void DirectionalLightDraw(DirectionLight directionLight);
+	//ポイントライトの詳細　向き
+	static void PointLightDraw(PointLight pointLight, Vector3 direction);
+	//スポットライト
+	static void SpotLightDraw(SpotLight spotLight);
 
 	static Sphere* CreateSphere(const std::string& texturePath);
 
