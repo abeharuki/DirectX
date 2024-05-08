@@ -6,7 +6,7 @@
 #pragma comment(lib, "dxcompiler.lib")
 
 TextureManager* TextureManager::instance_ = nullptr;
-uint32_t TextureManager::kSRVIndexTop_ = 2;
+
 
 void TextureManager::Initialize()
 {	
@@ -123,11 +123,10 @@ void TextureManager::LoadInternal(const std::string& filePath) {
 	UploadTextureData(textureData.resource.Get(), mipImage);
 
 	//テクスチャーデータの要素数番号をSRVのインデックスとする
-	uint32_t srvIndex = static_cast<uint32_t>(textureDatas.size()-1) + kSRVIndexTop_;
-
-
-	textureData.srvHandleCPU_ = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, srvIndex);
-	textureData.srvHandleGPU_ = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, srvIndex);
+	DescriptorHandle srvHandle_ = {};
+	srvHandle_ = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureData.srvHandleCPU_ = srvHandle_;//Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, srvIndex);
+	textureData.srvHandleGPU_ = srvHandle_;//Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, srvIndex);
 	//textureData.srvHandleCPU_.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	//textureData.srvHandleGPU_.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
@@ -153,10 +152,12 @@ void TextureManager::CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	instancingSrvDesc.Buffer.NumElements = instanceCount;
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-	instancingSrvHandelCPU[index] =Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, index+100);
-	instancingSrvHandelGPU[index] =Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, index+100);
-	instancingSrvHandelCPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	instancingSrvHandelGPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	DescriptorHandle srvHandle_ = {};
+	srvHandle_ = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	instancingSrvHandelCPU[index] = srvHandle_;
+	instancingSrvHandelGPU[index] = srvHandle_;
+	//instancingSrvHandelCPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//instancingSrvHandelGPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	Engine::GetDevice()->CreateShaderResourceView(pResource, &instancingSrvDesc, instancingSrvHandelCPU[index]);
 }
 
