@@ -10,8 +10,8 @@ namespace SkinningPace {
 		skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 		skinCluster.mappedPalette = { mappedPalette,skeleton.joints.size() };
 		//srvhandle = Allo～()
-		skinCluster.paletteSrvHandle.first = Engine::GetCPUDescriptorHandle(descriptorHeap.Get(), descriptorSize, 500);//空いてるインデックスに入れるマネージャーがないので手動で入れてる
-		skinCluster.paletteSrvHandle.second = Engine::GetGPUDescriptorHandle(descriptorHeap.Get(), descriptorSize, 500);//posteffectのアロケータを使えばできる気がする
+		skinCluster.paletteSrvHandle.first = Engine::GetCPUDescriptorHandle(descriptorHeap.Get(), descriptorSize, 3);//空いてるインデックスに入れるマネージャーがないので手動で入れてる
+		skinCluster.paletteSrvHandle.second = Engine::GetGPUDescriptorHandle(descriptorHeap.Get(), descriptorSize, 3);//posteffectのアロケータを使えばできる気がする
 
 		//palette用のsrvを作成
 		D3D12_SHADER_RESOURCE_VIEW_DESC paletteSrvDesc{};

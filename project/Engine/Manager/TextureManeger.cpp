@@ -7,7 +7,7 @@
 
 
 TextureManager* TextureManager::instance_ = nullptr;
-uint32_t TextureManager::kSRVIndexTop_ = 2;
+uint32_t TextureManager::kSRVIndexTop_ = 3;
 
 void TextureManager::Initialize()
 {

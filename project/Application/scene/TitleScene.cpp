@@ -67,10 +67,10 @@ void TitleScene::Update() {
 		pointLight_.position_.y += 0.1f;
 	}
 
-
+	worldTransformBox_.rotate.y += 0.01f;
 	worldTransformSphere_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
-	//worldTransformBox_.UpdateMatrix();
+	worldTransformBox_.UpdateMatrix();
 	viewProjection_.UpdateMatrix();
 	animation_->Update(worldTransformBox_);
 
@@ -172,8 +172,8 @@ void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 
 
-	human_->Draw(worldTransformSphere_, viewProjection_,true);
-	//animation_->Draw(worldTransformBox_, viewProjection_,false);
+	//human_->Draw(worldTransformSphere_, viewProjection_,true);
+	animation_->Draw(worldTransformBox_, viewProjection_,true);
 	//modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	if (isSprite_) {
