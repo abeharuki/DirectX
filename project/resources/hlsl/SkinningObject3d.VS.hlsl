@@ -77,11 +77,7 @@ VertexShaderOutput main(VertexShaderInput input) {
 	output.texcoord = input.texcoord;
 	output.normal = normalize(mul(skinned.normal, (float32_t3x3)gTransformationMatrix.WorldInverseTranspose));
     
-    //output.texcoord = input.texcoord;
-	//output.position = mul(input.position,WorldViewProjection);
-	//output.normal = normalize(mul(input.normal, (float32_t3x3)gTransformationMatrix.WorldInverseTranspose));
-	//output.worldPosition = mul(input.position, gTransformationMatrix.matWorld).xyz;
-    
+   
 	return output;
 
 }

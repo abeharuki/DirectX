@@ -60,7 +60,7 @@ Vector3 Animations::CalculateValue(const std::vector<KeyframeVector3>& keyframes
 
 	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
 		size_t nextIndex = index + 1;
-		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time - keyframes[index].time) {
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
 			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
 			return Math::Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
 		}
@@ -77,7 +77,7 @@ Quaternion Animations::CalculateValue(const std::vector<KeyframeQuaternion>& key
 
 	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
 		size_t nextIndex = index + 1;
-		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time - keyframes[index].time) {
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
 			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
 			return Math::Slerp(keyframes[index].value, keyframes[nextIndex].value, t);
 		}
@@ -149,14 +149,20 @@ void Animations::SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton) {
 void Animations::Update(WorldTransform& worldTransform) {
 	animationTime += 1.0f / 60.0f;
 	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
+	if (modelData.rootNode.children.size() != 0) {
+		ApplyAnimation(skeleton, animation, animationTime);
+	}
+	else {
+		NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
+		Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+		Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+		Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+		Matrix4x4 localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
+		//worldTransform.UpdateMatrix();
+		worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
+		worldTransform.TransferMatrix();
+	}
 	
-	NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
-	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
-	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
-	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
-	Matrix4x4 localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
-	worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
-	worldTransform.TransferMatrix();
 }
 	
 
@@ -164,7 +170,7 @@ void Animations::Update() {
 	animationTime += 1.0f / 60.0f;
 	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
 	ApplyAnimation(skeleton, animation, animationTime);
-	
+
 }
 
 void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection,bool flag) {
@@ -191,8 +197,11 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
-	Engine::GetList()->SetGraphicsRootDescriptorTable(6, skinCluster.paletteSrvHandle.second);
+	if (modelData.rootNode.children.size() != 0) {
+		Engine::GetList()->SetGraphicsRootDescriptorTable(6, skinCluster.paletteSrvHandle.second);
 
+	}
+	
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -218,12 +227,23 @@ Animations* Animations::Create(const std::string& directorPath, const std::strin
 
 void Animations::sPipeline() {
 
-	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateAnimationVSShader();
-	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
+	if (modelData.rootNode.children.size() != 0) {
+		//スキニングアニメーションなら
+		vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateAnimationVSShader();
+		pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
 
+		rootSignature_ = GraphicsPipeline::GetInstance()->CreateAnimationRootSignature();
+		sPipelineState_ = GraphicsPipeline::GetInstance()->CreateAnimationGraphicsPipeline(blendMode_);
+	}
+	else {
+		//ビジットアニメーションなら
+		vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
+		pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
 
-	rootSignature_ = GraphicsPipeline::GetInstance()->CreateAnimationRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateAnimationGraphicsPipeline(blendMode_);
+		rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
+		sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
+	}
+
 };
 
 //頂点データの設定

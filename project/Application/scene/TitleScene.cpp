@@ -65,13 +65,14 @@ void TitleScene::Update() {
 		pointLight_.position_.y += 0.1f;
 	}
 
-	human_->Update();
-	//animation_->Update(worldTransformBox_);
+	//human_->Update();
+	
 	worldTransformSphere_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
+	//worldTransformBox_.UpdateMatrix();
 	viewProjection_.UpdateMatrix();
-	//human_->Update(worldTransformSphere_);
-	
+	human_->Update(worldTransformSphere_);
+	//animation_->Update(worldTransformBox_);
 
 	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
 	static int currentItem = 1; // 初期選択アイテムのインデックス
@@ -172,7 +173,7 @@ void TitleScene::Draw() {
 
 
 	human_->Draw(worldTransformSphere_, viewProjection_,true);
-	//animation_->Draw(worldTransformBox_, viewProjection_);
+	//animation_->Draw(worldTransformBox_, viewProjection_,false);
 	//modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	if (isSprite_) {
