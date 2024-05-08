@@ -100,7 +100,7 @@ void Sprite::Draw(Transform& uvTransform ) {
 	
 	
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
-	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+	//Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	// TransformationMatrixCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 	// マテリアルCBufferの場所を設定

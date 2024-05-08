@@ -94,6 +94,14 @@ void Engine::EndFrame() {
 
 }
 
+void Engine::RenderPreDraw() {
+	dxCommon->RenderPreDraw();
+}
+
+void Engine::RenderPostDraw() {
+	dxCommon->RenderPostDraw();
+}
+
 void Engine::PreDraw() {
 	// 描画開始
 	dxCommon->PreDraw();
@@ -137,3 +145,6 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Engine::GetRTV() { return dxCommon-
 
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Engine::GetDSV() { return dxCommon->GetDSV(); }
 
+const DescriptorHandle& Engine::GetHandle() { return dxCommon->GetHandle(); }
+
+const D3D12_GPU_DESCRIPTOR_HANDLE Engine::GetSRVHandle() { return dxCommon->GetSRVHandle(); }

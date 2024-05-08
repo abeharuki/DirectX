@@ -17,8 +17,6 @@ void Model::Initialize(const std::string& filename, const std::string& texturePa
 	
 }
 
-
-
 void Model::sPipeline() {
 	
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
@@ -44,6 +42,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	//ライティング有効化
 	materialData->enableLighting = light;
 
+
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
@@ -54,7 +53,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	
 	
 
-	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+	//Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
     // wvp用のCBufferの場所を設定

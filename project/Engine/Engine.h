@@ -32,6 +32,9 @@ public:
 
 	static void PreDraw();
 
+	static void RenderPreDraw();
+	static void RenderPostDraw();
+
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(
 	    ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(
@@ -48,5 +51,8 @@ public:
 	 // DSV用のヒープ
 	static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDSV();
 
-	
+	const DescriptorHandle& GetHandle();
+
+	const D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle();
+
 };

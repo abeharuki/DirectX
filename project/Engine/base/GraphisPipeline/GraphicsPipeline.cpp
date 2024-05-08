@@ -11,8 +11,7 @@ GraphicsPipeline* GraphicsPipeline::GetInstance() {
 
 
 
-Microsoft::WRL::ComPtr<ID3D12PipelineState>
-    GraphicsPipeline::CreateGraphicsPipeline(BlendMode blendMode_) {
+Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateGraphicsPipeline(BlendMode blendMode_) {
 	if (sPipelineState_) {
 		return sPipelineState_;
 	} else {
@@ -151,8 +150,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 	}
 }
 
-Microsoft::WRL::ComPtr<ID3D12PipelineState>
-    GraphicsPipeline::CreateSpritePipeline(BlendMode blendMode_) {
+Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateSpritePipeline(BlendMode blendMode_) {
 	if (spritePipelineState_) {
 		return spritePipelineState_;
 	} else {
@@ -287,9 +285,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>
 	}
 }
 
-
-Microsoft::WRL::ComPtr<ID3D12PipelineState>
-    GraphicsPipeline::CreateParticleGraphicsPipeline(BlendMode blendMode_) {
+Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateParticleGraphicsPipeline(BlendMode blendMode_) {
 	if (particlesPipelineState_) {
 		return particlesPipelineState_;
 	} else {
@@ -440,6 +436,7 @@ GraphicsPipeline::CreateAnimationGraphicsPipeline(BlendMode blendMode_) {
 
 		// InputLayoutの設定
 		D3D12_INPUT_ELEMENT_DESC inputElementDescs[5] = {};
+
 		inputElementDescs[0].SemanticName = "POSITION";
 		inputElementDescs[0].SemanticIndex = 0;
 		inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -469,6 +466,7 @@ GraphicsPipeline::CreateAnimationGraphicsPipeline(BlendMode blendMode_) {
 		inputLayoutDesc.pInputElementDescs = inputElementDescs;
 		inputLayoutDesc.NumElements = _countof(inputElementDescs);
 
+
 #pragma endregion
 
 #pragma region BlendState
@@ -482,7 +480,6 @@ GraphicsPipeline::CreateAnimationGraphicsPipeline(BlendMode blendMode_) {
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-
 
 
 		// ブレンディング係数の設定
@@ -536,6 +533,7 @@ GraphicsPipeline::CreateAnimationGraphicsPipeline(BlendMode blendMode_) {
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 		graphicsPipelineStateDesc.pRootSignature = animationRootSignature_.Get(); // RootSignature
 
+
 		graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;         // InputLayout
 
 		graphicsPipelineStateDesc.VS = {
@@ -544,6 +542,7 @@ GraphicsPipeline::CreateAnimationGraphicsPipeline(BlendMode blendMode_) {
 		graphicsPipelineStateDesc.PS = {
 			pixelShaderBlob_->GetBufferPointer(),
 			pixelShaderBlob_->GetBufferSize() }; // PixelShader
+
 
 		graphicsPipelineStateDesc.BlendState = blendDesc;           // BrendState
 		graphicsPipelineStateDesc.RasterizerState = rasterizerDesc; // RasterizerState
@@ -560,15 +559,18 @@ GraphicsPipeline::CreateAnimationGraphicsPipeline(BlendMode blendMode_) {
 		// DepthStencilStateの設定
 		D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
 		// Depthの機能を有効化する
+
 		depthStencilDesc.DepthEnable = true;
 		// 書き込みします
 		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+
 		// 比較関数はLessEqual。つまり、近ければ描画される
 		depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
 		// DepthStencilの設定
 		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
 
 #pragma endregion
 
@@ -580,6 +582,7 @@ GraphicsPipeline::CreateAnimationGraphicsPipeline(BlendMode blendMode_) {
 		return animationPipelineState_;
 	}
 }
+
 
 
 
@@ -676,7 +679,6 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateRootSignatur
 
 }
 
-
 Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateParticleRootSignature() {
 
 	    //	ルートシグネチャーがあれば渡す
@@ -772,6 +774,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 	//	ルートシグネチャーがあれば渡す
 	if (GraphicsPipeline::GetInstance()->animationRootSignature_) {
 		return GraphicsPipeline::GetInstance()->animationRootSignature_;
+
 	}
 
 #pragma region RootSignature
@@ -832,6 +835,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; // バイリニアフィルタ
 	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; // 0~1の範囲外をリピート
 	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
 	staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; // 比較しない
 	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX; // ありったけMipmapを使う
@@ -857,6 +861,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 
 
 	return animationRootSignature_;
+
 
 #pragma endregion
 
@@ -1024,6 +1029,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateParticlePSShader() {
 }
 
 Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateAnimationVSShader() {
+
 	HRESULT hr_ = S_FALSE;
 
 	// dxcCompilerを初期化
@@ -1047,6 +1053,34 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateAnimationVSShader() {
 		CompileShader(L"resources/hlsl/SkinningObject3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(animationVertexShaderBlob_ != nullptr);
 	return GraphicsPipeline::GetInstance()->animationVertexShaderBlob_;
+
+}
+
+Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePostEffectPSShader() {
+	HRESULT hr_ = S_FALSE;
+
+	// dxcCompilerを初期化
+	IDxcUtils* dxcUtils = nullptr;
+	IDxcCompiler3* dxcCompiler = nullptr;
+	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	assert(SUCCEEDED(hr_));
+	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	assert(SUCCEEDED(hr_));
+
+	// 現時点でincludeしないが、includeに対応するための設定を行っておく
+	IDxcIncludeHandler* includeHandler = nullptr;
+	hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	assert(SUCCEEDED(hr_));
+
+	// Shaderをコンパイルする
+	if (GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_) {
+		return GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_;
+	}
+	GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_ =
+		CompileShader(L"resources/hlsl/CopyImage.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	assert(postEffectPixelShaderBlob_ != nullptr);
+
+	return GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_;
 }
 
 
