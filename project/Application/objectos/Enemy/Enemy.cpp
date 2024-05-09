@@ -113,7 +113,7 @@ void Enemy::Draw(const ViewProjection& camera) {
 void Enemy::MoveInitialize() {
 	time_ = 60 * 2;
 	isAttack_ = false;
-	worldTransformBody_.rotate.x = 0.0f;
+	//worldTransformBody_.rotate.x = 1.57075f;
 
 };
 void Enemy::MoveUpdata() {
@@ -126,9 +126,8 @@ void Enemy::MoveUpdata() {
 };
 
 void Enemy::AttackInitialize() {
-	worldTransformBody_.rotate.x = 0.0f;
 
-	int num = RandomGenerator::GetRandomInt(1, 2);
+	int num = RandomGenerator::GetRandomInt(1, 1);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kDash;
 	}
@@ -176,6 +175,7 @@ void Enemy::AttackUpdata() {
 
 //ダッシュ攻撃
 void Enemy::DashAttackInitialize() {
+	worldTransformBody_.rotate.x = 1.57075f;
 	num_ = RandomGenerator::GetRandomInt(1, 1);;
 	time_ = 60 * 2;
 }
