@@ -270,15 +270,15 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateLineGraphicsP
 		// DepthStencilStateの設定
 		D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
 		// Depthの機能を有効化する
-		depthStencilDesc.DepthEnable = false;
+		depthStencilDesc.DepthEnable = true;
 		// 書き込みします
-		//depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 		// 比較関数はLessEqual。つまり、近ければ描画される
-		//depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
 		// DepthStencilの設定
-		//graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
-		//graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
+		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 #pragma endregion
 
