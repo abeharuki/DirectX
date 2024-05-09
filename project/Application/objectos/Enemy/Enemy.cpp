@@ -2,14 +2,20 @@
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 
+
 void Enemy::Initialize() {
+
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("resources/Enemy", "enemy.png", "enemy.gltf"));
+
 
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.z = 10.0f;
+	worldTransformBase_.rotate.y = 1.57075f*2;
 	worldTransformBody_.Initialize();
-	worldTransformBody_.scale = { 2.5f,2.5f,2.5f };
-	worldTransformBody_.rotate.x = -1.57075f;
+	worldTransformBody_.scale = { 2.0f,2.0f,2.0f };
+	worldTransformBody_.rotate.x = 1.57075f;
 	worldTransformRock_.Initialize();
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	worldTransformRock_.translate.z = -15000.0f;
@@ -29,7 +35,7 @@ void Enemy::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
-
+	worldTransformBody_.rotate.x = 0.0f;
 
 }
 
@@ -77,6 +83,8 @@ void Enemy::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.TransferMatrix();
 	
+	animation_->Update(worldTransformBody_, true);
+
 	if (isAttack_) {
 		worldTransformRock_.UpdateMatrix();
 	}
@@ -97,13 +105,16 @@ void Enemy::Update() {
 	ImGui::End();
 }
 
+void Enemy::Draw(const ViewProjection& camera) {
+	animation_->Draw(worldTransformBody_, camera, false);
 
+}
 
 //移動
 void Enemy::MoveInitialize() {
 	time_ = 60 * 2;
 	isAttack_ = false;
-
+	worldTransformBody_.rotate.x = 0.0f;
 
 };
 void Enemy::MoveUpdata() {
@@ -116,7 +127,7 @@ void Enemy::MoveUpdata() {
 };
 
 void Enemy::AttackInitialize() {
-	worldTransformBody_.rotate.x = -1.57075f;
+	worldTransformBody_.rotate.x = 0.0f;
 
 	int num = RandomGenerator::GetRandomInt(1, 2);
 	if (num == 1) {
@@ -427,7 +438,7 @@ void Enemy::ThrowingAttackUpdata() {
 			worldTransformBody_.rotate.x -= 0.05f;
 		}
 		else {
-			worldTransformBody_.rotate.x = -1.57075f;
+			worldTransformBody_.rotate.x = 1.57075f;
 			worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 			behaviorRequest_ = Behavior::kRoot;
 		}

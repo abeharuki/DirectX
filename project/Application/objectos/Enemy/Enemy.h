@@ -7,6 +7,8 @@
 #include "WorldTransform.h"
 #include "Utilities/RandomGenerator.h"
 #include "CollisionManager/Collider.h"
+#include <Animation/Animation.h>
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -27,6 +29,8 @@ public: // メンバ関数
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
+
+	void Draw(const ViewProjection& camera);
 
 	// 移動
 	void MoveInitialize();
@@ -77,6 +81,8 @@ private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformRock_;
+
+	std::unique_ptr<Animations>animation_;
 
 	Vector3 playerPos_ = {};
 	Vector3 healerPos_ = {};

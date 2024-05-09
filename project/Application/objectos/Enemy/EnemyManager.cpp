@@ -50,7 +50,8 @@ void EnemyManager::Update() {
 };
 
 void EnemyManager::Draw(const ViewProjection& camera) {
-	Model_->Draw(enemy_->GetWorldTransformBody(), camera, false);
+	//Model_->Draw(enemy_->GetWorldTransformBody(), camera, false);
+	enemy_->Draw(camera);
 	rockModel_->Draw(enemy_->GetWorldTransformRock(), camera, false);
 };
 
