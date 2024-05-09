@@ -25,7 +25,7 @@ void TitleScene::Initialize() {
 	//animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png","AnimatedCube.gltf"));
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/human", "white.png", "walk.gltf"));
+	animation_.reset(Animations::Create("resources/Enemy", "enemy.png", "enemy.gltf"));
 
 
 
@@ -67,7 +67,7 @@ void TitleScene::Update() {
 		pointLight_.position_.y += 0.1f;
 	}
 
-	worldTransformBox_.rotate.y += 0.01f;
+	//worldTransformBox_.rotate.y += 0.01f;
 	worldTransformSphere_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
 	worldTransformBox_.UpdateMatrix();
@@ -113,9 +113,9 @@ void TitleScene::Update() {
 
 	if (ImGui::TreeNode("Animation")) {
 
-		ImGui::DragFloat3("AnimationPos", &worldTransformSphere_.translate.x, 0.1f);
-		ImGui::DragFloat3("AnimationRotate", &worldTransformSphere_.rotate.x, 0.01f);
-		ImGui::DragFloat3("AnimationSize", &worldTransformSphere_.scale.x, 0.1f);
+		ImGui::DragFloat3("AnimationPos", &worldTransformBox_.translate.x, 0.1f);
+		ImGui::DragFloat3("AnimationRotate", &worldTransformBox_.rotate.x, 0.01f);
+		ImGui::DragFloat3("AnimationSize", &worldTransformBox_.scale.x, 0.1f);
 
 		ImGui::TreePop();
 	}
