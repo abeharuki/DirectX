@@ -33,11 +33,13 @@ public:
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> lineRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> particleRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> animationRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> postEffectRootSignature_ = nullptr;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> linePipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> spritePipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> particlesPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> animationPipelineState_ = nullptr;
@@ -48,6 +50,9 @@ public:
 	//3dObj
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_ = nullptr;
+	//Line
+	//Microsoft::WRL::ComPtr<IDxcBlob> lineVertexShaderBlob_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcBlob> linePixelShaderBlob_ = nullptr;
 	//Sprite
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexSpriteShaderBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelSpriteShaderBlob_ = nullptr;
@@ -63,6 +68,7 @@ public:
 public:
 	//	GraphicsPipelineの生成
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateGraphicsPipeline(BlendMode blendMode_);
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateLineGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateSpritePipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateAnimationGraphicsPipeline(BlendMode blendMode_);
@@ -71,6 +77,8 @@ public:
 
 	//	RootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateRootSignature();
+	//	LineRootSignatureの生成
+	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateLineRootSignature();
 	// ParticleRootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateParticleRootSignature();
 	// AnimationRootSignatureの生成
@@ -81,6 +89,10 @@ public:
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateVSShader();
 	//	pixelshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreatePSShader();
+	//	vertexshaderの生成
+	//Microsoft::WRL::ComPtr<IDxcBlob> CreateLineVSShader();
+	//	pixelshaderの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreateLinePSShader();
 
 	//	vertexshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateSpriteVSShader();

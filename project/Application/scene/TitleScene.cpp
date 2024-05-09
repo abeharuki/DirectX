@@ -7,12 +7,13 @@ void TitleScene::Initialize() {
 	audioData_ = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
 	audio_->SoundPlayMP3(audioData_, true, 3.0f);
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
-
+	startPos_ = { 0.0f,0.0f,0.0f };
+	endPos_ = { 0.0f,100.0f,0.0f };
+	line_.reset(Line::CreateLine(startPos_, endPos_));
 	viewProjection_.Initialize();
-	viewProjection_.rotation_.x = 0.28f;
+	//viewProjection_.rotation_.x = 0.28f;
 	viewProjection_.translation_ = { 0.0f, 7.0f, -18.0f };
 	worldTransformSphere_.Initialize();
-	//worldTransformSphere_.translate = { -12.9f,-47.7922f,1224.1f };
 	//worldTransformSphere_.scale = { 10.0f,10.0f,10.0f };
 	worldTransformBox_.Initialize();
 	worldTransformBox_.rotate.y = 3.0f;
@@ -27,9 +28,6 @@ void TitleScene::Initialize() {
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/Enemy", "enemy.png", "enemy.gltf"));
-
-
-
 
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
@@ -67,7 +65,7 @@ void TitleScene::Update() {
 	else if (Input::PressKey(DIK_W)) {
 		pointLight_.position_.y += 0.1f;
 	}
-
+	line_->SetLinePos(startPos_, endPos_);
 	//worldTransformBox_.rotate.y += 0.01f;
 	worldTransformSphere_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
@@ -93,6 +91,13 @@ void TitleScene::Update() {
 	}
 
 	ImGui::Begin("Setting");
+
+	if (ImGui::TreeNode("Line")) {
+		ImGui::DragFloat3("startLine", &startPos_.x, 0.01f);
+		ImGui::DragFloat3("endLine", &endPos_.x, 0.01f);
+
+		ImGui::TreePop();
+	}
 
 	if (ImGui::TreeNode("Sprite")) {
 		ImGui::Checkbox("DrawSprite", &isSprite_);
@@ -172,10 +177,10 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 
-
+	line_->Draw(worldTransformSphere_,viewProjection_,false);
 	//human_->Draw(worldTransformSphere_, viewProjection_,true);
 	animation_->Draw(worldTransformBox_, viewProjection_,true);
-	//modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
+	modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	if (isSprite_) {
 		sprite_->Draw(uv);

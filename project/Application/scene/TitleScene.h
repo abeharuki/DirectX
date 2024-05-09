@@ -8,6 +8,7 @@
 #include <Model.h>
 #include <numbers>
 #include "Animation/Animation.h"
+#include "Line.h"
 
 class TitleScene : public IScene {
 public:
@@ -53,6 +54,7 @@ private:
 	Audio* audio_ = nullptr;
 	uint32_t audioData_;
 	std::unique_ptr<Sprite> sprite_;
+	std::unique_ptr<Line> line_;
 	ViewProjection viewProjection_;
 	WorldTransform worldTransformSphere_;
 	WorldTransform worldTransformBox_;
@@ -72,4 +74,7 @@ private:
 	bool isSprite_;
 	Transform uv;
 
+
+	Vector3 startPos_;
+	Vector3 endPos_;
 };
