@@ -15,6 +15,7 @@ void TitleScene::Initialize() {
 	//worldTransformSphere_.translate = { -12.9f,-47.7922f,1224.1f };
 	//worldTransformSphere_.scale = { 10.0f,10.0f,10.0f };
 	worldTransformBox_.Initialize();
+	worldTransformBox_.rotate.y = 3.0f;
 	worldTransformGround_.Initialize();
 	worldTransformGround_.rotate.y = 1.58f;
 	// スフィア
