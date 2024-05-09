@@ -158,7 +158,6 @@ void Animations::Update(WorldTransform& worldTransform) {
 		Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 		Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 		Matrix4x4 localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
-		//worldTransform.UpdateMatrix();
 		worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
 		worldTransform.TransferMatrix();
 	}

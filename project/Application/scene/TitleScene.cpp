@@ -11,7 +11,7 @@ void TitleScene::Initialize() {
 	endPos_ = { 0.0f,100.0f,0.0f };
 	line_.reset(Line::CreateLine(startPos_, endPos_));
 	viewProjection_.Initialize();
-	//viewProjection_.rotation_.x = 0.28f;
+	viewProjection_.rotation_.x = 0.28f;
 	viewProjection_.translation_ = { 0.0f, 7.0f, -18.0f };
 	worldTransformSphere_.Initialize();
 	//worldTransformSphere_.scale = { 10.0f,10.0f,10.0f };
@@ -80,14 +80,17 @@ void TitleScene::Update() {
 	if (currentItem == 0) {
 		Model::DirectionalLightDraw(directionLight_);
 		Sphere::DirectionalLightDraw(directionLight_);
+		Animations::DirectionalLightDraw(directionLight_);
 	}
 	else if (currentItem == 1) {
 		Model::PointLightDraw(pointLight_, directionLight_.direction);
 		Sphere::PointLightDraw(pointLight_, directionLight_.direction);
+		Animations::PointLightDraw(pointLight_, directionLight_.direction);
 	}
 	else if (currentItem == 2) {
 		Model::SpotLightDraw(spotLight_);
 		Sphere::SpotLightDraw(spotLight_);
+		Animations::SpotLightDraw(spotLight_);
 	}
 
 	ImGui::Begin("Setting");
