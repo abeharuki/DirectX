@@ -127,7 +127,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 
-	int num = RandomGenerator::GetRandomInt(1, 1);
+	int num = RandomGenerator::GetRandomInt(1, 2);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kDash;
 	}
@@ -301,6 +301,7 @@ void Enemy::ThrowingAttackInitialize() {
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	shakeTimer_ = 60.0f;
 	isAttack_ = false;
+	worldTransformBody_.rotate.x = 0.0f;
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 }
 
@@ -439,7 +440,7 @@ void Enemy::ThrowingAttackUpdata() {
 			worldTransformBody_.rotate.x -= 0.05f;
 		}
 		else {
-			worldTransformBody_.rotate.x = 1.57075f;
+			worldTransformBody_.rotate.x = 0.0f;
 			worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 			behaviorRequest_ = Behavior::kRoot;
 		}
