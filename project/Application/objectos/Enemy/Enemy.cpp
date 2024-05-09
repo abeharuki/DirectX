@@ -35,7 +35,7 @@ void Enemy::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
-	worldTransformBody_.rotate.x = 0.0f;
+	//worldTransformBody_.rotate.x = 0.0f;
 
 }
 
@@ -83,8 +83,7 @@ void Enemy::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.TransferMatrix();
 	
-	animation_->Update(worldTransformBody_, true);
-
+	
 	if (isAttack_) {
 		worldTransformRock_.UpdateMatrix();
 	}
@@ -188,7 +187,7 @@ void Enemy::DashAttackUpdata() {
 	else {
 		isAttack_ = true;
 	}
-
+	
 
 	// 追従対象からロックオン対象へのベクトル
 	if (isAttack_) {
@@ -302,9 +301,11 @@ void Enemy::ThrowingAttackInitialize() {
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	shakeTimer_ = 60.0f;
 	isAttack_ = false;
+	animation_->SetAnimationTimer(0.0f, 0.0f);
 }
 
 void Enemy::ThrowingAttackUpdata() {
+	animation_->Update(worldTransformBody_, false);
 
 	if (!isAttack_) {
 		if (worldTransformRock_.scale.x < 2.0f) {
