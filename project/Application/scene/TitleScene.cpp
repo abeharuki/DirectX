@@ -13,6 +13,9 @@ void TitleScene::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/human", "white.png", "walk.gltf"));
 
+	startPos_ = { 0.0f,0.0f,0.0f };
+	endPos_ = { 0.0f,100.0f,0.0f };
+	line_.reset(Line::CreateLine(startPos_, endPos_));
 
 
 	audio_ = Audio::GetInstance();
@@ -151,11 +154,23 @@ void TitleScene::Update() {
 	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 10.0f);
 	ImGui::End();
+
+	ImGui::Begin("Setting");
+
+	if (ImGui::TreeNode("Line")) {
+		ImGui::DragFloat3("startLine", &startPos_.x, 0.01f);
+		ImGui::DragFloat3("endLine", &endPos_.x, 0.01f);
+
+		ImGui::TreePop();
+	}
+	ImGui::End();
+
 }
 
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	//Model::LightDraw(color_, direction_, intensity_);
+	line_->Draw(worldTransform_, viewProjection_, false);
 
 	// 天球
 	skydome_->Draw(viewProjection_, false);

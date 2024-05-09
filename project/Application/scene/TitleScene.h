@@ -15,6 +15,7 @@
 #include <Renju/RenjuManager.h>
 #include <Animation/Animation.h>
 #include "PostEffects/PostEffect.h"
+#include <Line.h>
 
 
 class TitleScene : public IScene {
@@ -79,4 +80,8 @@ private:
 	bool isFadeIn_;
 	bool isFede_;
 	float alpha_;
+
+	std::unique_ptr<Line> line_;
+	Vector3 startPos_;
+	Vector3 endPos_;
 };
