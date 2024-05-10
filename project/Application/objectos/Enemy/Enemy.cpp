@@ -15,7 +15,7 @@ void Enemy::Initialize() {
 	worldTransformBase_.rotate.y = 1.57075f*2;
 	worldTransformBody_.Initialize();
 	worldTransformBody_.scale = { 2.0f,2.0f,2.0f };
-	worldTransformBody_.rotate.x = 1.57075f;
+	//worldTransformBody_.rotate.x = 1.57075f;
 	worldTransformRock_.Initialize();
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	worldTransformRock_.translate.z = -15000.0f;
@@ -93,12 +93,13 @@ void Enemy::Update() {
 
 	}
 
-
+	
 	ImGui::Begin("EnemyRock");
 	ImGui::SliderFloat3("pos", &worldTransformRock_.translate.x, -150.0f, 150.0f);
 	ImGui::End();
 
 	ImGui::Begin("Enemy");
+	animation_->AnimationDebug();
 	ImGui::SliderFloat3("rotato", &worldTransformBody_.rotate.x, -2.0f, 2.0f);
 	ImGui::Text("time%d", time_);
 	ImGui::End();
@@ -175,7 +176,7 @@ void Enemy::AttackUpdata() {
 
 //ダッシュ攻撃
 void Enemy::DashAttackInitialize() {
-	worldTransformBody_.rotate.x = 1.57075f;
+	//worldTransformBody_.rotate.x = 1.57075f;
 	num_ = RandomGenerator::GetRandomInt(1, 1);;
 	time_ = 60 * 2;
 }

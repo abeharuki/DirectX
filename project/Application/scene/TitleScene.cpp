@@ -156,6 +156,7 @@ void TitleScene::Update() {
 	ImGui::End();
 
 	ImGui::Begin("Setting");
+	
 
 	if (ImGui::TreeNode("Line")) {
 		ImGui::DragFloat3("startLine", &startPos_.x, 0.01f);
@@ -164,7 +165,7 @@ void TitleScene::Update() {
 		ImGui::TreePop();
 	}
 	ImGui::End();
-
+	animation_->AnimationDebug();
 }
 
 void TitleScene::Draw() {
