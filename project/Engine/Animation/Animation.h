@@ -12,6 +12,7 @@
 #include <array>
 #include "Skeleton.h"
 #include "Skinning.h"
+#include "Line.h"
 
 template<typename tValue>
 struct Keyframe {
@@ -133,6 +134,10 @@ private:
 	Animation animation;
 	Skeleton skeleton;
 	SkinCluster skinCluster;
+
+	std::unique_ptr<Line> line_[36];
+	Vector3 boonPos[36] = {};
+	int num_ = 0;
 private:
 	void LoadAnimation(const std::string& filename, const std::string& texturePath);
 	void LoadTexture(const std::string& filename);

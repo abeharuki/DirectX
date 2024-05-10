@@ -96,7 +96,10 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(),skeleton,modelData,Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 	CreateVertexResource();
 	sPipeline();
-
+	for (int i = 0; i < 36; i++) {
+		line_[i].reset(Line::CreateLine({0,0,0}, {0,0,0}));
+	}
+	
 
 }
 
@@ -120,21 +123,42 @@ void Animations::ApplyAnimation(Skeleton& skeleton, const Animation& animation, 
 			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 			joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 		}
+		
 	}
 }
 
 
 void Animations::SkeletonUpdate(Skeleton& skeleton) {
+
 	//全てのJointを更新
 	for (Joint& joint : skeleton.joints) {
 		joint.locaalMatrix = Math::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
 		if (joint.parent) {
 			joint.skeletonSpaceMatrix = joint.locaalMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
+			for (int i = num_; i < 36; ++i) {
+				num_++;
+				boonPos[i] = { joint.skeletonSpaceMatrix.m[3][0],joint.skeletonSpaceMatrix.m[3][1],joint.skeletonSpaceMatrix.m[3][2] };
+				break;
+			}
+			
 		}
 		else {
 			joint.skeletonSpaceMatrix = joint.locaalMatrix;
 		}
+		
 	}
+	for (int i = 2; i < 35; i++) {
+		if (i < 34) {
+			line_[i]->SetLinePos(boonPos[i], boonPos[i + 1]);
+		}
+
+		if (i == 34) {
+			num_ = 0;;
+		}
+		
+	}
+	
+	
 }
 
 void Animations::SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton) {
@@ -150,7 +174,7 @@ void Animations::Update(WorldTransform& worldTransform) {
 	animationTime += 1.0f / 60.0f;
 	animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生
 	if (modelData.rootNode.children.size() != 0) {
-		ApplyAnimation(skeleton, animation, animationTime);
+		
 	}
 	else {
 		NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
@@ -173,6 +197,7 @@ void Animations::Update() {
 }
 
 void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection,bool flag) {
+	ApplyAnimation(skeleton, animation, animationTime);
 	SkeletonUpdate(skeleton);
 	SkinningUpdate(skinCluster, skeleton);
 
@@ -211,8 +236,10 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画
-	Engine::GetList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
-
+	//Engine::GetList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
+	for (int i = 0; i < 36; i++) {
+		line_[i]->Draw(worldTransform, viewProjection, false);
+	}
 }
 
 Animations* Animations::Create(const std::string& directorPath, const std::string& filename, const std::string& motionPath)

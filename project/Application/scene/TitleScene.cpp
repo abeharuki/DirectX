@@ -8,7 +8,7 @@ void TitleScene::Initialize() {
 	audio_->SoundPlayMP3(audioData_, true, 3.0f);
 	sprite_.reset(Sprite::Create("resources/uvChecker.png"));
 	startPos_ = { 0.0f,0.0f,0.0f };
-	endPos_ = { 0.0f,100.0f,0.0f };
+	endPos_ = { 0.0f,1.0f,0.0f };
 	line_.reset(Line::CreateLine(startPos_, endPos_));
 	viewProjection_.Initialize();
 	viewProjection_.rotation_.x = 0.28f;
@@ -180,11 +180,11 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 
-	line_->Draw(worldTransformSphere_,viewProjection_,false);
+	//line_->Draw(worldTransformBox_,viewProjection_,false);
 	//human_->Draw(worldTransformSphere_, viewProjection_,true);
 	animation_->Draw(worldTransformBox_, viewProjection_,true);
-	modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
-	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
+	//modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
+	//modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	if (isSprite_) {
 		sprite_->Draw(uv);
 	}
