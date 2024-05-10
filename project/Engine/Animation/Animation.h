@@ -13,6 +13,7 @@
 #include "Skeleton.h"
 #include "Skinning.h"
 #include "Line.h"
+#include "ImGuiManager.h"
 
 template<typename tValue>
 struct Keyframe {
@@ -80,6 +81,7 @@ public:
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection,bool flag);
 
+	void AnimationDebug();
 
 	static Animations* Create(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
 
@@ -135,9 +137,13 @@ private:
 	Skeleton skeleton;
 	SkinCluster skinCluster;
 
-	std::unique_ptr<Line> line_[36];
-	Vector3 boonPos[36] = {};
-	int num_ = 0;
+	//デバック表示
+	std::vector<std::unique_ptr<Line>> line_;
+	std::vector<Vector3> boonPos;
+	std::vector<Vector3> boonPos2;
+	int jointsNum_;
+	bool debug_ = false;
+
 private:
 	void LoadAnimation(const std::string& filename, const std::string& texturePath);
 	void LoadTexture(const std::string& filename);
@@ -145,6 +151,8 @@ private:
 
 	void SkeletonUpdate(Skeleton& skeleton);
 	void SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton);
+
+	void BoonRecursive(Skeleton& skeleton,int32_t child);
 
 	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);

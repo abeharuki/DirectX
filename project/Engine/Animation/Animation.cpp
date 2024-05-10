@@ -1,5 +1,6 @@
 #include "Animation.h"
 
+
 Microsoft::WRL::ComPtr<ID3D12Resource> Animations::lightResource_;
 WritingStyle* Animations::lightData;
 
@@ -96,11 +97,15 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(),skeleton,modelData,Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 	CreateVertexResource();
 	sPipeline();
-	for (int i = 0; i < 36; i++) {
+	jointsNum_ = int(skeleton.joints.size());
+	line_.resize(jointsNum_);
+	//boonPos.resize(jointsNum_);
+	//boonPos2.resize(jointsNum_);
+
+	for (int i = 0; i < jointsNum_; i++) {
 		line_[i].reset(Line::CreateLine({0,0,0}, {0,0,0}));
 	}
 	
-
 }
 
 void Animations::LoadAnimation(const std::string& directorPath, const std::string& filename) {
@@ -127,6 +132,18 @@ void Animations::ApplyAnimation(Skeleton& skeleton, const Animation& animation, 
 	}
 }
 
+void Animations::BoonRecursive(Skeleton& skeleton, int32_t child) {
+	Joint& root = skeleton.joints[child];
+	for (uint32_t childIndex : root.children) {
+		root.locaalMatrix = Math::MakeAffineMatrix(root.transform.scale, root.transform.rotate, root.transform.translate);
+
+		boonPos.push_back({ root.skeletonSpaceMatrix.m[3][0],root.skeletonSpaceMatrix.m[3][1],root.skeletonSpaceMatrix.m[3][2] });
+		boonPos2.push_back({ skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][0],  skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][1],  skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][2] });
+
+
+		BoonRecursive(skeleton, childIndex);
+	}
+}
 
 void Animations::SkeletonUpdate(Skeleton& skeleton) {
 
@@ -135,11 +152,7 @@ void Animations::SkeletonUpdate(Skeleton& skeleton) {
 		joint.locaalMatrix = Math::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
 		if (joint.parent) {
 			joint.skeletonSpaceMatrix = joint.locaalMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
-			for (int i = num_; i < 36; ++i) {
-				num_++;
-				boonPos[i] = { joint.skeletonSpaceMatrix.m[3][0],joint.skeletonSpaceMatrix.m[3][1],joint.skeletonSpaceMatrix.m[3][2] };
-				break;
-			}
+			
 			
 		}
 		else {
@@ -147,17 +160,19 @@ void Animations::SkeletonUpdate(Skeleton& skeleton) {
 		}
 		
 	}
-	for (int i = 2; i < 35; i++) {
-		if (i < 34) {
-			line_[i]->SetLinePos(boonPos[i], boonPos[i + 1]);
-		}
-
-		if (i == 34) {
-			num_ = 0;;
-		}
-		
-	}
 	
+	
+	BoonRecursive(skeleton, skeleton.root);
+	
+
+	
+
+	for (size_t i = 3; i < boonPos.size() && i < boonPos2.size() && i < line_.size(); ++i) {
+		line_[i]->SetLinePos(boonPos[i], boonPos2[i]);
+	}
+
+	boonPos.clear();
+	boonPos2.clear();
 	
 }
 
@@ -201,6 +216,8 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	SkeletonUpdate(skeleton);
 	SkinningUpdate(skinCluster, skeleton);
 
+	
+
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
 	materialData->enableLighting = flag;
@@ -236,8 +253,10 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画
-	//Engine::GetList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
-	for (int i = 0; i < 36; i++) {
+	if (!debug_) {
+		Engine::GetList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
+	}
+	for (int i = 0; i < line_.size(); i++) {
 		line_[i]->Draw(worldTransform, viewProjection, false);
 	}
 }
@@ -366,4 +385,10 @@ void Animations::SpotLightDraw(SpotLight spotLight) {
 	lightData->pointLight_.isEnable_ = false;
 	lightData->directionLight_.isEnable_ = false;
 
+}
+
+void Animations::AnimationDebug() {
+	ImGui::Begin("Animations");
+	ImGui::Checkbox("Debug", &debug_);
+	ImGui::End();
 }

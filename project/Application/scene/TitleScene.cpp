@@ -72,7 +72,7 @@ void TitleScene::Update() {
 	worldTransformBox_.UpdateMatrix();
 	viewProjection_.UpdateMatrix();
 	animation_->Update(worldTransformBox_);
-
+	
 	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
 	static int currentItem = 1; // 初期選択アイテムのインデックス
 
@@ -171,10 +171,13 @@ void TitleScene::Update() {
 
 	ImGui::End();
 
+	animation_->AnimationDebug();
+
 	ImGui::Begin("TitleScene");
 	ImGui::Text("GameScene : push::P");
 	ImGui::End();
 
+	
 }
 
 void TitleScene::Draw() {
