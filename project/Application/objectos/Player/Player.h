@@ -9,6 +9,7 @@
 #include <optional>
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>
+#include "PostEffects/PostEffect.h"
 
 class Player : public Collider {
 public:

@@ -352,7 +352,9 @@ void Player::DashUpdata() {
 
 
 // ノックバック
-void Player::knockInitialize() { 
+void Player::knockInitialize() {
+	PostEffect::GetInstance()->VignetteColor({0.1f, 0.0f, 0.0f});
+	PostEffect::GetInstance()->isVignetting(true);
 	nockTime_ = 30;
 	animation_->SetAnimationTimer(0, 15.0f);
 	nockBack_ = true;
@@ -362,6 +364,7 @@ void Player::knockUpdata() {
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
+		PostEffect::GetInstance()->isVignetting(false);
 		behaviorRequest_ = Behavior::kRoot;
 		nockBack_ = false;
 	}

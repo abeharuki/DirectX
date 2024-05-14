@@ -18,7 +18,21 @@
 
 struct Grayscale {
 	int32_t isEnable;
+	float padding[3];
 };
+
+struct Vignetting {
+	int32_t isEnable;
+	Vector3 color;
+	float intensity;//明るさ
+	float padding[3];
+};
+
+struct PostEffects {
+	Grayscale grayscal;
+	Vignetting vignetting;
+};
+
 
 class PostEffect
 {
@@ -31,7 +45,11 @@ public:
 
 	void Draw();
 
-	void isGrayscale(bool flag) {grayData->isEnable = flag;}
+	void isGrayscale(bool flag) {postEffectData->grayscal.isEnable = flag;}
+	void isVignetting(bool flag) { postEffectData->vignetting.isEnable = flag; }
+	void VignetteIntensity(float intensity) { postEffectData->vignetting.intensity = intensity; }
+	void VignetteColor(Vector3 color) { postEffectData->vignetting.color = color; }
+	void Vignette(Vignetting vigne) { postEffectData->vignetting = vigne; }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;
@@ -50,10 +68,11 @@ private:
 
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	// 頂点
-	Microsoft::WRL::ComPtr<ID3D12Resource> grayResource_;
+	// リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> postEffectResource_;
 
-	Grayscale* grayData = nullptr;
+	PostEffects* postEffectData = nullptr;
+	
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;

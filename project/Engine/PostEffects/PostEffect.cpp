@@ -37,17 +37,21 @@ void PostEffect::Draw() {
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	Engine::GetList()->SetGraphicsRootDescriptorTable(0, Engine::GetInstance()->GetHandle());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(1, grayResource_->GetGPUVirtualAddress());
-
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, postEffectResource_->GetGPUVirtualAddress());
+	
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(3, 1, 0, 0);
 
 }
 
 void PostEffect::CreateResource() {
-	grayResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Grayscale));
-	grayResource_->Map(0, nullptr, reinterpret_cast<void**>(&grayData));
-	grayData->isEnable = false;
+	postEffectResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(PostEffects));
+	postEffectResource_->Map(0, nullptr, reinterpret_cast<void**>(&postEffectData));
+	postEffectData->grayscal.isEnable = false;
+	postEffectData->vignetting.isEnable = false;
+	postEffectData->vignetting.color = Vector3(0.0f, 0.0f, 0.0f);
+	postEffectData->vignetting.intensity = 16.0f;
+	
 }
 
 void PostEffect::sPipeline() {

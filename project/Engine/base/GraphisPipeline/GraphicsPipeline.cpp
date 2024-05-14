@@ -1221,7 +1221,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreatePostEffectRo
 	//PostEffectの切り替え用
 	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[1].Descriptor.ShaderRegister = 1; // レジスタ番号1を使う
+	rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号1を使う
 
 
 	// RootSignature作成
