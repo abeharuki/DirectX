@@ -9,6 +9,7 @@
 #include <numbers>
 #include "Animation/Animation.h"
 #include "Line.h"
+#include <PostEffects/PostEffect.h>
 
 class TitleScene : public IScene {
 public:
@@ -77,4 +78,8 @@ private:
 
 	Vector3 startPos_;
 	Vector3 endPos_;
+
+	Grayscale grayscale_;
+	Vignetting vignetting_;
+	bool postEffects[2];
 };

@@ -35,6 +35,8 @@ void TitleScene::Initialize() {
 	uv.scale = { 0.0f, 0.0f, 0.0f };
 	uv.rotate = { 0.0f, 0.0f, 0.0f };
 	uv.translate = { 0.0f, 0.0f };
+
+	vignetting_.intensity = 16.0f;
 }
 
 void TitleScene::Update() {
@@ -93,8 +95,16 @@ void TitleScene::Update() {
 		Animations::SpotLightDraw(spotLight_);
 	}
 
-	ImGui::Begin("Setting");
+	const char* postItems[] = { "Grayscale", "Vignetting"};
+	static int postCurrentItem = 1; // 初期選択アイテムのインデックス
 
+	grayscale_.isEnable = postEffects[0];
+	vignetting_.isEnable = postEffects[1];
+	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
+	PostEffect::GetInstance()->Vignette(vignetting_);
+
+
+	ImGui::Begin("Setting");
 	if (ImGui::TreeNode("Line")) {
 		ImGui::DragFloat3("startLine", &startPos_.x, 0.01f);
 		ImGui::DragFloat3("endLine", &endPos_.x, 0.01f);
@@ -169,6 +179,27 @@ void TitleScene::Update() {
 		ImGui::TreePop();
 	}
 
+
+	if (ImGui::TreeNode("PostEffect")) {
+		// Grayscale
+		ImGui::Combo("##combo", &postCurrentItem, postItems, IM_ARRAYSIZE(postItems));
+		if (ImGui::TreeNode("Grayscale")) {
+			ImGui::Checkbox("isGaryscale%d", &postEffects[0]);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("Vignetting")) {
+			// vignetting
+			ImGui::Checkbox("isVignetting", &postEffects[1]);
+			ImGui::DragFloat3("VignettingColor", &vignetting_.color.x, 0.1f);
+			ImGui::DragFloat("intensity", &vignetting_.intensity, 0.1f);
+			
+			ImGui::TreePop();
+		}
+
+		ImGui::TreePop();
+	}
+
 	ImGui::End();
 
 	animation_->AnimationDebug();
@@ -187,7 +218,7 @@ void TitleScene::Draw() {
 	//human_->Draw(worldTransformSphere_, viewProjection_,true);
 	animation_->Draw(worldTransformBox_, viewProjection_,true);
 	//modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
-	//modelGround_->Draw(worldTransformGround_, viewProjection_, true);
+	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	if (isSprite_) {
 		sprite_->Draw(uv);
 	}
