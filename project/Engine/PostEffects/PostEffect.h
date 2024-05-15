@@ -28,9 +28,15 @@ struct Vignetting {
 	float padding[3];
 };
 
+struct Smoothing
+{
+	int32_t isEnable;
+};
+
 struct PostEffects {
 	Grayscale grayscal;
 	Vignetting vignetting;
+	Smoothing smoothing;
 };
 
 
@@ -45,11 +51,13 @@ public:
 
 	void Draw();
 
+	//エフェクトの設定
 	void isGrayscale(bool flag) { postEffectData->grayscal.isEnable = flag; }
 	void isVignetting(bool flag) { postEffectData->vignetting.isEnable = flag; }
 	void VignetteIntensity(float intensity) { postEffectData->vignetting.intensity = intensity; }
 	void VignetteColor(Vector3 color) { postEffectData->vignetting.color = color; }
 	void Vignette(Vignetting vigne) { postEffectData->vignetting = vigne; }
+	void isSmoothing(bool flag) { postEffectData->smoothing.isEnable = flag; }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;

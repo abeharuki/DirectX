@@ -31,6 +31,8 @@ void TitleScene::Initialize() {
 
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
+	//modelGround_.reset(Model::CreateModelFromObj("resources/genko/genko.obj", "resources/moon.png"));
+
 	isSprite_ = false;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
 	uv.rotate = { 0.0f, 0.0f, 0.0f };
@@ -95,17 +97,18 @@ void TitleScene::Update() {
 		Animations::SpotLightDraw(spotLight_);
 	}
 
-	const char* postItems[] = { "Grayscale", "Vignetting"};
+	const char* postItems[] = { "Grayscale", "Vignetting","Smoothing"};
 	static int postCurrentItem = 1; // 初期選択アイテムのインデックス
 
 	grayscale_.isEnable = postEffects[0];
 	vignetting_.isEnable = postEffects[1];
+	smoothing_.isEnable = postEffects[2];
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
-
+	PostEffect::GetInstance()->isSmoothing(smoothing_.isEnable);
 
 	ImGui::Begin("Setting");
-	if (ImGui::TreeNode("Line")) {
+	;	if (ImGui::TreeNode("Line")) {
 		ImGui::DragFloat3("startLine", &startPos_.x, 0.01f);
 		ImGui::DragFloat3("endLine", &endPos_.x, 0.01f);
 
@@ -197,6 +200,11 @@ void TitleScene::Update() {
 			ImGui::TreePop();
 		}
 
+		if (ImGui::TreeNode("Smoothing")) {
+			ImGui::Checkbox("isSmoothing", &postEffects[2]);
+			ImGui::TreePop();
+		}
+
 		ImGui::TreePop();
 	}
 
@@ -216,9 +224,9 @@ void TitleScene::Draw() {
 
 	//line_->Draw(worldTransformBox_,viewProjection_,false);
 	//human_->Draw(worldTransformSphere_, viewProjection_,true);
-	animation_->Draw(worldTransformBox_, viewProjection_,true);
+	//animation_->Draw(worldTransformBox_, viewProjection_,true);
 	//modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
-	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
+	modelGround_->Draw(worldTransformGround_, viewProjection_, false);
 	if (isSprite_) {
 		sprite_->Draw(uv);
 	}

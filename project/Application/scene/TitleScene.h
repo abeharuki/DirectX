@@ -81,5 +81,6 @@ private:
 
 	Grayscale grayscale_;
 	Vignetting vignetting_;
-	bool postEffects[2];
+	Smoothing smoothing_;
+	bool postEffects[3];
 };

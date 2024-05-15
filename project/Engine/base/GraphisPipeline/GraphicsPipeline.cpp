@@ -1528,7 +1528,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePostEffectPSShader() {
 		return GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_;
 	}
 	GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_ =
-		CompileShader(L"resources/hlsl/CopyImage.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+		CompileShader(L"resources/hlsl/PostEffect.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(postEffectPixelShaderBlob_ != nullptr);
 
 	return GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_;
