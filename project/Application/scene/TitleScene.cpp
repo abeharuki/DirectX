@@ -106,7 +106,12 @@ void TitleScene::Update() {
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isSmoothing(smoothing_.isEnable);
-
+	if (smoothing_.kernelSize == 0) {
+		PostEffect::GetInstance()->SmoothingKernelSize3();
+	}
+	else {
+		PostEffect::GetInstance()->SmoothingKernelSize5();
+	}
 	ImGui::Begin("Setting");
 	;	if (ImGui::TreeNode("Line")) {
 		ImGui::DragFloat3("startLine", &startPos_.x, 0.01f);
@@ -202,6 +207,7 @@ void TitleScene::Update() {
 
 		if (ImGui::TreeNode("Smoothing")) {
 			ImGui::Checkbox("isSmoothing", &postEffects[2]);
+			ImGui::SliderInt("KerbelSize", &smoothing_.kernelSize,0, 1);
 			ImGui::TreePop();
 		}
 
