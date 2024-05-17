@@ -31,7 +31,7 @@ struct Vignetting {
 struct Smoothing
 {
 	int32_t isEnable;
-	int32_t kernelSize;
+	float kernelSize;
 };
 
 struct PostEffects {
@@ -59,8 +59,7 @@ public:
 	void VignetteColor(Vector3 color) { postEffectData->vignetting.color = color; }
 	void Vignette(Vignetting vigne) { postEffectData->vignetting = vigne; }
 	void isSmoothing(bool flag) { postEffectData->smoothing.isEnable = flag; }
-	void SmoothingKernelSize3() { postEffectData->smoothing.kernelSize = false; }
-	void SmoothingKernelSize5() { postEffectData->smoothing.kernelSize = true; }
+	void SmoothingKernelSize(float size) { postEffectData->smoothing.kernelSize = size; }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;

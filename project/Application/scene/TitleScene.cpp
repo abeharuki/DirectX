@@ -39,6 +39,7 @@ void TitleScene::Initialize() {
 	uv.translate = { 0.0f, 0.0f };
 
 	vignetting_.intensity = 16.0f;
+	smoothing_.kernelSize = 2.0f;
 }
 
 void TitleScene::Update() {
@@ -106,12 +107,7 @@ void TitleScene::Update() {
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isSmoothing(smoothing_.isEnable);
-	if (smoothing_.kernelSize == 0) {
-		PostEffect::GetInstance()->SmoothingKernelSize3();
-	}
-	else {
-		PostEffect::GetInstance()->SmoothingKernelSize5();
-	}
+	PostEffect::GetInstance()->SmoothingKernelSize(smoothing_.kernelSize);
 	ImGui::Begin("Setting");
 	;	if (ImGui::TreeNode("Line")) {
 		ImGui::DragFloat3("startLine", &startPos_.x, 0.01f);
@@ -207,7 +203,7 @@ void TitleScene::Update() {
 
 		if (ImGui::TreeNode("Smoothing")) {
 			ImGui::Checkbox("isSmoothing", &postEffects[2]);
-			ImGui::SliderInt("KerbelSize", &smoothing_.kernelSize,0, 1);
+			ImGui::SliderFloat("KerbelSize", &smoothing_.kernelSize,1, 5);
 			ImGui::TreePop();
 		}
 
@@ -230,7 +226,7 @@ void TitleScene::Draw() {
 
 	//line_->Draw(worldTransformBox_,viewProjection_,false);
 	//human_->Draw(worldTransformSphere_, viewProjection_,true);
-	//animation_->Draw(worldTransformBox_, viewProjection_,true);
+	animation_->Draw(worldTransformBox_, viewProjection_,true);
 	//modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, false);
 	if (isSprite_) {
