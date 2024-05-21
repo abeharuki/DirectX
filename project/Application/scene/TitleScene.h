@@ -5,11 +5,13 @@
 #include "Audio/Audio.h"
 #include <Sprite.h>
 #include <Sphere.h>
+#include <Skydome.h>
 #include <Model.h>
 #include <numbers>
 #include "Animation/Animation.h"
 #include "Line.h"
 #include <PostEffects/PostEffect.h>
+#include <Skybox.h>
 
 class TitleScene : public IScene {
 public:
@@ -69,6 +71,8 @@ private:
 	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Animations>human_;
 	
+	std::unique_ptr<Skydome> skydome_;
+	std::unique_ptr<Skybox> skybox_;
 	//スプライト
 	Vector2 spritePos_;
 	Vector2 spriteSize_ = { 250.0f,250.0f };

@@ -19,6 +19,14 @@ void TitleScene::Initialize() {
 	worldTransformBox_.rotate.y = 3.0f;
 	worldTransformGround_.Initialize();
 	worldTransformGround_.rotate.y = 1.58f;
+	// 天球
+	skydome_ = std::make_unique<Skydome>();
+	// 3Dモデルの生成
+	skydome_->Initialize(Model::CreateModelFromObj("resources/skydome.obj", "resources/skydome/skyCube.dds"));
+
+	skybox_ = std::make_unique<Skybox>();
+	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
+
 	// スフィア
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
@@ -70,11 +78,26 @@ void TitleScene::Update() {
 	else if (Input::PressKey(DIK_W)) {
 		pointLight_.position_.y += 0.1f;
 	}
+
+	if (Input::PressKey(DIK_LEFTARROW)) {
+		viewProjection_.rotation_.y += -0.05f;
+	}
+	else if (Input::PressKey(DIK_RIGHTARROW)) {
+		viewProjection_.rotation_.y += 0.05f;
+	}
+	if (Input::PressKey(DIK_DOWNARROW)) {
+		viewProjection_.rotation_.x += 0.05f;
+	}
+	else if (Input::PressKey(DIK_UPARROW)) {
+		viewProjection_.rotation_.x += -0.05f;
+	}
+
 	line_->SetLinePos(startPos_, endPos_);
 	//worldTransformBox_.rotate.y += 0.01f;
 	worldTransformSphere_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
 	worldTransformBox_.UpdateMatrix();
+	skydome_->Update();
 	viewProjection_.UpdateMatrix();
 	animation_->Update(worldTransformBox_);
 	
@@ -232,6 +255,7 @@ void TitleScene::Draw() {
 	if (isSprite_) {
 		sprite_->Draw(uv);
 	}
-	
+	//skydome_->Draw(viewProjection_,false);
+	skybox_->Draw(worldTransformGround_, viewProjection_);
 	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 }

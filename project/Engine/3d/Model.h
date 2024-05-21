@@ -82,7 +82,7 @@ public:
 	
 	
 
-	
+	//objと画像パス
 	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
 	
 	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };

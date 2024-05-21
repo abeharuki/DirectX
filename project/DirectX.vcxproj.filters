@@ -11,6 +11,8 @@
     <FxCompile Include="resources\hlsl\SpritePS.hlsl" />
     <FxCompile Include="resources\hlsl\SpriteVS.hlsl" />
     <FxCompile Include="resources\hlsl\Line.PS.hlsl" />
+    <FxCompile Include="resources\hlsl\Skybox.VS.hlsl" />
+    <FxCompile Include="resources\hlsl\Skybox.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application\base\BaseCharacter.cpp" />
@@ -61,6 +63,7 @@
     <ClCompile Include="Engine\base\StringUtility.cpp" />
     <ClCompile Include="Engine\Manager\TextureManeger.cpp" />
     <ClCompile Include="Engine\3d\Line.cpp" />
+    <ClCompile Include="Engine\3d\Skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\base\BaseCharacter.h" />
@@ -117,12 +120,14 @@
     <ClInclude Include="Engine\Manager\TextureManeger.h" />
     <ClInclude Include="Application\base\GlobalVariables\GlobalVariables.h" />
     <ClInclude Include="Engine\3d\Line.h" />
+    <ClInclude Include="Engine\3d\Skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\hlsl\Fullscreen.hlsli" />
     <None Include="resources\hlsl\Object3d.hlsli" />
     <None Include="resources\hlsl\Particle.hlsli" />
     <None Include="resources\hlsl\Sprite.hlsli" />
+    <None Include="resources\hlsl\Skybox.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
