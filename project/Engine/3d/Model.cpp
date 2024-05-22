@@ -3,8 +3,6 @@
 #include <format>
 #include <imgui.h>
 
-
-
 Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
 WritingStyle* Model::lightData;
 
@@ -35,7 +33,6 @@ void Model::sPipeline() {
 
 
 void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection ,bool light) {
-	
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
 
@@ -55,6 +52,9 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 
 	//Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
+	if (lightData->environment_.isEnble_) {
+		Engine::GetList()->SetGraphicsRootDescriptorTable(7, textureManager_->GetGPUHandle(Skybox::textureNum));
+	}
 
     // wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -104,6 +104,7 @@ void Model::CreateVertexResource() {
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 
+
 	// ライティング
 	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));
 	// 頂点リソースにデータを書き込む
@@ -115,7 +116,6 @@ void Model::CreateVertexResource() {
 	lightData->directionLight_.direction = {0.0f, -1.0f, 0.0f};
 	lightData->directionLight_.intensity = 1.0f;
 	//lightData->directionLight_.isEnable_ = true;
-	
 
 	//カメラ
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));

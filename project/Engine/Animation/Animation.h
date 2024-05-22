@@ -14,6 +14,7 @@
 #include "Skinning.h"
 #include "Line.h"
 #include "ImGuiManager.h"
+#include <Skybox.h>
 
 template<typename tValue>
 struct Keyframe {
@@ -91,7 +92,12 @@ public:
 	static void PointLightDraw(PointLight pointLight, Vector3 direction);
 	//スポットライト
 	static void SpotLightDraw(SpotLight spotLight);
-
+	//映り込み度
+	void Environment(float environment,bool flag) { 
+		if (Skybox::textureNum != 0) {
+			lightData->environment_.isEnble_ = flag;
+		}
+		lightData->environment_.environment = environment; }
 
 	/// <summary>
 	/// グラフィックスパイプラインの初期化

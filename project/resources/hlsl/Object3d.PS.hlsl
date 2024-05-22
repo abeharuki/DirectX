@@ -28,10 +28,17 @@ struct SpotLight {
 	int32_t isEnable;
 };
 
+struct Environment
+{
+    float32_t environment;
+    int32_t isEnble_;
+};
+
 struct WritingStyle {
 	DirectionLight directionLight;
 	PointLight pointLight;
 	SpotLight spotLight;
+    Environment environment;
 };
 
 
@@ -41,6 +48,7 @@ Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
 ConstantBuffer<WritingStyle> gLight: register(b1);
 ConstantBuffer<Camera> gCamera : register(b2);
+TextureCube<float32_t4> gEnvironmentTextere : register(t1);
 
 
 PixelShaderOutput main(VertexShaderOutput input) {
@@ -123,12 +131,21 @@ PixelShaderOutput main(VertexShaderOutput input) {
 			output.color.rgb = sDiffuse + sSpecular;
 		}
 		
-
+        if (gLight.environment.isEnble_)
+        {
+            float32_t3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);
+            float32_t3 reflectedVector = reflect(cameraToPosition, normalize(input.normal));
+            float32_t4 environmentColor = gEnvironmentTextere.Sample(gSampler, reflectedVector);
+            output.color.rgb += environmentColor.rgb * gLight.environment.environment;
+        }
+		
+       
 
 	} else {
 	   output.color.rgb = gMaterial.color.rgb * textureColor.rgb;
 	 
 	}
+	
 
 	output.color.a = gMaterial.color.a * textureColor.a;
 

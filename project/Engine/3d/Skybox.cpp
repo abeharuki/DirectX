@@ -1,5 +1,16 @@
 #include "Skybox.h"
 
+Skybox* Skybox::instance_ = nullptr;
+uint32_t Skybox::textureNum;
+
+Skybox* Skybox::GetInstance() {
+	if (instance_ == nullptr)
+	{
+		instance_ = new Skybox();
+	}
+	return instance_;
+}
+
 void Skybox::Initialize(const std::string& texturePath) {
 	worldTransform_.Initialize();
 	worldTransform_.scale = { 10000,10000,10000 };
@@ -149,4 +160,5 @@ void Skybox::CreateVertexResource() {
 void Skybox::LoadTexture(const std::string& texturePath) {
 	TextureManager::GetInstance()->Load(texturePath);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
+	Skybox::textureNum = texture_;
 }

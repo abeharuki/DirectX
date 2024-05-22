@@ -78,7 +78,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     
     
     
-    float32_t sigma = gPostEffectStyle.smoothing.kernelSize;
+   // float32_t sigma = gPostEffectStyle.smoothing.kernelSize;
     
    
     
@@ -94,14 +94,14 @@ PixelShaderOutput main(VertexShaderOutput input)
         {
             for (int32_t y = 0; y < 3; ++y)
             {
-                kernel3x3[x][y] = gauss(kIndex3x3[x][y].x, kIndex3x3[x][y].y, sigma);
+                kernel3x3[x][y] = gauss(kIndex3x3[x][y].x, kIndex3x3[x][y].y, gPostEffectStyle.smoothing.kernelSize);
                 weight += kernel3x3[x][y];
 
             }
 
         }
        
-    
+        
         for (int32_t i = 0; i < 3; ++i)
         {
             for (int32_t j = 0; j < 3; ++j)

@@ -39,7 +39,7 @@ void Sprite::sPipeline(){
 	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreateSpritePSShader();
 
 
-	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
+	rootSignature_ = GraphicsPipeline::GetInstance()->CreateSpriteRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateSpritePipeline(blendMode_);
 
 	

@@ -202,14 +202,21 @@ struct SpotLight {
 	float decay_;//減衰
 	float cosAngle_;//
 	bool isEnable_ = false;
+	float padding;
+	
 
 };
 
+struct Environment {
+	float environment;
+	bool isEnble_ = false;
+};
 
 struct WritingStyle {
 	DirectionLight directionLight_;
 	PointLight pointLight_;
 	SpotLight spotLight_;
+	Environment  environment_;
 };
 
 

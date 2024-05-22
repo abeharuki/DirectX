@@ -45,9 +45,15 @@ public: // 静的メンバ関数
 
 	static Skybox* Create(const std::string& fileName);
 
+	uint32_t GetTexture() { return texture_; }
+
 public: // 静的メンバ変数
 	// 頂点数
 	static const int kVertNum = 4;
+
+	static Skybox* instance_;
+
+	static uint32_t textureNum;
 
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
@@ -114,5 +120,4 @@ private: // メンバ関数
 	/// </summary>
 	void CreateVertexResource();
 	void LoadTexture(const std::string& fileName);
-	void AdjustTextureSize();
 };

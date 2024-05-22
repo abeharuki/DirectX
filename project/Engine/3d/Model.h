@@ -15,6 +15,8 @@
 #include "ViewProjection.h"
 #include "GraphicsPipeline.h"
 #include "ModelManager.h"
+#include <Skybox.h>
+
 
 class Model {
 public: // 静的メンバ変数
@@ -96,6 +98,15 @@ public:
 	//光沢度
 	void SetShininess(float i);
 
+	//映り込み度
+	void Environment(float environment, bool flag) {
+		if (Skybox::textureNum != 0) {
+			lightData->environment_.isEnble_ = flag;
+		}
+		
+		lightData->environment_.environment = environment;
+	}
+
 private:
 	
 	
@@ -118,6 +129,7 @@ private:
 	
 	TextureManager* textureManager_;
 	uint32_t texture_;
+	uint32_t skyboxTexture_;
 
 	uint16_t instanceCount = 10;
  private:

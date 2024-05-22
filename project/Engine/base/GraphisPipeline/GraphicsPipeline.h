@@ -35,6 +35,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> skyboxRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> lineRootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> spriteRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> particleRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> animationRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> postEffectRootSignature_ = nullptr;
@@ -82,6 +83,7 @@ public:
 
 	//	RootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateRootSignature();
+	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateSpriteRootSignature();
 	//SkyCube
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateSkyboxRootSignature();
 	//	LineRootSignatureの生成

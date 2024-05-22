@@ -12,7 +12,7 @@ void TitleScene::Initialize() {
 	line_.reset(Line::CreateLine(startPos_, endPos_));
 	viewProjection_.Initialize();
 	viewProjection_.rotation_.x = 0.28f;
-	viewProjection_.translation_ = { 0.0f, 7.0f, -18.0f };
+	viewProjection_.translation_ = { 0.0f, 3.0f, -9.0f };
 	worldTransformSphere_.Initialize();
 	//worldTransformSphere_.scale = { 10.0f,10.0f,10.0f };
 	worldTransformBox_.Initialize();
@@ -35,7 +35,8 @@ void TitleScene::Initialize() {
 	//animation_.reset(Animations::Create("./resources/AnimatedCube", "AnimatedCube_BaseColor.png","AnimatedCube.gltf"));
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "enemy.png", "enemy.gltf"));
+	//animation_.reset(Animations::Create("resources/Enemy", "enemy.png", "enemy.gltf"));
+	animation_.reset(Animations::Create("resources/human", "white.png", "walk.gltf"));
 
 	modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
@@ -100,7 +101,8 @@ void TitleScene::Update() {
 	skydome_->Update();
 	viewProjection_.UpdateMatrix();
 	animation_->Update(worldTransformBox_);
-	
+	animation_->Environment(1.0f, true);
+
 	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
 	static int currentItem = 1; // 初期選択アイテムのインデックス
 
