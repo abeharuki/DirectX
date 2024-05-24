@@ -42,6 +42,8 @@ void TitleScene::Initialize() {
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
 	//modelGround_.reset(Model::CreateModelFromObj("resources/genko/genko.obj", "resources/moon.png"));
 
+	ModelManager::GetInstance()->LoadJsonObjFile();
+
 	isSprite_ = false;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
 	uv.rotate = { 0.0f, 0.0f, 0.0f };

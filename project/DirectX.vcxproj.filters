@@ -64,6 +64,7 @@
     <ClCompile Include="Engine\Manager\TextureManeger.cpp" />
     <ClCompile Include="Engine\3d\Line.cpp" />
     <ClCompile Include="Engine\3d\Skybox.cpp" />
+    <ClCompile Include="Application\base\Object3d.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\base\BaseCharacter.h" />
@@ -121,6 +122,7 @@
     <ClInclude Include="Application\base\GlobalVariables\GlobalVariables.h" />
     <ClInclude Include="Engine\3d\Line.h" />
     <ClInclude Include="Engine\3d\Skybox.h" />
+    <ClInclude Include="Application\base\Object3d.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\hlsl\Fullscreen.hlsli" />
