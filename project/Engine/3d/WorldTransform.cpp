@@ -18,7 +18,7 @@ void WorldTransform::Map() {
 
 void WorldTransform::TransferMatrix() { 
 	constMap->matWorld = matWorld_; 
-	constMap->WorldInverseTranspose = Math::Inverse(matWorld_);
+	constMap->WorldInverseTranspose = Math::Transpose(Math::Inverse(matWorld_));
 }
 
 void WorldTransform::UpdateMatrix() {
