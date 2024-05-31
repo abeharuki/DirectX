@@ -27,6 +27,8 @@ void PostEffect::Initialize() {
 	CreateResource();
 }
 
+void PostEffect::Update() {}
+
 void PostEffect::Draw() {
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
@@ -44,6 +46,8 @@ void PostEffect::Draw() {
 
 }
 
+void PostEffect::Apply() {}
+
 void PostEffect::CreateResource() {
 	postEffectResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(PostEffects));
 	postEffectResource_->Map(0, nullptr, reinterpret_cast<void**>(&postEffectData));
@@ -58,10 +62,10 @@ void PostEffect::CreateResource() {
 void PostEffect::sPipeline() {
 
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePostEffectVSShader();
-	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePostEffectPSShader();
+	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePostEffectPSShader(L"PostEffect.PS.hlsl");
 
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreatePostEffectRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreatePostEffectGraphicsPipeline();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreatePostEffectGraphicsPipeline(pixelShaderBlob_);
 
 };

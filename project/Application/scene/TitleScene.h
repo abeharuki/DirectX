@@ -87,4 +87,6 @@ private:
 	Vignetting vignetting_;
 	Smoothing smoothing_;
 	bool postEffects[3];
+
+	float env_;
 };

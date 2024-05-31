@@ -50,7 +50,11 @@ public:
 
 	void Initialize();
 
+	void Update();
+
 	void Draw();
+
+	void Apply();
 
 	//エフェクトの設定
 	void isGrayscale(bool flag) { postEffectData->grayscal.isEnable = flag; }

@@ -864,7 +864,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateAnimationGrap
 	}
 }
 
-Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreatePostEffectGraphicsPipeline() {
+Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreatePostEffectGraphicsPipeline(Microsoft::WRL::ComPtr<IDxcBlob> postEffectPixelShaderBlob_) {
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> postEffectPipelineState_ = nullptr;
 	if (postEffectPipelineState_) {
 		return postEffectPipelineState_;
 	}
@@ -1898,8 +1899,10 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePostEffectVSShader() {
 	return GraphicsPipeline::GetInstance()->postEffectVertexShaderBlob_;
 }
 
-Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePostEffectPSShader() {
+Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePostEffectPSShader(const std::wstring path) {
 	HRESULT hr_ = S_FALSE;
+
+	Microsoft::WRL::ComPtr<IDxcBlob> postEffectPixelShaderBlob_ = nullptr;
 
 	// dxcCompilerを初期化
 	IDxcUtils* dxcUtils = nullptr;
@@ -1915,14 +1918,13 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePostEffectPSShader() {
 	assert(SUCCEEDED(hr_));
 
 	// Shaderをコンパイルする
-	if (GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_) {
-		return GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_;
+	if (postEffectPixelShaderBlob_) {
+		return postEffectPixelShaderBlob_;
 	}
-	GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_ =
-		CompileShader(L"resources/hlsl/PostEffect.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
-	assert(postEffectPixelShaderBlob_ != nullptr);
+	postEffectPixelShaderBlob_ = CompileShader(L"resources/hlsl/" + path, L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	assert(postEffectPixelShaderBlob_ != nullptr); 
 
-	return GraphicsPipeline::GetInstance()->postEffectPixelShaderBlob_;
+	return postEffectPixelShaderBlob_;
 }
 
 

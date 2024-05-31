@@ -101,10 +101,10 @@ void TitleScene::Update() {
 	skydome_->Update();
 	viewProjection_.UpdateMatrix();
 	animation_->Update(worldTransformBox_);
-	animation_->Environment(1.0f, true);
+	animation_->Environment(env_, true);
 
 	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
-	static int currentItem = 1; // 初期選択アイテムのインデックス
+	static int currentItem = 0; // 初期選択アイテムのインデックス
 
 
 	if (currentItem == 0) {
@@ -149,22 +149,23 @@ void TitleScene::Update() {
 		ImGui::TreePop();
 	}
 
-
-	if (ImGui::TreeNode("Bunny")) {
+	if (ImGui::TreeNode("Sphere")) {
 
 		ImGui::DragFloat3("BunnyPos", &worldTransformSphere_.translate.x, 0.1f);
 		ImGui::DragFloat3("BunnyRotate", &worldTransformSphere_.rotate.x, 0.01f);
 		ImGui::DragFloat3("BunnySize", &worldTransformSphere_.scale.x, 0.1f);
-		
+
 		ImGui::TreePop();
 	}
+
+
 
 	if (ImGui::TreeNode("Animation")) {
 
 		ImGui::DragFloat3("AnimationPos", &worldTransformBox_.translate.x, 0.1f);
 		ImGui::DragFloat3("AnimationRotate", &worldTransformBox_.rotate.x, 0.01f);
 		ImGui::DragFloat3("AnimationSize", &worldTransformBox_.scale.x, 0.1f);
-
+		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
 
@@ -259,5 +260,5 @@ void TitleScene::Draw() {
 	}
 	//skydome_->Draw(viewProjection_,false);
 	skybox_->Draw(worldTransformGround_, viewProjection_);
-	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
+	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 }
