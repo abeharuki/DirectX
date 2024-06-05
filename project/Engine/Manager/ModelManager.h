@@ -16,13 +16,11 @@
 #include <assimp/postprocess.h>
 #include <DirectXTex.h>
 #include <json.hpp>
-#include <Object3d.h>
 
 struct Scene {
 	struct ObjectData {
 		std::string filename;
 		Transform transform;
-		std::vector<Object3d*> objects;
 		std::vector<ObjectData> children;
 	};
 
@@ -38,18 +36,17 @@ public:
 	static ModelData LoadGltfFile(const std::string& filename);
 	static ModelData LoadObjFile(const std::string& filename);
 
-	void LoadJsonObjFile(const std::string& filename);
+	
+	void LoadJsonObject(nlohmann::json& object, Scene::ObjectData& objectData);
+
 	
 
 	static Node ReadNode(aiNode* node);
 
 	static const int maxtex = 256;
-
-private:
-	void LoadJsonObject(nlohmann::json& object, Scene::ObjectData& parentObjectData);
+	
 private:
 	static ModelManager* instance_;
 
-	std::map<std::string,Model*> models;
 
 };

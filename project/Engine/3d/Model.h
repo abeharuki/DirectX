@@ -50,6 +50,7 @@ public:
 	//初期化
 	static void StaticInitialize();
 	void Initialize(const std::string& filename, const std::string& texturePath);
+	void Initialize(const std::string& filename);
 
 	
 	/// <summary>
@@ -86,6 +87,8 @@ public:
 
 	//objと画像パス
 	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
+
+	static Model* CreateFromObj(const std::string& filename);
 	
 	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 

@@ -12,6 +12,7 @@
 #include "Line.h"
 #include <PostEffects/PostEffect.h>
 #include <Skybox.h>
+#include "3d/ModelLoader.h"
 
 class TitleScene : public IScene {
 public:
@@ -68,6 +69,9 @@ private:
 	std::unique_ptr<Model> modelBunny_;
 	std::unique_ptr<Model> modelGround_;
 
+	//ローダー
+	std::unique_ptr<ModelLoader> loader_;
+
 	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Animations>human_;
 	
@@ -87,4 +91,7 @@ private:
 	Vignetting vignetting_;
 	Smoothing smoothing_;
 	bool postEffects[3];
+
+	
+
 };

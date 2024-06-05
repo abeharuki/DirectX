@@ -42,7 +42,7 @@ void TitleScene::Initialize() {
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
 	//modelGround_.reset(Model::CreateModelFromObj("resources/genko/genko.obj", "resources/moon.png"));
 
-	ModelManager::GetInstance()->LoadJsonObjFile();
+	//loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	isSprite_ = false;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
@@ -253,13 +253,13 @@ void TitleScene::Draw() {
 
 	//line_->Draw(worldTransformBox_,viewProjection_,false);
 	//human_->Draw(worldTransformSphere_, viewProjection_,true);
-	animation_->Draw(worldTransformBox_, viewProjection_,true);
+	//animation_->Draw(worldTransformBox_, viewProjection_,true);
 	//modelBunny_->Draw(worldTransformSphere_, viewProjection_, true);
-	modelGround_->Draw(worldTransformGround_, viewProjection_, false);
+	//modelGround_->Draw(worldTransformGround_, viewProjection_, false);
 	if (isSprite_) {
 		sprite_->Draw(uv);
 	}
 	//skydome_->Draw(viewProjection_,false);
-	skybox_->Draw(worldTransformGround_, viewProjection_);
+	//skybox_->Draw(worldTransformGround_, viewProjection_);
 	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 }

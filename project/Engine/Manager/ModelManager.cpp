@@ -213,69 +213,9 @@ Node ModelManager::ReadNode(aiNode* node)
 	return result;
 }
 
-//Json型のモデル用
-void ModelManager::LoadJsonObjFile(const std::string& filename) {
-	//連結してファイルパスを得る
-	const std::string fullpath = "./resources/JsonFile" + filename;
 
-	//fileストリーム
-	std::ifstream file;
-
-	//ファイルを開く
-	file.open(fullpath);
-	//fileオープンの失敗をチェック
-	if (file.fail()) {
-		assert(0);
-	}
-
-	//JSON文字列から回答したデータ
-	nlohmann::json deserialized;
-
-	//解凍
-	file >> deserialized;
-
-	//正しいレベルデータfileかチェック
-	assert(deserialized.is_object());
-	assert(deserialized.contains("name"));
-	assert(deserialized["name"].is_string());
-
-	//"name"を文字列として取得
-	std::string name = deserialized["name"].get<std::string>();
-	assert(name.compare("scene") == 0);
-
-	//レベルデータ格納用インスタンスを作成
-	Scene* levelData = new Scene();
-
-	//"objects"のすべてのオブジェクトを走査
-	for (nlohmann::json& object : deserialized["objects"]) {
-		Scene::ObjectData rootObject;
-		LoadJsonObject(object, rootObject);
-		levelData->objects.push_back(rootObject);
-
-	}
-
-	//レベルデータからオブジェクトの生成,配置
-	for (auto& objectData : levelData->objects) {
-		//ファイル名から登録済みモデルを検索
-		Model* model = nullptr;
-		decltype(models)::iterator it = models.find(objectData.filename);
-		if (it != models.end()) { model = it->second; }
-		//モデルを指定して3Dオブジェクトを生成
-		Object3d* newObject = Object3d::Create(model);
-		//座標
-		newObject->SetPosition(objectData.transform.translate);
-		//回転角
-		newObject->SetRatation(objectData.transform.rotate);
-		//スケール
-		newObject->SetScale(objectData.transform.scale);
-		//配列に登録
-		objectData.objects.clear();
-		objectData.objects.push_back(newObject);
-		levelData->objects.push_back(objectData);
-	}
-}
-
-void ModelManager::LoadJsonObject(nlohmann::json& object, Scene::ObjectData& parentObjectData) {
+void ModelManager::LoadJsonObject(nlohmann::json& object, Scene::ObjectData& objectData) {
+	
 	assert(object.contains("type"));
 
 	// 種別を取得
@@ -283,9 +223,7 @@ void ModelManager::LoadJsonObject(nlohmann::json& object, Scene::ObjectData& par
 
 	// MESH
 	if (type.compare("MESH") == 0) {
-		// 今回追加した要素の参照を得る
-		Scene::ObjectData objectData;
-
+		
 		if (object.contains("file_name")) {
 			// ファイル名
 			objectData.filename = object["file_name"].get<std::string>();
@@ -294,27 +232,27 @@ void ModelManager::LoadJsonObject(nlohmann::json& object, Scene::ObjectData& par
 		nlohmann::json transform = object["transform"];
 		// 平行移動
 		objectData.transform.translate.x = transform["translation"][0].get<float>();
-		objectData.transform.translate.y = transform["translation"][1].get<float>();
-		objectData.transform.translate.z = transform["translation"][2].get<float>();
+		objectData.transform.translate.y = transform["translation"][2].get<float>();
+		objectData.transform.translate.z = transform["translation"][1].get<float>();
 		// 回転角
-		objectData.transform.rotate.x = transform["rotation"][0].get<float>();
-		objectData.transform.rotate.y = transform["rotation"][1].get<float>();
-		objectData.transform.rotate.z = transform["rotation"][2].get<float>();
+		objectData.transform.rotate.x = -transform["rotation"][0].get<float>();
+		objectData.transform.rotate.y = -transform["rotation"][2].get<float>();
+		objectData.transform.rotate.z = -transform["rotation"][1].get<float>();
 		// スケーリング
 		objectData.transform.scale.x = transform["scaling"][0].get<float>();
-		objectData.transform.scale.y = transform["scaling"][1].get<float>();
-		objectData.transform.scale.z = transform["scaling"][2].get<float>();
+		objectData.transform.scale.y = transform["scaling"][2].get<float>();
+		objectData.transform.scale.z = transform["scaling"][1].get<float>();
 
-		// 子オブジェクトの処理
-		if (object.contains("children")) {
-			for (nlohmann::json& child : object["children"]) {
-				LoadJsonObject(child, objectData);
-			}
-		}
-
-		// 親オブジェクトの子リストに追加
-		parentObjectData.children.push_back(objectData);
+		//TODO: コライダーのパラメータ読み込み
 	}
 
+	// 子オブジェクトの処理
+	if (object.contains("children")) {
+		for (nlohmann::json& child : object["children"]) {
+			objectData.children.emplace_back(Scene::ObjectData{});
+			LoadJsonObject(child, objectData.children.back());
+		}
+	}
 
 }
+

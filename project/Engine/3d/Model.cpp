@@ -15,6 +15,16 @@ void Model::Initialize(const std::string& filename, const std::string& texturePa
 	
 }
 
+void Model::Initialize(const std::string& filename) {
+
+	modelData = ModelManager::LoadObjFile(filename);
+	CreateVertexResource();
+	sPipeline();
+
+
+}
+
+
 void Model::sPipeline() {
 	
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
@@ -144,6 +154,15 @@ Model* Model::CreateModelFromObj(const std::string& filename, const std::string&
 
 
 }
+
+Model* Model::CreateFromObj(const std::string& filename) {
+	Model* model = new Model;
+	model->Initialize(filename);
+	return model;
+
+
+}
+
 
 void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
 	modelData = ModelManager::LoadObjFile(filename);
