@@ -107,6 +107,25 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 	}
 	
 }
+void Animations::Initialize(const std::string& motionPath) {
+
+	LoadAnimation("resources/JsonFile/", motionPath +".gltf");
+	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
+	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(), skeleton, modelData, Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	CreateVertexResource();
+	sPipeline();
+	jointsNum_ = int(skeleton.joints.size());
+	line_.resize(jointsNum_);
+	//boonPos.resize(jointsNum_);
+	//boonPos2.resize(jointsNum_);
+
+	for (int i = 0; i < jointsNum_; i++) {
+		line_[i].reset(Line::CreateLine({ 0,0,0 }, { 0,0,0 }));
+	}
+
+}
+
+
 
 void Animations::LoadAnimation(const std::string& directorPath, const std::string& filename) {
 	modelData = modelManager_->LoadGltfFile(directorPath + "/" + filename);

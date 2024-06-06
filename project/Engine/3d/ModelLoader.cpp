@@ -32,7 +32,7 @@ ModelLoader* ModelLoader::Create(const std::string& filename) {
 //Json型のモデル用
 void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 	//連結してファイルパスを得る
-	const std::string fullpath = filename;
+	const std::string fullpath = /*./resources/JsonFile*/filename;
 
 	//fileストリーム
 	std::ifstream file;
@@ -68,36 +68,36 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 		levelData->objects.emplace_back(Scene::ObjectData{});
 		// 今回追加した要素の参照を得る
 		Scene::ObjectData& objectData = levelData->objects.back();
+		if (object.contains("file_name")) {
+			objectData.filename = object["file_name"];
+		}
 		ModelManager::GetInstance()->LoadJsonObject(object, objectData);
 
 	}
 
 	//モデルの読み込み
-	/*
 	for (auto& objectData : levelData->objects) {
 		//ファイル名から登録済みモデルを検索
 		decltype(models)::iterator it = models.find(objectData.filename);
-		if (it != models.end()) {
+		
+		if (it == models.end()) {
 			Model* model = Model::CreateFromObj(objectData.filename);
 			models[objectData.filename] = model;
 		}
 	}
-	*/
+	
 	//レベルデータからオブジェクトの生成,配置
 	for (auto& objectData : levelData->objects) {
-		//ファイル名から登録済みモデルを検索
-		Model* model = nullptr;
-		decltype(models)::iterator it = models.find(objectData.filename);
-		if (it != models.end()) { model = it->second; }
 		//モデルを指定して3Dオブジェクトを生成
 		WorldTransform* newObject = new WorldTransform;
-		newObject->Initialize();
 		//座標
 		newObject->translate = objectData.transform.translate;
 		//回転角
 		newObject->rotate = objectData.transform.rotate;
 		//スケール
 		newObject->scale = objectData.transform.scale;
+		newObject->Initialize();
+
 		//配列に登録
 		worldTransforms.push_back(newObject);
 	}

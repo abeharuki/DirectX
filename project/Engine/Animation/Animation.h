@@ -74,6 +74,7 @@ public:
 
 	//初期化
 	void Initialize(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
+	void Initialize(const std::string& motionPath);
 
 	//Animation
 	void Update(WorldTransform& worldTransform);

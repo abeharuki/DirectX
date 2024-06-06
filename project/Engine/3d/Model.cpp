@@ -17,7 +17,7 @@ void Model::Initialize(const std::string& filename, const std::string& texturePa
 
 void Model::Initialize(const std::string& filename) {
 
-	modelData = ModelManager::LoadObjFile(filename);
+	modelData = ModelManager::LoadObjFile("resources/JsonFile/" + filename + ".obj");
 	CreateVertexResource();
 	sPipeline();
 

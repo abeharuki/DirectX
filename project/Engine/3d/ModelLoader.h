@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <Model.h>
-
+#include "Animation/Animation.h"
 
 class ModelLoader {
 	
@@ -26,6 +26,7 @@ private:
 private:
 	Scene* levelData = nullptr;
 	std::map<std::string, Model*> models;
+	std::map<std::string, Animation*> animationModels;
 	std::vector<WorldTransform*> worldTransforms;
 
 };

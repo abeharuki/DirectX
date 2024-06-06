@@ -42,7 +42,7 @@ void TitleScene::Initialize() {
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
 	//modelGround_.reset(Model::CreateModelFromObj("resources/genko/genko.obj", "resources/moon.png"));
 
-	//loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
+	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	isSprite_ = false;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
@@ -70,16 +70,16 @@ void TitleScene::Update() {
 	sprite_->SetPosition(spritePos_);
 
 	if (Input::PressKey(DIK_A)) {
-		pointLight_.position_.x += -0.1f;
+		viewProjection_.translation_.x += -0.1f;
 	}
 	else if (Input::PressKey(DIK_D)) {
-		pointLight_.position_.x += 0.1f;
+		viewProjection_.translation_.x += 0.1f;
 	}
 	if (Input::PressKey(DIK_S)) {
-		pointLight_.position_.y += -0.1f;
+		viewProjection_.translation_.y += -0.1f;
 	}
 	else if (Input::PressKey(DIK_W)) {
-		pointLight_.position_.y += 0.1f;
+		viewProjection_.translation_.y += 0.1f;
 	}
 
 	if (Input::PressKey(DIK_LEFTARROW)) {
@@ -104,6 +104,8 @@ void TitleScene::Update() {
 	viewProjection_.UpdateMatrix();
 	animation_->Update(worldTransformBox_);
 	animation_->Environment(1.0f, true);
+	loader_->Update();
+
 
 	const char* items[] = { "DirectionLight", "PointLight", "SpotLight" };
 	static int currentItem = 1; // 初期選択アイテムのインデックス
@@ -262,4 +264,6 @@ void TitleScene::Draw() {
 	//skydome_->Draw(viewProjection_,false);
 	//skybox_->Draw(worldTransformGround_, viewProjection_);
 	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
+
+	loader_->Draw(viewProjection_, false);
 }
