@@ -126,6 +126,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\objectos\Tank\Tank.cpp" />
     <ClCompile Include="Application\objectos\Tank\TankManager.cpp" />
     <ClCompile Include="Application\scene\ClearScene.cpp" />
+    <ClCompile Include="Application\scene\DebugScene.cpp" />
     <ClCompile Include="Application\scene\GameScene.cpp" />
     <ClCompile Include="Application\scene\LoadScene.cpp" />
     <ClCompile Include="Application\scene\OverScene.cpp" />
@@ -136,6 +137,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\Line.cpp" />
     <ClCompile Include="Engine\3d\Mesh.cpp" />
     <ClCompile Include="Engine\3d\Model.cpp" />
+    <ClCompile Include="Engine\3d\ModelLoader.cpp" />
     <ClCompile Include="Engine\3d\Sphere.cpp" />
     <ClCompile Include="Engine\3d\ViewProjection.cpp" />
     <ClCompile Include="Engine\3d\WorldTransform.cpp" />
@@ -251,6 +253,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\objectos\Tank\Tank.h" />
     <ClInclude Include="Application\objectos\Tank\TankManager.h" />
     <ClInclude Include="Application\scene\ClearScene.h" />
+    <ClInclude Include="Application\scene\DebugScene.h" />
     <ClInclude Include="Application\scene\GameScene.h" />
     <ClInclude Include="Application\scene\LoadScene.h" />
     <ClInclude Include="Application\scene\OverScene.h" />
@@ -261,6 +264,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Line.h" />
     <ClInclude Include="Engine\3d\Mesh.h" />
     <ClInclude Include="Engine\3d\Model.h" />
+    <ClInclude Include="Engine\3d\ModelLoader.h" />
     <ClInclude Include="Engine\3d\Sphere.h" />
     <ClInclude Include="Engine\3d\ViewProjection.h" />
     <ClInclude Include="Engine\3d\WorldTransform.h" />

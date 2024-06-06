@@ -113,6 +113,64 @@ void Sprite::Draw(Transform& uvTransform ) {
 
 	
 }
+void Sprite::Draw() {
+
+	UpdateVertexBuffer();
+
+	Transform cameraTransform{
+		{1.0f, 1.0f, 1.0f  },
+		{0.0f, 0.0f, 0.0f  },
+		{0.0f, 0.0f, -10.0f}
+	};
+
+	// Sprite用のworldViewProjectionMatrixを作る
+	Matrix4x4 matWorld_ = Math::MakeAffineMatrix(Vector3{ size_.x,size_.y, 1.0f }, Vector3{ 0.0f, 0.0f,rotation_ }, Vector3{ position_.x, position_.y, 0.5f });
+	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
+	Matrix4x4 projectionMatrixSprite = Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
+	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
+	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, matWorld_);
+
+
+
+	// UVTransform用の行列
+	Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
+		{
+			uv.scale.x + 1,
+			uv.scale.y + 1,
+			uv.scale.z + 1,
+		},
+		uv.rotate, uv.translate);
+
+	materialDataSprite->uvTransform = uvTransformMatrix;
+
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
+	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
+	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
+
+	// Spriteをインデックス描画。
+	Engine::GetList()->IASetVertexBuffers(0, 1, &vbView_); // VBVを設定
+	Engine::GetList()->IASetIndexBuffer(&ibView_);         // IBVを設定
+
+
+
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
+	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+	// TransformationMatrixCBufferの場所を設定
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
+	// マテリアルCBufferの場所を設定
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
+
+
+	// 描画
+	Engine::GetList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+
+}
 
 void Sprite::UpdateVertexBuffer() {
 

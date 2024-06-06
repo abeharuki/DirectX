@@ -21,6 +21,9 @@ IScene* SceneFactory::CreateScene(const std::string& sceneName) {
 	else if (sceneName == "LoadScene") {
 		newScene = new LoadScene();
 	}
+	else if (sceneName == "DebugScene") {
+		newScene = new DebugScene();
+	}
 
 
 	return newScene;

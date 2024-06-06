@@ -19,6 +19,7 @@ void FollowCamera::Update() {
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
 
+
 	// ジョイスティックの状態取得
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 		// 回転速度
@@ -50,9 +51,9 @@ void FollowCamera::Update() {
 
 
 	viewProjection_.rotation_.y =
-		Math::LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 0.1f);
+		Math::LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 1.0f);
 	viewProjection_.rotation_.x =
-		Math::LerpShortAngle(viewProjection_.rotation_.x, destinationAngleX_, 0.1f);
+		Math::LerpShortAngle(viewProjection_.rotation_.x, destinationAngleX_, 1.0f);
 
 	// 追従対象がいれば
 	if (target_) {

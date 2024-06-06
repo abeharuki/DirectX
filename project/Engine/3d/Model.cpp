@@ -16,6 +16,14 @@ void Model::Initialize(const std::string& filename, const std::string& texturePa
 	
 }
 
+void Model::Initialize(const std::string& filename) {
+
+	modelData = ModelManager::LoadObjFile("resources/JsonFile/" + filename + ".obj");
+	CreateVertexResource();
+	sPipeline();
+
+
+}
 
 
 void Model::sPipeline() {
@@ -143,6 +151,12 @@ void Model::SetShininess(float i) { materialData->shininess = i; }
 Model* Model::CreateModelFromObj(const std::string& filename, const std::string& texturePath) {
 	Model* model = new Model;
 	model->Initialize(filename, texturePath);
+	return model;
+}
+
+Model* Model::CreateFromObj(const std::string& filename) {
+	Model* model = new Model;
+	model->Initialize(filename);
 	return model;
 }
 

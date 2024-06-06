@@ -1,5 +1,15 @@
 #include "ModelManager.h"
 
+ModelManager* ModelManager::instance_ = nullptr;
+
+ModelManager* ModelManager::GetInstance() {
+	if (instance_ == nullptr)
+	{
+		instance_ = new ModelManager();
+	}
+	return instance_;
+}
+
 MaterialData ModelManager::LoadMaterialTemplateFile(const std::string& filename) {
 	// 宣言
 	MaterialData materialData; // 構築するMaterialData
@@ -185,4 +195,47 @@ Node ModelManager::ReadNode(aiNode* node)
 		result.children[childIndex] = ReadNode(node->mChildren[childIndex]);
 	}
 	return result;
+}
+
+
+void ModelManager::LoadJsonObject(nlohmann::json& object, Scene::ObjectData& objectData) {
+
+	assert(object.contains("type"));
+
+	// 種別を取得
+	std::string type = object["type"].get<std::string>();
+
+	// MESH
+	if (type.compare("MESH") == 0) {
+
+		if (object.contains("file_name")) {
+			// ファイル名
+			objectData.filename = object["file_name"].get<std::string>();
+		}
+
+		nlohmann::json transform = object["transform"];
+		// 平行移動
+		objectData.transform.translate.x = transform["translation"][0].get<float>();
+		objectData.transform.translate.y = transform["translation"][2].get<float>();
+		objectData.transform.translate.z = transform["translation"][1].get<float>();
+		// 回転角
+		objectData.transform.rotate.x = -transform["rotation"][0].get<float>();
+		objectData.transform.rotate.y = -transform["rotation"][2].get<float>();
+		objectData.transform.rotate.z = -transform["rotation"][1].get<float>();
+		// スケーリング
+		objectData.transform.scale.x = transform["scaling"][0].get<float>();
+		objectData.transform.scale.y = transform["scaling"][2].get<float>();
+		objectData.transform.scale.z = transform["scaling"][1].get<float>();
+
+		//TODO: コライダーのパラメータ読み込み
+	}
+
+	// 子オブジェクトの処理
+	if (object.contains("children")) {
+		for (nlohmann::json& child : object["children"]) {
+			objectData.children.emplace_back(Scene::ObjectData{});
+			LoadJsonObject(child, objectData.children.back());
+		}
+	}
+
 }

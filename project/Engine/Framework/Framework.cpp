@@ -14,7 +14,6 @@ void Framework::Update() {
 		nowLoading = true;
 	}
 	sceneManager_->Update();
-
 	Engine::EndFrame();
 }
 

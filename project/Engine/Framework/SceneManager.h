@@ -35,4 +35,8 @@ private:
 	bool load_ = false;
 
 	AbstractSceneFactory* sceneFactory_ = nullptr;
+
+
+	int currentItem = 0; // 初期選択アイテムのインデックス
+	int preCurrentItem = 0;
 };

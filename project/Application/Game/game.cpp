@@ -15,8 +15,13 @@ void Game::Initialize() {
 }
 
 void Game::Update() {
+
+
+
 	// 基底クラスの更新
 	Framework::Update();
+
+	
 }
 
 void Game::Draw() {

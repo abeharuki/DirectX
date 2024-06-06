@@ -15,15 +15,30 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <DirectXTex.h>
+#include <json.hpp>
+
+struct Scene {
+	struct ObjectData {
+		std::string filename;
+		Transform transform;
+		std::vector<ObjectData> children;
+	};
+
+	std::vector<ObjectData> objects;
+};
 
 
 class ModelManager {
 public:
+	static ModelManager* GetInstance();
 
 	//objファイルの読み込み
 	static MaterialData LoadMaterialTemplateFile(const std::string& filename);
 	static ModelData LoadGltfFile(const std::string& filename);
 	static ModelData LoadObjFile(const std::string& filename);
+
+	void LoadJsonObject(nlohmann::json& object, Scene::ObjectData& objectData);
+
 
 	static Node ReadNode(aiNode* node);
 
@@ -31,5 +46,5 @@ public:
 
 
 private:
-
+	static ModelManager* instance_;
 };
