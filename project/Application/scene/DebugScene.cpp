@@ -8,7 +8,21 @@ void DebugScene::Initialize() {
 	viewProjection_.rotation_.x = 0.28f;
 	viewProjection_.translation_ = { 0.0f, 3.0f, -9.0f };
 	worldTransform_.Initialize();
+	worldTransform_.translate.z = -5.0f;
+	worldTransformSkybox_.Initialize();
+	worldTransformAnimation_.Initialize();
+	worldTransformAnimation_.translate = { 2.3f,2.8f,-15.5f };
+	//skybox
+	skybox_ = std::make_unique<Skybox>();
+	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
+
+
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
+
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("resources/human", "white.png", "walk.gltf"));
+
+	//modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
@@ -23,6 +37,10 @@ void DebugScene::Initialize() {
 
 void DebugScene::Update() {
 
+
+	animation_->Update(true);
+	animation_->Environment(env_, true);
+
 	loader_->Update();
 	CameraMove();
 	followCamera_->Update();
@@ -30,9 +48,10 @@ void DebugScene::Update() {
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
 	
+	worldTransformSkybox_.UpdateMatrixQuaternion();
+	worldTransformAnimation_.UpdateMatrixQuaternion();
 
-
-
+	loader_->GetModel("box")->Environment(env_, true);
 	grayscale_.isEnable = postEffects[0];
 	vignetting_.isEnable = postEffects[1];
 	smoothing_.isEnable = postEffects[2];
@@ -41,6 +60,24 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->isSmoothing(smoothing_.isEnable);
 	PostEffect::GetInstance()->SmoothingKernelSize(smoothing_.kernelSize);
 	ImGui::Begin("Setting");
+
+	//ローダーオブジェクト
+	if (ImGui::TreeNode("LoaderObj")) {
+		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
+		ImGui::TreePop();
+	}
+	
+	//アニメーション
+	if (ImGui::TreeNode("Animation")) {
+
+		ImGui::DragFloat3("AnimationPos", &worldTransformAnimation_.translate.x, 0.1f);
+		ImGui::DragFloat3("AnimationRotate", &worldTransformAnimation_.rotate.x, 0.01f);
+		ImGui::DragFloat3("AnimationSize", &worldTransformAnimation_.scale.x, 0.1f);
+		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
+		ImGui::TreePop();
+	}
+
+	//Posteffect
 	if (ImGui::TreeNode("PostEffect")) {
 		// Grayscale
 		//ImGui::Combo("##combo", &postCurrentItem, postItems, IM_ARRAYSIZE(postItems));
@@ -72,6 +109,9 @@ void DebugScene::Update() {
 
 void DebugScene::Draw() {
 	loader_->Draw(viewProjection_, true);
+	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+
+	skybox_->Draw(worldTransform_, viewProjection_);
 }
 
 

@@ -20,6 +20,18 @@ public:
 	void Update();
 	void Draw(const ViewProjection& viewProjection, bool flag);
 
+	//色とアルファ値
+	void SetColor(Vector4 color);
+
+	//光沢度
+	void SetShininess(float i);
+
+	//映り込み度
+	void Environment(float environment, bool flag);
+
+
+	Model* GetModel(std::string name) { return models[name]; }
+
 private:
 	void LoadJsonObjFile(const std::string& filename);
 

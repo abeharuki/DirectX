@@ -202,7 +202,7 @@ struct SpotLight {
 	float decay_;//減衰
 	float cosAngle_;//
 	bool isEnable_ = false;
-
+	float padding;
 };
 
 struct Environment {

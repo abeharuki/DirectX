@@ -116,3 +116,46 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 		worldTransforms.push_back(newObject);
 	}
 }
+
+
+//色とアルファ値
+void ModelLoader::SetColor(Vector4 color) {
+	for (auto& objectData : levelData->objects) {
+		//ファイル名から登録済みモデルを検索
+		Model* model = nullptr;
+		decltype(models)::iterator it = models.find(objectData.filename);
+		if (it != models.end()) { model = it->second; }
+
+		model->SetColor(color);
+
+	}
+};
+
+
+
+//光沢度
+void ModelLoader::SetShininess(float i) {
+	for (auto& objectData : levelData->objects) {
+		//ファイル名から登録済みモデルを検索
+		Model* model = nullptr;
+		decltype(models)::iterator it = models.find(objectData.filename);
+		if (it != models.end()) { model = it->second; }
+
+		model->SetShininess(i);
+
+	}
+};
+
+//映り込み度
+void ModelLoader::Environment(float environment, bool flag) {
+
+	for (auto& objectData : levelData->objects) {
+		//ファイル名から登録済みモデルを検索
+		Model* model = nullptr;
+		decltype(models)::iterator it = models.find(objectData.filename);
+		if (it != models.end()) { model = it->second; }
+
+		model->Environment(environment,flag);
+		
+	}
+}

@@ -104,6 +104,24 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 
 }
 
+void Animations::Initialize(const std::string& motionPath) {
+	textureManager_ = TextureManager::GetInstance();
+	LoadAnimation("resources/JsonFile/", motionPath + ".gltf");
+	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
+	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(), skeleton, modelData, Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	CreateVertexResource();
+	sPipeline();
+	jointsNum_ = int(skeleton.joints.size());
+	line_.resize(jointsNum_);
+	
+
+	for (int i = 0; i < jointsNum_; i++) {
+		line_[i].reset(Line::CreateLine({ 0,0,0 }, { 0,0,0 }));
+	}
+
+}
+
+
 void Animations::LoadAnimation(const std::string& directorPath, const std::string& filename) {
 	modelData = modelManager_->LoadGltfFile(directorPath + "/" + filename);
 	animation = LoadAnimationFile(directorPath, filename);
@@ -196,6 +214,16 @@ void Animations::Update(WorldTransform& worldTransform, bool roop) {
 
 }
 
+void Animations::Update(bool roop) {
+	if (flameTimer_ == 0.0f) { animationTime += 1.0f / 60.0f; }
+	else { animationTime += 1.0f / flameTimer_; }
+
+	if (roop) {
+		animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生 
+	}
+	//ApplyAnimation(skeleton, animation, animationTime);
+
+}
 
 
 

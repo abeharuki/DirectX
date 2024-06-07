@@ -17,7 +17,7 @@ void Model::Initialize(const std::string& filename, const std::string& texturePa
 }
 
 void Model::Initialize(const std::string& filename) {
-
+	textureManager_ = TextureManager::GetInstance();
 	modelData = ModelManager::LoadObjFile("resources/JsonFile/" + filename + ".obj");
 	CreateVertexResource();
 	sPipeline();
@@ -61,7 +61,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 	if (lightData->environment_.isEnble_) {
-		Engine::GetList()->SetGraphicsRootDescriptorTable(7, textureManager_->GetGPUHandle(Skybox::textureNum));
+		Engine::GetList()->SetGraphicsRootDescriptorTable(6, textureManager_->GetGPUHandle(Skybox::textureNum));
 	}
 
     // wvp用のCBufferの場所を設定
@@ -159,6 +159,7 @@ Model* Model::CreateFromObj(const std::string& filename) {
 
 void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
 	modelData = ModelManager::LoadObjFile(filename);
+	textureManager_ = TextureManager::GetInstance();
 	TextureManager::GetInstance()->Load(texturePath);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
 	
