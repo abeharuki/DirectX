@@ -16,6 +16,9 @@ void DebugScene::Initialize() {
 	followCamera_->SetTarget(&worldTransform_);
 
 	PostEffect::GetInstance()->isGrayscale(false);
+
+	vignetting_.intensity = 16.0f;
+	smoothing_.kernelSize = 2.0f;
 }
 
 void DebugScene::Update() {
@@ -27,6 +30,44 @@ void DebugScene::Update() {
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
 	
+
+
+
+	grayscale_.isEnable = postEffects[0];
+	vignetting_.isEnable = postEffects[1];
+	smoothing_.isEnable = postEffects[2];
+	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
+	PostEffect::GetInstance()->Vignette(vignetting_);
+	PostEffect::GetInstance()->isSmoothing(smoothing_.isEnable);
+	PostEffect::GetInstance()->SmoothingKernelSize(smoothing_.kernelSize);
+	ImGui::Begin("Setting");
+	if (ImGui::TreeNode("PostEffect")) {
+		// Grayscale
+		//ImGui::Combo("##combo", &postCurrentItem, postItems, IM_ARRAYSIZE(postItems));
+		if (ImGui::TreeNode("Grayscale")) {
+			ImGui::Checkbox("isGaryscale%d", &postEffects[0]);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("Vignetting")) {
+			// vignetting
+			ImGui::Checkbox("isVignetting", &postEffects[1]);
+			ImGui::DragFloat3("VignettingColor", &vignetting_.color.x, 0.1f);
+			ImGui::DragFloat("intensity", &vignetting_.intensity, 0.1f);
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("Smoothing")) {
+			ImGui::Checkbox("isSmoothing", &postEffects[2]);
+			ImGui::SliderFloat("KerbelSize", &smoothing_.kernelSize, 1, 5);
+			ImGui::TreePop();
+		}
+
+		ImGui::TreePop();
+	}
+
+	ImGui::End();
 }
 
 void DebugScene::Draw() {

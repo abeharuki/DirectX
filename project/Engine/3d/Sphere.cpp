@@ -34,7 +34,7 @@ void Sphere::sPipeline() {
 
 void Sphere::Draw(
 	WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light) {
-	cameraData->worldPos = viewProjection.translation_;
+	cameraData->worldPos = viewProjection.worldPos_;
 
 
 	// ライティング有効化
@@ -182,7 +182,6 @@ void Sphere::CreateVertexResource() {
 	// カメラ
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
 	cameraResorce_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
-	cameraData->worldPos = { 0.0f, 0.0f, -10.0f };
 
 	// ライティング
 	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));

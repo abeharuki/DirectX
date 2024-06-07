@@ -68,6 +68,8 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 		levelData->objects.emplace_back(Scene::ObjectData{});
 		// 今回追加した要素の参照を得る
 		Scene::ObjectData& objectData = levelData->objects.back();
+
+
 		if (object.contains("file_name")) {
 			objectData.filename = object["file_name"];
 		}
@@ -81,6 +83,18 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 		decltype(models)::iterator it = models.find(objectData.filename);
 
 		if (it == models.end()) {
+			/*ファイル形式別の読み込み作り途中
+			std::wstring filePathW = Utility::ConvertString(objectData.filename);
+			HRESULT hr{};
+			if (filePathW.ends_with(L".obj")) {
+				Model* model = Model::CreateFromObj(objectData.filename);
+				models[objectData.filename] = model;
+			}
+			else {
+				//Animations* animetion = Animations::Create(objectData.filename);
+			}*/
+
+			
 			Model* model = Model::CreateFromObj(objectData.filename);
 			models[objectData.filename] = model;
 		}

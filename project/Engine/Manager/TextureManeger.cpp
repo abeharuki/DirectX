@@ -82,15 +82,27 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 	// テクスチャファイルを読み込んでプログラムを扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = Utility::ConvertString(filePath);
-	HRESULT hr =
-	    DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	HRESULT hr{};
+	if (filePathW.ends_with(L".dds")) {
+		DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+	}
+	else {
+		DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	}
+
 	assert(SUCCEEDED(hr));
 
 	// ミニマップの作成
 	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(
-	    image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0,
-	    mipImages);
+	if (DirectX::IsCompressed(image.GetMetadata().format)) {
+		mipImages = std::move(image);
+	}
+	else {
+		hr = DirectX::GenerateMipMaps(
+			image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 4,
+			mipImages);
+	}
+
 
 	// ミニマップ付きのデータを返す
 	return mipImages;
@@ -127,18 +139,23 @@ void TextureManager::LoadInternal(const std::string& filePath) {
 	srvHandle_ = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	textureData.srvHandleCPU_ = srvHandle_;//Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, srvIndex);
 	textureData.srvHandleGPU_ = srvHandle_;//Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, srvIndex);
-	//textureData.srvHandleCPU_.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//textureData.srvHandleGPU_.ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
 
 	// metaDataを元にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = textureData.metadata.format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
+	if (textureData.metadata.IsCubemap()) {
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+		srvDesc.TextureCube.MostDetailedMip = 0;
+		srvDesc.TextureCube.MipLevels = UINT_MAX;
+		srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
+	}
+	else {
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+		srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
+	}
 	Engine::GetDevice()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU_);
-	
+
 }
 
 void TextureManager::CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource,uint32_t instanceCount) {
@@ -156,8 +173,6 @@ void TextureManager::CreateInstanceSRV(uint32_t index, ID3D12Resource* pResource
 	srvHandle_ = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	instancingSrvHandelCPU[index] = srvHandle_;
 	instancingSrvHandelGPU[index] = srvHandle_;
-	//instancingSrvHandelCPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize( D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//instancingSrvHandelGPU[index].ptr += Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	Engine::GetDevice()->CreateShaderResourceView(pResource, &instancingSrvDesc, instancingSrvHandelCPU[index]);
 }
 
@@ -196,27 +211,28 @@ ID3D12Resource* TextureManager::CreateTextureResource(
 	return resource;
 }
 
-// TextureResourceにデータ転送
-void TextureManager::UploadTextureData(
-    Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+void TextureManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
 	// Meta情報を取得
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	// 全MipMapについて
-	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-		// MipMapLevelを指定して各Imageを取得
-		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-		// Textureに転送
-		HRESULT hr = texture->WriteToSubresource(
-		    UINT(mipLevel),
-		    nullptr,              // 全領域へコピー
-		    img->pixels,          // 元データアドレ
-		    UINT(img->rowPitch),  // 1ランサイズ
-		    UINT(img->slicePitch) // 1枚サイズ
-		);
-		assert(SUCCEEDED(hr));
+	// 全MipMapと全アレイ要素について
+	for (size_t arraySlice = 0; arraySlice < metadata.arraySize; ++arraySlice) {
+		for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
+			// MipMapLevelとアレイ要素を指定して各Imageを取得
+			const DirectX::Image* img = mipImages.GetImage(mipLevel, arraySlice, 0);
+			if (img) {
+				// Textureに転送
+				HRESULT hr = texture->WriteToSubresource(
+					static_cast<UINT>(mipLevel + arraySlice * metadata.mipLevels),
+					nullptr,
+					img->pixels,
+					static_cast<UINT>(img->rowPitch),
+					static_cast<UINT>(img->slicePitch)
+				);
+				assert(SUCCEEDED(hr));
+			}
+		}
 	}
 }
-
 const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
 {
 	

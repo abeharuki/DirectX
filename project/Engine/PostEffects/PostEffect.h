@@ -28,9 +28,16 @@ struct Vignetting {
 	float padding[3];
 };
 
+struct Smoothing
+{
+	int32_t isEnable;
+	float kernelSize;
+};
+
 struct PostEffects {
 	Grayscale grayscal;
 	Vignetting vignetting;
+	Smoothing smoothing;
 };
 
 
@@ -43,13 +50,20 @@ public:
 
 	void Initialize();
 
+	void Update();
+
 	void Draw();
 
-	void isGrayscale(bool flag) {postEffectData->grayscal.isEnable = flag;}
+	void Apply();
+
+	//エフェクトの設定
+	void isGrayscale(bool flag) { postEffectData->grayscal.isEnable = flag; }
 	void isVignetting(bool flag) { postEffectData->vignetting.isEnable = flag; }
 	void VignetteIntensity(float intensity) { postEffectData->vignetting.intensity = intensity; }
 	void VignetteColor(Vector3 color) { postEffectData->vignetting.color = color; }
 	void Vignette(Vignetting vigne) { postEffectData->vignetting = vigne; }
+	void isSmoothing(bool flag) { postEffectData->smoothing.isEnable = flag; }
+	void SmoothingKernelSize(float size) { postEffectData->smoothing.kernelSize = size; }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;
@@ -72,7 +86,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> postEffectResource_;
 
 	PostEffects* postEffectData = nullptr;
-	
+
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;

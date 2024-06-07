@@ -33,25 +33,30 @@ public:
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> skyboxRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> lineRootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> spriteRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> particleRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> animationRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> postEffectRootSignature_ = nullptr;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> skyboxPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> linePipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> spritePipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> particlesPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> animationPipelineState_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> postEffectPipelineState_ = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_ = nullptr;
-	//Line
-	Microsoft::WRL::ComPtr<IDxcBlob> linePixelShaderBlob_ = nullptr;
 	//3dObj
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_ = nullptr;
+	//skybox
+	Microsoft::WRL::ComPtr<IDxcBlob> skyboxVertexShaderBlob_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcBlob> skyboxPixelShaderBlob_ = nullptr;
+	//Line
+	Microsoft::WRL::ComPtr<IDxcBlob> linePixelShaderBlob_ = nullptr;
 	//Sprite
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexSpriteShaderBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelSpriteShaderBlob_ = nullptr;
@@ -62,20 +67,23 @@ public:
 	Microsoft::WRL::ComPtr<IDxcBlob> animationVertexShaderBlob_ = nullptr;
 	//PostEffect
 	Microsoft::WRL::ComPtr<IDxcBlob> postEffectVertexShaderBlob_ = nullptr;
-	Microsoft::WRL::ComPtr<IDxcBlob> postEffectPixelShaderBlob_ = nullptr;
 
 public:
 	//	GraphicsPipelineの生成
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateGraphicsPipeline(BlendMode blendMode_);
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateSkyboxGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateLineGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateSpritePipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateAnimationGraphicsPipeline(BlendMode blendMode_);
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreatePostEffectGraphicsPipeline();
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreatePostEffectGraphicsPipeline(Microsoft::WRL::ComPtr<IDxcBlob> postEffectPixelShaderBlob_);
 
 
 	//	RootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateRootSignature();
+	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateSpriteRootSignature();
+	//SkyCube
+	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateSkyboxRootSignature();
 	//	LineRootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateLineRootSignature();
 	// ParticleRootSignatureの生成
@@ -88,6 +96,11 @@ public:
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateVSShader();
 	//	pixelshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreatePSShader();
+	//	SkyCubvertexshaderの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreateSkyboxVSShader();
+	//	SkyCubepixelshaderの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreateSkyboxPSShader();
+
 	//	pixelshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateLinePSShader();
 
@@ -107,7 +120,7 @@ public:
 	//	vertexshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreatePostEffectVSShader();
 	//	pixelshaderの生成
-	Microsoft::WRL::ComPtr<IDxcBlob> CreatePostEffectPSShader();
+	Microsoft::WRL::ComPtr<IDxcBlob> CreatePostEffectPSShader(const std::wstring path);
 
 	static IDxcBlob* CompileShader(
 		// CompilerするShaderファイルへのパス

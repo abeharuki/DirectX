@@ -51,9 +51,6 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	//ライティング有効化
 	materialData->enableLighting = light;
 
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
-
-
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
@@ -62,10 +59,10 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	
-	
-
-	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
+	if (lightData->environment_.isEnble_) {
+		Engine::GetList()->SetGraphicsRootDescriptorTable(7, textureManager_->GetGPUHandle(Skybox::textureNum));
+	}
 
     // wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -164,8 +161,7 @@ void Model::LoadTexture(const std::string& filename, const std::string& textureP
 	modelData = ModelManager::LoadObjFile(filename);
 	TextureManager::GetInstance()->Load(texturePath);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
-	//textureManager_->Initialize();
-	//texture_ = textureManager_->Load(texturePath);
+	
 }
 
 

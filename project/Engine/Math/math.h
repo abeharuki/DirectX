@@ -205,11 +205,17 @@ struct SpotLight {
 
 };
 
+struct Environment {
+	float environment;
+	bool isEnble_ = false;
+};
+
 
 struct WritingStyle {
 	DirectionLight directionLight_;
 	PointLight pointLight_;
 	SpotLight spotLight_;
+	Environment  environment_;
 };
 
 

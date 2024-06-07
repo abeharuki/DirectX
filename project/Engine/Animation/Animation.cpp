@@ -224,6 +224,9 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
+	if (lightData->environment_.isEnble_) {
+		Engine::GetList()->SetGraphicsRootDescriptorTable(7, textureManager_->GetGPUHandle(Skybox::textureNum));
+	}
 	if (modelData.rootNode.children.size() != 0) {
 		Engine::GetList()->SetGraphicsRootDescriptorTable(6, skinCluster.paletteSrvHandle.second);
 

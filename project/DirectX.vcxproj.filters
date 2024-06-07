@@ -309,6 +309,9 @@
     <ClCompile Include="Application\scene\DebugScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\3d\Skybox.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\hlsl\Particle.VS.hlsl">
@@ -330,9 +333,11 @@
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\hlsl\Fullscreen.VS.hlsl" />
-    <FxCompile Include="resources\hlsl\CopyImage.PS.hlsl" />
+    <FxCompile Include="resources\hlsl\PostEffect.PS.hlsl" />
     <FxCompile Include="resources\hlsl\SkinningObject3d.VS.hlsl" />
     <FxCompile Include="resources\hlsl\Line.PS.hlsl" />
+    <FxCompile Include="resources\hlsl\Skybox.VS.hlsl" />
+    <FxCompile Include="resources\hlsl\Skybox.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -542,6 +547,9 @@
     <ClInclude Include="Application\scene\DebugScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\3d\Skybox.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -559,5 +567,6 @@
       <Filter>リソース ファイル</Filter>
     </None>
     <None Include="resources\hlsl\Fullscreen.hlsli" />
+    <None Include="resources\hlsl\Skybox.hlsli" />
   </ItemGroup>
 </Project>

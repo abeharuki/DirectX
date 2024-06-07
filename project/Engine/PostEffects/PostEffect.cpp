@@ -27,6 +27,8 @@ void PostEffect::Initialize() {
 	CreateResource();
 }
 
+void PostEffect::Update() {}
+
 void PostEffect::Draw() {
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
@@ -38,11 +40,13 @@ void PostEffect::Draw() {
 
 	Engine::GetList()->SetGraphicsRootDescriptorTable(0, Engine::GetInstance()->GetHandle());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, postEffectResource_->GetGPUVirtualAddress());
-	
+
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(3, 1, 0, 0);
 
 }
+
+void PostEffect::Apply() {}
 
 void PostEffect::CreateResource() {
 	postEffectResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(PostEffects));
@@ -51,16 +55,17 @@ void PostEffect::CreateResource() {
 	postEffectData->vignetting.isEnable = false;
 	postEffectData->vignetting.color = Vector3(0.0f, 0.0f, 0.0f);
 	postEffectData->vignetting.intensity = 16.0f;
-	
+	postEffectData->smoothing.isEnable = false;
+	postEffectData->smoothing.kernelSize = false;
 }
 
 void PostEffect::sPipeline() {
 
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePostEffectVSShader();
-	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePostEffectPSShader();
+	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePostEffectPSShader(L"PostEffect.PS.hlsl");
 
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreatePostEffectRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreatePostEffectGraphicsPipeline();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreatePostEffectGraphicsPipeline(pixelShaderBlob_);
 
 };

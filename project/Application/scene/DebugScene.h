@@ -4,6 +4,7 @@
 #include <Sprite.h>
 #include "3d/ModelLoader.h"
 #include <camera/followCamera.h>
+#include <PostEffects/PostEffect.h>
 
 class DebugScene: public IScene {
 public:
@@ -27,5 +28,12 @@ private:
 	//ローダー
 	std::unique_ptr<ModelLoader> loader_;
 
-	
+
+	//PosteEffect
+	Grayscale grayscale_;
+	Vignetting vignetting_;
+	Smoothing smoothing_;
+	bool postEffects[3];
+
+	float env_;
 };
