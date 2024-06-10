@@ -48,6 +48,10 @@ void OverScene::Draw() {
 	spriteBack_->Draw(uv);
 }
 
+void OverScene::RenderDirect() {
+
+}
+
 void OverScene::Fade() {
 	if (isFadeIn_) {
 		if (alpha_ > 0.001f) {

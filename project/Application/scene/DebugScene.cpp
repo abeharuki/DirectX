@@ -57,8 +57,8 @@ void DebugScene::Update() {
 	smoothing_.isEnable = postEffects[2];
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
-	PostEffect::GetInstance()->isSmoothing(smoothing_.isEnable);
-	PostEffect::GetInstance()->SmoothingKernelSize(smoothing_.kernelSize);
+	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
+	PostEffect::GetInstance()->GaussianKernelSize(smoothing_.kernelSize);
 	ImGui::Begin("Setting");
 
 	//ローダーオブジェクト
@@ -114,6 +114,9 @@ void DebugScene::Draw() {
 	skybox_->Draw(worldTransform_, viewProjection_);
 }
 
+void DebugScene::RenderDirect() {
+
+}
 
 void DebugScene::CameraMove() {
 	// ゲームパッドの状態を得る変数(XINPUT)

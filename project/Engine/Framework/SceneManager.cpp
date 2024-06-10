@@ -67,6 +67,16 @@ void SceneManager::Draw() {
 	
 }
 
+void SceneManager::RenderDirect() {
+	if (!load_) {
+		currentScene_->RenderDirect();
+	}
+	else {
+		loadScene_->RenderDirect();
+	}
+	
+}
+
 void SceneManager::LoadScene() {
 	loadScene_ = sceneFactory_->CreateScene("LoadScene");
 	loadScene_->Initialize();

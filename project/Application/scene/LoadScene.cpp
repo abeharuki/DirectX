@@ -28,6 +28,10 @@ void LoadScene::Update() {
 	ImGui::End();
 }
 
+void LoadScene::RenderDirect() {
+
+}
+
 void LoadScene::Draw() {
 	backSprite_->Draw(uv);
 	nowLoadingSprite_->Draw(uv);

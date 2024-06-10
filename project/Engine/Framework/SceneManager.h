@@ -13,6 +13,8 @@ public:
 
 	void Draw();	
 
+	void  RenderDirect();
+
 	void Loading();
 
 	void LoadScene();

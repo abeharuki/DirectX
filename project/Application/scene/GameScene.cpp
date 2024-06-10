@@ -105,6 +105,14 @@ void GameScene::Update() {
 
 	enemyManager_->Update();
 
+	if (playerManager_->GetPlayer()->IsDash()) {
+		PostEffect::GetInstance()->GaussianKernelSize(2.0f);
+		PostEffect::GetInstance()->isGaussian(true);
+	}
+	else {
+		PostEffect::GetInstance()->isGaussian(false);
+	}
+
 	// 追従カメラの更新
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -126,7 +134,6 @@ void GameScene::Update() {
 		enemyManager_->SetHealerPos(healerManager_->GetHealer()->GetWorldPosition());
 		enemyManager_->SetRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
 		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
-
 	}
 
 	healerManager_->SetViewProjection(viewProjection_);
@@ -146,7 +153,9 @@ void GameScene::Draw() {
 	//地面
 	ground_->Draw(viewProjection_, false);
 	//プレイヤー
-	playerManager_->Draw(viewProjection_);
+	if (!playerManager_->GetPlayer()->IsDash()) {
+		playerManager_->Draw(viewProjection_);
+	}
 	//敵
 	enemyManager_->Draw(viewProjection_);
 	// タンク
@@ -177,6 +186,13 @@ void GameScene::Draw() {
 	// スプライト描画後処理
 	Sprite::PostDraw();
 #pragma endregion
+}
+
+void GameScene::RenderDirect() {
+	if (playerManager_->GetPlayer()->IsDash()) {
+		playerManager_->Draw(viewProjection_);
+	}
+	
 }
 
 void GameScene::Fade() {

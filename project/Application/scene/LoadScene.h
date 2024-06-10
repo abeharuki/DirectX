@@ -13,7 +13,7 @@ public:
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
-
+	void RenderDirect() override;
 	//const char* items[3] = { "DirectionLight", "PointLight", "Item 3"};
 	//static const int currentItem = 0; // 初期選択アイテムのインデックス
 

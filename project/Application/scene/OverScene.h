@@ -8,7 +8,7 @@ public:
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
-
+	void RenderDirect() override;
 	void Fade();
 
 private:

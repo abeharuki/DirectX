@@ -55,8 +55,8 @@ void PostEffect::CreateResource() {
 	postEffectData->vignetting.isEnable = false;
 	postEffectData->vignetting.color = Vector3(0.0f, 0.0f, 0.0f);
 	postEffectData->vignetting.intensity = 16.0f;
-	postEffectData->smoothing.isEnable = false;
-	postEffectData->smoothing.kernelSize = false;
+	postEffectData->gaussian.isEnable = false;
+	postEffectData->gaussian.kernelSize = false;
 }
 
 void PostEffect::sPipeline() {

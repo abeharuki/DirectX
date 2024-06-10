@@ -27,6 +27,7 @@ public: // メンバ関数
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
+	void RenderDirect() override;
 
 	GameScene();
 	~GameScene();

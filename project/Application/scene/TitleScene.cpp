@@ -201,6 +201,10 @@ void TitleScene::Draw() {
 	spriteBack_->Draw(uv);
 }
 
+void TitleScene::RenderDirect() {
+
+}
+
 void TitleScene::cameraMove() {
 
 	// 追従カメラの更新

@@ -43,6 +43,10 @@ void ClearScene::Draw() {
 	spriteBack_->Draw(uv);
 }
 
+void ClearScene::RenderDirect() {
+
+}
+
 void ClearScene::Fade() {
 	if (isFadeIn_) {
 		if (alpha_ > 0.001f) {

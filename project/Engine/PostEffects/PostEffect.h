@@ -28,7 +28,7 @@ struct Vignetting {
 	float padding[3];
 };
 
-struct Smoothing
+struct Gaussian
 {
 	int32_t isEnable;
 	float kernelSize;
@@ -37,7 +37,7 @@ struct Smoothing
 struct PostEffects {
 	Grayscale grayscal;
 	Vignetting vignetting;
-	Smoothing smoothing;
+	Gaussian gaussian;
 };
 
 
@@ -62,8 +62,8 @@ public:
 	void VignetteIntensity(float intensity) { postEffectData->vignetting.intensity = intensity; }
 	void VignetteColor(Vector3 color) { postEffectData->vignetting.color = color; }
 	void Vignette(Vignetting vigne) { postEffectData->vignetting = vigne; }
-	void isSmoothing(bool flag) { postEffectData->smoothing.isEnable = flag; }
-	void SmoothingKernelSize(float size) { postEffectData->smoothing.kernelSize = size; }
+	void isGaussian(bool flag) { postEffectData->gaussian.isEnable = flag; }
+	void GaussianKernelSize(float size) { postEffectData->gaussian.kernelSize = size; }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;

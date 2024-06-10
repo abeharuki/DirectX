@@ -280,6 +280,10 @@ void TutorialScene::Draw() {
 	spriteBack_->Draw(uv);
 }
 
+void TutorialScene::RenderDirect() {
+
+}
+
 void TutorialScene::cameraMove() {
 
 	// 追従カメラの更新

@@ -13,7 +13,7 @@ public:
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
-
+	void RenderDirect() override;
 	void CameraMove();
 	Vector3 GetLocalPosition();
 private:
@@ -39,7 +39,7 @@ private:
 	//PosteEffect
 	Grayscale grayscale_;
 	Vignetting vignetting_;
-	Smoothing smoothing_;
+	Gaussian smoothing_;
 	bool postEffects[3];
 
 	float env_;
