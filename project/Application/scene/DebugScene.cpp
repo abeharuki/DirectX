@@ -33,6 +33,7 @@ void DebugScene::Initialize() {
 
 	vignetting_.intensity = 16.0f;
 	smoothing_.kernelSize = 2.0f;
+	outLine_.differenceValue = 1.0f;
 }
 
 void DebugScene::Update() {
@@ -55,10 +56,19 @@ void DebugScene::Update() {
 	grayscale_.isEnable = postEffects[0];
 	vignetting_.isEnable = postEffects[1];
 	smoothing_.isEnable = postEffects[2];
+	outLine_.isEnable = postEffects[3];
+	if (outLine_.isEnable != 0) {
+		PostEffect::GetInstance()->Effect(false);
+	}
+	else {
+		PostEffect::GetInstance()->Effect(true);
+	}
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
 	PostEffect::GetInstance()->GaussianKernelSize(smoothing_.kernelSize);
+	PostEffect::GetInstance()->isOutLine(outLine_.isEnable,viewProjection_);
+	PostEffect::GetInstance()->ValueOutLine(outLine_.differenceValue);
 	ImGui::Begin("Setting");
 
 	//ローダーオブジェクト
@@ -98,6 +108,12 @@ void DebugScene::Update() {
 		if (ImGui::TreeNode("Smoothing")) {
 			ImGui::Checkbox("isSmoothing", &postEffects[2]);
 			ImGui::SliderFloat("KerbelSize", &smoothing_.kernelSize, 1, 5);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("OutLine")) {
+			ImGui::Checkbox("isOutLine", &postEffects[3]);
+			ImGui::DragFloat("OutLine", &outLine_.differenceValue);
 			ImGui::TreePop();
 		}
 

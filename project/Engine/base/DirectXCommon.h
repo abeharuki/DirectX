@@ -72,6 +72,13 @@ public: // メンバ関数
 	void RenderPreDraw();
 	void RenderPostDraw();
 
+	//深度
+	/// <summary>
+	/// 描画前処理
+	/// </summary>
+	void DepthPreDraw();
+	void DepthPostDraw();
+
 	/// <summary>
 	/// レンダーターゲットのクリア
 	/// </summary>
@@ -121,8 +128,9 @@ public: // メンバ関数
 	ID3D12DescriptorHeap* GetDSV() const { return descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap(); }
 
 	const DescriptorHandle& GetHandle() { return srvHandle_; }
+	const DescriptorHandle& GetDepthHandle() { return depthHandle_; }
 
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle() { return srvHandle0_; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetDSVHandle() { return dsvHandle_; }
 
 	static const uint32_t kMaxSRVCount;
 
@@ -138,7 +146,7 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_;
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
 	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> swapChainResources;
-	Microsoft::WRL::ComPtr<ID3D12Resource> depthBuffer_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_;
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
 	Microsoft::WRL::ComPtr <IDXGIDebug1> debug_;
 
@@ -153,12 +161,11 @@ private: // メンバ変数
 	// RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_;
-	D3D12_GPU_DESCRIPTOR_HANDLE srvHandle0_;
 	DescriptorHandle srvHandle_;
 	D3D12_RESOURCE_BARRIER barrier{};
-
-
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
+	DescriptorHandle depthHandle_;
+	D3D12_RESOURCE_BARRIER depthBarrier{};
+	DescriptorHandle dsvHandle_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource;
 	D3D12_RESOURCE_BARRIER renderBarrier{};

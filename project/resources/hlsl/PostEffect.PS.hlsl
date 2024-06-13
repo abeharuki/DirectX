@@ -12,7 +12,7 @@ struct Vignetting
     float intensity;
 };
 
-struct Smoothing
+struct Gaussian
 {
     int32_t isEnable;
     float32_t kernelSize;
@@ -22,7 +22,7 @@ struct PostEffectStyle
 {
     Grayscale grayscale;
     Vignetting vignetting;
-    Smoothing smoothing;
+    Gaussian gaussian;
 };
 
 Texture2D<float32_t4> gTexture : register(t0);
@@ -83,8 +83,8 @@ PixelShaderOutput main(VertexShaderOutput input)
     
    
     
-    
-    if (gPostEffectStyle.smoothing.isEnable != 0)
+    //ガウシアンフィルター
+    if (gPostEffectStyle.gaussian.isEnable != 0)
     {
         output.color.rgb = float32_t3(0.0f, 0.0f, 0.0f);
         output.color.a = 1.0f;
@@ -95,7 +95,7 @@ PixelShaderOutput main(VertexShaderOutput input)
         {
             for (int32_t y = 0; y < 3; ++y)
             {
-                kernel3x3[x][y] = gauss(kIndex3x3[x][y].x, kIndex3x3[x][y].y, gPostEffectStyle.smoothing.kernelSize);
+                kernel3x3[x][y] = gauss(kIndex3x3[x][y].x, kIndex3x3[x][y].y, gPostEffectStyle.gaussian.kernelSize);
                 weight += kernel3x3[x][y];
 
             }
@@ -118,7 +118,7 @@ PixelShaderOutput main(VertexShaderOutput input)
         output.color.rgb *= rcp(weight);
     }
    
-   
+    //グレースケール
     if (gPostEffectStyle.grayscale.isEnable != 0)
     {
         float32_t value = dot(output.color.rgb, float32_t3(0.2125f, 0.7154f, 0.0721f));
@@ -126,6 +126,7 @@ PixelShaderOutput main(VertexShaderOutput input)
 
     }
     
+    //ビネット
     if (gPostEffectStyle.vignetting.isEnable != 0)
     {
         float32_t2 correct = input.texcoord * (1.0f - input.texcoord.yx);

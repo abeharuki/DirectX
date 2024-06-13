@@ -86,6 +86,22 @@ void DirectXCommon::Initialize(WinApp* winApp, int32_t backBufferWidth, int32_t 
 
 	// フェンス生成
 	CreateFence();
+
+	// クライアント領域のサイズと一緒にして画面全体に表示
+	viewport.Width = WinApp::kWindowWidth;
+	viewport.Height = WinApp::kWindowHeight;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+
+	// シザー矩形
+
+	// 基本的にビューポートと同じ矩形が構成されるようにする
+	scissorRect.left = 0;
+	scissorRect.right = WinApp::kWindowWidth;
+	scissorRect.top = 0;
+	scissorRect.bottom = WinApp::kWindowHeight;
 }
 
 void DirectXCommon::PreDraw() {
@@ -107,27 +123,12 @@ void DirectXCommon::PreDraw() {
 	// TransitionBarrierを練る
 	commandList_->ResourceBarrier(1, &barrier);
 
-	// 描画先のRTVとDSVを設定する 
+	// 描画先のRTVとDSVを設定する
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
 
+	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, &dsvHandle);
 
-	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, &dsvHandle_);
-
-	// クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = WinApp::kWindowWidth;
-	viewport.Height = WinApp::kWindowHeight;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-	// シザー矩形
-
-	// 基本的にビューポートと同じ矩形が構成されるようにする
-	scissorRect.left = 0;
-	scissorRect.right = WinApp::kWindowWidth;
-	scissorRect.top = 0;
-	scissorRect.bottom = WinApp::kWindowHeight;
+	
 
 	// 全画面クリア
 	ClearRenderTargetSWAP();
@@ -140,6 +141,7 @@ void DirectXCommon::PreDraw() {
 	ID3D12DescriptorHeap* heaps[] = { descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetDescriptorHeap() };
 	commandList_->SetDescriptorHeaps(_countof(heaps), heaps);
 
+	DepthPreDraw();
 }
 
 void DirectXCommon::PostDraw() {
@@ -150,6 +152,9 @@ void DirectXCommon::PostDraw() {
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	// TransitionBarrierを練る
 	commandList_->ResourceBarrier(1, &barrier);
+
+	DepthPostDraw();
+
 	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからcloseすること
 	hr_ = commandList_->Close();
 	assert(SUCCEEDED(hr_));
@@ -433,7 +438,7 @@ CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t h
 void DirectXCommon::CreateDepthBuffer() {
 
 
-	ID3D12Resource* depthStencilResource = CreateDepthStencilTextureResource(
+	depthStencilResource_ = CreateDepthStencilTextureResource(
 		device_.Get(), WinApp::kWindowWidth, WinApp::kWindowHeight);
 
 
@@ -444,8 +449,17 @@ void DirectXCommon::CreateDepthBuffer() {
 
 	dsvHandle_ = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	// DSVHeapの先頭にDSVを作る
-	device_->CreateDepthStencilView(depthStencilResource, &dsvDesc, dsvHandle_);
+	device_->CreateDepthStencilView(depthStencilResource_.Get(), &dsvDesc, dsvHandle_);
 
+	D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc{};
+	depthTextureSrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	depthTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	depthTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	depthTextureSrvDesc.Texture2D.MipLevels = 1;
+
+	depthHandle_ = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//SRVの作成
+	device_->CreateShaderResourceView(depthStencilResource_.Get(), &depthTextureSrvDesc, depthHandle_);
 
 }
 
@@ -573,7 +587,7 @@ void DirectXCommon::RenderPreDraw() {
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
 
 
-	commandList_->OMSetRenderTargets(1, &rtvHandle_, false, &dsvHandle_);
+	commandList_->OMSetRenderTargets(1, &rtvHandle_, false, &dsvHandle);
 
 
 	// クライアント領域のサイズと一緒にして画面全体に表示
@@ -604,7 +618,6 @@ void DirectXCommon::RenderPreDraw() {
 	commandList_->SetDescriptorHeaps(_countof(heaps), heaps);
 
 }
-
 void DirectXCommon::RenderPostDraw() {
 	HRESULT hr_ = S_FALSE;
 
@@ -643,8 +656,39 @@ void DirectXCommon::CreateRenderTexture() {
 	//SRVの作成
 	device_->CreateShaderResourceView(renderTextureResource.Get(), &renderTextureSrvDesc, srvHandle_);
 
+	
+
 }
 
+/*-----------------------------Depth用テクスチャ------------------------------*/
+void DirectXCommon::DepthPreDraw() {
+
+
+
+	// 今回のバリアはTransition
+	depthBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	//Noneにしておく
+	depthBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	//バリアを張る対象のリソース
+	depthBarrier.Transition.pResource = depthStencilResource_.Get();
+	//遷移前(現在)のResourceState
+	depthBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+	//遷移後のResourceState
+	depthBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	//TransitionBarrierを練る
+	commandList_->ResourceBarrier(1, &depthBarrier);
+
+}
+void DirectXCommon::DepthPostDraw() {
+	HRESULT hr_ = S_FALSE;
+
+	// 今回はRenderTargetからPresentにする
+	depthBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	depthBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+	// TransitionBarrierを練る
+	commandList_->ResourceBarrier(1, &depthBarrier);
+
+}
 
 
 DescriptorHandle DirectXCommon::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type)

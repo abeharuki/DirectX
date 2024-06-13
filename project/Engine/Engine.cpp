@@ -146,5 +146,6 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Engine::GetRTV() { return dxCommon-
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Engine::GetDSV() { return dxCommon->GetDSV(); }
 
 const DescriptorHandle& Engine::GetHandle() { return dxCommon->GetHandle(); }
+const DescriptorHandle& Engine::GetDepthHandle() { return dxCommon->GetDepthHandle(); }
 
-const D3D12_GPU_DESCRIPTOR_HANDLE Engine::GetSRVHandle() { return dxCommon->GetSRVHandle(); }
+//D3D12_GPU_DESCRIPTOR_HANDLE Engine::GetDSVHandle() { return dxCommon->GetDSVHandle(); }

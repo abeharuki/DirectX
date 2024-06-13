@@ -40,7 +40,8 @@ private:
 	Grayscale grayscale_;
 	Vignetting vignetting_;
 	Gaussian smoothing_;
-	bool postEffects[3];
+	OutLineStyle outLine_;
+	bool postEffects[4];
 
 	float env_;
 };

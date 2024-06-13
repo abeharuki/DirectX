@@ -19,34 +19,40 @@ void PostEffect::Destroy()
 		instance_ = nullptr;
 	}
 
+
 }
 
 
 void PostEffect::Initialize() {
 	sPipeline();
 	CreateResource();
+	outline_ = std::make_unique<OutLine>();
+	outline_->Initialize();
 }
 
 void PostEffect::Update() {}
 
 void PostEffect::Draw() {
+	if (effect_) {
+		// RootSignatureを設定。PSOに設定しているけど別途設定が必要
+		Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
+		Engine::GetList()->SetPipelineState(sPipelineState_.Get());
 
-	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
-	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
+		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+		Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Engine::GetList()->SetGraphicsRootDescriptorTable(0, Engine::GetInstance()->GetHandle());
+		Engine::GetList()->SetGraphicsRootConstantBufferView(1, postEffectResource_->GetGPUVirtualAddress());
 
-	Engine::GetList()->SetGraphicsRootDescriptorTable(0, Engine::GetInstance()->GetHandle());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(1, postEffectResource_->GetGPUVirtualAddress());
-
-	// 三角形の描画
-	Engine::GetList()->DrawInstanced(3, 1, 0, 0);
-
+		// 三角形の描画
+		Engine::GetList()->DrawInstanced(3, 1, 0, 0);
+	}
+	
 }
 
-void PostEffect::Apply() {}
+void PostEffect::Apply() {
+	outline_->Draw();
+}
 
 void PostEffect::CreateResource() {
 	postEffectResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(PostEffects));

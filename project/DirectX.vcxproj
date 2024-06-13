@@ -155,6 +155,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Framework\SceneManager.cpp" />
     <ClCompile Include="Engine\Manager\ModelManager.cpp" />
     <ClCompile Include="Engine\Math\math.cpp" />
+    <ClCompile Include="Engine\PostEffects\OutLine.cpp" />
     <ClCompile Include="Engine\PostEffects\PostEffect.cpp" />
     <ClCompile Include="Engine\Utilities\RandomGenerator.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -175,6 +176,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Manager\TextureManeger.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="resources\hlsl\OutLine.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="resources\hlsl\PostEffect.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -301,6 +308,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Manager\ModelManager.h" />
     <ClInclude Include="Engine\Math\math.h" />
     <ClInclude Include="Engine\Math\Quaternion.h" />
+    <ClInclude Include="Engine\PostEffects\OutLine.h" />
     <ClInclude Include="Engine\PostEffects\PostEffect.h" />
     <ClInclude Include="Engine\Utilities\RandomGenerator.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />

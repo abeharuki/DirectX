@@ -52,7 +52,9 @@ public:
 	static Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDSV();
 
 	const DescriptorHandle& GetHandle();
+	const DescriptorHandle& GetDepthHandle();
 
-	const D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle();
+	//D3D12_GPU_DESCRIPTOR_HANDLE GetDSVHandle();
+	
 
 };

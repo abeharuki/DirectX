@@ -15,6 +15,7 @@
 #include "ViewProjection.h"
 #include "GraphicsPipeline.h"
 #include "ModelManager.h"
+#include "OutLine.h"
 
 struct Grayscale {
 	int32_t isEnable;
@@ -57,6 +58,7 @@ public:
 	void Apply();
 
 	//エフェクトの設定
+	void Effect(bool flag) { effect_ = flag; }
 	void isGrayscale(bool flag) { postEffectData->grayscal.isEnable = flag; }
 	void isVignetting(bool flag) { postEffectData->vignetting.isEnable = flag; }
 	void VignetteIntensity(float intensity) { postEffectData->vignetting.intensity = intensity; }
@@ -64,6 +66,8 @@ public:
 	void Vignette(Vignetting vigne) { postEffectData->vignetting = vigne; }
 	void isGaussian(bool flag) { postEffectData->gaussian.isEnable = flag; }
 	void GaussianKernelSize(float size) { postEffectData->gaussian.kernelSize = size; }
+	void isOutLine(bool flag,ViewProjection& viewProjection) { outline_->isOutLine(flag); outline_->SetViewProjection(viewProjection); }
+	void ValueOutLine(float value) { outline_->ValueOutLine(value); }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;
@@ -86,7 +90,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> postEffectResource_;
 
 	PostEffects* postEffectData = nullptr;
-
+	std::unique_ptr<OutLine> outline_;
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
@@ -95,5 +99,5 @@ private:
 
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
-
+	bool effect_ = true;
 };

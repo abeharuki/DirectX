@@ -23,7 +23,9 @@ void Framework::Draw() {
 	sceneManager_->Draw();
 	Engine::RenderPostDraw();
 
+	
 	Engine::PreDraw();
+	postEffect_->Apply();
 	postEffect_->Draw();
 	sceneManager_->RenderDirect();
 	Engine::PostDraw();
