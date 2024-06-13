@@ -23,8 +23,9 @@ struct OutLineStyle {
 	
 	int32_t isEnable;
 	float differenceValue;	
+	float padding1[2];
 	Matrix4x4 projectionInverse;
-	float padding1[44];
+	
 };
 
 
@@ -46,7 +47,10 @@ public:
 	//エフェクトの設定
 	void isOutLine(bool flag) { outLineData->isEnable = flag; }
 	void ValueOutLine(float value) { outLineData->differenceValue = value; }
-	void SetViewProjection(ViewProjection& viewProjection) { viewProjection_ = viewProjection; }
+	void SetViewProjection(ViewProjection& viewProjection) { 
+		viewProjection_ = viewProjection;
+		outLineData->projectionInverse = Math::Inverse(viewProjection_.matProjection);
+	}
 private:
 	void CreateResource();
 

@@ -31,7 +31,7 @@ void OutLine::Update() {}
 
 void OutLine::Draw() {
 	
-	outLineData->projectionInverse = Math::Inverse(viewProjection_.matProjection);
+	
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());

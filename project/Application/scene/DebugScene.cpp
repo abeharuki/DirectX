@@ -33,7 +33,7 @@ void DebugScene::Initialize() {
 
 	vignetting_.intensity = 16.0f;
 	smoothing_.kernelSize = 2.0f;
-	outLine_.differenceValue = 1.0f;
+	outLine_.differenceValue = 0.1f;
 }
 
 void DebugScene::Update() {
