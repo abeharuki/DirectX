@@ -342,6 +342,7 @@
     <FxCompile Include="resources\hlsl\Skybox.VS.hlsl" />
     <FxCompile Include="resources\hlsl\Skybox.PS.hlsl" />
     <FxCompile Include="resources\hlsl\OutLine.PS.hlsl" />
+    <FxCompile Include="resources\hlsl\Skinning.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">

@@ -76,7 +76,7 @@ PixelShaderOutput main(VertexShaderOutput input)
 
         }
         float32_t weight = length(difference);
-        weight = saturate(weight * gOutLineStyle.differenceValue);//0～1の範囲に収める
+        weight = saturate(weight /* gOutLineStyle.differenceValue*/);//0～1の範囲に収める
         //weightが大きければ多き程暗く表示する
         output.color.rgb = (1.0f - weight) * gTexture.Sample(gSampler,input.texcoord).rgb;
         output.color.a = 1.0f;

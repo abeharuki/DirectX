@@ -15,7 +15,7 @@ namespace SkinningPace {
 		srvHandle_ = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		skinCluster.paletteSrvHandle.first = srvHandle_;//空いてるインデックスに入れるマネージャーがないので手動で入れてる
 		skinCluster.paletteSrvHandle.second = srvHandle_;//posteffectのアロケータを使えばできる気がする
-
+		
 		//palette用のsrvを作成
 		D3D12_SHADER_RESOURCE_VIEW_DESC paletteSrvDesc{};
 		paletteSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
