@@ -122,20 +122,13 @@ public:
 
 private:
 	
-	
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
-	// 頂点
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	//マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 
 	// カメラ用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
 
-
-	VertexData* vertexData = nullptr;
+	std::unique_ptr<Mesh> meshData_;
 	ModelData modelData;
 	Material* materialData = nullptr;
 	CameraForGPU* cameraData = nullptr;

@@ -265,11 +265,11 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
-		vertexBufferView,
+		meshData_->GetVertexBufferView(),
 		skinCluster.influenceBufferView
 	};
 	Engine::GetList()->IASetVertexBuffers(0, 2, vbvs);
-	Engine::GetList()->IASetIndexBuffer(&indexBufferView);
+	Engine::GetList()->IASetIndexBuffer(&meshData_->GetIndexBufferView());
 
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
@@ -294,7 +294,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	// 三角形の描画
 	//Engine::GetList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 	if (!debug_) {
-		Engine::GetList()->DrawIndexedInstanced(UINT(modelData.meshData.indices.size()), 1, 0, 0, 0);
+		Engine::GetList()->DrawIndexedInstanced(UINT(meshData_->GetIndicesSize()), 1, 0, 0, 0);
 	}
 	for (int i = 0; i < line_.size(); i++) {
 		line_[i]->Draw(worldTransform, viewProjection, false);
@@ -333,37 +333,9 @@ void Animations::sPipeline() {
 
 //頂点データの設定
 void Animations::CreateVertexResource() {
-	// モデルの読み込み 
-	// 頂点リソースを作る
-	vertexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) * modelData.meshData.vertices.size());
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
-
-	// 頂点バッファビューを作成する
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
-	vertexBufferView.SizeInBytes = UINT(
-		sizeof(VertexData) * modelData.meshData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
-
-
-	std::memcpy(vertexData, modelData.meshData.vertices.data(), sizeof(VertexData) * modelData.meshData.vertices.size()); // 頂点データをリソースにコピース
-
-
-	// 頂点リソースを作る
-
-	indexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t) * modelData.meshData.indices.size());
-
-
-
-	// 頂点バッファビューを作成する
-	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
-	indexBufferView.SizeInBytes = sizeof(uint32_t) * UINT(modelData.meshData.indices.size()); // 使用するリソースのサイズは頂点サイズ
-	indexBufferView.Format = DXGI_FORMAT_R32_UINT; // 1頂点あたりのサイズ
-
-	uint32_t* indexData = nullptr;
-	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData)); // 書き込むためのアドレスを取得
-	std::memcpy(indexData, modelData.meshData.indices.data(), sizeof(uint32_t) * modelData.meshData.indices.size()); // 頂点データをリ
-
-
+	// モデルの読み込み
+	meshData_ = std::make_unique<Mesh>();
+	meshData_->Initialize(modelData.meshData);
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
 

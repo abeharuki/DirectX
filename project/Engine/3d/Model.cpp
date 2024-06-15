@@ -57,7 +57,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+	Engine::GetList()->IASetVertexBuffers(0, 1, &meshData_->GetVertexBufferView());
 	
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 	if (lightData->environment_.isEnble_) {
@@ -73,7 +73,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(modelData.meshData.vertices.size()), 1, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), 1, 0, 0);
 
 	
 }
@@ -81,19 +81,8 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 //頂点データの設定
 void Model::CreateVertexResource() {
 	// モデルの読み込み 
-	// 頂点リソースを作る
-	vertexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) * modelData.meshData.vertices.size());
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
-
-	// 頂点バッファビューを作成する
-	vertexBufferView.BufferLocation =vertexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
-	vertexBufferView.SizeInBytes = UINT(
-	    sizeof(VertexData) * modelData.meshData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
-
-	
-	std::memcpy( vertexData, modelData.meshData.vertices.data(),sizeof(VertexData) * modelData.meshData.vertices.size()); // 頂点データをリソースにコピース
-	
+	meshData_ = std::make_unique<Mesh>();
+	meshData_->Initialize(modelData.meshData);
 	
 
 	// マテリアル

@@ -2,6 +2,64 @@
 #include "Engine.h"
 
 
+
+void Mesh::Initialize(const MeshData& meshData)
+{
+	//頂点データの初期化
+	meshData_ = meshData;
+
+	//頂点バッファの作成
+	CreateVertexBuffer();
+
+	//インデックスバッファの作成
+	if (!meshData_.indices.empty()) {
+		CreateIndexBuffer();
+	}
+	
+
+	//更新
+	//Update();
+}
+
+void Mesh::Update()
+{
+}
+
+void Mesh::CreateVertexBuffer()
+{
+	VertexData* vertexData = nullptr;
+	// 頂点リソースを作る
+	vertexResource = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) * meshData_.vertices.size());
+	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData)); // 書き込むためのアドレスを取得
+
+	// 頂点バッファビューを作成する
+	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
+	vertexBufferView.SizeInBytes = UINT(
+		sizeof(VertexData) * meshData_.vertices.size()); // 使用するリソースのサイズは頂点サイズ
+	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
+
+
+	std::memcpy(vertexData,meshData_.vertices.data(), sizeof(VertexData) * meshData_.vertices.size()); // 頂点データをリソースにコピース
+
+
+}
+
+void Mesh::CreateIndexBuffer()
+{
+	
+	indexResource = CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t) * meshData_.indices.size());
+
+	// 頂点バッファビューを作成する
+	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
+	indexBufferView.SizeInBytes = sizeof(uint32_t) * UINT(meshData_.indices.size()); // 使用するリソースのサイズは頂点サイズ
+	indexBufferView.Format = DXGI_FORMAT_R32_UINT; // 1頂点あたりのサイズ
+
+	uint32_t* indexData = nullptr;
+	indexResource->Map(0,nullptr, reinterpret_cast<void**>(&indexData)); // 書き込むためのアドレスを取得
+	std::memcpy(indexData,meshData_.indices.data(), sizeof(uint32_t) * meshData_.indices.size()); // 頂点データをリ
+
+}
+
 ID3D12Resource* Mesh::CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes) {
 
 	// 頂点リソース用のヒープの設定
