@@ -40,12 +40,11 @@ MaterialData ModelManager::LoadMaterialTemplateFile(const std::string& filename)
 }
 
 //アニメーション用
-ModelData ModelManager::LoadGltfFile(const std::string& filename) {
-
+ModelData ModelManager::LoadGltfFile(const std::string& directorPath,const std::string& filename) {
 
 	ModelData modelData;
 	Assimp::Importer importer;
-	std::string filePath = filename;
+	std::string filePath = directorPath + "/" + filename;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 	assert(scene->HasMeshes());
 
@@ -53,7 +52,7 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals());
-		assert(mesh->HasTextureCoords(0));
+		assert(mesh->HasTextureCoords(0));//
 		modelData.meshData.vertices.resize(mesh->mNumVertices);
 
 		//頂点の解析
@@ -110,7 +109,7 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 			aiString textureFilePath;
 			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-			modelData.material.textureFilePath = textureFilePath.C_Str();
+			modelData.material.textureFilePath = directorPath + "/" + textureFilePath.C_Str();
 		}
 	}
 

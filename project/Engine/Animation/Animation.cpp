@@ -111,17 +111,16 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 
 }
 
-void Animations::Initialize(const std::string& motionPath) {
-	textureManager_ = TextureManager::GetInstance();
-	LoadAnimation("resources/JsonFile/", motionPath + ".gltf");
+void Animations::Initialize(const std::string& directorPath,const std::string& motionPath) {
+	LoadAnimation(directorPath, motionPath);
+	LoadTexture(modelData.material.textureFilePath);
 	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
 	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(), skeleton, modelData, Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 	CreateVertexResource();
 	sPipeline();
 	jointsNum_ = int(skeleton.joints.size());
 	line_.resize(jointsNum_);
-	
-
+	localMatrix = Math::MakeIdentity4x4();
 	for (int i = 0; i < jointsNum_; i++) {
 		line_[i].reset(Line::CreateLine({ 0,0,0 }, { 0,0,0 }));
 	}
@@ -130,7 +129,7 @@ void Animations::Initialize(const std::string& motionPath) {
 
 
 void Animations::LoadAnimation(const std::string& directorPath, const std::string& filename) {
-	modelData = modelManager_->LoadGltfFile(directorPath + "/" + filename);
+	modelData = modelManager_->LoadGltfFile(directorPath ,filename);
 	animation = LoadAnimationFile(directorPath, filename);
 }
 
@@ -206,28 +205,6 @@ void Animations::SkinningUpdate() {
 	}
 }
 
-void Animations::Update(WorldTransform& worldTransform, const uint32_t animationNumber,bool roop) {
-	if (flameTimer_ == 0.0f) { animationTime += 1.0f / 60.0f; }
-	else { animationTime += 1.0f / flameTimer_; }
-
-	if (roop) {
-		animationTime = std::fmod(animationTime, animation[animationNumber].duration);//最後まで行ったら最初に戻る。リピート再生 
-	}
-
-	if (modelData.rootNode.children.size() != 0) {
-		
-	}
-	else {
-		NodeAnimation& rootNodeAnimation = animation[animationNumber].nodeAnimations[modelData.rootNode.name];
-		Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
-		Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
-		Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
-		localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
-		//worldTransform.UpdateMatrix();
-		
-	}
-
-}
 
 void Animations::Update(const uint32_t animationNumber) {
 	animationNumber_ = animationNumber;

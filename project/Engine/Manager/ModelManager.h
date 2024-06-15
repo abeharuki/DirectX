@@ -34,7 +34,7 @@ public:
 
 	//objファイルの読み込み
 	static MaterialData LoadMaterialTemplateFile(const std::string& filename);
-	static ModelData LoadGltfFile(const std::string& filename);
+	static ModelData LoadGltfFile(const std::string& directorPath,const std::string& filename);
 	static ModelData LoadObjFile(const std::string& filename);
 
 	void LoadJsonObject(nlohmann::json& object, Scene::ObjectData& objectData);

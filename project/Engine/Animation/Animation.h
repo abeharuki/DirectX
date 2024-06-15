@@ -67,10 +67,8 @@ public:
 
 	//初期化
 	void Initialize(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
-	void Initialize(const std::string& motionPath);
+	void Initialize(const std::string& directorPath,const std::string& motionPath);
 
-	//Animation
-	void Update(WorldTransform& worldTransform, const uint32_t animationNumber,bool roop);
 	//skinningAnimation
 	void Update(const uint32_t animationNumber);
 
