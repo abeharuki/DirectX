@@ -93,7 +93,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+	Engine::GetList()->IASetVertexBuffers(0, 1, &meshData_->GetVertexBufferView());
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetParticleGPUHandle(instancing_));
@@ -109,7 +109,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(modelData.meshData.vertices.size()), numInstance, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), numInstance, 0, 0);
 	numInstance = 0;
 }
 
@@ -127,22 +127,8 @@ void Particle::CreateVertexResource() {
 		instancingData[i].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	// 頂点リソースを作る
-	vertexResource_ = Mesh::CreateBufferResoure(
-	    Engine::GetDevice().Get(), sizeof(VertexData) * modelData.meshData.vertices.size());
-	vertexResource_->Map(
-	    0, nullptr, reinterpret_cast<void**>(&vertexData_)); // 書き込むためのアドレスを取得
-
-	// 頂点バッファビューを作成する
-	vertexBufferView.BufferLocation =
-	    vertexResource_->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
-	vertexBufferView.SizeInBytes = UINT(
-	    sizeof(VertexData) * modelData.meshData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
-
-	std::memcpy(
-	    vertexData_, modelData.meshData.vertices.data(),
-	    sizeof(VertexData) * modelData.meshData.vertices.size()); // 頂点データをリソースにコピース
+	meshData_ = std::make_unique<Mesh>();
+	meshData_->Initialize(modelData.meshData);
 
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));

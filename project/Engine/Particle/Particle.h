@@ -84,20 +84,13 @@ public:
 	void SetFiled(AccelerationField accelerationField);
 
 private:
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
-	// 頂点
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;
-	VertexData* vertexData_;
+	
+	//Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
 
 	// WVP用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResouce_;
 	// マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
-
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
-	uint32_t* indexData_;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandelCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandelGPU;
@@ -106,6 +99,7 @@ private:
 	ParticleForGPU* instancingData;
 	ModelData modelData;
 	Material* materialData = nullptr;
+	std::unique_ptr<Mesh> meshData_;
 
 	//TextureManager* textureManager_;
 	uint32_t texture_;
