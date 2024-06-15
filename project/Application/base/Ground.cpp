@@ -7,7 +7,12 @@ void Ground::Initialize(Model* model) {
 	model_ = model;
 	worldTransform_.Initialize();
 	worldTransform_.scale = { 1.0f, 1.0f, 1.0f };
-
+	Transform uv = {
+		{30.0f,30.0f,30.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f},
+	};
+	model_->SetUV(uv);
 }
 
 /// <summary>

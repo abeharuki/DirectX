@@ -89,6 +89,19 @@ public:
 
 	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 
+	void SetUV(Transform& uvTransform) {
+		// UVTransform用の行列
+		Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
+			{
+				uvTransform.scale.x + 1,
+				uvTransform.scale.y + 1,
+				uvTransform.scale.z + 1,
+			},
+			uvTransform.rotate, uvTransform.translate);
+
+		materialData->uvTransform = uvTransformMatrix;
+	}
+
 	//色とアルファ値
 	void SetColor(Vector4 color);
 

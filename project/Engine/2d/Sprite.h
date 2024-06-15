@@ -115,6 +115,19 @@ public: // メンバ関数
 	void SetPosition(const Vector2& position) { position_ = position; }
 	void SetSize(const Vector2& size) { size_ = size; }
 	void SetRotation(const float& rotation) { rotation_ = rotation; }
+	void SetUV(Transform& uvTransform) {
+		// UVTransform用の行列
+		Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
+			{
+				uvTransform.scale.x + 1,
+				uvTransform.scale.y + 1,
+				uvTransform.scale.z + 1,
+			},
+			uvTransform.rotate, uvTransform.translate);
+
+		materialDataSprite->uvTransform = uvTransformMatrix;
+	}
+
 
 	const Vector2& GetPosition() const { return position_; }
 

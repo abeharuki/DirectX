@@ -95,7 +95,7 @@ Quaternion Animations::CalculateValue(const std::vector<KeyframeQuaternion>& key
 
 
 void Animations::Initialize(const std::string& directorPath, const std::string& filename, const std::string& motionPath) {
-
+	directorPath_ = directorPath;
 	LoadAnimation(directorPath, motionPath);
 	LoadTexture(directorPath + "/" + filename);
 	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
@@ -433,9 +433,13 @@ void Animations::SetAnimationTimer(float startTimer, float flameTimer) {
 	flameTimer_ = flameTimer;
 }
 
+void Animations::SetTexture(const std::string& path) {
+	LoadTexture(directorPath_ + "/" + path);
+}
 
 void Animations::AnimationDebug() {
 	ImGui::Begin("Animations");
 	ImGui::Checkbox("Debug", &debug_);
 	ImGui::End();
 }
+

@@ -6,10 +6,10 @@ void DebugPlayer::Initialize() {
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = 2.0f;
-	
+	worldTransformBase_.translate.y = 0.3f;
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/human", "white.png", "walk.gltf"));
+	animation_.reset(Animations::Create("resources/human", "white.png", "Human.gltf"));
 	
 	
 }
@@ -83,7 +83,7 @@ void DebugPlayer::Draw(const ViewProjection& camera) {
 
 // 移動
 void DebugPlayer::MoveInitialize() {
-	worldTransformBase_.translate.y = 0.0f;
+	worldTransformBase_.translate.y = 0.3f;
 	workAttack_.isAttack = false;
 	dash_ = false;
 	combo_ = false;
@@ -99,7 +99,7 @@ void DebugPlayer::MoveUpdata() {
 		bool isMove = false;
 
 		// 移動速度
-		const float kCharacterSpeed = 0.09f;
+		const float kCharacterSpeed = 0.2f;
 		// 移動量
 		velocity_ = {
 		   (float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.0f,
@@ -113,7 +113,7 @@ void DebugPlayer::MoveUpdata() {
 
 
 		if (isMove) {
-			animation_->Update(0);
+			animation_->Update(4);
 			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_->rotation_.y);
 			velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 			// 現在の位置から移動する位置へのベクトル
@@ -135,7 +135,7 @@ void DebugPlayer::MoveUpdata() {
 			}
 		}
 		else {
-			animation_->Stop();
+			animation_->Update(1);
 		}
 
 		// ジャンプ
@@ -167,12 +167,14 @@ void DebugPlayer::JumpInitialize() {
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
+	animation_->SetAnimationTimer(0.0f, 60.0f);
 };
 void DebugPlayer::JumpUpdata() {
+	animation_->Update(2);
 	// 移動
 	worldTransformBase_.translate += velocity_;
 	// 重力加速度
-	const float kGravity = 0.05f;
+	const float kGravity = 0.03f;
 	// 加速ベクトル
 	Vector3 accelerationVector = { 0, -kGravity, 0 };
 	// 加速
@@ -180,7 +182,7 @@ void DebugPlayer::JumpUpdata() {
 
 
 
-	if (worldTransformBase_.translate.y <= 0.0f) {
+	if (worldTransformBase_.translate.y <= 0.3f) {
 		
 		// ジャンプ終了
 		behaviorRequest_ = Behavior::kRoot;
@@ -210,7 +212,9 @@ void DebugPlayer::DashUpdata() {
 
 // 攻撃
 void DebugPlayer::AttackInitialize(){}
-void DebugPlayer::AttackUpdata(){}
+void DebugPlayer::AttackUpdata(){
+	animation_->Update(3);
+}
 
 Vector3 DebugPlayer::GetLocalPosition() {
 	// ワールド座標を入れる関数

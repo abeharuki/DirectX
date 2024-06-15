@@ -114,6 +114,8 @@ public:
 	//アニメーションタイマーの設定
 	void SetAnimationTimer(float startTime, float flameTime);
 
+	void SetTexture(const std::string& texturePath);
+
 private:
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
@@ -135,7 +137,7 @@ private:
 
 	// カメラ用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
-
+	std::string directorPath_;
 
 	VertexData* vertexData = nullptr;
 	Material* materialData = nullptr;
