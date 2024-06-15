@@ -35,7 +35,7 @@ void Healer::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 	if (nockBack_) {
-		animation_->Update(worldTransformHead_, false);
+		animation_->Update(0);
 	}
 	hitCount_ = 3;
 
@@ -118,7 +118,8 @@ void Healer::Update() {
 	}
 
 	if (nockBack_) {
-		animation_->Update(worldTransformHead_, false);
+		animation_->SetLoop(false);
+		animation_->Update(0);
 	}
 
 };

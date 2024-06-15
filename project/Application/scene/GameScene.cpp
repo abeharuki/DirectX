@@ -73,6 +73,7 @@ void GameScene::Initialize() {
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 
+	
 }
 
 void GameScene::Update() {

@@ -141,7 +141,7 @@ void TitleScene::Update() {
 	skydome_->Update();
 	ground_->Update();
 	worldTransform_.UpdateMatrix();
-	animation_->Update(worldTransform_,true);
+	animation_->Update(0);
 
 	if (Input::PushKey(DIK_C)) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");

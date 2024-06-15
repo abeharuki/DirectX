@@ -153,7 +153,7 @@ void DirectXCommon::PostDraw() {
 	// TransitionBarrierを練る
 	commandList_->ResourceBarrier(1, &barrier);
 
-	DepthPostDraw();
+	//DepthPostDraw();
 
 	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからcloseすること
 	hr_ = commandList_->Close();

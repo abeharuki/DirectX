@@ -47,5 +47,5 @@ private:
 	float destinationAngleY_ = 0.0f;
 	float destinationAngleX_ = 0.0f;
 	// 遅延量
-	float delayAmount_ = 0.2f;
+	float delayAmount_ = 0.5f;
 };

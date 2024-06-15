@@ -7,6 +7,8 @@
 #include <PostEffects/PostEffect.h>
 #include <Skybox.h>
 #include <Skydome.h>
+#include "Player/DebugPlayer.h"
+#include <Ground.h>
 
 class DebugScene: public IScene {
 public:
@@ -33,8 +35,12 @@ private:
 
 	//ローダー
 	std::unique_ptr<ModelLoader> loader_;
-
+	// 地面
+	std::unique_ptr<Ground> ground_;
 	std::unique_ptr<Skybox> skybox_;
+
+	//プレイヤー
+	std::unique_ptr<DebugPlayer> debugPlayer_;
 
 	//PosteEffect
 	Grayscale grayscale_;

@@ -107,7 +107,8 @@ void Tank::Update() {
 		worldTransformHp_[i].TransferMatrix();
 	}
 	if (nockBack_) {
-		animation_->Update(worldTransformHead_, false);
+		animation_->SetLoop(false);
+		animation_->Update(0);
 	}
 };
 

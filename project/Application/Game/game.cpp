@@ -10,8 +10,8 @@ void Game::Initialize() {
 	//ロード画面の設定
 	SceneManager::GetInstance()->LoadScene();
 	//シーンマネージャーに最初のシーンをセット
-	SceneManager::GetInstance()->FirstScene("TitleScene");
-	
+	//SceneManager::GetInstance()->FirstScene("TitleScene");
+	SceneManager::GetInstance()->FirstScene("DebugScene");
 }
 
 void Game::Update() {

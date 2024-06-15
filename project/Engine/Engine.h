@@ -35,6 +35,8 @@ public:
 	static void RenderPreDraw();
 	static void RenderPostDraw();
 
+	static void DepthPostDraw();
+
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(
 		ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(

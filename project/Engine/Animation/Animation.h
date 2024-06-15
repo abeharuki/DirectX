@@ -70,9 +70,9 @@ public:
 	void Initialize(const std::string& motionPath);
 
 	//Animation
-	void Update(WorldTransform& worldTransform,bool roop);
+	void Update(WorldTransform& worldTransform, const uint32_t animationNumber,bool roop);
 	//skinningAnimation
-	void Update(bool roop);
+	void Update(const uint32_t animationNumber);
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag);
 
@@ -94,6 +94,12 @@ public:
 		lightData->environment_.environment = environment;
 	}
 
+	//止める
+	void Stop() {
+		animationTime = 0.0f;
+	}
+	//ループさせるかどうか
+	void SetLoop(bool flag) { isLoop_ = flag; }
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
@@ -144,9 +150,11 @@ private:
 
 	ModelManager* modelManager_;
 	ModelData modelData;
-	Animation animation;
+	std::vector<Animation> animation{};
 	Skeleton skeleton;
 	SkinCluster skinCluster;
+
+	uint32_t animationNumber_;
 
 	//デバック表示
 	std::vector<std::unique_ptr<Line>> line_;
@@ -154,13 +162,17 @@ private:
 	std::vector<Vector3> boonPos2;
 	int jointsNum_;
 	bool debug_ = false;
+	bool isLoop_ = true;
+	Matrix4x4 localMatrix;
 private:
+	std::vector<Animation> LoadAnimationFile(const std::string& directorPath, const std::string& filename);
+
 	void LoadAnimation(const std::string& filename, const std::string& texturePath);
 	void LoadTexture(const std::string& filename);
-	void ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime);
+	void ApplyAnimation(const std::string& name,const uint32_t animationNumber);
 
-	void SkeletonUpdate(Skeleton& skeleton);
-	void SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton);
+	void SkeletonUpdate();
+	void SkinningUpdate();
 
 	void BoonRecursive(Skeleton& skeleton, int32_t child);
 

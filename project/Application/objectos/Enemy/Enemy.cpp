@@ -307,7 +307,8 @@ void Enemy::ThrowingAttackInitialize() {
 }
 
 void Enemy::ThrowingAttackUpdata() {
-	animation_->Update(worldTransformBody_, false);
+	animation_->SetLoop(false);
+	animation_->Update(0);
 
 	if (!isAttack_) {
 		if (worldTransformRock_.scale.x < 2.0f) {

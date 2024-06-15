@@ -128,7 +128,8 @@ void Player::Update() {
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
 	if (nockBack_) {
-		animation_->Update(worldTransformHead_, false);
+		animation_->SetLoop(false);
+		animation_->Update(0);
 	}
 	
 

@@ -102,6 +102,10 @@ void Engine::RenderPostDraw() {
 	dxCommon->RenderPostDraw();
 }
 
+void Engine::DepthPostDraw() {
+	dxCommon->DepthPostDraw();
+}
+
 void Engine::PreDraw() {
 	// 描画開始
 	dxCommon->PreDraw();
@@ -115,6 +119,7 @@ void Engine::PostDraw() {
 	// 描画終了
 	dxCommon->PostDraw();
 }
+
 
 
 D3D12_CPU_DESCRIPTOR_HANDLE Engine::GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {

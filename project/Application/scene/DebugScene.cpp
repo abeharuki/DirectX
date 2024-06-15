@@ -15,6 +15,10 @@ void DebugScene::Initialize() {
 	//skybox
 	skybox_ = std::make_unique<Skybox>();
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
+	// 地面
+	ground_ = std::make_unique<Ground>();
+	ground_->Initialize(
+		Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
 
 
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -24,10 +28,17 @@ void DebugScene::Initialize() {
 
 	//modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 
+	debugPlayer_ = std::make_unique<DebugPlayer>();
+	debugPlayer_->Initialize();
+
+	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
 	// 自キャラのワールドトランスフォームを追従カメラにセット
-	followCamera_->SetTarget(&worldTransform_);
+	followCamera_->SetTarget(&debugPlayer_->GetWorldTransform());
+
+	// 自キャラの生成と初期化処理
+	debugPlayer_->SetViewProjection(&followCamera_->GetViewProjection());
 
 	PostEffect::GetInstance()->isGrayscale(false);
 
@@ -39,11 +50,12 @@ void DebugScene::Initialize() {
 void DebugScene::Update() {
 
 
-	animation_->Update(true);
+	animation_->Update(0);
 	animation_->Environment(env_, true);
 
 	loader_->Update();
-	CameraMove();
+	debugPlayer_->Update();
+	//CameraMove();
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
@@ -52,6 +64,8 @@ void DebugScene::Update() {
 	worldTransformSkybox_.UpdateMatrixQuaternion();
 	worldTransformAnimation_.UpdateMatrixQuaternion();
 
+
+	ground_->Update();
 	loader_->GetModel("box")->Environment(env_, true);
 	grayscale_.isEnable = postEffects[0];
 	vignetting_.isEnable = postEffects[1];
@@ -60,9 +74,7 @@ void DebugScene::Update() {
 	if (outLine_.isEnable != 0) {
 		PostEffect::GetInstance()->Effect(false);
 	}
-	else {
-		PostEffect::GetInstance()->Effect(true);
-	}
+	else
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
@@ -124,9 +136,10 @@ void DebugScene::Update() {
 }
 
 void DebugScene::Draw() {
-	loader_->Draw(viewProjection_, true);
-	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
-
+	//loader_->Draw(viewProjection_, true);
+	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	debugPlayer_->Draw(viewProjection_);
+	ground_->Draw(viewProjection_, false);
 	skybox_->Draw(worldTransform_, viewProjection_);
 }
 

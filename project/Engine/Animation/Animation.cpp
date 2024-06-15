@@ -3,51 +3,57 @@
 Microsoft::WRL::ComPtr<ID3D12Resource> Animations::lightResource_;
 WritingStyle* Animations::lightData;
 
-Animation LoadAnimationFile(const std::string& directorPath, const std::string& filename) {
-	Animation animation;//今回作るアニメーション
+std::vector<Animation> Animations::LoadAnimationFile(const std::string& directorPath, const std::string& filename) {
+	std::vector<Animation> animation{};//今回作るアニメーション
 	Assimp::Importer importer;
 	std::string filePath = directorPath + "/" + filename;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), 0);
 	assert(scene->mNumAnimations != 0);//アニメーションがない
-	aiAnimation* animationAssimp = scene->mAnimations[0];//最初のアニメーションだけ採用
-	animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond);//時間の単位を1秒に変換
 
-	//assimpでは個々のNodeのAnimationをchannelと呼んでいるのでchannelを回してNodeAnimationの情報を取ってくる
-	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
-		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
-		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
-		//位置
-		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
-			aiVectorKey& keyAssimp = nodeAnimationAssimp->mPositionKeys[keyIndex];
-			KeyframeVector3 keyframe;
-			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);//秒に変換
-			keyframe.value = { -keyAssimp.mValue.x,keyAssimp.mValue.y,keyAssimp.mValue.z };//右手->左手
-			nodeAnimation.translate.keyframes.push_back(keyframe);
+	for (uint32_t animationIndex = 0; animationIndex < scene->mNumAnimations; ++animationIndex) {
+		Animation currentAnimationData{};
+		aiAnimation* animationAssimp = scene->mAnimations[animationIndex];//最初のアニメーションだけ採用
+		currentAnimationData.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond);//時間の単位を1秒に変換
+
+		//assimpでは個々のNodeのAnimationをchannelと呼んでいるのでchannelを回してNodeAnimationの情報を取ってくる
+		for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
+			aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
+			NodeAnimation& nodeAnimation = currentAnimationData.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
+			//位置
+			for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
+				aiVectorKey& keyAssimp = nodeAnimationAssimp->mPositionKeys[keyIndex];
+				KeyframeVector3 keyframe;
+				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);//秒に変換
+				keyframe.value = { -keyAssimp.mValue.x,keyAssimp.mValue.y,keyAssimp.mValue.z };//右手->左手
+				nodeAnimation.translate.keyframes.push_back(keyframe);
+			}
+
+			//回転
+			for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
+				aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
+				KeyframeQuaternion keyframe{};
+				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);//秒に変換
+				keyframe.value = { keyAssimp.mValue.x,-keyAssimp.mValue.y,-keyAssimp.mValue.z,keyAssimp.mValue.w };//右手->左手
+				nodeAnimation.rotate.keyframes.push_back(keyframe);
+			}
+
+			//スケール
+			for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
+				aiVectorKey& keyAssimp = nodeAnimationAssimp->mScalingKeys[keyIndex];
+				KeyframeVector3 keyframe{};
+				keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);//秒に変換
+				keyframe.value = { keyAssimp.mValue.x,keyAssimp.mValue.y,keyAssimp.mValue.z };//右手->左手
+				nodeAnimation.scale.keyframes.push_back(keyframe);
+			}
+
+
+
 		}
 
-		//回転
-		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
-			aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
-			KeyframeQuaternion keyframe{};
-			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);//秒に変換
-			keyframe.value = { keyAssimp.mValue.x,-keyAssimp.mValue.y,-keyAssimp.mValue.z,keyAssimp.mValue.w };//右手->左手
-			nodeAnimation.rotate.keyframes.push_back(keyframe);
-		}
-
-		//スケール
-		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
-			aiVectorKey& keyAssimp = nodeAnimationAssimp->mScalingKeys[keyIndex];
-			KeyframeVector3 keyframe{};
-			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);//秒に変換
-			keyframe.value = { keyAssimp.mValue.x,keyAssimp.mValue.y,keyAssimp.mValue.z };//右手->左手
-			nodeAnimation.scale.keyframes.push_back(keyframe);
-		}
-
-
-
+		animation.push_back(currentAnimationData);
 	}
 
-
+	
 
 	return animation;
 }
@@ -98,6 +104,7 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 	sPipeline();
 	jointsNum_ = int(skeleton.joints.size());
 	line_.resize(jointsNum_);
+	localMatrix = Math::MakeIdentity4x4();
 	for (int i = 0; i < jointsNum_; i++) {
 		line_[i].reset(Line::CreateLine({ 0,0,0 }, { 0,0,0 }));
 	}
@@ -133,10 +140,19 @@ void Animations::LoadTexture(const std::string& filename) {
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
 }
 
-void Animations::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime) {
+void Animations::ApplyAnimation(const std::string& name,const uint32_t animationNumber) {
+	if (auto it = animation[animationNumber].nodeAnimations.find(name); it != animation[animationNumber].nodeAnimations.end())
+	{
+		NodeAnimation& rootNodeAnimation = (*it).second;
+		Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+		Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+		Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+		localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
+	}
+
 	for (Joint& joint : skeleton.joints) {
 		//対象のJointのAnimationがあれば、値の提供を行う.
-		if (auto it = animation.nodeAnimations.find(joint.name); it != animation.nodeAnimations.end()) {
+		if (auto it = animation[animationNumber].nodeAnimations.find(joint.name); it != animation[animationNumber].nodeAnimations.end()) {
 			const NodeAnimation& rootNodeAnimation = (*it).second;
 			joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
 			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
@@ -158,7 +174,7 @@ void Animations::BoonRecursive(Skeleton& skeleton, int32_t child) {
 	}
 }
 
-void Animations::SkeletonUpdate(Skeleton& skeleton) {
+void Animations::SkeletonUpdate() {
 	//全てのJointを更新
 	for (Joint& joint : skeleton.joints) {
 		joint.locaalMatrix = Math::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
@@ -181,7 +197,7 @@ void Animations::SkeletonUpdate(Skeleton& skeleton) {
 
 }
 
-void Animations::SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton) {
+void Animations::SkinningUpdate() {
 	//全てのJointを更新
 	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
 		assert(jointIndex < skinCluster.inverseBindPoseMatrixs.size());
@@ -190,48 +206,54 @@ void Animations::SkinningUpdate(SkinCluster& skinCluster, Skeleton& skeleton) {
 	}
 }
 
-void Animations::Update(WorldTransform& worldTransform, bool roop) {
+void Animations::Update(WorldTransform& worldTransform, const uint32_t animationNumber,bool roop) {
 	if (flameTimer_ == 0.0f) { animationTime += 1.0f / 60.0f; }
 	else { animationTime += 1.0f / flameTimer_; }
 
 	if (roop) {
-		animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生 
+		animationTime = std::fmod(animationTime, animation[animationNumber].duration);//最後まで行ったら最初に戻る。リピート再生 
 	}
 
 	if (modelData.rootNode.children.size() != 0) {
 		
 	}
 	else {
-		NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
+		NodeAnimation& rootNodeAnimation = animation[animationNumber].nodeAnimations[modelData.rootNode.name];
 		Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
 		Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
 		Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
-		Matrix4x4 localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
+		localMatrix = Math::MakeAffineMatrix(scale, rotate, translate);
 		//worldTransform.UpdateMatrix();
-		worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
-		worldTransform.TransferMatrix();
+		
 	}
 
 }
 
-void Animations::Update(bool roop) {
+void Animations::Update(const uint32_t animationNumber) {
+	animationNumber_ = animationNumber;
 	if (flameTimer_ == 0.0f) { animationTime += 1.0f / 60.0f; }
 	else { animationTime += 1.0f / flameTimer_; }
 
-	if (roop) {
-		animationTime = std::fmod(animationTime, animation.duration);//最後まで行ったら最初に戻る。リピート再生 
+	if (isLoop_) {
+		animationTime = std::fmod(animationTime, animation[animationNumber].duration);//最後まで行ったら最初に戻る。リピート再生 
+		localMatrix = Math::MakeIdentity4x4();
 	}
-	//ApplyAnimation(skeleton, animation, animationTime);
-
+	
+	
 }
 
 
 
 void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag) {
-	ApplyAnimation(skeleton, animation, animationTime);
-	SkeletonUpdate(skeleton);
-	SkinningUpdate(skinCluster, skeleton);
-
+	ApplyAnimation(modelData.rootNode.name, animationNumber_);
+	SkeletonUpdate();
+	SkinningUpdate();
+	
+	if (modelData.skinClusterData.empty()) {
+		worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
+		worldTransform.TransferMatrix();
+	}
+	
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
 	materialData->enableLighting = flag;
