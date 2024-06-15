@@ -5,11 +5,12 @@ void DebugPlayer::Initialize() {
 
 	// 初期化
 	worldTransformBase_.Initialize();
+	worldTransformBase_.scale = { 3.0f,3.0f,3.0f };
 	worldTransformBase_.translate.x = 2.0f;
-	worldTransformBase_.translate.y = 0.3f;
+	worldTransformBase_.translate.y = 1.0f;
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/human", "white.png", "Human.gltf"));
+	animation_.reset(Animations::Create("resources/human", "uvChecker.png", "Human.gltf"));
 	
 	
 }
@@ -71,6 +72,8 @@ void DebugPlayer::Update() {
 
 	worldTransformBase_.UpdateMatrix();
 
+	animation_->AnimationDebug();
+
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::End();
@@ -83,7 +86,7 @@ void DebugPlayer::Draw(const ViewProjection& camera) {
 
 // 移動
 void DebugPlayer::MoveInitialize() {
-	worldTransformBase_.translate.y = 0.3f;
+	worldTransformBase_.translate.y = 1.0f;
 	workAttack_.isAttack = false;
 	dash_ = false;
 	combo_ = false;
@@ -99,7 +102,7 @@ void DebugPlayer::MoveUpdata() {
 		bool isMove = false;
 
 		// 移動速度
-		const float kCharacterSpeed = 0.2f;
+		const float kCharacterSpeed = 0.5f;
 		// 移動量
 		velocity_ = {
 		   (float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.0f,
@@ -151,10 +154,13 @@ void DebugPlayer::MoveUpdata() {
 
 		// ダッシュボタンを押したら
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
-			behaviorRequest_ = Behavior::kDash;
+			//behaviorRequest_ = Behavior::kDash;
 		} 
 
 
+	}
+	else {
+		animation_->Update(1);
 	}
 
 
@@ -163,7 +169,7 @@ void DebugPlayer::MoveUpdata() {
 
 // ジャンプ
 void DebugPlayer::JumpInitialize() {
-	worldTransformBase_.translate.y = 0.0f;
+	worldTransformBase_.translate.y = 1.0f;
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
@@ -179,10 +185,11 @@ void DebugPlayer::JumpUpdata() {
 	Vector3 accelerationVector = { 0, -kGravity, 0 };
 	// 加速
 	velocity_ += accelerationVector;
+	// 移動速度
+	const float kCharacterSpeed = 0.2f;
 
 
-
-	if (worldTransformBase_.translate.y <= 0.3f) {
+	if (worldTransformBase_.translate.y <= 1.0f) {
 		
 		// ジャンプ終了
 		behaviorRequest_ = Behavior::kRoot;
