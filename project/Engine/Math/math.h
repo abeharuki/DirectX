@@ -116,6 +116,8 @@ struct Color {
 	float a;
 };
 
+
+
 struct Material {
 	Color color;
 	int32_t enableLighting;
@@ -136,6 +138,13 @@ struct Node {
 	Matrix4x4 localMatrix{};
 	std::string name;
 	std::vector<Node> children;
+};
+
+struct MeshData
+{
+	std::vector<VertexData> vertices;
+	std::vector<uint32_t>indices;
+	//uint32_t materialIndex;
 };
 
 struct MaterialData {
@@ -159,8 +168,7 @@ struct JointWeightData {
 
 struct ModelData {
 	std::map<std::string, JointWeightData> skinClusterData;
-	std::vector<VertexData> vertices;
-	std::vector<uint32_t>indices;
+	MeshData meshData;
 	MaterialData material;
 	Node rootNode;
 };

@@ -28,15 +28,15 @@ namespace SkinningPace {
 		device->CreateShaderResourceView(skinCluster.paletteResource.Get(), &paletteSrvDesc, skinCluster.paletteSrvHandle.first);
 
 		//influence用のResource確保
-		skinCluster.influenceResource = Mesh::CreateBufferResoure(device.Get(), sizeof(VertexInfluence) * modelData.vertices.size());
+		skinCluster.influenceResource = Mesh::CreateBufferResoure(device.Get(), sizeof(VertexInfluence) * modelData.meshData.vertices.size());
 		VertexInfluence* mappedInfluence = nullptr;
 		skinCluster.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
-		std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData.vertices.size());
-		skinCluster.mappedInfluence = { mappedInfluence,modelData.vertices.size() };
+		std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData.meshData.vertices.size());
+		skinCluster.mappedInfluence = { mappedInfluence,modelData.meshData.vertices.size() };
 
 		//Influence用のVBV作成
 		skinCluster.influenceBufferView.BufferLocation = skinCluster.influenceResource->GetGPUVirtualAddress();
-		skinCluster.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
+		skinCluster.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.meshData.vertices.size());
 		skinCluster.influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
 
 		//InverceBindPoseMatrixの保存領域を作成

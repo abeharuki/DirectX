@@ -109,7 +109,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(modelData.meshData.vertices.size()), numInstance, 0, 0);
 	numInstance = 0;
 }
 
@@ -129,7 +129,7 @@ void Particle::CreateVertexResource() {
 
 	// 頂点リソースを作る
 	vertexResource_ = Mesh::CreateBufferResoure(
-	    Engine::GetDevice().Get(), sizeof(VertexData) * modelData.vertices.size());
+	    Engine::GetDevice().Get(), sizeof(VertexData) * modelData.meshData.vertices.size());
 	vertexResource_->Map(
 	    0, nullptr, reinterpret_cast<void**>(&vertexData_)); // 書き込むためのアドレスを取得
 
@@ -137,12 +137,12 @@ void Particle::CreateVertexResource() {
 	vertexBufferView.BufferLocation =
 	    vertexResource_->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
 	vertexBufferView.SizeInBytes = UINT(
-	    sizeof(VertexData) * modelData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
+	    sizeof(VertexData) * modelData.meshData.vertices.size()); // 使用するリソースのサイズは頂点サイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
 
 	std::memcpy(
-	    vertexData_, modelData.vertices.data(),
-	    sizeof(VertexData) * modelData.vertices.size()); // 頂点データをリソースにコピース
+	    vertexData_, modelData.meshData.vertices.data(),
+	    sizeof(VertexData) * modelData.meshData.vertices.size()); // 頂点データをリソースにコピース
 
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));

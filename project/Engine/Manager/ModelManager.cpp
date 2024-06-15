@@ -49,14 +49,12 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 	assert(scene->HasMeshes());
 
-
-
 	//メッシュの解析
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals());
 		assert(mesh->HasTextureCoords(0));
-		modelData.vertices.resize(mesh->mNumVertices);
+		modelData.meshData.vertices.resize(mesh->mNumVertices);
 
 		//頂点の解析
 		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
@@ -64,9 +62,9 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 			aiVector3D& normal = mesh->mNormals[vertexIndex];
 			aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
 			//座標系の変換
-			modelData.vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
-			modelData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
-			modelData.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
+			modelData.meshData.vertices[vertexIndex].position = { -position.x,position.y,position.z,1.0f };
+			modelData.meshData.vertices[vertexIndex].normal = { -normal.x,normal.y,normal.z };
+			modelData.meshData.vertices[vertexIndex].texcoord = { texcoord.x,texcoord.y };
 
 		}
 
@@ -76,7 +74,7 @@ ModelData ModelManager::LoadGltfFile(const std::string& filename) {
 			assert(face.mNumIndices == 3);
 			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 				uint32_t vertexIndex = face.mIndices[element];
-				modelData.indices.push_back(vertexIndex);
+				modelData.meshData.indices.push_back(vertexIndex);
 			}
 
 		}
@@ -153,7 +151,7 @@ ModelData ModelManager::LoadObjFile(const std::string& filename) {
 				vertex.texcoord = { texcoord.x,texcoord.y };
 				vertex.position.z *= -1.0f;
 				vertex.normal.x *= -1.0f;
-				modelData.vertices.push_back(vertex);
+				modelData.meshData.vertices.push_back(vertex);
 			}
 		}
 
