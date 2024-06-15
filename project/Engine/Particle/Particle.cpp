@@ -131,7 +131,7 @@ void Particle::CreateVertexResource() {
 	meshData_->Initialize(modelData.meshData);
 
 	// マテリアル
-	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
+	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(MaterialD));
 
 	// マテリアルにデータを書き込む
 	// 書き込むためのアドレスを取得

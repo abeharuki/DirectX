@@ -110,7 +110,7 @@ private: // メンバ変数
 
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
-	Material* materialData = nullptr;
+	MaterialD* materialData = nullptr;
 	CameraForGPU* cameraData = nullptr;
 
 	uint32_t texture_;

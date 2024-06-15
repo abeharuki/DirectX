@@ -4,7 +4,7 @@ void EnemyManager::Initialize() {
 
 	Model_.reset(Model::CreateModelFromObj("resources/Enemy2/enemy.obj", "resources/enemy/enemy.png"));
 	rockModel_.reset(Sphere::CreateSphere("resources/skydome/sky.png"));
-	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
+	//bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
 
 	spriteHP_.reset(Sprite::Create("resources/enemy/HP.png"));
 	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));

@@ -98,7 +98,7 @@ private:
 	// データを書き込む
 	ParticleForGPU* instancingData;
 	ModelData modelData;
-	Material* materialData = nullptr;
+	MaterialD* materialData = nullptr;
 	std::unique_ptr<Mesh> meshData_;
 
 	//TextureManager* textureManager_;

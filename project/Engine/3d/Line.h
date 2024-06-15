@@ -93,7 +93,7 @@ private:
 	TransformationMatrix* wvpData;
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
-	Material* materialData = nullptr;
+	MaterialD* materialData = nullptr;
 	CameraForGPU* cameraData = nullptr;
 
 };

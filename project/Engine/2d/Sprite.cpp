@@ -255,7 +255,7 @@ void Sprite::CreateVertexResource() {
 	
 	// Sprite用のマテリアルリソースを作る
 	// マテリアル
-	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
+	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(MaterialD));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));

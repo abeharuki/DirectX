@@ -8,8 +8,8 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
 WritingStyle* Model::lightData;
 
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
-	
-	LoadTexture(filename, texturePath);
+	modelData = ModelManager::LoadObjFile(filename);
+	LoadTexture(texturePath);
 	CreateVertexResource();
 	sPipeline();
 	
@@ -49,7 +49,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	cameraData->worldPos = viewProjection.worldPos_;
 
 	//ライティング有効化
-	materialData->enableLighting = light;
+	materialData_->SetLighting(light);
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
@@ -66,7 +66,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 
     // wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialData_->GetResource()->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
@@ -85,21 +85,8 @@ void Model::CreateVertexResource() {
 	meshData_->Initialize(modelData.meshData);
 	
 
-	// マテリアル
-	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
-
-	// マテリアルにデータを書き込む
-	// 書き込むためのアドレスを取得
-	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	// 今回は白を書き込む
-	materialData->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
-	materialData->color.a = float(1.0f);
-	// Lightingを有効にする
-	materialData->enableLighting = false;
-	//光沢
-	materialData->shininess = 10.0f;
-	// 初期化
-	materialData->uvTransform = Math::MakeIdentity4x4();
+	materialData_ = std::make_unique<Material>();
+	materialData_->Initialize();
 
 	// ライティング
 	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));
@@ -121,8 +108,7 @@ void Model::CreateVertexResource() {
 };
 
 void Model::SetColor(Vector4 color) {
-	materialData->color.rgb = {color.x, color.y, color.z};
-	materialData->color.a = color.w;
+	materialData_->SetColor(color);
 }
 
 void Model::SetBlendMode(BlendMode blendMode) { 
@@ -131,7 +117,7 @@ void Model::SetBlendMode(BlendMode blendMode) {
 
 }
 
-void Model::SetShininess(float i) { materialData->shininess = i; }
+void Model::SetShininess(float i) { materialData_->SetShininess(i); }
 
 
 Model* Model::CreateModelFromObj(const std::string& filename, const std::string& texturePath) {
@@ -146,11 +132,20 @@ Model* Model::CreateFromObj(const std::string& filename) {
 	return model;
 }
 
-void Model::LoadTexture(const std::string& filename, const std::string& texturePath) {
-	modelData = ModelManager::LoadObjFile(filename);
+void Model::LoadTexture(const std::string& texturePath) {
+	
 	textureManager_ = TextureManager::GetInstance();
-	TextureManager::GetInstance()->Load(texturePath);
-	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
+
+	//テクスチャを設定
+	if (texturePath != "")
+	{
+		TextureManager::GetInstance()->Load(texturePath);
+		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
+	}
+	else
+	{
+		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/white.png");
+	}
 	
 }
 

@@ -4,6 +4,7 @@
 #include <memory>
 #include "StringUtility.h"
 #include "Mesh.h"
+#include "Material.h"
 #include <fstream>
 #include <sstream>
 #include <dxcapi.h>
@@ -89,18 +90,7 @@ public:
 
 	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 
-	void SetUV(Transform& uvTransform) {
-		// UVTransform用の行列
-		Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
-			{
-				uvTransform.scale.x + 1,
-				uvTransform.scale.y + 1,
-				uvTransform.scale.z + 1,
-			},
-			uvTransform.rotate, uvTransform.translate);
-
-		materialData->uvTransform = uvTransformMatrix;
-	}
+	void SetUV(Transform& uvTransform) { materialData_->SetUV(uvTransform); }
 
 	//色とアルファ値
 	void SetColor(Vector4 color);
@@ -120,17 +110,16 @@ public:
 		lightData->environment_.environment = environment;
 	}
 
-private:
-	
-	//マテリアル用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 
+
+private:
 	// カメラ用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
 
 	std::unique_ptr<Mesh> meshData_;
+	//マテリアルデータ
+	std::unique_ptr<Material> materialData_;
 	ModelData modelData;
-	Material* materialData = nullptr;
 	CameraForGPU* cameraData = nullptr;
 	
 	TextureManager* textureManager_;
@@ -139,7 +128,7 @@ private:
 	uint16_t instanceCount = 10;
  private:
 	
-	void LoadTexture(const std::string& filename, const std::string& texturePath);
+	void LoadTexture(const std::string& texturePath);
 
 	 // objファイルの読み込み
 	

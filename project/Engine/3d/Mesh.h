@@ -23,7 +23,7 @@ public:
 
 	const size_t GetIndicesSize() const { return meshData_.indices.size(); };
 
-	//const uint32_t GetMaterialIndex() const { return meshData_.materialIndex; };
+	const uint32_t GetMaterialIndex() const { return meshData_.materialIndex; };
 
 	static ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes);
 

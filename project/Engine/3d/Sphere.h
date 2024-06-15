@@ -4,6 +4,7 @@
 #include <memory>
 #include "StringUtility.h"
 #include "Mesh.h"
+#include "Material.h"
 #include <fstream>
 #include <sstream>
 #include <dxcapi.h>
@@ -89,13 +90,12 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	// カメラ用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
-	// マテリアル用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 	// データを書き込む
 	TransformationMatrix* wvpData;
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
-	Material* materialData = nullptr;
+	//マテリアルデータ
+	std::unique_ptr<Material> materialData_;
 	CameraForGPU* cameraData = nullptr;
 
 	const uint32_t kSubdivision = 128;

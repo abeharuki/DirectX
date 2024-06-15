@@ -42,6 +42,7 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 	imguiManager->Initialize(win, dxCommon);
 
 	TextureManager::GetInstance()->Initialize();
+	TextureManager::GetInstance()->Load("resources/white.png");
 
 	//	Inputの初期化処理
 	keyInput = Input::GetInstance();

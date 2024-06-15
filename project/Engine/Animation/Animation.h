@@ -15,6 +15,7 @@
 #include <Line.h>
 #include "ImGuiManager.h"
 
+
 template<typename tValue>
 struct Keyframe {
 	float time;
@@ -77,6 +78,7 @@ public:
 	void AnimationDebug();
 
 	static Animations* Create(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
+	static Animations* Create(const std::string& filename, const std::string& motionPath);
 
 	//光の色　向き　明るさ
 	static void DirectionalLightDraw(DirectionLight directionLight);
@@ -123,20 +125,16 @@ private:
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
-
-	//マテリアル用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 
 	//メッシュデータ
 	std::unique_ptr<Mesh> meshData_;
+	//マテリアルデータ
+	std::unique_ptr<Material> materialData_;
 
 	// カメラ用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
-	std::string directorPath_;
 
-	Material* materialData = nullptr;
 	CameraForGPU* cameraData = nullptr;
 	TransformationMatrix* transformData = nullptr;
 

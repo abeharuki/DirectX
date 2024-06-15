@@ -38,7 +38,7 @@ void Sphere::Draw(
 
 
 	// ライティング有効化
-	materialData->enableLighting = light;
+	materialData_->SetLighting(light);
 
 
 
@@ -51,13 +51,13 @@ void Sphere::Draw(
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 
 
-
+	
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
-
+	
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialData_->GetResource()->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
@@ -162,22 +162,9 @@ void Sphere::CreateVertexResource() {
 		}
 	}
 
-
-	// マテリアル
-	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
-
-	// マテリアルにデータを書き込む
-	// 書き込むためのアドレスを取得
-	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	// 今回は白を書き込む
-	materialData->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
-	materialData->color.a = float(1.0f);
-	// Lightingを有効にする
-	materialData->enableLighting = false;
-	// 光沢
-	materialData->shininess = 10.0f;
-	// 初期化
-	materialData->uvTransform = Math::MakeIdentity4x4();
+	materialData_ = std::make_unique<Material>();
+	materialData_->Initialize();
+	
 
 	// カメラ
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
@@ -196,13 +183,12 @@ void Sphere::CreateVertexResource() {
 };
 
 void Sphere::SetColor(Vector4 color) {
-	materialData->color.rgb = { color.x, color.y, color.z };
-	materialData->color.a = color.w;
+	materialData_->SetColor(color);
 }
 
 void Sphere::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 
-void Sphere::SetShininess(float i) { materialData->shininess = i; }
+void Sphere::SetShininess(float i) { materialData_->SetShininess(i); }
 
 Sphere* Sphere::CreateSphere(const std::string& texturePath) {
 	Sphere* sphere = new Sphere;

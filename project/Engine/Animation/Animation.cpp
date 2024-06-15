@@ -95,7 +95,6 @@ Quaternion Animations::CalculateValue(const std::vector<KeyframeQuaternion>& key
 
 
 void Animations::Initialize(const std::string& directorPath, const std::string& filename, const std::string& motionPath) {
-	directorPath_ = directorPath;
 	LoadAnimation(directorPath, motionPath);
 	LoadTexture(directorPath + "/" + filename);
 	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
@@ -117,6 +116,7 @@ void Animations::Initialize(const std::string& directorPath,const std::string& m
 	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
 	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(), skeleton, modelData, Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 	CreateVertexResource();
+	LoadTexture(modelData.material.textureFilePath);
 	sPipeline();
 	jointsNum_ = int(skeleton.joints.size());
 	line_.resize(jointsNum_);
@@ -135,8 +135,20 @@ void Animations::LoadAnimation(const std::string& directorPath, const std::strin
 
 void Animations::LoadTexture(const std::string& filename) {
 	textureManager_ = TextureManager::GetInstance();
-	TextureManager::GetInstance()->Load(filename);
-	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
+
+	//テクスチャを設定
+	if (filename != "")
+	{
+		TextureManager::GetInstance()->Load(filename);
+		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
+	}
+	else
+	{
+		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/white.png");
+	}
+
+	
+	
 }
 
 void Animations::ApplyAnimation(const std::string& name,const uint32_t animationNumber) {
@@ -233,7 +245,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	
 	//カメラpos
 	cameraData->worldPos = viewProjection.worldPos_;
-	materialData->enableLighting = flag;
+	materialData_->SetLighting(flag);
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
@@ -262,7 +274,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialData_->GetResource()->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
@@ -283,9 +295,15 @@ Animations* Animations::Create(const std::string& directorPath, const std::strin
 	Animations* anime = new Animations;
 	anime->Initialize(directorPath, filename, motionPath);
 	return anime;
-
-
 }
+
+Animations* Animations::Create(const std::string& directorPath,const std::string& motionPath)
+{
+	Animations* anime = new Animations;
+	anime->Initialize(directorPath,motionPath);
+	return anime;
+}
+
 
 void Animations::sPipeline() {
 
@@ -313,21 +331,9 @@ void Animations::CreateVertexResource() {
 	// モデルの読み込み
 	meshData_ = std::make_unique<Mesh>();
 	meshData_->Initialize(modelData.meshData);
-	// マテリアル
-	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Material));
 
-	// マテリアルにデータを書き込む
-	// 書き込むためのアドレスを取得
-	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	// 今回は白を書き込む
-	materialData->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
-	materialData->color.a = float(1.0f);
-	// Lightingを有効にする
-	materialData->enableLighting = false;
-	//光沢
-	materialData->shininess = 10.0f;
-	// 初期化
-	materialData->uvTransform = Math::MakeIdentity4x4();
+	materialData_ = std::make_unique<Material>();
+	materialData_->Initialize();
 
 	// ライティング
 	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));
@@ -383,7 +389,8 @@ void Animations::SetAnimationTimer(float startTimer, float flameTimer) {
 }
 
 void Animations::SetTexture(const std::string& path) {
-	LoadTexture(directorPath_ + "/" + path);
+	TextureManager::GetInstance()->Load(path);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(path);
 }
 
 void Animations::AnimationDebug() {

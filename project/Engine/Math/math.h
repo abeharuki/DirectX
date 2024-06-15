@@ -118,7 +118,7 @@ struct Color {
 
 
 
-struct Material {
+struct MaterialD {
 	Color color;
 	int32_t enableLighting;
 	float padding[3];
@@ -144,7 +144,7 @@ struct MeshData
 {
 	std::vector<VertexData> vertices;
 	std::vector<uint32_t>indices;
-	//uint32_t materialIndex;
+	uint32_t materialIndex;
 };
 
 struct MaterialData {

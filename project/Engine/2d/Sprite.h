@@ -172,7 +172,7 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_;
 	uint32_t* indexData_;
 
-	Material* materialDataSprite;
+	MaterialD* materialDataSprite;
 	DirectionLight* directionalLightData = nullptr;
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
 
