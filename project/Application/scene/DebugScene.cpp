@@ -50,8 +50,8 @@ void DebugScene::Initialize() {
 void DebugScene::Update() {
 
 
-	animation_->Update(0);
-	animation_->Environment(env_, true);
+	//animation_->Update(0);
+	//animation_->Environment(env_, true);
 
 	loader_->Update();
 	debugPlayer_->Update();
@@ -82,12 +82,13 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->isOutLine(outLine_.isEnable,viewProjection_);
 	PostEffect::GetInstance()->ValueOutLine(outLine_.differenceValue);
 	ImGui::Begin("Setting");
-
+	/*
 	//ローダーオブジェクト
 	if (ImGui::TreeNode("LoaderObj")) {
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
+	
 	
 	//アニメーション
 	if (ImGui::TreeNode("Animation")) {
@@ -98,7 +99,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
-
+	*/
 	//Posteffect
 	if (ImGui::TreeNode("PostEffect")) {
 		// Grayscale

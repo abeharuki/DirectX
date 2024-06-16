@@ -164,12 +164,41 @@ void Animations::ApplyAnimation(const std::string& name,const uint32_t animation
 	for (Joint& joint : skeleton.joints) {
 		//対象のJointのAnimationがあれば、値の提供を行う.
 		if (auto it = animation[animationNumber].nodeAnimations.find(joint.name); it != animation[animationNumber].nodeAnimations.end()) {
-			const NodeAnimation& rootNodeAnimation = (*it).second;
-			joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
-			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
-			joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+
+			if (isBlending_) {
+
+				Vector3 currentTranslate = CalculateValue(animation[preAnimationNumber_].nodeAnimations[joint.name].translate.keyframes, animationTime);
+				Quaternion currentRotate = CalculateValue(animation[preAnimationNumber_].nodeAnimations[joint.name].rotate.keyframes, animationTime);
+				Vector3 currentScale = CalculateValue(animation[preAnimationNumber_].nodeAnimations[joint.name].scale.keyframes, animationTime);
+
+
+				// 次のアニメーションのキーを取得
+				Vector3 nextTranslate = CalculateValue(animation[animationNumber].nodeAnimations[joint.name].translate.keyframes, nextAnimationTime);
+				Quaternion nextRotate = CalculateValue(animation[animationNumber].nodeAnimations[joint.name].rotate.keyframes, nextAnimationTime);
+				Vector3 nextScale = CalculateValue(animation[animationNumber].nodeAnimations[joint.name].scale.keyframes, nextAnimationTime);
+
+				// 線形補間（Lerp）および球面線形補間（Slerp）を使用してブレンド
+				float t = blendTime_ / blendDuration_;
+				joint.transform.translate = Math::Lerp(currentTranslate, nextTranslate, t);
+				joint.transform.rotate = Math::Slerp(currentRotate, nextRotate, t);
+				joint.transform.scale = Math::Lerp(currentScale, nextScale, t);
+
+			}
+			else {
+
+				const NodeAnimation& rootNodeAnimation = (*it).second;
+				joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+				joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime);
+				joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+
+			}
+
+
 		}
+		
 	}
+
+	
 }
 
 void Animations::BoonRecursive(Skeleton& skeleton, int32_t child) {
@@ -219,7 +248,31 @@ void Animations::SkinningUpdate() {
 
 
 void Animations::Update(const uint32_t animationNumber) {
+
 	animationNumber_ = animationNumber;
+
+	if (preAnimationNumber_ != animationNumber) {
+		isBlending_ = true;
+	}
+
+	if (isBlending_) {
+		blendTime_ += 1.0f / 60.0f; // フレーム時間の更新
+		if (blendTime_ >= blendDuration_) {
+			// ブレンド完了
+			isBlending_ = false;
+			preAnimationNumber_ = animationNumber;
+			animationTime = nextAnimationTime;
+			blendTime_ = 0.0f;
+			nextAnimationTime = 0.0f;
+		}
+		else {
+			nextAnimationTime += 1.0f / 60.0f;
+		}
+	}
+
+
+
+	
 	if (flameTimer_ == 0.0f) { animationTime += 1.0f / 60.0f; }
 	else { animationTime += 1.0f / flameTimer_; }
 
@@ -384,8 +437,15 @@ void Animations::SpotLightDraw(SpotLight spotLight) {
 
 
 void Animations::SetAnimationTimer(float startTimer, float flameTimer) {
-	animationTime = startTimer;
+	nextAnimationTime = startTimer;
 	flameTimer_ = flameTimer;
+}
+
+void Animations::SetBlend(const uint32_t animationNumber ,float num) {
+	animationNumber_ = animationNumber;
+	blendDuration_ = num;
+	isBlending_ = true;
+	nextAnimationTime = 0.0f;
 }
 
 void Animations::SetTexture(const std::string& path) {
@@ -396,6 +456,8 @@ void Animations::SetTexture(const std::string& path) {
 void Animations::AnimationDebug() {
 	ImGui::Begin("Animations");
 	ImGui::Checkbox("Debug", &debug_);
+	ImGui::Text("animationTime%f",animationTime);
+	ImGui::Text("nextAnimationTime%f", nextAnimationTime);
 	ImGui::End();
 }
 

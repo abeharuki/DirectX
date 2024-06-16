@@ -11,7 +11,7 @@ void DebugPlayer::Initialize() {
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/human", "uvChecker.png", "Human.gltf"));
-	
+	animation_->SetAnimationTimer(0.0f, 30.0f);
 	
 }
 
@@ -74,7 +74,7 @@ void DebugPlayer::Update() {
 
 	animation_->AnimationDebug();
 
-	ImGui::Begin("Player");
+	ImGui::Begin("Setting");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::End();
 }
@@ -90,6 +90,29 @@ void DebugPlayer::MoveInitialize() {
 	workAttack_.isAttack = false;
 	dash_ = false;
 	combo_ = false;
+	// ゲームパッドの状態を得る変数(XINPUT)
+	XINPUT_STATE joyState;
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+
+		const float value = 0.7f;
+		// 移動量
+		velocity_ = {
+		   (float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.0f,
+		   (float)joyState.Gamepad.sThumbLY / SHRT_MAX };
+
+		//
+		if (Math::Length(velocity_) > value) {
+			//animation_->SetAnimatioNumber(4, 2);
+			animation_->SetAnimationTimer(0.8f, 30.0f);
+		}
+		else {
+			animation_->SetAnimationTimer(0.0f, 30.0f);
+		}
+		
+	}
+	
+	
+	//
 };
 void DebugPlayer::MoveUpdata() {
 	// ゲームパッドの状態を得る変数(XINPUT)
@@ -174,6 +197,7 @@ void DebugPlayer::JumpInitialize() {
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
 	animation_->SetAnimationTimer(0.0f, 60.0f);
+	animation_->SetBlend(1, 0.1f);
 };
 void DebugPlayer::JumpUpdata() {
 	animation_->Update(2);
@@ -190,7 +214,6 @@ void DebugPlayer::JumpUpdata() {
 
 
 	if (worldTransformBase_.translate.y <= 1.0f) {
-		
 		// ジャンプ終了
 		behaviorRequest_ = Behavior::kRoot;
 	}

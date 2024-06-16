@@ -111,8 +111,17 @@ public:
 	/// <returns></returns>
 	void CreateVertexResource();
 
+	//
+	void SetAnimatioNumber(uint32_t nextAnimation,uint32_t animation) { 
+		preAnimationNumber_ = animation;
+		animationNumber_ = nextAnimation;
+	}
+
 	//アニメーションタイマーの設定
 	void SetAnimationTimer(float startTime, float flameTime);
+	void SetpreAnimationTimer(float time) { animationTime = time; }
+
+	void SetBlend(const uint32_t animationNumber,float num);
 
 	void SetTexture(const std::string& texturePath);
 
@@ -142,6 +151,7 @@ private:
 	uint32_t texture_;
 
 	float animationTime = 0.0f;
+	float nextAnimationTime = 0.0f;
 	float flameTimer_ = 0.0f;
 
 	ModelManager* modelManager_;
@@ -151,6 +161,12 @@ private:
 	SkinCluster skinCluster;
 
 	uint32_t animationNumber_;
+	uint32_t preAnimationNumber_;
+
+	//補間のための情報
+	bool isBlending_;
+	float blendTime_;
+	float blendDuration_= 0.2f;//何秒かけて補間するか
 
 	//デバック表示
 	std::vector<std::unique_ptr<Line>> line_;

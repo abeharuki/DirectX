@@ -59,5 +59,9 @@ struct Quaternion
 	{
 		return !(*this == rhs);
 	}
+
+	static Quaternion Identity() {
+		return Quaternion(1.0f, 0.0f, 0.0f, 0.0f); // 実数部が 1.0、虚数部が (0, 0, 0) のクォータニオンを返す
+	}
 };
 
