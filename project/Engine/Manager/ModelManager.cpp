@@ -102,8 +102,8 @@ ModelData ModelManager::LoadGltfFile(const std::string& directorPath,const std::
 
 	}
 
-
-
+	
+	//Materialの解析
 	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
