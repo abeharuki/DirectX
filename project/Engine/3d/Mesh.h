@@ -15,6 +15,8 @@ public:
 
 	void Update();
 
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetVertexResource() const { return vertexResource; };
+
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView; };
 
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return indexBufferView; };
@@ -25,7 +27,18 @@ public:
 
 	const uint32_t GetMaterialIndex() const { return meshData_.materialIndex; };
 
+	//バッファーの作成
+	//読み込み用リソースの作成
 	static ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes);
+	//書き込み用リソースの作成
+	static ID3D12Resource* CreateUAVBufferResoure(ID3D12Device* device, size_t sizeInBytes);
+
+
+	//DescriptorHandleの作成
+	//static DescriptorHandle CreateResourceView(D3D12Resource* resource, size_t vertexSize, size_t sizeInBytes);
+
+	//UAVViewの作成
+	//static DescriptorHandle CreateUAVView(ID3D12Resource* resource ,size_t vertexSize ,size_t sizeInBytes);
 
 
 private:
@@ -41,5 +54,7 @@ private:
 	// 頂点
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
+
+	
 };
 

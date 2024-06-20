@@ -73,6 +73,8 @@ public:
 	//skinningAnimation
 	void Update(const uint32_t animationNumber);
 
+	void ComputeParameter();
+
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag);
 
 	void AnimationDebug();
@@ -109,7 +111,7 @@ public:
 	/// 3Dモデル生成
 	/// </summary>
 	/// <returns></returns>
-	void CreateVertexResource();
+	void CreateResource();
 
 	//
 	void SetAnimatioNumber(uint32_t nextAnimation,uint32_t animation) { 
@@ -128,13 +130,23 @@ public:
 private:
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> CSRootSignature_;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CSPipelineState_;
 
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
+	//DescriptorHandle
+	DescriptorHandle inputVertex;
+	DescriptorHandle influence;
+	DescriptorHandle outputVertex;
+
+	//shader書き込み用リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> uavResource_;
+	VertexData uavData_;
+
 
 	//メッシュデータ
 	std::unique_ptr<Mesh> meshData_;

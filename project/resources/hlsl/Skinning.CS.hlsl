@@ -31,6 +31,34 @@ ConstantBuffer<SkinningInformation> gSkinnningInformation : register(b0);
 
 
 [numthreads(1024, 1, 1)]
-void main( uint3 DTid : SV_DispatchThreadID )
-{
+void main( uint3 DTid : SV_DispatchThreadID ){
+    uint32_t vertexIndex = DTid.x;
+    if (vertexIndex < gSkinnningInformation.numVertices){
+        //Skinning計算
+        //必要なデータをStructuredBufferか受け取ってくる
+        //SkinnningObj3d.Vsでは入力頂点として受け取った
+        Vertex input = gInputVertices[vertexIndex];
+        VertexInfluence influence = gInfluences[vertexIndex];
+        
+        //skinnning後の頂点計算
+        Vertex skinned;
+        skinned.texcoord = input.texcoord;
+        
+        skinned.position = mul(input.position, gMatrixPalette[influence.index.x].skeletonSpaceMatrix) * influence.weight.x;
+        skinned.position += mul(input.position, gMatrixPalette[influence.index.y].skeletonSpaceMatrix) * influence.weight.y;
+        skinned.position += mul(input.position, gMatrixPalette[influence.index.z].skeletonSpaceMatrix) * influence.weight.z;
+        skinned.position += mul(input.position, gMatrixPalette[influence.index.w].skeletonSpaceMatrix) * influence.weight.w;
+        skinned.position.w = 1.0f;
+
+        skinned.normal = mul(input.normal, (float32_t3x3) gMatrixPalette[influence.index.x].skeletonSpaceInverseTransposeMatrix) * influence.weight.x;
+        skinned.normal += mul(input.normal, (float32_t3x3) gMatrixPalette[influence.index.y].skeletonSpaceInverseTransposeMatrix) * influence.weight.y;
+        skinned.normal += mul(input.normal, (float32_t3x3) gMatrixPalette[influence.index.z].skeletonSpaceInverseTransposeMatrix) * influence.weight.z;
+        skinned.normal += mul(input.normal, (float32_t3x3) gMatrixPalette[influence.index.w].skeletonSpaceInverseTransposeMatrix) * influence.weight.w;
+        skinned.normal = normalize(skinned.normal);
+        
+        //Skinning後の頂点データを格納,つまり書き込む
+        gOutputVertices[vertexIndex] = skinned;
+        
+    }
+    
 }

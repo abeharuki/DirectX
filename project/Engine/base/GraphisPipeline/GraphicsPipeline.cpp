@@ -867,6 +867,33 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateAnimationGrap
 	}
 }
 
+Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateAnimationCSGraphicsPipeline() {
+	if (animationCSPipelineState_) {
+		return animationCSPipelineState_;
+	}
+	else {
+		animationCSPipelineState_ = nullptr;
+
+#pragma region PSO
+
+		// PSO生成
+		D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc{};
+
+		computePipelineStateDesc.CS= {
+			.pShaderBytecode = animationComputeShaderBlob_->GetBufferPointer(),
+			.BytecodeLength = animationComputeShaderBlob_->GetBufferSize() };
+#pragma endregion
+		computePipelineStateDesc.pRootSignature = animationCSRootSignature_.Get();
+		// 実際に生成
+		HRESULT hr_ = Engine::GetDevice()->CreateComputePipelineState(
+			&computePipelineStateDesc, IID_PPV_ARGS(&animationCSPipelineState_));
+		assert(SUCCEEDED(hr_));
+
+		return animationCSPipelineState_;
+	}
+}
+
+
 Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreatePostEffectGraphicsPipeline(Microsoft::WRL::ComPtr<IDxcBlob> postEffectPixelShaderBlob_) {
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> postEffectPipelineState_ = nullptr;
 	if (postEffectPipelineState_) {
@@ -1068,8 +1095,6 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateOutLineGraphi
 		return outLinePipelineState_;
 	}
 }
-
-
 
 Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateRootSignature() {
 
@@ -1433,7 +1458,6 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateSpriteRootSi
 
 }
 
-
 Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateParticleRootSignature() {
 
 	//	ルートシグネチャーがあれば渡す
@@ -1634,6 +1658,119 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 #pragma endregion
 
 }
+
+Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationCSRootSignature() {
+
+	//	ルートシグネチャーがあれば渡す
+	if (GraphicsPipeline::GetInstance()->animationCSRootSignature_) {
+		return GraphicsPipeline::GetInstance()->animationCSRootSignature_;
+
+	}
+
+#pragma region RootSignature
+
+	D3D12_DESCRIPTOR_RANGE descriptorRangeSRV[3] = {};
+	// gMatrixPalette
+	descriptorRangeSRV[0].BaseShaderRegister = 0;
+	descriptorRangeSRV[0].NumDescriptors = 1;
+	descriptorRangeSRV[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeSRV[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	// Vertices
+	descriptorRangeSRV[1].BaseShaderRegister = 1;
+	descriptorRangeSRV[1].NumDescriptors = 1;
+	descriptorRangeSRV[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeSRV[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	// Influences
+	descriptorRangeSRV[2].BaseShaderRegister = 2;
+	descriptorRangeSRV[2].NumDescriptors = 1;
+	descriptorRangeSRV[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeSRV[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+
+	D3D12_DESCRIPTOR_RANGE descriptorRangeUAV[1] = {};
+	// gOutputVertices
+	descriptorRangeUAV[0].BaseShaderRegister = 0;
+	descriptorRangeUAV[0].NumDescriptors = 1;
+	descriptorRangeUAV[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+	descriptorRangeUAV[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	// RootSignature作成. 複数設定できるので配列。
+	D3D12_ROOT_PARAMETER rootParameters[5] = {};
+	// gMatrixPalette
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[0].DescriptorTable.pDescriptorRanges = &descriptorRangeSRV[0];
+	rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
+
+	// Vertices
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[1].DescriptorTable.pDescriptorRanges = &descriptorRangeSRV[1];
+	rootParameters[1].DescriptorTable.NumDescriptorRanges = 1;
+
+	// gInfluences
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[2].DescriptorTable.pDescriptorRanges = &descriptorRangeSRV[2];
+	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
+
+	//Vertex書き込み用
+	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[3].DescriptorTable.pDescriptorRanges = &descriptorRangeUAV[0];
+	rootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
+
+	//Skinning
+	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
+	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; // ComputeShaderで使う
+	rootParameters[4].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
+
+
+	// RootSignature作成
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
+	descriptionRootSignature.Flags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
+	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
+
+	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
+	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; // バイリニアフィルタ
+	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; // 0~1の範囲外をリピート
+	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; // 比較しない
+	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX; // ありったけMipmapを使う
+	staticSamplers[0].ShaderRegister = 0;         // レジスタ番号0を使う
+	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; // PixelShaderで使う
+	descriptionRootSignature.pStaticSamplers = staticSamplers;
+	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
+
+	// シリアライズしてバイナリにする
+	HRESULT hr_ = D3D12SerializeRootSignature(
+		&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
+	if (FAILED(hr_)) {
+		Utility::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
+		assert(false);
+	}
+
+	// バイナリを元に生成
+	GraphicsPipeline::GetInstance()->animationCSRootSignature_ = nullptr;
+	hr_ = Engine::GetDevice()->CreateRootSignature(
+		0, signatureBlob_->GetBufferPointer(), signatureBlob_->GetBufferSize(),
+		IID_PPV_ARGS(&GraphicsPipeline::GetInstance()->animationCSRootSignature_));
+	assert(SUCCEEDED(hr_));
+
+
+	return animationCSRootSignature_;
+
+
+#pragma endregion
+
+}
+
 
 Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreatePostEffectRootSignature() {
 
@@ -2056,6 +2193,35 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateAnimationVSShader() {
 	return GraphicsPipeline::GetInstance()->animationVertexShaderBlob_;
 
 }
+
+Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateAnimationCSShader() {
+
+	HRESULT hr_ = S_FALSE;
+
+	// dxcCompilerを初期化
+	IDxcUtils* dxcUtils = nullptr;
+	IDxcCompiler3* dxcCompiler = nullptr;
+	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	assert(SUCCEEDED(hr_));
+	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	assert(SUCCEEDED(hr_));
+
+	// 現時点でincludeしないが、includeに対応するための設定を行っておく
+	IDxcIncludeHandler* includeHandler = nullptr;
+	hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	assert(SUCCEEDED(hr_));
+	// Shaderをコンパイルする
+	//	早期リターン
+	if (GraphicsPipeline::GetInstance()->animationComputeShaderBlob_) {
+		return GraphicsPipeline::GetInstance()->animationComputeShaderBlob_;
+	}
+	GraphicsPipeline::GetInstance()->animationComputeShaderBlob_ =
+		CompileShader(L"resources/hlsl/Skinning.CS.hlsl", L"cs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	assert(animationComputeShaderBlob_ != nullptr);
+	return GraphicsPipeline::GetInstance()->animationComputeShaderBlob_;
+
+}
+
 
 Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreatePostEffectVSShader() {
 	HRESULT hr_ = S_FALSE;

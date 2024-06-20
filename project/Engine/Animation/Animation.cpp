@@ -99,7 +99,7 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 	LoadTexture(directorPath + "/" + filename);
 	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
 	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(), skeleton, modelData, Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-	CreateVertexResource();
+	CreateResource();
 	sPipeline();
 	jointsNum_ = int(skeleton.joints.size());
 	line_.resize(jointsNum_);
@@ -115,7 +115,7 @@ void Animations::Initialize(const std::string& directorPath,const std::string& m
 	LoadTexture(modelData.material.textureFilePath);
 	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
 	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(), skeleton, modelData, Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-	CreateVertexResource();
+	CreateResource();
 	LoadTexture(modelData.material.textureFilePath);
 	sPipeline();
 	jointsNum_ = int(skeleton.joints.size());
@@ -284,7 +284,18 @@ void Animations::Update(const uint32_t animationNumber) {
 	
 }
 
+void Animations::ComputeParameter() {
+	Engine::GetList()->SetComputeRootSignature(CSRootSignature_.Get());
+	Engine::GetList()->SetPipelineState(CSPipelineState_.Get());
+	Engine::GetList()->SetComputeRootDescriptorTable(0,skinCluster.paletteSrvHandle.second);
+	Engine::GetList()->SetComputeRootDescriptorTable(1,inputVertex);
+	Engine::GetList()->SetComputeRootDescriptorTable(2,influence);
+	Engine::GetList()->SetComputeRootDescriptorTable(3,outputVertex);
+	Engine::GetList()->SetComputeRootConstantBufferView(4, modelData.skinClusterData.size());
+	Engine::GetList()->Dispatch(UINT(modelData.meshData.vertices.size() + 1023) / 1024, 1, 1);
 
+
+}
 
 void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag) {
 	ApplyAnimation(modelData.rootNode.name, animationNumber_);
@@ -367,6 +378,11 @@ void Animations::sPipeline() {
 
 		rootSignature_ = GraphicsPipeline::GetInstance()->CreateAnimationRootSignature();
 		sPipelineState_ = GraphicsPipeline::GetInstance()->CreateAnimationGraphicsPipeline(blendMode_);
+
+		GraphicsPipeline::GetInstance()->CreateAnimationCSShader();
+		CSRootSignature_ = GraphicsPipeline::GetInstance()->CreateAnimationCSRootSignature();
+		CSPipelineState_ = GraphicsPipeline::GetInstance()->CreateAnimationCSGraphicsPipeline();
+
 	}
 	else {
 		//ビジットアニメーションなら
@@ -380,11 +396,11 @@ void Animations::sPipeline() {
 };
 
 //頂点データの設定
-void Animations::CreateVertexResource() {
+void Animations::CreateResource() {
 	// モデルの読み込み
 	meshData_ = std::make_unique<Mesh>();
 	meshData_->Initialize(modelData.meshData);
-
+	//マテリアル
 	materialData_ = std::make_unique<Material>();
 	materialData_->Initialize();
 
@@ -403,6 +419,14 @@ void Animations::CreateVertexResource() {
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
 	cameraResorce_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
 
+	//UAVResourceの作成
+	uavResource_ = Mesh::CreateUAVBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData));
+	//uavResource_->Map(0, nullptr, reinterpret_cast<void**>(&uavData_));
+
+	
+	//inputVertex = Mesh::CreateResourceView(Engine::GetDevice().Get(), meshData_->GetVertexResource().Get(),meshData_->GetVerticesSize(),sizeof(VertexData));
+	//influence = Mesh::CreateResourceView(Engine::GetDevice().Get(), skinCluster.influenceResource.Get(), skinCluster.mappedInfluence.size(), sizeof(VertexInfluence));
+	//outputVertex = Mesh::CreateUAVView(Engine::GetDevice().Get(), uavResource_.Get(), meshData_->GetVerticesSize(), sizeof(VertexData));
 };
 
 
