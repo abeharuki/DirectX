@@ -11,7 +11,13 @@ void DebugScene::Initialize() {
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
-	worldTransformAnimation_.translate = { 2.3f,2.8f,-15.5f };
+	worldTransformAnimation_.translate = { 2.3f,2.0f,-2.0f };
+	worldTransformSphere_.Initialize();
+	worldTransformSphere_.translate.y = 1.6f;
+	worldTransformSphere_.rotate.y = -1.55f;
+	worldTransformGround_.Initialize();
+	worldTransformGround_.rotate.y = 1.58f;
+
 	//skybox
 	skybox_ = std::make_unique<Skybox>();
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
@@ -19,6 +25,11 @@ void DebugScene::Initialize() {
 	ground_ = std::make_unique<Ground>();
 	ground_->Initialize(
 		Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
+
+	sphere_ = std::make_unique<Sphere>();
+	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
+
+	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
 
 
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -28,17 +39,17 @@ void DebugScene::Initialize() {
 
 	//modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 
-	debugPlayer_ = std::make_unique<DebugPlayer>();
-	debugPlayer_->Initialize();
+	//debugPlayer_ = std::make_unique<DebugPlayer>();
+	//debugPlayer_->Initialize();
 
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
 	// 自キャラのワールドトランスフォームを追従カメラにセット
-	followCamera_->SetTarget(&debugPlayer_->GetWorldTransform());
+	followCamera_->SetTarget(&worldTransform_);
 
 	// 自キャラの生成と初期化処理
-	debugPlayer_->SetViewProjection(&followCamera_->GetViewProjection());
+	//debugPlayer_->SetViewProjection(&followCamera_->GetViewProjection());
 
 	PostEffect::GetInstance()->isGrayscale(false);
 
@@ -49,21 +60,23 @@ void DebugScene::Initialize() {
 
 void DebugScene::Update() {
 
-
+	Model::DirectionalLightDraw(directionLight_);
+	Sphere::DirectionalLightDraw(directionLight_);
 	//animation_->Update(0);
 	//animation_->Environment(env_, true);
 
 	loader_->Update();
-	debugPlayer_->Update();
+	//debugPlayer_->Update();
 	//CameraMove();
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
 	
-	worldTransformSkybox_.UpdateMatrixQuaternion();
-	worldTransformAnimation_.UpdateMatrixQuaternion();
-
+	worldTransformSkybox_.UpdateMatrix();
+	worldTransformAnimation_.UpdateMatrix();
+	worldTransformGround_.UpdateMatrix();
+	worldTransformSphere_.UpdateMatrix();
 
 	ground_->Update();
 	loader_->GetModel("box")->Environment(env_, true);
@@ -82,13 +95,20 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->isOutLine(outLine_.isEnable,viewProjection_);
 	PostEffect::GetInstance()->ValueOutLine(outLine_.differenceValue);
 	ImGui::Begin("Setting");
-	/*
+	
 	//ローダーオブジェクト
 	if (ImGui::TreeNode("LoaderObj")) {
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
-	
+	if (ImGui::TreeNode("Sphere")) {
+
+		ImGui::DragFloat3("Pos", &worldTransformSphere_.translate.x, 0.1f);
+		ImGui::DragFloat3("Rotate", &worldTransformSphere_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Size", &worldTransformSphere_.scale.x, 0.1f);
+
+		ImGui::TreePop();
+	}
 	
 	//アニメーション
 	if (ImGui::TreeNode("Animation")) {
@@ -99,7 +119,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
-	*/
+	
 	//Posteffect
 	if (ImGui::TreeNode("PostEffect")) {
 		// Grayscale
@@ -138,10 +158,13 @@ void DebugScene::Update() {
 
 void DebugScene::Draw() {
 	//loader_->Draw(viewProjection_, true);
-	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
-	debugPlayer_->Draw(viewProjection_);
-	ground_->Draw(viewProjection_, false);
-	skybox_->Draw(worldTransform_, viewProjection_);
+	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
+	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
+
+	//debugPlayer_->Draw(viewProjection_);
+	//ground_->Draw(viewProjection_, false);
+	//skybox_->Draw(worldTransform_, viewProjection_);
 }
 
 void DebugScene::RenderDirect() {

@@ -31,7 +31,13 @@ private: // 基本変数
 	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0 };
 	Vector3 direction_ = { 0.0f, -2.0f, 0.0f };
 	float intensity_ = 1.0f;
-
+	
+	
+	
+	
+	
+	
+	
 
 private:
 	Audio* audio_ = nullptr;

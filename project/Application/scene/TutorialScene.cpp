@@ -189,7 +189,7 @@ void TutorialScene::Update() {
 		SceneManager::GetInstance()->ChangeScene("OverScene");
 	}
 
-
+	
 	ImGui::Begin("step");
 	ImGui::Text("move%d", move_);
 	ImGui::Text("dash%d", dash_);
