@@ -103,6 +103,10 @@ void Engine::RenderPostDraw() {
 	dxCommon->RenderPostDraw();
 }
 
+void Engine::DepthPreDraw() {
+	dxCommon->DepthPreDraw();
+}
+
 void Engine::DepthPostDraw() {
 	dxCommon->DepthPostDraw();
 }
@@ -155,3 +159,21 @@ const DescriptorHandle& Engine::GetHandle() { return dxCommon->GetHandle(); }
 const DescriptorHandle& Engine::GetDepthHandle() { return dxCommon->GetDepthHandle(); }
 
 //D3D12_GPU_DESCRIPTOR_HANDLE Engine::GetDSVHandle() { return dxCommon->GetDSVHandle(); }
+
+void Engine::TransitionResource(GpuResource& resource, D3D12_RESOURCE_STATES newState)
+{
+	D3D12_RESOURCE_STATES oldState = resource.GetResourceState();
+
+	if (oldState != newState)
+	{
+		D3D12_RESOURCE_BARRIER barrier{};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = resource.GetResource();
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		barrier.Transition.StateBefore = oldState;
+		barrier.Transition.StateAfter = newState;
+		resource.SetResourceState(newState);
+		Engine::GetList()->ResourceBarrier(1, &barrier);
+	}
+}

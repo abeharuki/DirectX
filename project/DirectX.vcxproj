@@ -148,6 +148,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Animation\Skeleton.cpp" />
     <ClCompile Include="Engine\Animation\Skinning.cpp" />
     <ClCompile Include="Engine\Audio\Audio.cpp" />
+    <ClCompile Include="Engine\base\ColorBuffer.cpp" />
     <ClCompile Include="Engine\base\DescriptorHeap.cpp" />
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="Engine\base\WinApp.cpp" />
@@ -305,9 +306,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Animation\Skeleton.h" />
     <ClInclude Include="Engine\Animation\Skinning.h" />
     <ClInclude Include="Engine\Audio\Audio.h" />
+    <ClInclude Include="Engine\base\ColorBuffer.h" />
     <ClInclude Include="Engine\base\DescriptorHandle.h" />
     <ClInclude Include="Engine\base\DescriptorHeap.h" />
     <ClInclude Include="Engine\base\DirectXCommon.h" />
+    <ClInclude Include="Engine\base\GpuResource.h" />
     <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="Engine\CollisionManager\Collider.h" />
     <ClInclude Include="Engine\CollisionManager\CollisionConfig.h" />

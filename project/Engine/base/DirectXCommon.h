@@ -14,7 +14,7 @@
 #include <dxgidebug.h>
 #include <DescriptorHeap.h>
 #include <DescriptorHandle.h>
-
+#include "Math/math.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -89,6 +89,7 @@ public: // メンバ関数
 	/// レンダーテクスチャの作成
 	/// </summary>
 	void CreateRenderTexture();
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format,const Vector4& clearColor);
 
 	DescriptorHandle AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type);
 

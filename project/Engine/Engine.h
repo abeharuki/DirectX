@@ -1,6 +1,7 @@
 #pragma once
 #include "DirectXCommon.h"
 #include "WinApp.h"
+#include "base/GpuResource.h"
 
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
@@ -35,6 +36,7 @@ public:
 	static void RenderPreDraw();
 	static void RenderPostDraw();
 
+	static void DepthPreDraw();
 	static void DepthPostDraw();
 
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(
@@ -57,6 +59,7 @@ public:
 	const DescriptorHandle& GetDepthHandle();
 
 	//D3D12_GPU_DESCRIPTOR_HANDLE GetDSVHandle();
-	
+	void TransitionResource(GpuResource& resource, D3D12_RESOURCE_STATES newState);
+
 
 };

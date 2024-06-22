@@ -16,7 +16,7 @@
 #include "ViewProjection.h"
 #include "GraphicsPipeline.h"
 #include "ModelManager.h"
-
+#include "base/ColorBuffer.h"
 
 
 struct OutLineStyle {
@@ -51,6 +51,8 @@ public:
 		viewProjection_ = viewProjection;
 		outLineData->projectionInverse = Math::Inverse(viewProjection_.matProjection);
 	}
+
+	const DescriptorHandle& GetHandle() { return colorBuffer_->GetSRVHandle(); }
 private:
 	void CreateResource();
 
@@ -58,6 +60,8 @@ private:
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
 	void sPipeline();
+
+	void CreateRenderTexture();
 
 private:
 	static OutLine* instance_;
@@ -78,5 +82,11 @@ private:
 
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+
+
+	//DescriptorHandle srvHandle_;
+	//D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_;
+	//Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource;
+	std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
 
 };

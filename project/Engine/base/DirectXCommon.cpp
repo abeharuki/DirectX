@@ -5,7 +5,7 @@
 #include <imgui_impl_dx12.h>
 #include <imgui_impl_win32.h>
 #include <thread>
-#include <Math/math.h>
+
 
 
 
@@ -141,7 +141,7 @@ void DirectXCommon::PreDraw() {
 	ID3D12DescriptorHeap* heaps[] = { descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetDescriptorHeap() };
 	commandList_->SetDescriptorHeaps(_countof(heaps), heaps);
 
-	DepthPreDraw();
+	//DepthPreDraw();
 }
 
 void DirectXCommon::PostDraw() {
@@ -516,7 +516,7 @@ void DirectXCommon::Debug() {
 
 /*-------------------------OffscreenRendering関連------------------------*/
 
-Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor) {
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateRenderTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format,const Vector4& clearColor) {
 	// 生成するResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = width;                          // Textureの幅

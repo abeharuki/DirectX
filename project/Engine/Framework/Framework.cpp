@@ -23,11 +23,13 @@ void Framework::Draw() {
 	sceneManager_->Draw();
 	Engine::RenderPostDraw();
 
-	
-	Engine::PreDraw();
+	//Engine::DepthPreDraw();
 	postEffect_->Apply();
+	//Engine::DepthPostDraw();
+
+	Engine::PreDraw();
 	postEffect_->Draw();
-	Engine::DepthPostDraw();
+	
 	sceneManager_->RenderDirect();
 	Engine::PostDraw();
 }

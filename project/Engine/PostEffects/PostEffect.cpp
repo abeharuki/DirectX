@@ -34,6 +34,7 @@ void PostEffect::Update() {}
 
 void PostEffect::Draw() {
 	if (effect_) {
+
 		// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 		Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
 		Engine::GetList()->SetPipelineState(sPipelineState_.Get());
@@ -41,7 +42,8 @@ void PostEffect::Draw() {
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 		Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		Engine::GetList()->SetGraphicsRootDescriptorTable(0, Engine::GetInstance()->GetHandle());
+		//Engine::GetList()->SetGraphicsRootDescriptorTable(0, Engine::GetInstance()->GetHandle());
+		Engine::GetList()->SetGraphicsRootDescriptorTable(0, outline_->GetHandle());
 		Engine::GetList()->SetGraphicsRootConstantBufferView(1, postEffectResource_->GetGPUVirtualAddress());
 
 		// 三角形の描画

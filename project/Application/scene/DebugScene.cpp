@@ -85,9 +85,11 @@ void DebugScene::Update() {
 	smoothing_.isEnable = postEffects[2];
 	outLine_.isEnable = postEffects[3];
 	if (outLine_.isEnable != 0) {
-		PostEffect::GetInstance()->Effect(false);
+		//PostEffect::GetInstance()->Effect(false);
 	}
-	else
+	else {
+		//PostEffect::GetInstance()->Effect(true);
+	}
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
