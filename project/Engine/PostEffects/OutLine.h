@@ -38,11 +38,10 @@ public:
 
 	void Initialize();
 
-	void Update();
-
 	void Draw();
 
-	void Apply();
+	void PreDraw();
+	void PostDraw();
 
 	//エフェクトの設定
 	void isOutLine(bool flag) { outLineData->isEnable = flag; }
@@ -61,7 +60,6 @@ private:
 	/// </summary>
 	void sPipeline();
 
-	void CreateRenderTexture();
 
 private:
 	static OutLine* instance_;
@@ -83,10 +81,6 @@ private:
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-
-	//DescriptorHandle srvHandle_;
-	//D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_;
-	//Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource;
 	std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
-
+	float clearColor_[4]{ 0.1f, 0.25f, 0.5f, 1.0f };
 };
