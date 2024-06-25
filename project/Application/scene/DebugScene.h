@@ -62,7 +62,8 @@ private:
 	Vignetting vignetting_;
 	Gaussian smoothing_;
 	OutLineStyle outLine_;
-	bool postEffects[4];
+	RadialBlur radialBlur_;
+	bool postEffects[5];
 
 	float env_;
 };

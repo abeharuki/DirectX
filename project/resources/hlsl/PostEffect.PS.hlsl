@@ -18,11 +18,19 @@ struct Gaussian
     float32_t kernelSize;
 };
 
+struct RadialBlur
+{
+    float32_t2 center;
+    float32_t blurWidth;
+    int32_t isEnble;
+};
+
 struct PostEffectStyle
 {
     Grayscale grayscale;
     Vignetting vignetting;
     Gaussian gaussian;
+    RadialBlur radialBlur;
 };
 
 Texture2D<float32_t4> gTexture : register(t0);
@@ -76,18 +84,16 @@ PixelShaderOutput main(VertexShaderOutput input)
     uint32_t width, height;
     gTexture.GetDimensions(width, height);
     float32_t2 uvStepSize = float32_t2(rcp(width), rcp(height));
-    
-    
-    
+  
    // float32_t sigma = gPostEffectStyle.smoothing.kernelSize;
+ 
     
-   
     
     //ガウシアンフィルター
     if (gPostEffectStyle.gaussian.isEnable != 0)
     {
-        output.color.rgb = float32_t3(0.0f, 0.0f, 0.0f);
-        output.color.a = 1.0f;
+         output.color.rgb = float32_t3(0.0f, 0.0f, 0.0f);
+         output.color.a = 1.0f;
         
         float32_t weight = 0.0f;
         float32_t kernel3x3[3][3];
@@ -117,6 +123,31 @@ PixelShaderOutput main(VertexShaderOutput input)
         }
         output.color.rgb *= rcp(weight);
     }
+    
+     //ラジアルブラー
+    if (gPostEffectStyle.radialBlur.isEnble != 0)
+    {
+        const float32_t2 kCenter = gPostEffectStyle.radialBlur.center;
+        const int32_t kNumSamples = 10;
+        const float32_t kBlurWidth = gPostEffectStyle.radialBlur.blurWidth;
+        //中心から現在のuvに対して方向を計算
+        float32_t2 direction = input.texcoord - kCenter;
+        float32_t3 outputColor = float32_t3(0.0f, 0.0f, 0.0f);
+
+        for (int32_t sampleIndex = 0; sampleIndex < kNumSamples; ++sampleIndex)
+        {
+            //現愛のuvから先ほどの計算した方向にサンプリング点を進めながらサンプリングしていく
+            float32_t2 texcoord = input.texcoord + direction * kBlurWidth * float32_t(sampleIndex);
+            outputColor.rgb += gTexture.Sample(gSampler, texcoord).rgb;
+        }
+
+        //平均かする
+        outputColor.rgb *= rcp(kNumSamples);
+        
+        output.color.rgb = outputColor;
+        output.color.a = 1.0f;
+    }
+       
    
     //グレースケール
     if (gPostEffectStyle.grayscale.isEnable != 0)
@@ -137,8 +168,7 @@ PixelShaderOutput main(VertexShaderOutput input)
 
     }
     
-   
-       
+  
     
     return output;
 }

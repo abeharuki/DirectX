@@ -56,6 +56,8 @@ void DebugScene::Initialize() {
 	vignetting_.intensity = 16.0f;
 	smoothing_.kernelSize = 2.0f;
 	outLine_.differenceValue = 0.1f;
+	radialBlur_.center = { 0.5f,0.5f };
+	radialBlur_.blurWidth = 0.01f;
 }
 
 void DebugScene::Update() {
@@ -84,6 +86,7 @@ void DebugScene::Update() {
 	vignetting_.isEnable = postEffects[1];
 	smoothing_.isEnable = postEffects[2];
 	outLine_.isEnable = postEffects[3];
+	radialBlur_.isEnble = postEffects[4];
 	if (outLine_.isEnable != 0) {
 		//PostEffect::GetInstance()->Effect(false);
 	}
@@ -96,6 +99,10 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->GaussianKernelSize(smoothing_.kernelSize);
 	PostEffect::GetInstance()->isOutLine(outLine_.isEnable,viewProjection_);
 	PostEffect::GetInstance()->ValueOutLine(outLine_.differenceValue);
+	PostEffect::GetInstance()->isRadialBlur(radialBlur_.isEnble);
+	PostEffect::GetInstance()->RadialBlurCenter(radialBlur_.center);
+	PostEffect::GetInstance()->RadialBlurWidth(radialBlur_.blurWidth);
+
 	ImGui::Begin("Setting");
 	
 	//ローダーオブジェクト
@@ -149,6 +156,13 @@ void DebugScene::Update() {
 		if (ImGui::TreeNode("OutLine")) {
 			ImGui::Checkbox("isOutLine", &postEffects[3]);
 			ImGui::DragFloat("OutLine", &outLine_.differenceValue);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("RadialBlur")) {
+			ImGui::Checkbox("isRadialBlur", &postEffects[4]);
+			ImGui::DragFloat2("Center", &radialBlur_.center.x);
+			ImGui::SliderFloat("Width", &radialBlur_.blurWidth,0.01f,1.0f);
 			ImGui::TreePop();
 		}
 

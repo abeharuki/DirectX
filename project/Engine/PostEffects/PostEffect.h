@@ -33,12 +33,22 @@ struct Gaussian
 {
 	int32_t isEnable;
 	float kernelSize;
+	float padding[2];
 };
+
+struct RadialBlur {
+	Vector2 center;
+	float blurWidth;
+	int32_t isEnble;
+};
+
+
 
 struct PostEffects {
 	Grayscale grayscal;
 	Vignetting vignetting;
 	Gaussian gaussian;
+	RadialBlur radialBlur;
 };
 
 
@@ -59,15 +69,24 @@ public:
 
 	//エフェクトの設定
 	void Effect(bool flag) { effect_ = flag; }
+	//グレイスケール
 	void isGrayscale(bool flag) { postEffectData->grayscal.isEnable = flag; }
+	//ビネット
 	void isVignetting(bool flag) { postEffectData->vignetting.isEnable = flag; }
 	void VignetteIntensity(float intensity) { postEffectData->vignetting.intensity = intensity; }
 	void VignetteColor(Vector3 color) { postEffectData->vignetting.color = color; }
 	void Vignette(Vignetting vigne) { postEffectData->vignetting = vigne; }
+	//ガウシアン
 	void isGaussian(bool flag) { postEffectData->gaussian.isEnable = flag; }
 	void GaussianKernelSize(float size) { postEffectData->gaussian.kernelSize = size; }
+	//アウトライン
 	void isOutLine(bool flag,ViewProjection& viewProjection) { outline_->isOutLine(flag); outline_->SetViewProjection(viewProjection); }
 	void ValueOutLine(float value) { outline_->ValueOutLine(value); }
+	//ラジアル
+	void isRadialBlur(bool flag) { postEffectData->radialBlur.isEnble = flag; }
+	void RadialBlurCenter(Vector2 num) { postEffectData->radialBlur.center = { num.x,num.y };}
+	void RadialBlurWidth(float num) { postEffectData->radialBlur.blurWidth = num; }
+
 private:
 	PostEffect() = default;
 	~PostEffect() = default;

@@ -59,12 +59,22 @@ void PostEffect::Apply() {
 void PostEffect::CreateResource() {
 	postEffectResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(PostEffects));
 	postEffectResource_->Map(0, nullptr, reinterpret_cast<void**>(&postEffectData));
+	//グレイスケール
 	postEffectData->grayscal.isEnable = false;
+	//ビネット
 	postEffectData->vignetting.isEnable = false;
 	postEffectData->vignetting.color = Vector3(0.0f, 0.0f, 0.0f);
 	postEffectData->vignetting.intensity = 16.0f;
+	//ガウシャン
 	postEffectData->gaussian.isEnable = false;
 	postEffectData->gaussian.kernelSize = false;
+	//ラジアルブラー
+	postEffectData->radialBlur.isEnble = false;
+	postEffectData->radialBlur.center = { 0.5f,0.5f };
+	postEffectData->radialBlur.blurWidth = 0.01f;
+
+
+
 }
 
 void PostEffect::sPipeline() {
