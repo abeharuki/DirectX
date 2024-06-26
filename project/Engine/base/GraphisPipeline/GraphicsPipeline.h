@@ -41,6 +41,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> animationCSRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> postEffectRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> outLineRootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> dissolveRootSignature_ = nullptr;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> skyboxPipelineState_ = nullptr;
@@ -50,6 +51,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> animationPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> animationCSPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> outLinePipelineState_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> dissolvePipelineState_ = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_ = nullptr;
@@ -73,6 +75,7 @@ public:
 	//PostEffect
 	Microsoft::WRL::ComPtr<IDxcBlob> postEffectVertexShaderBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<IDxcBlob> outLinePixelShaderBlob_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcBlob> dissolvePixelShaderBlob_ = nullptr;
 public:
 	//	GraphicsPipelineの生成
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateGraphicsPipeline(BlendMode blendMode_);
@@ -84,7 +87,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateAnimationCSGraphicsPipeline();
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreatePostEffectGraphicsPipeline(Microsoft::WRL::ComPtr<IDxcBlob> postEffectPixelShaderBlob_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateOutLineGraphicsPipeline();
-
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateDissolveGraphicsPipeline();
 
 	//	RootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateRootSignature();
@@ -101,6 +104,7 @@ public:
 	//PostEffect系RootSignetureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreatePostEffectRootSignature();
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateOutLineRootSignature();
+	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateDissolveRootSignature();
 
 	//	vertexshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateVSShader();
@@ -134,6 +138,7 @@ public:
 	//	pixelshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreatePostEffectPSShader(const std::wstring path);
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateOutLinePSShader();
+	Microsoft::WRL::ComPtr<IDxcBlob> CreateDissolvePSShader();
 
 	static IDxcBlob* CompileShader(
 		// CompilerするShaderファイルへのパス

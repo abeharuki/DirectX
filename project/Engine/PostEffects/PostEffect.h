@@ -16,6 +16,7 @@
 #include "GraphicsPipeline.h"
 #include "ModelManager.h"
 #include "OutLine.h"
+#include "Dissolve.h"
 
 struct Grayscale {
 	int32_t isEnable;
@@ -86,7 +87,10 @@ public:
 	void isRadialBlur(bool flag) { postEffectData->radialBlur.isEnble = flag; }
 	void RadialBlurCenter(Vector2 num) { postEffectData->radialBlur.center = { num.x,num.y };}
 	void RadialBlurWidth(float num) { postEffectData->radialBlur.blurWidth = num; }
-
+	//ディゾルブ
+	void isDissolve(bool flag) { dissolve_->isDissolve(flag); }
+	void Threshold(float num) { dissolve_->Threshold(num); }
+	void EdgeColor(Vector3 num) { dissolve_->SetColor(num); }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;
@@ -110,6 +114,7 @@ private:
 
 	PostEffects* postEffectData = nullptr;
 	std::unique_ptr<OutLine> outline_;
+	std::unique_ptr<Dissolve> dissolve_;
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;

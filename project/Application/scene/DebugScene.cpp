@@ -87,6 +87,7 @@ void DebugScene::Update() {
 	smoothing_.isEnable = postEffects[2];
 	outLine_.isEnable = postEffects[3];
 	radialBlur_.isEnble = postEffects[4];
+	dissolve_.isEnble = postEffects[5];
 	if (outLine_.isEnable != 0) {
 		//PostEffect::GetInstance()->Effect(false);
 	}
@@ -102,7 +103,9 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->isRadialBlur(radialBlur_.isEnble);
 	PostEffect::GetInstance()->RadialBlurCenter(radialBlur_.center);
 	PostEffect::GetInstance()->RadialBlurWidth(radialBlur_.blurWidth);
-
+	PostEffect::GetInstance()->isDissolve(dissolve_.isEnble);
+	PostEffect::GetInstance()->Threshold(dissolve_.threshold);
+	PostEffect::GetInstance()->EdgeColor(dissolve_.edgeColor);
 	ImGui::Begin("Setting");
 	
 	//ローダーオブジェクト
@@ -163,6 +166,13 @@ void DebugScene::Update() {
 			ImGui::Checkbox("isRadialBlur", &postEffects[4]);
 			ImGui::DragFloat2("Center", &radialBlur_.center.x);
 			ImGui::SliderFloat("Width", &radialBlur_.blurWidth,0.01f,1.0f);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("Dissolve")) {
+			ImGui::Checkbox("isDissolve", &postEffects[5]);
+			ImGui::SliderFloat("Thresholed", &dissolve_.threshold, 0.01f, 1.0f);
+			ImGui::DragFloat3("EdgeColor", &dissolve_.edgeColor.x,0.0f,1.0f);
 			ImGui::TreePop();
 		}
 

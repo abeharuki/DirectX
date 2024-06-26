@@ -63,7 +63,8 @@ private:
 	Gaussian smoothing_;
 	OutLineStyle outLine_;
 	RadialBlur radialBlur_;
-	bool postEffects[5];
+	DissolveStyle dissolve_;
+	bool postEffects[6];
 
 	float env_;
 };

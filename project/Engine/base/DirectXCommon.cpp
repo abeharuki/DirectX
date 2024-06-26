@@ -140,8 +140,6 @@ void DirectXCommon::PreDraw() {
 
 	ID3D12DescriptorHeap* heaps[] = { descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetDescriptorHeap() };
 	commandList_->SetDescriptorHeaps(_countof(heaps), heaps);
-
-	//DepthPreDraw();
 }
 
 void DirectXCommon::PostDraw() {
@@ -152,8 +150,6 @@ void DirectXCommon::PostDraw() {
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	// TransitionBarrierを練る
 	commandList_->ResourceBarrier(1, &barrier);
-
-	//DepthPostDraw();
 
 	// コマンドリストの内容を確定させる。すべてのコマンドを積んでからcloseすること
 	hr_ = commandList_->Close();

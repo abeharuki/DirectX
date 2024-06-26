@@ -28,6 +28,9 @@ void PostEffect::Initialize() {
 	CreateResource();
 	outline_ = std::make_unique<OutLine>();
 	outline_->Initialize();
+
+	dissolve_ = std::make_unique<Dissolve>();
+	dissolve_->Initialize();
 }
 
 void PostEffect::Update() {}
@@ -43,7 +46,7 @@ void PostEffect::Draw() {
 		Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		//Engine::GetList()->SetGraphicsRootDescriptorTable(0, Engine::GetInstance()->GetHandle());
-		Engine::GetList()->SetGraphicsRootDescriptorTable(0, outline_->GetHandle());
+		Engine::GetList()->SetGraphicsRootDescriptorTable(0, dissolve_->GetHandle());
 		Engine::GetList()->SetGraphicsRootConstantBufferView(1, postEffectResource_->GetGPUVirtualAddress());
 
 		// 三角形の描画
@@ -54,6 +57,7 @@ void PostEffect::Draw() {
 
 void PostEffect::Apply() {
 	outline_->Draw();
+	dissolve_->Draw(outline_->GetHandle());
 }
 
 void PostEffect::CreateResource() {
