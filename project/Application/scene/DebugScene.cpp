@@ -29,6 +29,7 @@ void DebugScene::Initialize() {
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 
+
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
 
 
@@ -58,18 +59,20 @@ void DebugScene::Initialize() {
 	outLine_.differenceValue = 0.1f;
 	radialBlur_.center = { 0.5f,0.5f };
 	radialBlur_.blurWidth = 0.01f;
+	dissolve_.edgeColor = { 1.0f,0.0f,0.0f };
 }
 
 void DebugScene::Update() {
 
-	Model::DirectionalLightDraw(directionLight_);
-	Sphere::DirectionalLightDraw(directionLight_);
+	animation_->DirectionalLightDraw(directionLight_);
+	sphere_->DirectionalLightDraw(directionLight_);
+	modelGround_->DirectionalLightDraw(directionLight_);
 	//animation_->Update(0);
 	//animation_->Environment(env_, true);
 
 	loader_->Update();
 	//debugPlayer_->Update();
-	//CameraMove();
+	CameraMove();
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
@@ -80,20 +83,29 @@ void DebugScene::Update() {
 	worldTransformGround_.UpdateMatrix();
 	worldTransformSphere_.UpdateMatrix();
 
-	ground_->Update();
-	loader_->GetModel("box")->Environment(env_, true);
+	//loader_->GetModel("box")->Environment(env_, true);
 	grayscale_.isEnable = postEffects[0];
 	vignetting_.isEnable = postEffects[1];
 	smoothing_.isEnable = postEffects[2];
 	outLine_.isEnable = postEffects[3];
 	radialBlur_.isEnble = postEffects[4];
 	dissolve_.isEnble = postEffects[5];
+	animeDissolve_.isEnble = isAnimeDissolve_;
 	if (outLine_.isEnable != 0) {
 		//PostEffect::GetInstance()->Effect(false);
 	}
 	else {
 		//PostEffect::GetInstance()->Effect(true);
 	}
+	//animation_->isDissolve(animeDissolve_.isEnble);
+	animation_->SetThreshold(animeDissolve_.threshold);
+	//sphere_->isDissolve(animeDissolve_.isEnble);
+	sphere_->SetThreshold(animeDissolve_.threshold);
+	//modelGround_->isDissolve(animeDissolve_.isEnble);
+	modelGround_->SetThreshold(animeDissolve_.threshold);
+	animation_->SetEdgeColor(dissolve_.edgeColor);
+	sphere_->SetEdgeColor(dissolve_.edgeColor);
+	modelGround_->SetEdgeColor(dissolve_.edgeColor);
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
@@ -129,6 +141,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("AnimationRotate", &worldTransformAnimation_.rotate.x, 0.01f);
 		ImGui::DragFloat3("AnimationSize", &worldTransformAnimation_.scale.x, 0.1f);
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
+		ImGui::SliderFloat("Thresholed", &animeDissolve_.threshold, 0.01f, 1.0f);
 		ImGui::TreePop();
 	}
 	

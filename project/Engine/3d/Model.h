@@ -17,11 +17,18 @@
 #include "GraphicsPipeline.h"
 #include "ModelManager.h"
 #include <Skybox.h>
+#include <PostEffects/Dissolve.h>
 
 class Model {
 public: // 静的メンバ変数
 	
-	
+	struct WritingStyle {
+		DirectionLight directionLight_;
+		PointLight pointLight_;
+		SpotLight spotLight_;
+		Environment  environment_;
+		DissolveStyle dissolve_;
+	};
 
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
@@ -34,9 +41,7 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	
-	// ライティング
-	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
-	static WritingStyle* lightData;
+	
 
 	BlendMode blendMode_ = BlendMode::kNormal;
 
@@ -68,11 +73,11 @@ public:
 	/// </summary>
 	/// <param name="commandList">描画コマンドリスト</param>
 	//光の色　向き　明るさ
-	static void DirectionalLightDraw(DirectionLight directionLight);
+	void DirectionalLightDraw(DirectionLight directionLight);
 	//ポイントライトの詳細　向き
-	static void PointLightDraw(PointLight pointLight, Vector3 direction);
+	void PointLightDraw(PointLight pointLight, Vector3 direction);
 	//スポットライト
-	static void SpotLightDraw(SpotLight spotLight);
+	void SpotLightDraw(SpotLight spotLight);
 
 	void DirectionalLight(Vector4 color, Vector3 direction, float intensity);
 
@@ -88,7 +93,7 @@ public:
 	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
 	static Model* CreateFromObj(const std::string& filename);
 
-	static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
+	//static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 
 	void SetUV(Transform& uvTransform) { materialData_->SetUV(uvTransform); }
 
@@ -110,11 +115,22 @@ public:
 		lightData->environment_.environment = environment;
 	}
 
-
+	//void isDissolve(bool flag) { lightData->dissolve_.isEnble = flag; }
+	void SetThreshold(float num) { lightData->dissolve_.threshold = num; }
+	void SetEdgeColor(Vector3 color) { lightData->dissolve_.edgeColor = color; }
+	void SetMaskTexture(const std::string& texturePath);
 
 private:
 	// カメラ用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
+
+	// ライティング
+	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	WritingStyle* lightData;
+
+	//ディゾルブ
+	Microsoft::WRL::ComPtr<ID3D12Resource> dissolveResource_;
+	DissolveStyle* dissolveData = nullptr;
 
 	std::unique_ptr<Mesh> meshData_;
 	//マテリアルデータ
@@ -124,6 +140,7 @@ private:
 	
 	TextureManager* textureManager_;
 	uint32_t texture_;
+	uint32_t maskTexture_;
 	uint32_t skyboxTexture_;
 	uint16_t instanceCount = 10;
  private:

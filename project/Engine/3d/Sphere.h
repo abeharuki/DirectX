@@ -15,6 +15,7 @@
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include "GraphicsPipeline.h"
+#include "PostEffects/Dissolve.h"
 
 class Sphere {
 	// 静的メンバ変数
@@ -28,9 +29,13 @@ public:
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	BlendMode blendMode_ = BlendMode::kNormal;
 
-	// ライティング
-	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
-	static WritingStyle* lightData;
+	struct WritingStyle {
+		DirectionLight directionLight_;
+		PointLight pointLight_;
+		SpotLight spotLight_;
+		Environment  environment_;
+		DissolveStyle dissolve_;
+	};
 
 public:
 	/// <summary>
@@ -61,14 +66,14 @@ public:
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 
 	//光の色　向き　明るさ
-	static void LightDraw(Vector4 color, Vector3 direction, float intensity);
+	void LightDraw(Vector4 color, Vector3 direction, float intensity);
 
 	//光の色　向き　明るさ
-	static void DirectionalLightDraw(DirectionLight directionLight);
+	void DirectionalLightDraw(DirectionLight directionLight);
 	//ポイントライトの詳細　向き
-	static void PointLightDraw(PointLight pointLight, Vector3 direction);
+	void PointLightDraw(PointLight pointLight, Vector3 direction);
 	//スポットライト
-	static void SpotLightDraw(SpotLight spotLight);
+	void SpotLightDraw(SpotLight spotLight);
 
 	static Sphere* CreateSphere(const std::string& texturePath);
 
@@ -78,10 +83,15 @@ public:
 	// 光沢度
 	void SetShininess(float i);
 
+	//void isDissolve(bool flag) { lightData->dissolve_.isEnble = flag; }
+	void SetThreshold(float num) { lightData->dissolve_.threshold = num; }
+	void SetEdgeColor(Vector3 color) { lightData->dissolve_.edgeColor = color; }
+	void SetMaskTexture(const std::string& texturePath);
+
 private:
 	TextureManager* textureManager_;
 	uint32_t texture_;
-
+	uint32_t maskTexture_;
 
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
@@ -97,7 +107,9 @@ private:
 	//マテリアルデータ
 	std::unique_ptr<Material> materialData_;
 	CameraForGPU* cameraData = nullptr;
-
+	// ライティング
+	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	WritingStyle* lightData;
 	const uint32_t kSubdivision = 128;
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 

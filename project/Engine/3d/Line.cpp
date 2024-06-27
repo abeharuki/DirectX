@@ -8,8 +8,8 @@
 Microsoft::WRL::ComPtr<IDxcBlob> Line::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Line::pixelShaderBlob_;
 
-Microsoft::WRL::ComPtr<ID3D12Resource> Line::lightResource_;
-WritingStyle* Line::lightData;
+//Microsoft::WRL::ComPtr<ID3D12Resource> Line::lightResource_;
+//WritingStyle* Line::lightData;
 
 
 void Line::Initialize(Vector3 start, Vector3 end) {

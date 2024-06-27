@@ -14,6 +14,7 @@
 #include "Skinning.h"
 #include <Line.h>
 #include "ImGuiManager.h"
+#include <PostEffects/Dissolve.h>
 
 
 template<typename tValue>
@@ -50,17 +51,17 @@ Animation LoadAnimationFile(const std::string& directorPath, const std::string& 
 class Animations {
 public: // 静的メンバ変数
 
-
+	struct WritingStyle {
+		DirectionLight directionLight_;
+		PointLight pointLight_;
+		SpotLight spotLight_;
+		Environment  environment_;
+		DissolveStyle dissolve_;
+	};
 
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
-
 	
-
-	// ライティング
-	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
-	static WritingStyle* lightData;
-
 	BlendMode blendMode_ = BlendMode::kNormal;
 
 public:
@@ -82,12 +83,23 @@ public:
 	static Animations* Create(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
 	static Animations* Create(const std::string& filename, const std::string& motionPath);
 
+	/// <summary>
+	/// グラフィックスパイプラインの初期化
+	/// </summary>
+	void sPipeline();
+
+	/// <summary>
+	/// 3Dモデル生成
+	/// </summary>
+	/// <returns></returns>
+	void CreateResource();
+
 	//光の色　向き　明るさ
-	static void DirectionalLightDraw(DirectionLight directionLight);
+	void DirectionalLightDraw(DirectionLight directionLight);
 	//ポイントライトの詳細　向き
-	static void PointLightDraw(PointLight pointLight, Vector3 direction);
+	void PointLightDraw(PointLight pointLight, Vector3 direction);
 	//スポットライト
-	static void SpotLightDraw(SpotLight spotLight);
+	void SpotLightDraw(SpotLight spotLight);
 	//映り込み度
 	void Environment(float environment, bool flag) {
 		if (Skybox::textureNum != 0) {
@@ -102,22 +114,17 @@ public:
 	}
 	//ループさせるかどうか
 	void SetLoop(bool flag) { isLoop_ = flag; }
-	/// <summary>
-	/// グラフィックスパイプラインの初期化
-	/// </summary>
-	void sPipeline();
+	
 
-	/// <summary>
-	/// 3Dモデル生成
-	/// </summary>
-	/// <returns></returns>
-	void CreateResource();
-
-	//
+	//補間するアニメーションナンバーの設定
 	void SetAnimatioNumber(uint32_t nextAnimation,uint32_t animation) { 
 		preAnimationNumber_ = animation;
 		animationNumber_ = nextAnimation;
 	}
+
+	//void isDissolve(bool flag) { lightData->dissolve_.isEnble = flag; }
+	void SetThreshold(float num) { lightData->dissolve_.threshold = num; }
+	void SetEdgeColor(Vector3 color) { lightData->dissolve_.edgeColor = color; }
 
 	//アニメーションタイマーの設定
 	void SetAnimationTimer(float startTime, float flameTime);
@@ -126,7 +133,7 @@ public:
 	void SetBlend(const uint32_t animationNumber,float num);
 
 	void SetTexture(const std::string& texturePath);
-
+	void SetMaskTexture(const std::string& texturePath);
 private:
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
@@ -147,6 +154,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> uavResource_;
 	VertexData uavData_;
 
+	// ライティング
+	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	WritingStyle* lightData;
 
 	//メッシュデータ
 	std::unique_ptr<Mesh> meshData_;
@@ -159,8 +169,14 @@ private:
 	CameraForGPU* cameraData = nullptr;
 	TransformationMatrix* transformData = nullptr;
 
+	// リソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> dissolveResource_;
+	DissolveStyle* dissolveData = nullptr;
+
+	//テクスチャ
 	TextureManager* textureManager_;
 	uint32_t texture_;
+	uint32_t maskTexture_;
 
 	float animationTime = 0.0f;
 	float nextAnimationTime = 0.0f;

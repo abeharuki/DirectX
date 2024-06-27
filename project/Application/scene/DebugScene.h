@@ -38,10 +38,10 @@ private:
 	WorldTransform worldTransformGround_;
 	std::unique_ptr<Model> modelBunny_;
 	std::unique_ptr<Animations>animation_;
+	std::unique_ptr<Model> modelGround_;
 
 	// 球
 	std::unique_ptr<Sphere> sphere_;
-	std::unique_ptr<Model> modelGround_;
 
 	// 速度
 	Vector3 velocity_ = {};
@@ -56,6 +56,10 @@ private:
 
 	//プレイヤー
 	std::unique_ptr<DebugPlayer> debugPlayer_;
+
+	//アニメーションdissolve
+	DissolveStyle animeDissolve_;
+	bool isAnimeDissolve_ = false;
 
 	//PosteEffect
 	Grayscale grayscale_;

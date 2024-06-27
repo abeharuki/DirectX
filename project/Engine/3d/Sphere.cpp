@@ -8,8 +8,8 @@
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::vertexShaderBlob_;
 Microsoft::WRL::ComPtr<IDxcBlob> Sphere::pixelShaderBlob_;
 
-Microsoft::WRL::ComPtr<ID3D12Resource> Sphere::lightResource_;
-WritingStyle* Sphere::lightData;
+//Microsoft::WRL::ComPtr<ID3D12Resource> Sphere::lightResource_;
+//WritingStyle* Sphere::lightData;
 
 
 void Sphere::Initialize(const std::string& texturePath) {
@@ -54,7 +54,9 @@ void Sphere::Draw(
 	
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
-	
+	Engine::GetList()->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetGPUHandle(maskTexture_));
+
+
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialData_->GetResource()->GetGPUVirtualAddress());
@@ -180,6 +182,9 @@ void Sphere::CreateVertexResource() {
 	lightData->directionLight_.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	lightData->directionLight_.direction = { 0.0f, -1.0f, 0.0f };
 	lightData->directionLight_.intensity = 1.0f;
+	lightData->dissolve_.threshold = 0.0f;
+	lightData->dissolve_.edgeColor = { 1.0f,0.4f,0.3f };
+	lightData->dissolve_.isEnble = true;
 };
 
 void Sphere::SetColor(Vector4 color) {
@@ -207,6 +212,8 @@ void Sphere::LightDraw(Vector4 color, Vector3 direction, float intensity) {
 void Sphere::LoadTexture(const std::string& texturePath) {
 	TextureManager::GetInstance()->Load(texturePath);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(texturePath);
+	maskTexture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/noise0.png");
+
 }
 
 
@@ -298,18 +305,11 @@ void Sphere::DirectionalLightDraw(DirectionLight directionLight) {
 	lightData->directionLight_.direction = Math::Normalize(directionLight.direction);
 	lightData->directionLight_.intensity = directionLight.intensity;
 	lightData->directionLight_.isEnable_ = true;
-	lightData->pointLight_.isEnable_ = false;
-	lightData->spotLight_.isEnable_ = false;
-
-
-
 }
 void Sphere::PointLightDraw(PointLight pointLight, Vector3 direction) {
 	lightData->pointLight_ = pointLight;
 	lightData->directionLight_.direction = Math::Normalize(direction);
 	lightData->pointLight_.isEnable_ = true;
-	lightData->spotLight_.isEnable_ = false;
-	lightData->directionLight_.isEnable_ = false;
 	lightData->directionLight_.intensity = 0.0f;
 
 }
@@ -317,7 +317,9 @@ void Sphere::SpotLightDraw(SpotLight spotLight) {
 	lightData->spotLight_ = spotLight;
 	lightData->spotLight_.direction_ = Math::Normalize(spotLight.direction_);
 	lightData->spotLight_.isEnable_ = true;
-	lightData->pointLight_.isEnable_ = false;
-	lightData->directionLight_.isEnable_ = false;
+}
 
+void Sphere::SetMaskTexture(const std::string& path) {
+	TextureManager::GetInstance()->Load("resources/Mask/" + path);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/" + path);
 }

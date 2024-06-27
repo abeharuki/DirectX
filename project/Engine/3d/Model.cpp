@@ -4,8 +4,9 @@
 #include <imgui.h>
 
 
-Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
-WritingStyle* Model::lightData;
+
+//Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
+//WritingStyle* Model::lightData;
 
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
 	modelData = ModelManager::LoadObjFile(filename);
@@ -60,6 +61,8 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->IASetVertexBuffers(0, 1, &meshData_->GetVertexBufferView());
 	
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(7, TextureManager::GetInstance()->GetGPUHandle(maskTexture_));
+
 	if (lightData->environment_.isEnble_) {
 		Engine::GetList()->SetGraphicsRootDescriptorTable(6, textureManager_->GetGPUHandle(Skybox::textureNum));
 	}
@@ -71,6 +74,8 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(8, dissolveResource_->GetGPUVirtualAddress());
+
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), 1, 0, 0);
@@ -88,6 +93,13 @@ void Model::CreateVertexResource() {
 	materialData_ = std::make_unique<Material>();
 	materialData_->Initialize();
 
+	//ディゾルブ
+	//dissolveResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DissolveStyle));
+	//dissolveResource_->Map(0, nullptr, reinterpret_cast<void**>(&dissolveData));
+	//dissolveData->isEnble = false;
+	//dissolveData->threshold = 1.0f;
+	//dissolveData->edgeColor = { 1.0f,0.4f,0.3f };
+
 	// ライティング
 	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));
 	// 頂点リソースにデータを書き込む
@@ -99,7 +111,9 @@ void Model::CreateVertexResource() {
 	lightData->directionLight_.direction = {0.0f, -1.0f, 0.0f};
 	lightData->directionLight_.intensity = 1.0f;
 	//lightData->directionLight_.isEnable_ = true;
-	
+	lightData->dissolve_.threshold = 0.0f;
+	lightData->dissolve_.edgeColor = { 1.0f,0.4f,0.3f };
+	lightData->dissolve_.isEnble = false;
 
 	//カメラ
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
@@ -146,7 +160,8 @@ void Model::LoadTexture(const std::string& texturePath) {
 	{
 		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/white.png");
 	}
-	
+	maskTexture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/noise0.png");
+
 }
 
 
@@ -155,18 +170,12 @@ void Model::DirectionalLightDraw(DirectionLight directionLight) {
 	lightData->directionLight_.direction = Math::Normalize(directionLight.direction);
 	lightData->directionLight_.intensity = directionLight.intensity;
 	lightData->directionLight_.isEnable_ = true;
-	lightData->pointLight_.isEnable_ = false;
-	lightData->spotLight_.isEnable_ = false;
-
 	
-
 }
 void Model::PointLightDraw(PointLight pointLight, Vector3 direction) {
 	lightData->pointLight_ = pointLight;
 	lightData->directionLight_.direction = Math::Normalize(direction);
 	lightData->pointLight_.isEnable_ = true;
-	lightData->spotLight_.isEnable_ = false;
-	lightData->directionLight_.isEnable_ = false;
 	lightData->directionLight_.intensity = 0.0f;
 
 }
@@ -174,8 +183,6 @@ void Model::SpotLightDraw(SpotLight spotLight) {
 	lightData->spotLight_ = spotLight;
 	lightData->spotLight_.direction_ = Math::Normalize(spotLight.direction_);
 	lightData->spotLight_.isEnable_ = true;
-	lightData->pointLight_.isEnable_ = false;
-	lightData->directionLight_.isEnable_ = false;
 	
 }
 
@@ -187,6 +194,10 @@ void Model::DirectionalLight(Vector4 color, Vector3 direction, float intensity) 
 
 }
 
+void Model::SetMaskTexture(const std::string& path) {
+	TextureManager::GetInstance()->Load("resources/Mask/" + path);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/" + path);
+}
 void Model::PostDraw() {}
 
 

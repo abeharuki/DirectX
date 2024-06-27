@@ -1201,21 +1201,25 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateRootSignatur
 
 #pragma region RootSignature
 
-	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRange[3] = {};
 	descriptorRange[0].BaseShaderRegister = 0;                      // 0から始まる
 	descriptorRange[0].NumDescriptors = 1;                          // 数は1つ
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
+	descriptorRange[1].BaseShaderRegister = 1;                      // 0から始まる
+	descriptorRange[1].NumDescriptors = 1;                          // 数は1つ
+	descriptorRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
+	descriptorRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
+	descriptorRange[2].BaseShaderRegister = 2;                      // 0から始まる
+	descriptorRange[2].NumDescriptors = 1;                          // 数は1つ
+	descriptorRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
+	descriptorRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
-	D3D12_DESCRIPTOR_RANGE Range[1] = {};
-	Range[0].BaseShaderRegister = 1;                      // 0から始まる
-	Range[0].NumDescriptors = 1;                          // 数は1つ
-	Range[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
-	Range[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
+	
 
 
 	// RootSignature作成. 複数設定できるので配列。
-	D3D12_ROOT_PARAMETER rootParameters[7] = {};
+	D3D12_ROOT_PARAMETER rootParameters[8] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
@@ -1229,7 +1233,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateRootSignatur
 	rootParameters[2].ParameterType =
 		D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
+	rootParameters[2].DescriptorTable.pDescriptorRanges = &descriptorRange[0]; // Tableの中身の配列を指定
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 	//Light
@@ -1250,8 +1254,19 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateRootSignatur
 	//環境マップ用
 	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
 	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[6].DescriptorTable.pDescriptorRanges = Range; // Tableの中身の配列を指定
+	rootParameters[6].DescriptorTable.pDescriptorRanges = &descriptorRange[1]; // Tableの中身の配列を指定
 	rootParameters[6].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
+
+	//maskテクスチャ
+	rootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	rootParameters[7].DescriptorTable.pDescriptorRanges = &descriptorRange[2];
+	rootParameters[7].DescriptorTable.NumDescriptorRanges = 1;
+
+	//dissolve
+	//rootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
+	//rootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	//rootParameters[8].Descriptor.ShaderRegister = 3; // レジスタ番号3を使う
 
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
@@ -1654,20 +1669,23 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 
 #pragma region RootSignature
 
-	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRange[3] = {};
 	descriptorRange[0].BaseShaderRegister = 0;                      // 0から始まる
 	descriptorRange[0].NumDescriptors = 1;                          // 数は1つ
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
-	D3D12_DESCRIPTOR_RANGE Range[1] = {};
-	Range[0].BaseShaderRegister = 1;                      // 0から始まる
-	Range[0].NumDescriptors = 1;                          // 数は1つ
-	Range[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
-	Range[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
+	descriptorRange[1].BaseShaderRegister = 1;                      // 0から始まる
+	descriptorRange[1].NumDescriptors = 1;                          // 数は1つ
+	descriptorRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
+	descriptorRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
+	descriptorRange[2].BaseShaderRegister = 2;                      // 0から始まる
+	descriptorRange[2].NumDescriptors = 1;                          // 数は1つ
+	descriptorRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
+	descriptorRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
 
 	// RootSignature作成. 複数設定できるので配列。
-	D3D12_ROOT_PARAMETER rootParameters[8] = {};
+	D3D12_ROOT_PARAMETER rootParameters[9] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
@@ -1680,7 +1698,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 	//Texture
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
+	rootParameters[2].DescriptorTable.pDescriptorRanges = &descriptorRange[0]; // Tableの中身の配列を指定
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 	//Light
@@ -1701,14 +1719,26 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 	//Well
 	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;    // tabelを使う
 	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // Vertexhaderで使う
-	rootParameters[6].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
+	rootParameters[6].DescriptorTable.pDescriptorRanges = &descriptorRange[0]; // Tableの中身の配列を指定
 	rootParameters[6].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 	//環境マップ用
 	rootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
 	rootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[7].DescriptorTable.pDescriptorRanges = Range; // Tableの中身の配列を指定
+	rootParameters[7].DescriptorTable.pDescriptorRanges = &descriptorRange[1]; // Tableの中身の配列を指定
 	rootParameters[7].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
+
+	//maskテクスチャ
+	rootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	rootParameters[8].DescriptorTable.pDescriptorRanges = &descriptorRange[2];
+	rootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
+
+	//dissolve
+	//rootParameters[9].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
+	//rootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	//rootParameters[9].Descriptor.ShaderRegister = 3; // レジスタ番号3を使う
+	
 
 
 	// RootSignature作成

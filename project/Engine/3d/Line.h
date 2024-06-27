@@ -17,6 +17,13 @@
 class Line {
 	// 静的メンバ変数
 public:
+	struct WritingStyle {
+		DirectionLight directionLight_;
+		PointLight pointLight_;
+		SpotLight spotLight_;
+		Environment  environment_;
+	};
+
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	// パイプラインステートオブジェクト
@@ -26,9 +33,6 @@ public:
 	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	BlendMode blendMode_ = BlendMode::kNormal;
 
-	// ライティング
-	static Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
-	static WritingStyle* lightData;
 
 public:
 	/// <summary>
@@ -58,14 +62,14 @@ public:
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 
 	//光の色　向き　明るさ
-	static void LightDraw(Vector4 color, Vector3 direction, float intensity);
+	void LightDraw(Vector4 color, Vector3 direction, float intensity);
 
 	//光の色　向き　明るさ
-	static void DirectionalLightDraw(DirectionLight directionLight);
+	void DirectionalLightDraw(DirectionLight directionLight);
 	//ポイントライトの詳細　向き
-	static void PointLightDraw(PointLight pointLight, Vector3 direction);
+	void PointLightDraw(PointLight pointLight, Vector3 direction);
 	//スポットライト
-	static void SpotLightDraw(SpotLight spotLight);
+	void SpotLightDraw(SpotLight spotLight);
 
 	static Line* CreateLine(Vector3 start, Vector3 end);
 
@@ -91,6 +95,12 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
 	// データを書き込む
 	TransformationMatrix* wvpData;
+
+
+	// ライティング
+	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	WritingStyle* lightData;
+
 	VertexData* vertexData = nullptr;
 	ModelData modelData;
 	MaterialD* materialData = nullptr;
