@@ -35,10 +35,10 @@ public:
 
 
 	//DescriptorHandleの作成
-	//static DescriptorHandle CreateResourceView(D3D12Resource* resource, size_t vertexSize, size_t sizeInBytes);
+	//const DescriptorHandle& CreateResourceView(ID3D12Resource* resource, size_t vertexSize, size_t sizeInBytes);
 
 	//UAVViewの作成
-	//static DescriptorHandle CreateUAVView(ID3D12Resource* resource ,size_t vertexSize ,size_t sizeInBytes);
+	//const DescriptorHandle& CreateUAVView(ID3D12Resource* resource ,size_t vertexSize ,size_t sizeInBytes);
 
 
 private:

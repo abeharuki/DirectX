@@ -44,6 +44,9 @@ struct Animation {
 	std::map<std::string, NodeAnimation> nodeAnimations;
 };
 
+struct SkinningInformation {
+	uint32_t numVertices;
+};
 
 Animation LoadAnimationFile(const std::string& directorPath, const std::string& filename);
 
@@ -144,6 +147,10 @@ private:
 
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+
+	//スキニングの情報
+	Microsoft::WRL::ComPtr<ID3D12Resource> skinningInformation;
+	std::unique_ptr<SkinningInformation> skinningData_;
 
 	//DescriptorHandle
 	DescriptorHandle inputVertex;

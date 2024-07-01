@@ -290,7 +290,7 @@ void Animations::ComputeParameter() {
 	Engine::GetList()->SetComputeRootDescriptorTable(1,inputVertex);
 	Engine::GetList()->SetComputeRootDescriptorTable(2,influence);
 	Engine::GetList()->SetComputeRootDescriptorTable(3,outputVertex);
-	Engine::GetList()->SetComputeRootConstantBufferView(4, modelData.skinClusterData.size());
+	Engine::GetList()->SetComputeRootConstantBufferView(4, skinningInformation->GetGPUVirtualAddress());
 	Engine::GetList()->Dispatch(UINT(modelData.meshData.vertices.size() + 1023) / 1024, 1, 1);
 
 
@@ -300,7 +300,8 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	ApplyAnimation(modelData.rootNode.name, animationNumber_);
 	SkeletonUpdate();
 	SkinningUpdate();
-	
+	ComputeParameter();
+
 	if (modelData.skinClusterData.empty()) {
 		worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
 		worldTransform.TransferMatrix();
@@ -332,7 +333,6 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	}
 	if (modelData.rootNode.children.size() != 0) {
 		Engine::GetList()->SetGraphicsRootDescriptorTable(6, skinCluster.paletteSrvHandle.second);
-
 	}
 
 
@@ -343,11 +343,8 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
-	//Engine::GetList()->SetGraphicsRootConstantBufferView(9, dissolveResource_->GetGPUVirtualAddress());
-
 
 	// 三角形の描画
-	//Engine::GetList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 	if (!debug_) {
 		Engine::GetList()->DrawIndexedInstanced(UINT(meshData_->GetIndicesSize()), 1, 0, 0, 0);
 	}
@@ -433,13 +430,58 @@ void Animations::CreateResource() {
 	cameraResorce_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
 
 	//UAVResourceの作成
-	uavResource_ = Mesh::CreateUAVBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData));
+	uavResource_ = Mesh::CreateUAVBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) *meshData_->GetVerticesSize());
 	//uavResource_->Map(0, nullptr, reinterpret_cast<void**>(&uavData_));
 
-	
-	//inputVertex = Mesh::CreateResourceView(Engine::GetDevice().Get(), meshData_->GetVertexResource().Get(),meshData_->GetVerticesSize(),sizeof(VertexData));
-	//influence = Mesh::CreateResourceView(Engine::GetDevice().Get(), skinCluster.influenceResource.Get(), skinCluster.mappedInfluence.size(), sizeof(VertexInfluence));
-	//outputVertex = Mesh::CreateUAVView(Engine::GetDevice().Get(), uavResource_.Get(), meshData_->GetVerticesSize(), sizeof(VertexData));
+	//スキニング
+	skinningInformation = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(SkinningInformation));
+	skinningInformation->Map(0, nullptr, reinterpret_cast<void**>(&skinningData_));
+	skinningData_->numVertices = uint32_t(modelData.meshData.vertices.size());
+
+	//SRVの作成
+	D3D12_SHADER_RESOURCE_VIEW_DESC inputDesc{};
+	inputDesc.Format = DXGI_FORMAT_UNKNOWN;
+	inputDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	inputDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	inputDesc.Buffer.FirstElement = 0;
+	inputDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	inputDesc.Buffer.NumElements = UINT(meshData_->GetVerticesSize());
+	inputDesc.Buffer.StructureByteStride = sizeof(VertexData);
+
+	inputVertex = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	Engine::GetDevice()->CreateShaderResourceView(meshData_->GetVertexResource().Get(), &inputDesc, inputVertex);
+
+	//SRVの作成
+	D3D12_SHADER_RESOURCE_VIEW_DESC influenceDesc{};
+	influenceDesc.Format = DXGI_FORMAT_UNKNOWN;
+	influenceDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	influenceDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	influenceDesc.Buffer.FirstElement = 0;
+	influenceDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	influenceDesc.Buffer.NumElements = UINT(skinCluster.mappedInfluence.size());
+	influenceDesc.Buffer.StructureByteStride = sizeof(VertexInfluence);
+
+	influence = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	Engine::GetDevice()->CreateShaderResourceView(meshData_->GetVertexResource().Get(), &influenceDesc, influence);
+
+	//srv作成
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0;
+	uavDesc.Buffer.NumElements = UINT(meshData_->GetVerticesSize());//頂点数
+	uavDesc.Buffer.CounterOffsetInBytes = 0;
+	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
+	uavDesc.Buffer.StructureByteStride = sizeof(VertexData);
+
+	outputVertex = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	// UAVビューを作成
+	Engine::GetDevice()->CreateUnorderedAccessView(uavResource_.Get(), nullptr, &uavDesc, outputVertex);
+
+	//inputVertex = Mesh::CreateResourceView(meshData_->GetVertexResource().Get(),meshData_->GetVerticesSize(),sizeof(VertexData));
+	//influence = Mesh::CreateResourceView(skinCluster.influenceResource.Get(), skinCluster.mappedInfluence.size(), sizeof(VertexInfluence));
+	//outputVertex = Mesh::CreateUAVView(uavResource_.Get(), meshData_->GetVerticesSize(), sizeof(VertexData));
 };
 
 

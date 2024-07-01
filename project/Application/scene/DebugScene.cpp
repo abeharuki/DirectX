@@ -11,7 +11,7 @@ void DebugScene::Initialize() {
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
-	worldTransformAnimation_.translate = { 2.3f,2.0f,-2.0f };
+	worldTransformAnimation_.translate = { 2.3f,2.0f,-11.0f };
 	worldTransformSphere_.Initialize();
 	worldTransformSphere_.translate.y = 1.6f;
 	worldTransformSphere_.rotate.y = -1.55f;
@@ -59,15 +59,15 @@ void DebugScene::Initialize() {
 	outLine_.differenceValue = 0.1f;
 	radialBlur_.center = { 0.5f,0.5f };
 	radialBlur_.blurWidth = 0.01f;
-	dissolve_.edgeColor = { 1.0f,0.0f,0.0f };
+	dissolve_.edgeColor = { 1.0f,-1.0f,-1.0f };
 }
 
 void DebugScene::Update() {
-
+	worldTransformAnimation_.rotate.y = 0.05f;
 	animation_->DirectionalLightDraw(directionLight_);
 	sphere_->DirectionalLightDraw(directionLight_);
 	modelGround_->DirectionalLightDraw(directionLight_);
-	//animation_->Update(0);
+	animation_->Update(0);
 	//animation_->Environment(env_, true);
 
 	loader_->Update();

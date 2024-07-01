@@ -117,8 +117,9 @@ ID3D12Resource* Mesh::CreateUAVBufferResoure(ID3D12Device* device, size_t sizeIn
 
 	return uavResource;
 }
+
 /*
-DescriptorHandle Mesh::CreateResourceView(ID3D12Resource* resource, size_t vertexSize, size_t sizeInBytes) {
+DescriptorHandle& Mesh::CreateResourceView(ID3D12Resource* resource, size_t vertexSize, size_t sizeInBytes) {
 
     //デバイスの取得
 	Microsoft::WRL::ComPtr<ID3D12Device> device = Engine::GetInstance()->GetDevice();
@@ -142,7 +143,7 @@ DescriptorHandle Mesh::CreateResourceView(ID3D12Resource* resource, size_t verte
 	return srvHandle_;
 }
 
-DescriptorHandle Mesh::CreateUAVView(ID3D12Resource* resource, size_t vertexSize, size_t sizeInBytes) {
+DescriptorHandle& Mesh::CreateUAVView(ID3D12Resource* resource, size_t vertexSize, size_t sizeInBytes) {
 
     //デバイスの取得
 	Microsoft::WRL::ComPtr<ID3D12Device> device = Engine::GetInstance()->GetDevice();
