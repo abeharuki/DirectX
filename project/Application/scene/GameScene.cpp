@@ -107,11 +107,10 @@ void GameScene::Update() {
 	enemyManager_->Update();
 
 	if (playerManager_->GetPlayer()->IsDash()) {
-		PostEffect::GetInstance()->GaussianKernelSize(2.0f);
-		PostEffect::GetInstance()->isGaussian(true);
+		PostEffect::GetInstance()->isRadialBlur(true);
 	}
 	else {
-		PostEffect::GetInstance()->isGaussian(false);
+		PostEffect::GetInstance()->isRadialBlur(false);
 	}
 
 	// 追従カメラの更新
@@ -218,7 +217,7 @@ void GameScene::Fade() {
 	}
 
 	if (playerManager_->IsOver()) {
-		PostEffect::GetInstance()->isGrayscale(true);
+		PostEffect::GetInstance()->isGrayscale(false);
 	}
 
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });

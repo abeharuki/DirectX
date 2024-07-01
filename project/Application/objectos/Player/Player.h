@@ -195,6 +195,7 @@ private: // メンバ変数
 	Vector3 velocity_ = {};
 
 	bool isOver_;
+	float threshold_;
 	float a;
 
 	//体力

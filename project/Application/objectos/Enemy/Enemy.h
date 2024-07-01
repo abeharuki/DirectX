@@ -123,6 +123,7 @@ private: // メンバ変数
 	int num_;
 
 	bool clear_;
+	float threshold_ = 0.0f;
 
 	//シェイク
 	float shakeTimer_;

@@ -465,8 +465,13 @@ void Enemy::DeadInitilize() {
 }
 void Enemy::DeadUpdata() {
 	worldTransformBase_.rotate.z -= 0.01f;
-	if (worldTransformBase_.rotate.z < -1.0f) {
+	
+	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+	threshold_ += 0.008f;
+	animation_->SetThreshold(threshold_);
+	if (threshold_ >= 1.0f&& worldTransformBase_.rotate.z < -1.0f) {
 		clear_ = true;
+
 	}
 
 };

@@ -300,7 +300,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	ApplyAnimation(modelData.rootNode.name, animationNumber_);
 	SkeletonUpdate();
 	SkinningUpdate();
-	ComputeParameter();
+	//ComputeParameter();
 
 	if (modelData.skinClusterData.empty()) {
 		worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
@@ -327,14 +327,14 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, textureManager_->GetGPUHandle(texture_));
-	Engine::GetList()->SetGraphicsRootDescriptorTable(8, textureManager_->GetGPUHandle(maskTexture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(7, textureManager_->GetGPUHandle(maskTexture_));
 	if (lightData->environment_.isEnble_) {
-		Engine::GetList()->SetGraphicsRootDescriptorTable(7, textureManager_->GetGPUHandle(Skybox::textureNum));
+		Engine::GetList()->SetGraphicsRootDescriptorTable(6, textureManager_->GetGPUHandle(Skybox::textureNum));
 	}
 	if (modelData.rootNode.children.size() != 0) {
-		Engine::GetList()->SetGraphicsRootDescriptorTable(6, skinCluster.paletteSrvHandle.second);
+		Engine::GetList()->SetGraphicsRootDescriptorTable(8, skinCluster.paletteSrvHandle.second);
 	}
-
+	
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -429,7 +429,7 @@ void Animations::CreateResource() {
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
 	cameraResorce_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
 
-	//UAVResourceの作成
+	/*/UAVResourceの作成
 	uavResource_ = Mesh::CreateUAVBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) *meshData_->GetVerticesSize());
 	//uavResource_->Map(0, nullptr, reinterpret_cast<void**>(&uavData_));
 
@@ -478,7 +478,7 @@ void Animations::CreateResource() {
 
 	// UAVビューを作成
 	Engine::GetDevice()->CreateUnorderedAccessView(uavResource_.Get(), nullptr, &uavDesc, outputVertex);
-
+	*/
 	//inputVertex = Mesh::CreateResourceView(meshData_->GetVertexResource().Get(),meshData_->GetVerticesSize(),sizeof(VertexData));
 	//influence = Mesh::CreateResourceView(skinCluster.influenceResource.Get(), skinCluster.mappedInfluence.size(), sizeof(VertexInfluence));
 	//outputVertex = Mesh::CreateUAVView(uavResource_.Get(), meshData_->GetVerticesSize(), sizeof(VertexData));

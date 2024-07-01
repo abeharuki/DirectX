@@ -26,7 +26,6 @@ void Player::Initialize() {
 	a = 0.0f;
 	isOver_ = false;
 	hitCount_ = 6;
-
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
@@ -132,11 +131,12 @@ void Player::Update() {
 		animation_->Update(0);
 	}
 	
-
+	animation_->SetThreshold(threshold_);
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::Text("%d", noAttack_);
 	ImGui::Text("%d", hitCount_);
+	ImGui::SliderFloat("Thres", &threshold_, 0.0f, 1.0f);
 	ImGui::End();
 }
 
@@ -354,8 +354,10 @@ void Player::DashUpdata() {
 
 // ノックバック
 void Player::knockInitialize() {
-	PostEffect::GetInstance()->VignetteColor({0.1f, 0.0f, 0.0f});
-	PostEffect::GetInstance()->isVignetting(true);
+	if (hitCount_ != 1) {
+		PostEffect::GetInstance()->VignetteColor({ 0.1f, 0.0f, 0.0f });
+		PostEffect::GetInstance()->isVignetting(true);
+	}
 	nockTime_ = 30;
 	animation_->SetAnimationTimer(0, 15.0f);
 	nockBack_ = true;
@@ -525,8 +527,21 @@ void Player::AttackUpdata() {
 	}
 }
 
-void Player::DeadInitilize() {};
-void Player::DeadUpdata() { isOver_ = true; };
+void Player::DeadInitilize() {
+	threshold_ = 0.0f;
+	
+};
+void Player::DeadUpdata() { 
+
+	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f});
+	threshold_ += 0.008f;
+	animation_->SetThreshold(threshold_);
+	if (threshold_ >= 1.0f) {
+		isOver_ = true;
+		
+	}
+	 
+};
 
 // 親子関係
 void Player::Relationship() {

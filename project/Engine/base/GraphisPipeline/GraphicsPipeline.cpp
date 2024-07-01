@@ -1716,23 +1716,23 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[5].Descriptor.ShaderRegister = 2; // レジスタ番号2を使う
 
-	//Well
-	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;    // tabelを使う
-	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // Vertexhaderで使う
-	rootParameters[6].DescriptorTable.pDescriptorRanges = &descriptorRange[0]; // Tableの中身の配列を指定
+	//環境マップ用
+	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
+	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	rootParameters[6].DescriptorTable.pDescriptorRanges = &descriptorRange[1]; // Tableの中身の配列を指定
 	rootParameters[6].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
-	//環境マップ用
-	rootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
-	rootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[7].DescriptorTable.pDescriptorRanges = &descriptorRange[1]; // Tableの中身の配列を指定
-	rootParameters[7].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
-
 	//maskテクスチャ
-	rootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	rootParameters[8].DescriptorTable.pDescriptorRanges = &descriptorRange[2];
-	rootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
+	rootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	rootParameters[7].DescriptorTable.pDescriptorRanges = &descriptorRange[2];
+	rootParameters[7].DescriptorTable.NumDescriptorRanges = 1;
+
+	//Well
+	rootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;    // tabelを使う
+	rootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // Vertexhaderで使う
+	rootParameters[8].DescriptorTable.pDescriptorRanges = &descriptorRange[0]; // Tableの中身の配列を指定
+	rootParameters[8].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 	//dissolve
 	//rootParameters[9].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
