@@ -140,6 +140,13 @@ void GameScene::Update() {
 	renjuManager_->SetViewProjection(viewProjection_);
 	tankManager_->SetViewProjection(viewProjection_);
 	CheckAllCollision();
+
+
+	playerManager_->GetPlayer()->SetLight(directionLight_);
+	enemyManager_->GetEnemy()->SetLight(directionLight_);
+	healerManager_->GetHealer()->SetLight(directionLight_);
+	renjuManager_->GetRenju()->SetLight(directionLight_);
+	tankManager_->GetTank()->SetLight(directionLight_);
 }
 
 
@@ -148,8 +155,7 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	//Model::LightDraw(color_, direction_, intensity_);
 
-	// 天球
-	skydome_->Draw(viewProjection_, false);
+	
 	//地面
 	ground_->Draw(viewProjection_, false);
 	//プレイヤー
@@ -164,6 +170,9 @@ void GameScene::Draw() {
 	healerManager_->Draw(viewProjection_);
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
+
+	// 天球
+	skydome_->Draw(viewProjection_, false);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

@@ -19,16 +19,18 @@
 #include <Skybox.h>
 #include <PostEffects/Dissolve.h>
 
+struct WritingStyle {
+	DirectionLight directionLight_;
+	PointLight pointLight_;
+	SpotLight spotLight_;
+	Environment  environment_;
+	DissolveStyle dissolve_;
+};
+
 class Model {
 public: // 静的メンバ変数
 	
-	struct WritingStyle {
-		DirectionLight directionLight_;
-		PointLight pointLight_;
-		SpotLight spotLight_;
-		Environment  environment_;
-		DissolveStyle dissolve_;
-	};
+	
 
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
@@ -41,7 +43,8 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 	
-	
+	//static Microsoft::WRL::ComPtr<ID3D12Resource> publicLightResource_;
+	//static WritingStyle* publicLightData;
 
 	BlendMode blendMode_ = BlendMode::kNormal;
 
@@ -119,6 +122,7 @@ public:
 	void SetThreshold(float num) { lightData->dissolve_.threshold = num; }
 	void SetEdgeColor(Vector3 color) { lightData->dissolve_.edgeColor = color; }
 	void SetMaskTexture(const std::string& texturePath);
+
 
 private:
 	// カメラ用リソース

@@ -5,8 +5,8 @@
 
 
 
-//Microsoft::WRL::ComPtr<ID3D12Resource> Model::lightResource_;
-//WritingStyle* Model::lightData;
+//Microsoft::WRL::ComPtr<ID3D12Resource> Model::publicLightResource_;
+//WritingStyle* Model::publicLightData;
 
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
 	modelData = ModelManager::LoadObjFile(filename);
@@ -51,6 +51,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 
 	//ライティング有効化
 	materialData_->SetLighting(light);
+	
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
@@ -73,6 +74,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, worldTransform.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
+
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
 	//Engine::GetList()->SetGraphicsRootConstantBufferView(8, dissolveResource_->GetGPUVirtualAddress());
 
@@ -100,6 +102,7 @@ void Model::CreateVertexResource() {
 	//dissolveData->threshold = 1.0f;
 	//dissolveData->edgeColor = { 1.0f,0.4f,0.3f };
 
+	
 	// ライティング
 	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));
 	// 頂点リソースにデータを書き込む
@@ -108,9 +111,9 @@ void Model::CreateVertexResource() {
 
 	// デフォルト値
 	lightData->directionLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
-	lightData->directionLight_.direction = {0.0f, -1.0f, 0.0f};
+	lightData->directionLight_.direction = Math::Normalize({0.0f, -5.0f, 0.0f});
 	lightData->directionLight_.intensity = 1.0f;
-	//lightData->directionLight_.isEnable_ = true;
+	lightData->directionLight_.isEnable_ = true;
 	lightData->dissolve_.threshold = 0.0f;
 	lightData->dissolve_.edgeColor = { 1.0f,0.4f,0.3f };
 	lightData->dissolve_.isEnble = false;

@@ -59,6 +59,9 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }
 	WorldTransform& GetWorldTransformRock() { return worldTransformRock_; }
 
+	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
+
+
 	void SetPlayerPos(Vector3 pos) { playerPos_ = pos; };
 	void SetHealerPos(Vector3 pos) { healerPos_ = pos; };
 	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; };

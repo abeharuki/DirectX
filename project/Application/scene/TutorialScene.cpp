@@ -178,7 +178,11 @@ void TutorialScene::Update() {
 	skydome_->Update();
 	ground_->Update();
 
-
+	playerManager_->GetPlayer()->SetLight(directionLight_);
+	enemyManager_->GetEnemy()->SetLight(directionLight_);
+	healerManager_->GetHealer()->SetLight(directionLight_);
+	renjuManager_->GetRenju()->SetLight(directionLight_);
+	tankManager_->GetTank()->SetLight(directionLight_);
 
 
 	if (Input::PushKey(DIK_C)) {

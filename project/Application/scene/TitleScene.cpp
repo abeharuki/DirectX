@@ -15,9 +15,8 @@ void TitleScene::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/human", "white.png", "walk.gltf"));
 
-	startPos_ = { 0.0f,0.0f,0.0f };
-	endPos_ = { 0.0f,100.0f,0.0f };
-	line_.reset(Line::CreateLine(startPos_, endPos_));
+	
+	
 
 
 	audio_ = Audio::GetInstance();
@@ -69,15 +68,14 @@ void TitleScene::Initialize() {
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Black.png"));
-	spriteBack_->SetSize({ 10.0f, 10.0f });
 	spriteTitle_.reset(Sprite::Create("resources/Title/title.png"));
+	spriteTitle_->SetSize({ 2000.0f, 800.0f });
+	spriteTitle_->SetPosition({ -300,0.0f });
 	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));
 	//spriteRule_.reset(Sprite::Create("resources/Title/rule.png"));
 	rule_ = false;
 	pos_.x = 1280.0f;
-	spriteTitle_->SetPosition({-250,0.0f});
-	//spritePushA_->SetSize({ 3.6f, 2.0f });
-	//spriteRule_->SetSize({ 1280.0f, 720.0f });
+	
 	spriteBack_->SetSize({ 1280.0f,720.0f });
 	isFadeIn_ = true;
 	isFadeOut_ = false;
@@ -90,7 +88,7 @@ void TitleScene::Initialize() {
 void TitleScene::Update() {
 
 	
-
+	
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
 	if (Input::GetInstance()->GetPadConnect()) {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
@@ -143,7 +141,13 @@ void TitleScene::Update() {
 	skydome_->Update();
 	ground_->Update();
 	worldTransform_.UpdateMatrix();
-	animation_->Update(0);
+	
+
+	playerManager_->GetPlayer()->SetLight(directionLight_);
+	enemyManager_->GetEnemy()->SetLight(directionLight_);
+	healerManager_->GetHealer()->SetLight(directionLight_);
+	renjuManager_->GetRenju()->SetLight(directionLight_);
+	tankManager_->GetTank()->SetLight(directionLight_);
 
 	if (Input::PushKey(DIK_C)) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
@@ -158,27 +162,18 @@ void TitleScene::Update() {
 	ImGui::End();
 
 	ImGui::Begin("Setting");
-	
-
-	if (ImGui::TreeNode("Line")) {
-		ImGui::DragFloat3("startLine", &startPos_.x, 0.01f);
-		ImGui::DragFloat3("endLine", &endPos_.x, 0.01f);
-
-		ImGui::TreePop();
-	}
+	ImGui::DragFloat3("DirectionLight", &directionLight_.direction.x, 1.0f);
 	ImGui::End();
-	animation_->AnimationDebug();
 }
 
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	//Model::LightDraw(color_, direction_, intensity_);
-	line_->Draw(worldTransform_, viewProjection_, false);
+	//line_->Draw(worldTransform_, viewProjection_, false);
 
-	// 天球
-	skydome_->Draw(viewProjection_, false);
+	
 	// 地面
-	ground_->Draw(viewProjection_, false);
+	ground_->Draw(viewProjection_, true);
 
 	// プレイヤー
 	playerManager_->Draw(viewProjection_);
@@ -191,7 +186,8 @@ void TitleScene::Draw() {
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
 
-	animation_->Draw(worldTransform_, viewProjection_,true);
+	// 天球
+	skydome_->Draw(viewProjection_, false);
 
 	Transform uv;
 	uv.scale = { 0.0f, 0.0f, 0.0f };
@@ -201,10 +197,12 @@ void TitleScene::Draw() {
 	spritePushA_->Draw(uv);
 	//spriteRule_->Draw(uv);
 	spriteBack_->Draw(uv);
+
+	
 }
 
 void TitleScene::RenderDirect() {
-
+	
 }
 
 void TitleScene::cameraMove() {

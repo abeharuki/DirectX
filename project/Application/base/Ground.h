@@ -25,6 +25,8 @@ public:
 	// ワールド座標を取得 地面
 	Vector3 GetWorldPosition();
 
+	void SetLight(DirectionLight directionLight) { model_->DirectionalLightDraw(directionLight); }
+
 private:
 	WorldTransform worldTransform_;
 

@@ -125,7 +125,7 @@ void Healer::Update() {
 };
 
 void Healer::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformHead_, camera,false);
+	animation_->Draw(worldTransformHead_, camera,true);
 
 }
 
@@ -150,7 +150,8 @@ void Healer::JumpUpdata() {};
 // ノックバック
 void Healer::knockInitialize() { 
 	nockTime_ = 30;
-	animation_->SetAnimationTimer(0, 15.0f);
+	animation_->SetAnimationTimer(0, 8.0f);
+	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
 };
 void Healer::knockUpdata() {
@@ -159,6 +160,8 @@ void Healer::knockUpdata() {
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
 		nockBack_ = false;
+		animation_->SetAnimationTimer(0, 8.0f);
+		animation_->SetpreAnimationTimer(0);
 		if (hitCount_ == 0) {
 			behaviorRequest_ = Behavior::kDead;
 		}

@@ -58,6 +58,9 @@ public: // メンバ関数
 
 	void Relationship();
 
+	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
+
+
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
 	void OnCollision(const WorldTransform& worldTransform);

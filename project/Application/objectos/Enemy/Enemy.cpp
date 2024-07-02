@@ -15,7 +15,6 @@ void Enemy::Initialize() {
 	worldTransformBase_.rotate.y = 1.57075f*2;
 	worldTransformBody_.Initialize();
 	worldTransformBody_.scale = { 2.0f,2.0f,2.0f };
-	//worldTransformBody_.rotate.x = 1.57075f;
 	worldTransformRock_.Initialize();
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	worldTransformRock_.translate.z = -15000.0f;
@@ -26,7 +25,7 @@ void Enemy::Initialize() {
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformBody_.TransferMatrix();
-	worldTransformRock_.TransferMatrix();
+	worldTransformRock_.UpdateMatrix();
 
 
 
@@ -82,14 +81,14 @@ void Enemy::Update() {
 	Relationship();
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.TransferMatrix();
-	
+	worldTransformRock_.UpdateMatrix();
 	
 	if (isAttack_) {
-		worldTransformRock_.UpdateMatrix();
+		
 	}
 	else {
 
-		worldTransformRock_.TransferMatrix();
+		//worldTransformRock_.TransferMatrix();
 
 	}
 
@@ -106,7 +105,7 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformBody_, camera, false);
+	animation_->Draw(worldTransformBody_, camera, true);
 
 }
 
@@ -193,8 +192,7 @@ void Enemy::DashAttackUpdata() {
 	// 追従対象からロックオン対象へのベクトル
 	if (isAttack_) {
 		// 回転
-		worldTransformBase_.rotate.y =
-			Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_ + 3.14f, 0.2f);
+		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_ , 0.2f);
 
 		if (num_ == 1) {
 			sub = playerPos_ - GetWorldPosition();
@@ -298,19 +296,104 @@ void Enemy::DashAttackUpdata() {
 
 //投擲攻撃
 void Enemy::ThrowingAttackInitialize() {
-	worldTransformRock_.translate = { 0.0f, 15.0f, 0.0f };
+	worldTransformRock_.translate = worldTransformBase_.translate;
+	worldTransformRock_.translate.y = 15.0f;
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	shakeTimer_ = 60.0f;
 	isAttack_ = false;
 	worldTransformBody_.rotate.x = 0.0f;
 	animation_->SetAnimationTimer(0.0f, 0.0f);
+	animation_->SetpreAnimationTimer(0);
+	
 }
 
 void Enemy::ThrowingAttackUpdata() {
 	animation_->SetLoop(false);
 	animation_->Update(0);
+	int num = RandomGenerator::GetRandomInt(1, 1);
+	
 
 	if (!isAttack_) {
+		
+
+		if (num == 1) {
+			sub = playerPos_ - GetWorldPosition();
+			// y軸周りの回転
+			if (sub.z != 0.0) {
+				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+				if (sub.z < 0.0) {
+					destinationAngleY_ = (sub.x >= 0.0)
+						? std::numbers::pi_v<float> -destinationAngleY_
+						: -std::numbers::pi_v<float> -destinationAngleY_;
+				}
+			}
+			else {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+					: -std::numbers::pi_v<float> / 2.0f;
+			}
+
+		}
+		else if (num == 2) {
+			sub = healerPos_ - GetWorldPosition();;
+			// y軸周りの回転
+			if (sub.z != 0.0) {
+				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+				if (sub.z < 0.0) {
+					destinationAngleY_ = (sub.x >= 0.0)
+						? std::numbers::pi_v<float> -destinationAngleY_
+						: -std::numbers::pi_v<float> -destinationAngleY_;
+				}
+			}
+			else {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+					: -std::numbers::pi_v<float> / 2.0f;
+			}
+
+		}
+		else if (num == 3) {
+			sub = renjuPos_ - GetWorldPosition();
+			// y軸周りの回転
+			if (sub.z != 0.0) {
+				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+				if (sub.z < 0.0) {
+					destinationAngleY_ = (sub.x >= 0.0)
+						? std::numbers::pi_v<float> -destinationAngleY_
+						: -std::numbers::pi_v<float> -destinationAngleY_;
+				}
+			}
+			else {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+					: -std::numbers::pi_v<float> / 2.0f;
+			}
+
+
+		}
+		else if (num == 4) {
+			sub = tankPos_ - GetWorldPosition();
+			// y軸周りの回転
+			if (sub.z != 0.0) {
+				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+				if (sub.z < 0.0) {
+					destinationAngleY_ = (sub.x >= 0.0)
+						? std::numbers::pi_v<float> -destinationAngleY_
+						: -std::numbers::pi_v<float> -destinationAngleY_;
+				}
+			}
+			else {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+					: -std::numbers::pi_v<float> / 2.0f;
+			}
+
+		}
+
+		// 回転
+		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+
+
 		if (worldTransformRock_.scale.x < 2.0f) {
 
 			randX = RandomGenerator::GetRandomFloat(-0.1f, 0.1f);
@@ -336,8 +419,7 @@ void Enemy::ThrowingAttackUpdata() {
 				if (worldTransformBase_.rotate.x <= 1.2f) {
 					isAttack_ = true;
 					worldTransformRock_.rotate = { 0.0f, 0.0f, 0.0f };
-					worldTransformRock_.translate = worldTransformBody_.translate;
-					worldTransformRock_.translate.y = 15.0f;
+					
 				}
 				else {
 					worldTransformBody_.rotate.x -= 0.08f;
@@ -348,90 +430,28 @@ void Enemy::ThrowingAttackUpdata() {
 		}
 	}
 
-
-
-
 	if (isAttack_) {
-		int num = RandomGenerator::GetRandomInt(1, 1);
+		
+		// 回転
+		worldTransformBase_.rotate.y =
+			Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+
 		if (num == 1) {
 			sub = playerPos_ - worldTransformRock_.GetWorldPos();
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-
 			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, playerPos_, 0.1f);
 		}
 		else if (num == 2) {
 			sub = healerPos_ - worldTransformRock_.GetWorldPos();
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-
-			worldTransformRock_.translate =
-				Math::Lerp(worldTransformRock_.translate, healerPos_, 0.1f);
+			worldTransformRock_.translate =	Math::Lerp(worldTransformRock_.translate, healerPos_, 0.1f);
 		}
 		else if (num == 3) {
 			sub = renjuPos_ - worldTransformRock_.GetWorldPos();
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-
-			worldTransformRock_.translate =
-				Math::Lerp(worldTransformRock_.translate, renjuPos_, 0.1f);
+			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, renjuPos_, 0.1f);
 
 		}
 		else if (num == 4) {
 			sub = tankPos_ - worldTransformRock_.GetWorldPos();
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-
-			worldTransformRock_.translate =
-				Math::Lerp(worldTransformRock_.translate, tankPos_, 0.1f);
+			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, tankPos_, 0.1f);
 
 		}
 	}
@@ -481,11 +501,12 @@ void Enemy::Relationship() {
 		Math::MakeAffineMatrix(
 			worldTransformBody_.scale, worldTransformBody_.rotate, worldTransformBody_.translate),
 		worldTransformBase_.matWorld_);
-
+	/*
 	worldTransformRock_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(
 			worldTransformRock_.scale, worldTransformRock_.rotate, worldTransformRock_.translate),
 		worldTransformBody_.matWorld_);
+		*/
 }
 
 

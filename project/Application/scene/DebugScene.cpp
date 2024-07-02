@@ -17,6 +17,11 @@ void DebugScene::Initialize() {
 	worldTransformSphere_.rotate.y = -1.55f;
 	worldTransformGround_.Initialize();
 	worldTransformGround_.rotate.y = 1.58f;
+	worldTransformLineBox_.Initialize();
+
+	linebox_ = std::make_unique<LineBox>();
+	AABB aabb = { {-1,-1,-1},{1,1,1} };
+	linebox_.reset(LineBox::Create(aabb));
 
 	//skybox
 	skybox_ = std::make_unique<Skybox>();
@@ -56,10 +61,13 @@ void DebugScene::Initialize() {
 
 	vignetting_.intensity = 16.0f;
 	smoothing_.kernelSize = 2.0f;
+	outLine_.isEnable = true;
 	outLine_.differenceValue = 0.1f;
 	radialBlur_.center = { 0.5f,0.5f };
 	radialBlur_.blurWidth = 0.01f;
 	dissolve_.edgeColor = { 1.0f,-1.0f,-1.0f };
+
+
 }
 
 void DebugScene::Update() {
@@ -82,6 +90,7 @@ void DebugScene::Update() {
 	worldTransformAnimation_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
 	worldTransformSphere_.UpdateMatrix();
+	worldTransformLineBox_.UpdateMatrix();
 
 	//loader_->GetModel("box")->Environment(env_, true);
 	grayscale_.isEnable = postEffects[0];
@@ -91,12 +100,7 @@ void DebugScene::Update() {
 	radialBlur_.isEnble = postEffects[4];
 	dissolve_.isEnble = postEffects[5];
 	animeDissolve_.isEnble = isAnimeDissolve_;
-	if (outLine_.isEnable != 0) {
-		//PostEffect::GetInstance()->Effect(false);
-	}
-	else {
-		//PostEffect::GetInstance()->Effect(true);
-	}
+	
 	//animation_->isDissolve(animeDissolve_.isEnble);
 	animation_->SetThreshold(animeDissolve_.threshold);
 	//sphere_->isDissolve(animeDissolve_.isEnble);
@@ -110,7 +114,7 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
 	PostEffect::GetInstance()->GaussianKernelSize(smoothing_.kernelSize);
-	PostEffect::GetInstance()->isOutLine(outLine_.isEnable,viewProjection_);
+	PostEffect::GetInstance()->isOutLine(outLine_.isEnable);
 	PostEffect::GetInstance()->ValueOutLine(outLine_.differenceValue);
 	PostEffect::GetInstance()->isRadialBlur(radialBlur_.isEnble);
 	PostEffect::GetInstance()->RadialBlurCenter(radialBlur_.center);
@@ -120,6 +124,15 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->EdgeColor(dissolve_.edgeColor);
 	ImGui::Begin("Setting");
 	
+	if (ImGui::TreeNode("LineBox")) {
+
+		ImGui::DragFloat3("Pos", &worldTransformLineBox_.translate.x, 0.1f);
+		ImGui::DragFloat3("Rotate", &worldTransformLineBox_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Size", &worldTransformLineBox_.scale.x, 0.1f);
+
+		ImGui::TreePop();
+	}
+
 	//ローダーオブジェクト
 	if (ImGui::TreeNode("LoaderObj")) {
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
@@ -201,6 +214,7 @@ void DebugScene::Draw() {
 	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 
+	linebox_->Draw(worldTransformLineBox_, viewProjection_, true);
 	//debugPlayer_->Draw(viewProjection_);
 	//ground_->Draw(viewProjection_, false);
 	//skybox_->Draw(worldTransform_, viewProjection_);

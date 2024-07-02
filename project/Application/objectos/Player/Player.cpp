@@ -141,7 +141,7 @@ void Player::Update() {
 }
 
 void Player::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformHead_, camera,false);
+	animation_->Draw(worldTransformHead_, camera,true);
 
 }
 
@@ -358,19 +358,30 @@ void Player::knockInitialize() {
 		PostEffect::GetInstance()->VignetteColor({ 0.1f, 0.0f, 0.0f });
 		PostEffect::GetInstance()->isVignetting(true);
 	}
-	nockTime_ = 30;
-	animation_->SetAnimationTimer(0, 15.0f);
+	
+	nockTime_ = 10;
+	animation_->SetAnimationTimer(0, 8.0f);
+	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
 	hitCount_--;
 };
 void Player::knockUpdata() {
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0;
-	if (--nockTime_ <= 0) {
-		PostEffect::GetInstance()->isVignetting(false);
-		behaviorRequest_ = Behavior::kRoot;
-		nockBack_ = false;
+	if (hitCount_ != 1) {
+		if (--nockTime_ <= 0) {
+			PostEffect::GetInstance()->isVignetting(false);
+			behaviorRequest_ = Behavior::kRoot;
+			nockBack_ = false;
+			animation_->SetAnimationTimer(0, 8.0f);
+			animation_->SetpreAnimationTimer(0);
+		}
 	}
+	else {
+		behaviorRequest_ = Behavior::kRoot;
+	}
+
+	
 };
 
 // 攻撃
@@ -525,6 +536,15 @@ void Player::AttackUpdata() {
 
 		break;
 	}
+
+	// ダッシュボタンを押したら
+	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
+		behaviorRequest_ = Behavior::kDash;
+	}
+	// ダッシュ
+	if (Input::PushKey(DIK_F)) {
+		behaviorRequest_ = Behavior::kDash;
+	}
 }
 
 void Player::DeadInitilize() {
@@ -532,7 +552,6 @@ void Player::DeadInitilize() {
 	
 };
 void Player::DeadUpdata() { 
-
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f});
 	threshold_ += 0.008f;
 	animation_->SetThreshold(threshold_);
@@ -540,7 +559,6 @@ void Player::DeadUpdata() {
 		isOver_ = true;
 		
 	}
-	 
 };
 
 // 親子関係

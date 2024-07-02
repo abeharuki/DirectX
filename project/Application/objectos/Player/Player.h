@@ -110,7 +110,10 @@ public: // メンバ関数
 		viewProjection_ = viewProjection;
 	}
 
+	//敵攻撃フラグ
 	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
+
+	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
 
 	//死亡フラグ
 	void SetTankDead(bool dead) { tankDead_ = dead; }

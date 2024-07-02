@@ -106,8 +106,10 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 	    0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
 	    4, viewProjection.constBuff_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
+	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
+	
+	
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), numInstance, 0, 0);
 	numInstance = 0;
@@ -156,6 +158,14 @@ void Particle::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 
 void Particle::SetFiled(AccelerationField accelerationField) {
 	accelerationField_ = accelerationField;
+}
+
+void Particle::SetModel(const std::string& filename, std::string& path){
+	modelData = ModelManager::LoadObjFile("resources/" + filename + path);
+	if (modelData.material.textureFilePath != "") {
+		TextureManager::GetInstance()->Load("resources/" + filename + modelData.material.textureFilePath);
+		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/" + filename + modelData.material.textureFilePath);
+	}
 }
 
 Particle* Particle::Create(const std::string& filename, Emitter emitter) {
@@ -221,3 +231,6 @@ std::list<Particle_> Particle::Emission(const Emitter& emitter, std::mt19937& ra
 	}
 	return particles;
 }
+
+
+	

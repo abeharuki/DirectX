@@ -81,7 +81,7 @@ public:
 	void isGaussian(bool flag) { postEffectData->gaussian.isEnable = flag; }
 	void GaussianKernelSize(float size) { postEffectData->gaussian.kernelSize = size; }
 	//アウトライン
-	void isOutLine(bool flag,ViewProjection& viewProjection) { outline_->isOutLine(flag); outline_->SetViewProjection(viewProjection); }
+	void isOutLine(bool flag) { outline_->isOutLine(flag); /*outline_->SetViewProjection(viewProjection);*/ }
 	void ValueOutLine(float value) { outline_->ValueOutLine(value); }
 	//ラジアル
 	void isRadialBlur(bool flag) { postEffectData->radialBlur.isEnble = flag; }

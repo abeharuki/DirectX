@@ -83,6 +83,8 @@ public:
 	//フィールドをセット
 	void SetFiled(AccelerationField accelerationField);
 
+	void SetModel(const std::string& filename, std::string& path);
+
 private:
 	
 	//Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;

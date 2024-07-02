@@ -133,7 +133,7 @@ void Renju::Draw(const ViewProjection& view) {
 	}
 
 	
-	animation_->Draw(worldTransformHead_, view,false);
+	animation_->Draw(worldTransformHead_, view,true);
 
 	
 }
@@ -166,7 +166,8 @@ void Renju::JumpUpdata() {};
 // ノックバック
 void Renju::knockInitialize() { 
 	nockTime_ = 30; 
-	animation_->SetAnimationTimer(0, 15.0f);
+	animation_->SetAnimationTimer(0,8.0f);
+	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
 };
 void Renju::knockUpdata() {
@@ -181,6 +182,9 @@ void Renju::knockUpdata() {
 		else {
 			behaviorRequest_ = Behavior::kRoot;
 		}
+
+		animation_->SetAnimationTimer(0, 8.0f);
+		animation_->SetpreAnimationTimer(0);
 	}
 };
 

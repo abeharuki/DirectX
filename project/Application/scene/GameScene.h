@@ -38,10 +38,13 @@ public: // メンバ関数
 	void Fade();
 
 private://基本変数
-	//光の数値
-	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0 };
-	Vector3 direction_ = { 0.0f,-2.0f,0.0f };
-	float intensity_ = 1.0f;
+	// 光の数値
+	DirectionLight directionLight_{
+		{1.0f, 1.0f, 1.0f, 1.0f},
+		{0.0f, -2.0f, 0.0f},
+		1.0f,
+		true,
+	};
 
 private: // メンバ変数
 

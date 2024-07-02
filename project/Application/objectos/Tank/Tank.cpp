@@ -113,7 +113,7 @@ void Tank::Update() {
 };
 
 void Tank::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformHead_, camera,false);
+	animation_->Draw(worldTransformHead_, camera,true);
 
 }
 
@@ -144,7 +144,8 @@ void Tank::JumpUpdata() {};
 // ノックバック
 void Tank::knockInitialize() { 
 	nockTime_ = 30;
-	animation_->SetAnimationTimer(0, 15.0f);
+	animation_->SetAnimationTimer(0, 8.0f);
+	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
 };
 void Tank::knockUpdata() {
@@ -159,6 +160,8 @@ void Tank::knockUpdata() {
 		else {
 			behaviorRequest_ = Behavior::kRoot;
 		}
+		animation_->SetAnimationTimer(0, 9.0f);
+		animation_->SetpreAnimationTimer(0);
 	}
 };
 

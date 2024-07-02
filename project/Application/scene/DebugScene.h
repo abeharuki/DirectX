@@ -10,6 +10,7 @@
 #include "Player/DebugPlayer.h"
 #include <Ground.h>
 #include <Sphere.h>
+#include "3d/LineBox.h"
 
 class DebugScene: public IScene {
 public:
@@ -36,12 +37,16 @@ private:
 	WorldTransform worldTransformAnimation_;
 	WorldTransform worldTransformSphere_;
 	WorldTransform worldTransformGround_;
+	WorldTransform worldTransformLineBox_;
 	std::unique_ptr<Model> modelBunny_;
 	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Model> modelGround_;
 
 	// 球
 	std::unique_ptr<Sphere> sphere_;
+
+	//線の箱
+	std::unique_ptr<LineBox> linebox_;
 
 	// 速度
 	Vector3 velocity_ = {};

@@ -61,6 +61,7 @@ private:
 	void sPipeline();
 
 
+
 private:
 	static OutLine* instance_;
 	ViewProjection viewProjection_;

@@ -22,12 +22,14 @@ void OutLine::Destroy()
 }
 
 void OutLine::Initialize() {
+	viewProjection_.Initialize();
 	sPipeline();
 	CreateResource();
 
 	colorBuffer_ = std::make_unique<ColorBuffer>();
 	colorBuffer_->Create(WinApp::kWindowWidth, WinApp::kWindowHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
-
+	
+	
 }
 
 void OutLine::Draw() {
@@ -84,6 +86,7 @@ void OutLine::CreateResource() {
 	outLineData->isEnable = false;
 	outLineData->differenceValue = 1.0f;
 	outLineData->projectionInverse = Math::MakeIdentity4x4();
+	outLineData->projectionInverse = Math::Inverse(viewProjection_.matProjection);
 }
 
 void OutLine::sPipeline() {
