@@ -122,7 +122,7 @@ public:
 	void SetThreshold(float num) { lightData->dissolve_.threshold = num; }
 	void SetEdgeColor(Vector3 color) { lightData->dissolve_.edgeColor = color; }
 	void SetMaskTexture(const std::string& texturePath);
-
+	void SetTexture(const std::string& texturePath);
 
 private:
 	// カメラ用リソース

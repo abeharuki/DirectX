@@ -1,5 +1,12 @@
 #include "LineBox.h"
 
+LineBox* LineBox::Create()
+{
+	LineBox* linebox = new LineBox();
+	linebox->Initialize();
+	return linebox;
+}
+
 LineBox* LineBox::Create(AABB aabb)
 {
 	LineBox* linebox = new LineBox();
@@ -14,9 +21,43 @@ LineBox* LineBox::Create(OBB obb)
 	return linebox;
 }
 
+void LineBox::Initialize() {
+	aabb_ = { {0,0,0},{0,0,0} };
+	
+	vertex[0] = { aabb_.min.x ,aabb_.min.y ,aabb_.min.z };
+	vertex[1] = { aabb_.min.x ,aabb_.min.y ,aabb_.max.z };
+
+	vertex[2] = { aabb_.max.x ,aabb_.min.y ,aabb_.min.z };
+	vertex[3] = { aabb_.max.x ,aabb_.min.y ,aabb_.max.z };
+
+	vertex[4] = { aabb_.min.x,aabb_.max.y , aabb_.min.z };
+	vertex[5] = { aabb_.min.x,aabb_.max.y , aabb_.max.z };
+
+	vertex[6] = { aabb_.max.x,aabb_.max.y , aabb_.min.z };
+	vertex[7] = { aabb_.max.x,aabb_.max.y , aabb_.max.z };
+
+	for (int i = 0; i < 12; ++i) {
+		lines_[i] = std::make_unique<Line>();
+	}
+
+	lines_[0].reset(Line::CreateLine(vertex[0], vertex[1]));
+	lines_[1].reset(Line::CreateLine(vertex[0], vertex[2]));
+	lines_[2].reset(Line::CreateLine(vertex[1], vertex[3]));
+	lines_[3].reset(Line::CreateLine(vertex[2], vertex[3]));
+
+	lines_[4].reset(Line::CreateLine(vertex[4], vertex[5]));
+	lines_[5].reset(Line::CreateLine(vertex[4], vertex[6]));
+	lines_[6].reset(Line::CreateLine(vertex[5], vertex[7]));
+	lines_[7].reset(Line::CreateLine(vertex[6], vertex[7]));
+
+	lines_[8].reset(Line::CreateLine(vertex[0], vertex[4]));
+	lines_[9].reset(Line::CreateLine(vertex[1], vertex[5]));
+	lines_[10].reset(Line::CreateLine(vertex[2], vertex[6]));
+	lines_[11].reset(Line::CreateLine(vertex[3], vertex[7]));
+}
+
 void LineBox::Initialize(AABB aabb) {
 	aabb_ = aabb;
-	Vector3 vertex[8];
 	vertex[0] = { aabb.min.x ,aabb.min.y ,aabb.min.z };
 	vertex[1] = { aabb.min.x ,aabb.min.y ,aabb.max.z };
 
@@ -56,6 +97,7 @@ void LineBox::Initialize(OBB obb){
 void LineBox::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light){
 	aabb_.min = { aabb_.min.x - worldTransform.scale.x ,aabb_.min.y - worldTransform.scale.y ,aabb_.min.z - worldTransform.scale.z };
 	aabb_.max = { aabb_.max.x + worldTransform.scale.x ,aabb_.max.y + worldTransform.scale.y ,aabb_.max.z + worldTransform.scale.z };
+	
 	for (int i = 0; i < 12; ++i) {
 		lines_[i]->Draw(worldTransform, viewProjection, light);
 	}

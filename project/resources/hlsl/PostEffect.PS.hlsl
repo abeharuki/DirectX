@@ -25,12 +25,19 @@ struct RadialBlur
     int32_t isEnble;
 };
 
+struct Random
+{
+    float32_t time;
+    int32_t isEnble;
+};
+
 struct PostEffectStyle
 {
     Grayscale grayscale;
     Vignetting vignetting;
     Gaussian gaussian;
     RadialBlur radialBlur;
+    Random random;
 };
 
 Texture2D<float32_t4> gTexture : register(t0);
@@ -50,6 +57,16 @@ float gauss(float x, float y, float sigma)
     float denominator = 2.0f * PI * sigma * sigma;
     return exp(exponent) * rcp(denominator);
 
+}
+
+float rand2dTo1d(float2 value)
+{
+    
+    float2 smallValue = sin(value);
+    float2 dotDir = float2(12.9898, 78.233);
+    float random = dot(smallValue, dotDir);
+    random = frac(sin(random) * 143758.5453);
+    return random;
 }
 
 static const float32_t2 kIndex3x3[3][3] =
@@ -149,6 +166,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     }
        
    
+   
     //グレースケール
     if (gPostEffectStyle.grayscale.isEnable != 0)
     {
@@ -168,7 +186,15 @@ PixelShaderOutput main(VertexShaderOutput input)
 
     }
     
+     //ノイズ
+    if (gPostEffectStyle.random.isEnble != 0)
+    {
+        float32_t random = rand2dTo1d(input.texcoord + gPostEffectStyle.random.time);
+        float32_t4 randomValue = float32_t4(random, random, random, 1.0f);
+        output.color *= randomValue;
+
+    }
   
     
-    return output;
+        return output;
 }

@@ -172,20 +172,17 @@ void Model::DirectionalLightDraw(DirectionLight directionLight) {
 	lightData->directionLight_.color = directionLight.color;
 	lightData->directionLight_.direction = Math::Normalize(directionLight.direction);
 	lightData->directionLight_.intensity = directionLight.intensity;
-	lightData->directionLight_.isEnable_ = true;
+	lightData->directionLight_.isEnable_ = directionLight.isEnable_;
 	
 }
 void Model::PointLightDraw(PointLight pointLight, Vector3 direction) {
 	lightData->pointLight_ = pointLight;
 	lightData->directionLight_.direction = Math::Normalize(direction);
-	lightData->pointLight_.isEnable_ = true;
-	lightData->directionLight_.intensity = 0.0f;
 
 }
 void Model::SpotLightDraw(SpotLight spotLight) {
 	lightData->spotLight_ = spotLight;
 	lightData->spotLight_.direction_ = Math::Normalize(spotLight.direction_);
-	lightData->spotLight_.isEnable_ = true;
 	
 }
 
@@ -201,6 +198,15 @@ void Model::SetMaskTexture(const std::string& path) {
 	TextureManager::GetInstance()->Load("resources/Mask/" + path);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/" + path);
 }
+
+void Model::SetTexture(const std::string& path) {
+	if (path != "") {
+		TextureManager::GetInstance()->Load("resources/" + path);
+		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/" + path);
+	}
+	
+}
+
 void Model::PostDraw() {}
 
 

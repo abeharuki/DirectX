@@ -32,6 +32,8 @@ public:
 
 	Model* GetModel(std::string name) { return models[name]; }
 
+	void SetTexture(const std::string& filename);
+
 private:
 	void LoadJsonObjFile(const std::string& filename);
 

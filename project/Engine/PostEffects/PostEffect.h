@@ -43,13 +43,17 @@ struct RadialBlur {
 	int32_t isEnble;
 };
 
-
+struct Random {
+	float time;
+	int32_t isEnble;
+};
 
 struct PostEffects {
 	Grayscale grayscal;
 	Vignetting vignetting;
 	Gaussian gaussian;
 	RadialBlur radialBlur;
+	Random random;
 };
 
 
@@ -91,6 +95,8 @@ public:
 	void isDissolve(bool flag) { dissolve_->isDissolve(flag); }
 	void Threshold(float num) { dissolve_->Threshold(num); }
 	void EdgeColor(Vector3 num) { dissolve_->SetColor(num); }
+	//ノイズエフェクト
+	void isRandom(bool flag) { postEffectData->random.isEnble = flag; }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;

@@ -73,7 +73,8 @@ private:
 	OutLineStyle outLine_;
 	RadialBlur radialBlur_;
 	DissolveStyle dissolve_;
-	bool postEffects[6];
+	Random random_;
+	bool postEffects[7];
 
 	float env_;
 };

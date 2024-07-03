@@ -147,6 +147,7 @@ void GameScene::Update() {
 	healerManager_->GetHealer()->SetLight(directionLight_);
 	renjuManager_->GetRenju()->SetLight(directionLight_);
 	tankManager_->GetTank()->SetLight(directionLight_);
+	ground_->SetLight(directionLight_);
 }
 
 
@@ -294,7 +295,7 @@ void GameScene::CheckAllCollision() {
 
 #pragma endregion
 
-#pragma region 敵キャラとヒーラーの当たり判定
+#pragma region 敵キャラとヒーラーの攻撃当たり判定
 	// 敵キャラ座標
 	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x,enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
 	posB = healerManager_->GetCanePos();

@@ -18,7 +18,6 @@ void DebugScene::Initialize() {
 	worldTransformGround_.Initialize();
 	worldTransformGround_.rotate.y = 1.58f;
 	worldTransformLineBox_.Initialize();
-
 	linebox_ = std::make_unique<LineBox>();
 	AABB aabb = { {-1,-1,-1},{1,1,1} };
 	linebox_.reset(LineBox::Create(aabb));
@@ -37,8 +36,8 @@ void DebugScene::Initialize() {
 
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
 
-
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
+	loader_->SetTexture("skydome/sky.png");
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/human", "white.png", "walk.gltf"));
@@ -99,6 +98,7 @@ void DebugScene::Update() {
 	outLine_.isEnable = postEffects[3];
 	radialBlur_.isEnble = postEffects[4];
 	dissolve_.isEnble = postEffects[5];
+	random_.isEnble = postEffects[6];
 	animeDissolve_.isEnble = isAnimeDissolve_;
 	
 	//animation_->isDissolve(animeDissolve_.isEnble);
@@ -122,6 +122,7 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->isDissolve(dissolve_.isEnble);
 	PostEffect::GetInstance()->Threshold(dissolve_.threshold);
 	PostEffect::GetInstance()->EdgeColor(dissolve_.edgeColor);
+	PostEffect::GetInstance()->isRandom(random_.isEnble);
 	ImGui::Begin("Setting");
 	
 	if (ImGui::TreeNode("LineBox")) {
@@ -201,7 +202,10 @@ void DebugScene::Update() {
 			ImGui::DragFloat3("EdgeColor", &dissolve_.edgeColor.x,0.0f,1.0f);
 			ImGui::TreePop();
 		}
-
+		if (ImGui::TreeNode("Random")) {
+			ImGui::Checkbox("Random", &postEffects[6]);
+			ImGui::TreePop();
+		}
 		ImGui::TreePop();
 	}
 
@@ -209,7 +213,7 @@ void DebugScene::Update() {
 }
 
 void DebugScene::Draw() {
-	//loader_->Draw(viewProjection_, true);
+	loader_->Draw(viewProjection_, true);
 	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);

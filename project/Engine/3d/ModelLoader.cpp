@@ -159,3 +159,14 @@ void ModelLoader::Environment(float environment, bool flag) {
 		
 	}
 }
+
+void ModelLoader::SetTexture(const std::string& filename) {
+	for (auto& objectData : levelData->objects) {
+		//ファイル名から登録済みモデルを検索
+		Model* model = nullptr;
+		decltype(models)::iterator it = models.find(objectData.filename);
+		if (it != models.end()) { model = it->second; }
+		model->SetTexture(filename);
+		
+	}
+}

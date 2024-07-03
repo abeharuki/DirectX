@@ -36,6 +36,8 @@ void PostEffect::Initialize() {
 void PostEffect::Update() {}
 
 void PostEffect::Draw() {
+	++postEffectData->random.time;
+
 	if (effect_) {
 
 		// RootSignatureを設定。PSOに設定しているけど別途設定が必要

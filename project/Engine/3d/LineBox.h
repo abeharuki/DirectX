@@ -22,10 +22,12 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	static LineBox* GetInstance();
+	static LineBox* Create();
 	static LineBox* Create(AABB aabb);
 	static LineBox* Create(OBB obb);
 
 	// 初期化
+	void Initialize();
 	void Initialize(AABB aabb);
 	void Initialize(OBB obb);
 
@@ -54,5 +56,6 @@ public:
 
 private:
 	std::unique_ptr<Line> lines_[12];
+	Vector3 vertex[8];
 	AABB aabb_;
 };

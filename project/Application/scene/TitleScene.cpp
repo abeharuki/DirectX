@@ -142,12 +142,13 @@ void TitleScene::Update() {
 	ground_->Update();
 	worldTransform_.UpdateMatrix();
 	
-
+	//ライティングの設定
 	playerManager_->GetPlayer()->SetLight(directionLight_);
 	enemyManager_->GetEnemy()->SetLight(directionLight_);
 	healerManager_->GetHealer()->SetLight(directionLight_);
 	renjuManager_->GetRenju()->SetLight(directionLight_);
 	tankManager_->GetTank()->SetLight(directionLight_);
+	ground_->SetLight(directionLight_);
 
 	if (Input::PushKey(DIK_C)) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");

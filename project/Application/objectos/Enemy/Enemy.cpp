@@ -83,14 +83,7 @@ void Enemy::Update() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
 	
-	if (isAttack_) {
-		
-	}
-	else {
-
-		//worldTransformRock_.TransferMatrix();
-
-	}
+	
 
 	
 	ImGui::Begin("EnemyRock");
