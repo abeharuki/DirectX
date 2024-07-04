@@ -9,6 +9,7 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& camera);
+	void RenderDirect(const ViewProjection& camera);
 	Renju* GetRenju() { return renju_.get(); };
 	const WorldTransform& GetWorldTransform();
 	void SetViewProjection(const ViewProjection& viewProjection);
@@ -20,6 +21,17 @@ public:
 
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return renju_->GetBullets(); }
+
+	void Dissolve() {
+		threshold_ += 0.004f;
+		for (int i = 0; i < 3; ++i) {
+			HpModel_[i]->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+			nHpModel_[i]->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+			HpModel_[i]->SetThreshold(threshold_);
+			nHpModel_[i]->SetThreshold(threshold_);
+		}
+
+	}
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
@@ -36,7 +48,7 @@ private:
 
 	//
 	std::list<RenjuParticle*> particles_;
-
+	float threshold_ = 0.0f;
 	bool isDead_ = false;
 	bool isParticle_ = false;
 	Vector3 playerPos_;

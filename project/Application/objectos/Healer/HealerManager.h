@@ -8,6 +8,7 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& camera);
+	void RenderDirect(const ViewProjection& camera);
 	Healer* GetHealer() { return healer_.get(); };
 	const WorldTransform& GetWorldTransform();
 	void SetViewProjection(const ViewProjection& viewProjection);
@@ -28,6 +29,17 @@ public:
 
 	void SetParticlePos(Vector3 pos);
 
+	void Dissolve() {
+		threshold_ += 0.004f;
+		for (int i = 0; i < 3; ++i) {
+			HpModel_[i]->SetEdgeColor(Vector3{0.0f,-1.0f,-1.0f});
+			nHpModel_[i]->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+			HpModel_[i]->SetThreshold(threshold_);
+			nHpModel_[i]->SetThreshold(threshold_);
+		}
+		
+	}
+
 private:
 
 	std::unique_ptr<Model> Model_;
@@ -42,6 +54,7 @@ private:
 	bool isParticle_ = false;
 
 	bool isDead_ = false;
+	float threshold_ = 0.0f;
 
 	Vector3 playerPos_;
 	Vector3 enemyPos_;

@@ -403,13 +403,6 @@ void Animations::CreateResource() {
 	materialData_ = std::make_unique<Material>();
 	materialData_->Initialize();
 
-	//ディゾルブ
-	//dissolveResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DissolveStyle));
-	//dissolveResource_->Map(0, nullptr, reinterpret_cast<void**>(&dissolveData));
-	//dissolveData->isEnble = false;
-	//dissolveData->threshold = 1.0f;
-	//dissolveData->edgeColor = { 1.0f,0.4f,0.3f };
-
 	// ライティング
 	lightResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(WritingStyle));
 	// 頂点リソースにデータを書き込む

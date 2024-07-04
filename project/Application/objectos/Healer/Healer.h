@@ -99,6 +99,12 @@ public: // メンバ関数
 
 	bool IsDead() { return isDead_; }
 
+	void Dissolve() {
+		animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+		threshold_ += 0.004f;
+		animation_->SetThreshold(threshold_);
+	}
+
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
@@ -171,6 +177,7 @@ private: // メンバ変数
 
 	//死亡フラグ
 	bool isDead_ = false;
+	float threshold_;
 
 	//敵の攻撃フラグ
 	bool isEnemyAttack_;

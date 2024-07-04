@@ -81,7 +81,6 @@ private:
 	std::unique_ptr<RenjuManager> renjuManager_;
 
 
-
 	Vector2 pos_;
 	float size_[7];
 	bool rule_;

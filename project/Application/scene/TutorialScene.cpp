@@ -233,59 +233,56 @@ void TutorialScene::Draw() {
 
 	}
 
-	Transform uv;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f, 0.0f };
+
 	if (!step2_) {
-		spriteStep1_->Draw(uv);
-		spriteCombo_->Draw(uv);
+		spriteStep1_->Draw();
+		spriteCombo_->Draw();
 	}
 	else {
 		if (!call_ || !order_) {
-			spriteStep2_->Draw(uv);
+			spriteStep2_->Draw();
 		}
 
 	}
 
 
-	spriteTu_->Draw(uv);
+	spriteTu_->Draw();
 	if (call_ && order_) {
-		spriteSta_->Draw(uv);
+		spriteSta_->Draw();
 	}
 	else {
 		if (call_) {
-			spriteSen_[4]->Draw(uv);
+			spriteSen_[4]->Draw();
 		}
 		if (order_) {
-			spriteSen_[5]->Draw(uv);
+			spriteSen_[5]->Draw();
 		}
 	}
 	if (!step2_) {
 		if (move_) {
-			spriteSen_[0]->Draw(uv);
+			spriteSen_[0]->Draw();
 		}
 		if (attack_) {
-			spriteSen_[1]->Draw(uv);
+			spriteSen_[1]->Draw();
 		}
 		if (jump_) {
-			spriteSen_[2]->Draw(uv);
+			spriteSen_[2]->Draw();
 		}
 		if (dash_) {
-			spriteSen_[3]->Draw(uv);
+			spriteSen_[3]->Draw();
 		}
 		if (combo_) {
-			spriteSen_[6]->Draw(uv);
+			spriteSen_[6]->Draw();
 		}
 	}
 
 
 
-	spriteBack_->Draw(uv);
+	
 }
 
 void TutorialScene::RenderDirect() {
-
+	spriteBack_->Draw();
 }
 
 void TutorialScene::cameraMove() {

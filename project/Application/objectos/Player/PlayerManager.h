@@ -68,6 +68,7 @@ public:
 		revivalTransform_.scale.x = revivalCount_*2.0f;
 	}
 
+
 private:
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
@@ -95,6 +96,7 @@ private:
 
 	bool isDead_ = false;
 	int revivalCount_;
+
 
 	int hitCount_;
 

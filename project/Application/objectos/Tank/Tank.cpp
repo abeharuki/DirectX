@@ -28,7 +28,7 @@ void Tank::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 
-	hitCount_ = 0;
+	hitCount_ = 3;
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);

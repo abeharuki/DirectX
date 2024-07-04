@@ -131,13 +131,13 @@ void PlayerManager::DrawUI() {
 	uv.rotate = { 0.0f, 0.0f, 0.0f };
 	uv.translate = { 0.0f, 0.0f, 0.0f };
 	for (int i = 0; i < 6; i++) {
-		spriteHPG_[i]->Draw(uv);
-		spriteHP_[i]->Draw(uv);
+		spriteHPG_[i]->Draw();
+		spriteHP_[i]->Draw();
 	}
 
 	if (player_->GetIsDead()) {
-		spriteRevivalG_->Draw(uv);
-		spriteRevival_->Draw(uv);
+		spriteRevivalG_->Draw();
+		spriteRevival_->Draw();
 
 	}
 

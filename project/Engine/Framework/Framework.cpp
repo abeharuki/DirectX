@@ -19,17 +19,16 @@ void Framework::Update() {
 
 void Framework::Draw() {
 
+	
+
 	Engine::RenderPreDraw();
 	sceneManager_->Draw();
 	Engine::RenderPostDraw();
 
-	//Engine::DepthPreDraw();
 	postEffect_->Apply();
-	//Engine::DepthPostDraw();
 
 	Engine::PreDraw();
-	postEffect_->Draw();
-	
+	postEffect_->Draw();	
 	sceneManager_->RenderDirect();
 	Engine::PostDraw();
 }

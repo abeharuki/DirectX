@@ -56,13 +56,9 @@ void EnemyManager::Draw(const ViewProjection& camera) {
 };
 
 void EnemyManager::DrawUI() {
-	Transform uv;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f, 0.0f };
-	spriteHPG_->Draw(uv);
-	spriteHP_->Draw(uv);
-	spriteBoss_->Draw(uv);
+	spriteHPG_->Draw();
+	spriteHP_->Draw();
+	spriteBoss_->Draw();
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

@@ -55,6 +55,17 @@ void HealerManager::Update() {
 void HealerManager::Draw(const ViewProjection& camera) {
 	//Model_->Draw(healer_->GetWorldTransformHead(), camera, false);
 	healer_->Draw(camera);
+	
+
+	particle_->Draw(camera);
+	if (healer_->IsAttack()) {
+		CaneModel_->Draw(healer_->GetWorldTransformCane(), camera, false);
+
+	}
+
+};
+
+void HealerManager::RenderDirect(const ViewProjection& camera) {
 	if (healer_->GetHitCount() >= 3) {
 		HpModel_[0]->Draw(healer_->GetWorldTransfromHp(0), camera, false);
 	}
@@ -73,13 +84,6 @@ void HealerManager::Draw(const ViewProjection& camera) {
 	else {
 		nHpModel_[2]->Draw(healer_->GetWorldTransfromHp(2), camera, false);
 	}
-
-	particle_->Draw(camera);
-	if (healer_->IsAttack()) {
-		CaneModel_->Draw(healer_->GetWorldTransformCane(), camera, false);
-
-	}
-
 };
 
 void HealerManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }

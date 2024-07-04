@@ -44,6 +44,15 @@ void RenjuManager::Update() {
 void RenjuManager::Draw(const ViewProjection& camera) {
 	//Model_->Draw(renju_->GetWorldTransformHead(), camera, false);
 	renju_->Draw(camera);
+	
+	
+
+	for (RenjuParticle* particle : particles_) {
+		particle->Draw(camera);
+	}
+};
+
+void RenjuManager::RenderDirect(const ViewProjection& camera) {
 	if (renju_->GetHitCount() >= 3) {
 		HpModel_[0]->Draw(renju_->GetWorldTransfromHp(0), camera, false);
 
@@ -65,13 +74,7 @@ void RenjuManager::Draw(const ViewProjection& camera) {
 	else {
 		nHpModel_[2]->Draw(renju_->GetWorldTransfromHp(2), camera, false);
 	}
-	renju_->Draw(camera);
-
-	for (RenjuParticle* particle : particles_) {
-		particle->Draw(camera);
-	}
-};
-
+}
 
 void RenjuManager::SetParticlePos(Vector3 pos) {
 	// デスフラグが立った弾を削除

@@ -25,7 +25,7 @@ void Player::Initialize() {
 	worldTransformCollision_.translate.y = 2.0f;
 	a = 0.0f;
 	isOver_ = false;
-	hitCount_ = 6;
+	hitCount_ = 1;//6;
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
@@ -553,7 +553,7 @@ void Player::DeadInitilize() {
 };
 void Player::DeadUpdata() { 
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f});
-	threshold_ += 0.008f;
+	threshold_ += 0.004f;
 	animation_->SetThreshold(threshold_);
 	if (threshold_ >= 1.0f) {
 		isOver_ = true;

@@ -35,8 +35,7 @@ void GameScene::Initialize() {
 	ground_ = std::make_unique<Ground>();
 	// 3Dモデルの生成
 	modelGround_.reset(Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
-	ground_->Initialize(
-		Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
+	ground_->Initialize(Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
 
 	alpha_ = 1.0f;
 	//フェードイン・フェードアウト用スプライト
@@ -106,6 +105,16 @@ void GameScene::Update() {
 
 	enemyManager_->Update();
 
+	//倒された時のディゾルブ
+	if (playerManager_->GetPlayer()->HitCount() == 0) {
+		healerManager_->GetHealer()->Dissolve();
+		renjuManager_->GetRenju()->Dissolve();
+		tankManager_->GetTank()->Dissolve();
+		healerManager_->Dissolve();
+		renjuManager_->Dissolve();
+		tankManager_->Dissolve();
+	}
+
 	if (playerManager_->GetPlayer()->IsDash()) {
 		PostEffect::GetInstance()->isRadialBlur(true);
 	}
@@ -139,9 +148,10 @@ void GameScene::Update() {
 	healerManager_->SetViewProjection(viewProjection_);
 	renjuManager_->SetViewProjection(viewProjection_);
 	tankManager_->SetViewProjection(viewProjection_);
+	//当たり判定
 	CheckAllCollision();
 
-
+	//ライティングの設定
 	playerManager_->GetPlayer()->SetLight(directionLight_);
 	enemyManager_->GetEnemy()->SetLight(directionLight_);
 	healerManager_->GetHealer()->SetLight(directionLight_);
@@ -186,12 +196,6 @@ void GameScene::Draw() {
 	enemyManager_->DrawUI();
 	playerManager_->DrawUI();
 
-	Transform uv;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f, 0.0f };
-
-	spriteBack_->Draw(uv);
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -199,10 +203,16 @@ void GameScene::Draw() {
 }
 
 void GameScene::RenderDirect() {
+	healerManager_->RenderDirect(viewProjection_);
+	renjuManager_->RenderDirect(viewProjection_);
+	tankManager_->RenderDirect(viewProjection_);
+
 	if (playerManager_->GetPlayer()->IsDash()) {
 		playerManager_->Draw(viewProjection_);
 	}
-	
+
+	spriteBack_->Draw();
+
 }
 
 void GameScene::Fade() {

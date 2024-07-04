@@ -50,6 +50,11 @@ void TankManager::Update() {
 void TankManager::Draw(const ViewProjection& camera) {
 	//Model_->Draw(tank_->GetWorldTransformHead(), camera, false);
 	tank_->Draw(camera);
+	
+	particle_->Draw(camera);
+};
+
+void TankManager::RenderDirect(const ViewProjection& camera) {
 	if (tank_->GetHitCount() >= 3) {
 		HpModel_[0]->Draw(tank_->GetWorldTransfromHp(0), camera, false);
 
@@ -71,8 +76,7 @@ void TankManager::Draw(const ViewProjection& camera) {
 	else {
 		nHpModel_[2]->Draw(tank_->GetWorldTransfromHp(2), camera, false);
 	}
-	particle_->Draw(camera);
-};
+}
 
 // 衝突を検出したら呼び出されるコールバック関数
 void TankManager::OnAllyCollision(const WorldTransform& worldTransform) {

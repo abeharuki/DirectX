@@ -94,6 +94,7 @@ public: // メンバ関数
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
+
 	bool IsAttack() { return workAttack_.isAttack; }
 	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }

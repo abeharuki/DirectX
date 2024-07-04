@@ -4,6 +4,8 @@
 
 void TitleScene::Initialize() {
 	
+	PostEffect::GetInstance()->isOutLine(true);
+
 	worldTransform_.Initialize();
 	worldTransform_.scale = { 10.0f,10.0f,10.0f };
 	worldTransform_.translate.z = -5;
@@ -83,6 +85,7 @@ void TitleScene::Initialize() {
 
 
 	PostEffect::GetInstance()->isGrayscale(false);
+	
 }
 
 void TitleScene::Update() {
@@ -99,18 +102,7 @@ void TitleScene::Update() {
 	if (Input::PushKey(DIK_G)) {
 		//rule_ = true;
 	}
-	/*
-	if (rule_) {
-		const float speed = 30.0f;
-		if (pos_.x > 0.0f) {
-			pos_.x -= speed;
-		}
-		else {
-			pos_.x = 0.0f;
-			
-		}
-
-	}*/
+	
 
 	if (Input::GetInstance()->GetPadConnect()) {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
@@ -190,20 +182,13 @@ void TitleScene::Draw() {
 	// 天球
 	skydome_->Draw(viewProjection_, false);
 
-	Transform uv;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f, 0.0f };
-	spriteTitle_->Draw(uv);
-	spritePushA_->Draw(uv);
-	//spriteRule_->Draw(uv);
-	spriteBack_->Draw(uv);
-
+	spriteTitle_->Draw();
+	spritePushA_->Draw();
 	
 }
 
 void TitleScene::RenderDirect() {
-	
+	spriteBack_->Draw();
 }
 
 void TitleScene::cameraMove() {

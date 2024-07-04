@@ -8,6 +8,8 @@ class TankManager {
 		void Initialize();
 		void Update();
 		void Draw(const ViewProjection& camera);
+		void RenderDirect(const ViewProjection& camera);
+
 		Tank* GetTank() { return tank_.get(); };
 		const WorldTransform& GetWorldTransform();
 		void SetViewProjection(const ViewProjection& viewProjection);
@@ -24,6 +26,17 @@ class TankManager {
 
 		bool GetAttack() { return tank_->GetAttack(); }
 
+		void Dissolve() {
+			threshold_ += 0.004f;
+			for (int i = 0; i < 3; ++i) {
+				HpModel_[i]->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+				nHpModel_[i]->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+				HpModel_[i]->SetThreshold(threshold_);
+				nHpModel_[i]->SetThreshold(threshold_);
+			}
+
+		}
+
 	private:
 
 		std::unique_ptr<Model> Model_;
@@ -36,6 +49,7 @@ class TankManager {
 		bool isParticle_ = false;
 
 		bool isDead_ = false;
+		float threshold_ = 0.0f;
 
 		Vector3 playerPos_;
 		Vector3 enemyPos_;
