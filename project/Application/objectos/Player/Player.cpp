@@ -333,6 +333,7 @@ void Player::JumpUpdata() {
 
 // ダッシユ
 void Player::DashInitialize() {
+	PostEffect::GetInstance()->isRadialBlur(true);
 	workDash_.dashParameter_ = 0;
 	worldTransformBase_.rotate.y = destinationAngleY_;
 	dash_ = true;
@@ -348,6 +349,7 @@ void Player::DashUpdata() {
 	// 既定の時間経過で通常行動に戻る
 	if (++workDash_.dashParameter_ >= workDash_.behaviorDashTime) {
 		behaviorRequest_ = Behavior::kRoot;
+		PostEffect::GetInstance()->isRadialBlur(false);
 	}
 }
 
@@ -358,7 +360,7 @@ void Player::knockInitialize() {
 		PostEffect::GetInstance()->VignetteColor({ 0.1f, 0.0f, 0.0f });
 		PostEffect::GetInstance()->isVignetting(true);
 	}
-	
+	PostEffect::GetInstance()->isRadialBlur(false);
 	nockTime_ = 10;
 	animation_->SetAnimationTimer(0, 8.0f);
 	animation_->SetpreAnimationTimer(0);
@@ -551,13 +553,13 @@ void Player::AttackUpdata() {
 
 void Player::DeadInitilize() {
 	threshold_ = 0.0f;
-	PostEffect::GetInstance()->isRadialBlur(false);
+	
 };
 void Player::DeadUpdata() { 
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f});
 	threshold_ += 0.004f;
 	animation_->SetThreshold(threshold_);
-	if (threshold_ >= 0.8f) {
+	if (threshold_ >= 0.7f) {
 		isOver_ = true;
 		
 	}

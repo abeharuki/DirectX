@@ -115,13 +115,6 @@ void GameScene::Update() {
 		tankManager_->Dissolve();
 	}
 
-	if (playerManager_->GetPlayer()->IsDash()) {
-		PostEffect::GetInstance()->isRadialBlur(true);
-	}
-	else {
-		PostEffect::GetInstance()->isRadialBlur(false);
-	}
-
 	// 追従カメラの更新
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;

@@ -117,7 +117,15 @@ PixelShaderOutput main(VertexShaderOutput input)
         float NdotL = dot(normalize(input.normal), -gLight.directionLight.direction);
         float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
         float32_t3 diffuse = gMaterial.color.rbg * textureColor.rgb * gLight.directionLight.color.rgb * cos * gLight.directionLight.intensity;
-        float3 toonDiffuse = ToonShading(saturate(NdotL), TOON_LEVELS);
+        // トゥーンシェーディングの段階的な色分け
+        //float toonIntensity;
+        //if (cos > 0.95) toonIntensity = 1.0;
+        //else if (cos > 0.5)toonIntensity = 0.7;
+        //else if (cos > 0.25)toonIntensity = 0.5;
+        //else toonIntensity = 0.3;
+        //
+        //float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gLight.directionLight.color.rgb * toonIntensity * gLight.directionLight.intensity;
+        
         
 		// 鏡面反射
 		//float32_t3 reflectLight = reflect(gLight.directionLight.direction, normalize(input.normal));
@@ -129,8 +137,8 @@ PixelShaderOutput main(VertexShaderOutput input)
 
         if (gLight.directionLight.isEnable != 0)
         {
-			// 拡散反射＋鏡面反射
-            finalColor.rgb += diffuse + specular;
+            // 拡散反射＋鏡面反射
+            finalColor.rgb += diffuse +specular;
         }
 		//PointLight
         if (gLight.pointLight.isEnable != 0)
