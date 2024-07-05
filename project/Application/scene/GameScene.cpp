@@ -92,9 +92,6 @@ void GameScene::Update() {
 	}
 
 
-	if (!isFadeIn_) {
-
-	}
 
 	playerManager_->Update();
 	if (!enemyManager_->IsClear()) {
@@ -103,7 +100,10 @@ void GameScene::Update() {
 		tankManager_->Update();
 	}
 
-	enemyManager_->Update();
+	if (!playerManager_->IsOver()) {
+		enemyManager_->Update();
+
+	}
 
 	//倒された時のディゾルブ
 	if (playerManager_->GetPlayer()->HitCount() == 0) {

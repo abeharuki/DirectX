@@ -25,7 +25,7 @@ void Player::Initialize() {
 	worldTransformCollision_.translate.y = 2.0f;
 	a = 0.0f;
 	isOver_ = false;
-	hitCount_ = 1;//6;
+	hitCount_ = 2;//6;
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
@@ -551,37 +551,19 @@ void Player::AttackUpdata() {
 
 void Player::DeadInitilize() {
 	threshold_ = 0.0f;
-	PostEffect::GetInstance()->isRadialBlur(false)
+	PostEffect::GetInstance()->isRadialBlur(false);
 };
 void Player::DeadUpdata() { 
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f});
 	threshold_ += 0.004f;
 	animation_->SetThreshold(threshold_);
-	if (threshold_ >= 1.0f) {
+	if (threshold_ >= 0.8f) {
 		isOver_ = true;
 		
 	}
 };
 
-// 親子関係
-void Player::Relationship() {
-	worldTransformHead_.matWorld_ = Math::Multiply(
-		Math::MakeAffineMatrix(
-			worldTransformHead_.scale, worldTransformHead_.rotate, worldTransformHead_.translate),
-		worldTransformBase_.matWorld_);
 
-	worldTransformHammer_.matWorld_ = Math::Multiply(
-		Math::MakeAffineMatrix(
-			worldTransformHammer_.scale, worldTransformHammer_.rotate,
-			worldTransformHammer_.translate),
-		worldTransformBase_.matWorld_);
-
-	worldTransformCollision_.matWorld_ = Math::Multiply(
-		Math::MakeAffineMatrix(
-			worldTransformCollision_.scale, worldTransformCollision_.rotate,
-			worldTransformCollision_.translate),
-		worldTransformHammer_.matWorld_);
-}
 
 // 衝突を検出したら呼び出されるコールバック関数
 void Player::OnCollision(const WorldTransform& worldTransform) {
@@ -655,6 +637,25 @@ void Player::OnCollision(Collider* collider) {
 
 }
 
+// 親子関係
+void Player::Relationship() {
+	worldTransformHead_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformHead_.scale, worldTransformHead_.rotate, worldTransformHead_.translate),
+		worldTransformBase_.matWorld_);
+
+	worldTransformHammer_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformHammer_.scale, worldTransformHammer_.rotate,
+			worldTransformHammer_.translate),
+		worldTransformBase_.matWorld_);
+
+	worldTransformCollision_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformCollision_.scale, worldTransformCollision_.rotate,
+			worldTransformCollision_.translate),
+		worldTransformHammer_.matWorld_);
+}
 
 const Vector3 Player::GetWorldPosition() const {
 	// ワールド座標を入れる関数

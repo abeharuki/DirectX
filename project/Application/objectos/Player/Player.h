@@ -101,11 +101,7 @@ public: // メンバ関数
 	bool IsOver() { return isOver_; }
 	bool IsHit() { return hit_; }
 	int HitCount() { return hitCount_; }
-	void IsDead(bool dead) {
-		if (dead) {
-			behavior_ = Behavior::kDead;
-		};
-	}
+	
 
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
