@@ -4,7 +4,7 @@
 
 void TitleScene::Initialize() {
 	
-	PostEffect::GetInstance()->isOutLine(true);
+	
 
 	worldTransform_.Initialize();
 	worldTransform_.scale = { 10.0f,10.0f,10.0f };
@@ -16,9 +16,6 @@ void TitleScene::Initialize() {
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/human", "white.png", "walk.gltf"));
-
-	
-	
 
 
 	audio_ = Audio::GetInstance();
@@ -85,6 +82,8 @@ void TitleScene::Initialize() {
 
 
 	PostEffect::GetInstance()->isGrayscale(false);
+	PostEffect::GetInstance()->isOutLine(true);
+	PostEffect::GetInstance()->isBloom(true);
 	
 }
 
@@ -149,6 +148,8 @@ void TitleScene::Update() {
 	if (Input::PushKey(DIK_O)) {
 		SceneManager::GetInstance()->ChangeScene("OverScene");
 	}
+	PostEffect::GetInstance()->ValueOutLine(a_);
+
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 10.0f);
@@ -156,14 +157,13 @@ void TitleScene::Update() {
 
 	ImGui::Begin("Setting");
 	ImGui::DragFloat3("DirectionLight", &directionLight_.direction.x, 1.0f);
+	ImGui::DragFloat("Light", &directionLight_.intensity, 1.0f);
+	ImGui::DragFloat("outline", &a_, 0.1f);
 	ImGui::End();
 }
 
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
-	//Model::LightDraw(color_, direction_, intensity_);
-	//line_->Draw(worldTransform_, viewProjection_, false);
-
 	
 	// 地面
 	ground_->Draw(viewProjection_, true);
@@ -179,15 +179,14 @@ void TitleScene::Draw() {
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
 
-	// 天球
-	skydome_->Draw(viewProjection_, false);
-
 	spriteTitle_->Draw();
 	spritePushA_->Draw();
 	
 }
 
 void TitleScene::RenderDirect() {
+	// 天球
+	skydome_->Draw(viewProjection_, false);
 	spriteBack_->Draw();
 }
 

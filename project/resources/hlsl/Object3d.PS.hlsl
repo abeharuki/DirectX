@@ -64,7 +64,21 @@ TextureCube<float32_t4> gEnvironmentTextere : register(t1);
 Texture2D<float32_t> gMaskTexture : register(t2);
 //ConstantBuffer<DissolveStyle> gDissolveStyle : register(b3);
 
+// トゥーンシェーディングの段階数
+#define TOON_LEVELS 4
 
+// トゥーンシェーディングの各レベルの輝度値
+float3 ToonShading(float intensity, int levels)
+{
+    float stepSize = 1.0 / levels;
+    return step(float3(stepSize, stepSize * 2, stepSize * 3), float3(intensity, intensity, intensity));
+}
+
+// 量子化関数
+float3 Toonify(float3 color, int levels)
+{
+    return floor(color * levels) / levels;
+}
 
 PixelShaderOutput main(VertexShaderOutput input)
 {
@@ -73,7 +87,8 @@ PixelShaderOutput main(VertexShaderOutput input)
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
     float32_t3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
     float32_t4 finalColor = { 0, 0, 0, 1 };
-	
+    
+
     if (textureColor.a == 0.0)
     {
         discard;
@@ -102,7 +117,8 @@ PixelShaderOutput main(VertexShaderOutput input)
         float NdotL = dot(normalize(input.normal), -gLight.directionLight.direction);
         float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
         float32_t3 diffuse = gMaterial.color.rbg * textureColor.rgb * gLight.directionLight.color.rgb * cos * gLight.directionLight.intensity;
-
+        float3 toonDiffuse = ToonShading(saturate(NdotL), TOON_LEVELS);
+        
 		// 鏡面反射
 		//float32_t3 reflectLight = reflect(gLight.directionLight.direction, normalize(input.normal));
         float32_t3 halfVector = normalize(-gLight.directionLight.direction + toEye);

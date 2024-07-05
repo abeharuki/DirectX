@@ -1,25 +1,5 @@
 #include "OutLine.h"
 
-OutLine* OutLine::instance_ = nullptr;
-
-OutLine* OutLine::GetInstance()
-{
-	if (instance_ == nullptr)
-	{
-		instance_ = new OutLine();
-	}
-	return instance_;
-}
-
-void OutLine::Destroy()
-{
-	if (instance_ != nullptr)
-	{
-		delete instance_;
-		instance_ = nullptr;
-	}
-
-}
 
 void OutLine::Initialize() {
 	viewProjection_.Initialize();

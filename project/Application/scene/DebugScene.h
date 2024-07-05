@@ -74,7 +74,10 @@ private:
 	RadialBlur radialBlur_;
 	DissolveStyle dissolve_;
 	Random random_;
-	bool postEffects[7];
+	int32_t isBlur_;
+	Vector2 gasianBlur_ = {0.001f,0.001f};
+	BloomStyle bloom_;
+	bool postEffects[9];
 
 	float env_;
 };

@@ -182,8 +182,7 @@ void GameScene::Draw() {
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
 
-	// 天球
-	skydome_->Draw(viewProjection_, false);
+	
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -210,6 +209,9 @@ void GameScene::RenderDirect() {
 	if (playerManager_->GetPlayer()->IsDash()) {
 		playerManager_->Draw(viewProjection_);
 	}
+
+	// 天球
+	skydome_->Draw(viewProjection_, false);
 
 	spriteBack_->Draw();
 

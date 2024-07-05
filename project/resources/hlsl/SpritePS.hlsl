@@ -35,6 +35,19 @@ PixelShaderOutput main(VertexShaderOutput input) {
 			discard;
 		}
 	}
+	/*
+    float32_t mask = gMaskTexture.Sample(gSampler, input.texcoord);
+        //maskの値が0.5（閾値）以下の場合はdiscardして抜く
+    if (mask < gLight.dissolve.threshold)
+    {
+        discard;
+    }
+        //Edgeっぽさほ算出
+    float32_t edge = 1.0f - smoothstep(gLight.dissolve.threshold, gLight.dissolve.threshold + 0.03f, mask);
+  
+	 //Edgeっぽいほど指定した色を加算
+    output.color.rgb += edge * gLight.dissolve.edgeColor;
+	*/
 
 	return output;
 }

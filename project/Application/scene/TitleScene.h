@@ -83,4 +83,5 @@ private:
 	bool isFede_;
 	float alpha_;
 
+	float a_;
 };

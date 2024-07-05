@@ -79,7 +79,7 @@ void PlayerManager::Update() {
 	}
 
 	if (hitCount_ <= 0) {
-		isDead_ = true;
+		//isDead_ = true;
 	}
 	if (Input::PushKey(DIK_P)) {
 		isDead_ = true;

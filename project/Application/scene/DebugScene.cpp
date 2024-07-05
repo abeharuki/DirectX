@@ -100,7 +100,8 @@ void DebugScene::Update() {
 	dissolve_.isEnble = postEffects[5];
 	random_.isEnble = postEffects[6];
 	animeDissolve_.isEnble = isAnimeDissolve_;
-	
+	isBlur_ = postEffects[7];
+	bloom_.isEnble = postEffects[8];
 	//animation_->isDissolve(animeDissolve_.isEnble);
 	animation_->SetThreshold(animeDissolve_.threshold);
 	//sphere_->isDissolve(animeDissolve_.isEnble);
@@ -120,9 +121,17 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->RadialBlurCenter(radialBlur_.center);
 	PostEffect::GetInstance()->RadialBlurWidth(radialBlur_.blurWidth);
 	PostEffect::GetInstance()->isDissolve(dissolve_.isEnble);
-	PostEffect::GetInstance()->Threshold(dissolve_.threshold);
+	PostEffect::GetInstance()->dissolveThreshold(dissolve_.threshold);
 	PostEffect::GetInstance()->EdgeColor(dissolve_.edgeColor);
 	PostEffect::GetInstance()->isRandom(random_.isEnble);
+	PostEffect::GetInstance()->SetBlurWidth(gasianBlur_.x);
+	PostEffect::GetInstance()->SetBlurSigma(gasianBlur_.y);
+	PostEffect::GetInstance()->isGasianBlur(isBlur_);
+	PostEffect::GetInstance()->SetBloomSigma(bloom_.sigma);
+	PostEffect::GetInstance()->SetBloomWidth(bloom_.stepWidth);
+	PostEffect::GetInstance()->BloomLightStrength(bloom_.lightStrength);
+	PostEffect::GetInstance()->BloomTreshold(bloom_.bloomThreshold);
+	PostEffect::GetInstance()->isBloom(bloom_.isEnble);
 	ImGui::Begin("Setting");
 	
 	if (ImGui::TreeNode("LineBox")) {
@@ -206,6 +215,21 @@ void DebugScene::Update() {
 			ImGui::Checkbox("Random", &postEffects[6]);
 			ImGui::TreePop();
 		}
+
+		if (ImGui::TreeNode("Blur")) {
+			ImGui::Checkbox("Blur", &postEffects[7]);
+			ImGui::DragFloat2("wight , sigma", &gasianBlur_.x,0.001f,0.001f,0.05f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Bloom")) {
+			ImGui::Checkbox("Bloom", &postEffects[8]);
+			ImGui::DragFloat("wight", &bloom_.stepWidth, 0.001f,0.001f, 0.05f);
+			ImGui::DragFloat("sigma", &bloom_.sigma, 0.001f,0.001f, 0.05f);
+			ImGui::DragFloat("light", &bloom_.lightStrength, 0.1f,1.0f,5.0f);
+			ImGui::DragFloat("threshold", &bloom_.bloomThreshold, 0.1f,0.0, 1.0f);
+			ImGui::TreePop();
+		}
+
 		ImGui::TreePop();
 	}
 

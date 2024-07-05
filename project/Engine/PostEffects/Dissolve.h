@@ -24,11 +24,6 @@ struct DissolveStyle {
 class Dissolve {
 public:
 
-
-	static Dissolve* GetInstance();
-
-	static void Destroy();
-
 	void Initialize();
 
 	void Draw(DescriptorHandle srvHandle);
@@ -54,8 +49,6 @@ private:
 	//マスクテクスチャの読み込み
 	void LoadTexture(const std::string& texturePath);
 private:
-
-	static Dissolve* instance_;
 
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};

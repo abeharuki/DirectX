@@ -8,46 +8,37 @@
 #include <fstream>
 #include <sstream>
 #include <dxcapi.h>
-#include "Engine.h"
-#include "TextureManeger.h"
 #include <DirectXTex.h>
 #include <d3dx12.h>
-#include "WorldTransform.h"
-#include "ViewProjection.h"
 #include "GraphicsPipeline.h"
 #include "ModelManager.h"
 #include "base/ColorBuffer.h"
 
-
-struct OutLineStyle {
-	
-	int32_t isEnable;
-	float differenceValue;	
-	float padding1[2];
-	Matrix4x4 projectionInverse;
-	
+struct Blur {
+	float stepWidth;
+	float sigma;
+	int32_t isEnble;
 };
 
-
-class OutLine
-{
+class GasianBlur {
 public:
+
+
 	void Initialize();
 
-	void Draw();
+	void Draw(DescriptorHandle srvHandle);
 
 	void PreDraw();
 	void PostDraw();
 
-	//エフェクトの設定
-	void isOutLine(bool flag) { outLineData->isEnable = flag; }
-	void ValueOutLine(float value) { outLineData->differenceValue = value; }
-	void SetViewProjection(ViewProjection& viewProjection) { 
-		viewProjection_ = viewProjection;
-		outLineData->projectionInverse = Math::Inverse(viewProjection_.matProjection);
-	}
 
 	const DescriptorHandle& GetHandle() { return colorBuffer_->GetSRVHandle(); }
+
+	
+	//テクスチャのサイズ
+	void SetWidth(float num) { blurData->stepWidth = num; }
+	void SetSigma(float sigma) { blurData->sigma = sigma; }
+	void isGasianBlur(bool flag) { blurData->isEnble = flag; }
 private:
 	void CreateResource();
 
@@ -55,19 +46,14 @@ private:
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
 	void sPipeline();
-
-
-
 private:
-	ViewProjection viewProjection_;
 
 	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> postEffectResource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
 
-	OutLineStyle* outLineData = nullptr;
-
+	Blur* blurData = nullptr;
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
@@ -79,4 +65,6 @@ private:
 
 	std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
 	float clearColor_[4]{ 0.1f, 0.25f, 0.5f, 1.0f };
+
+	uint32_t texture_;
 };

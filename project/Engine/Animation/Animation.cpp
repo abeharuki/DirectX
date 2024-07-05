@@ -348,9 +348,14 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	if (!debug_) {
 		Engine::GetList()->DrawIndexedInstanced(UINT(meshData_->GetIndicesSize()), 1, 0, 0, 0);
 	}
+
+#ifdef _DEBUG
 	for (int i = 0; i < line_.size(); i++) {
 		line_[i]->Draw(worldTransform, viewProjection, false);
-	}
+}
+#endif
+
+	
 }
 
 Animations* Animations::Create(const std::string& directorPath, const std::string& filename, const std::string& motionPath)

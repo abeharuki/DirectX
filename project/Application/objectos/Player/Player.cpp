@@ -368,19 +368,21 @@ void Player::knockInitialize() {
 void Player::knockUpdata() {
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0;
-	if (hitCount_ != 1) {
-		if (--nockTime_ <= 0) {
-			PostEffect::GetInstance()->isVignetting(false);
+	if (--nockTime_ <= 0) {
+		PostEffect::GetInstance()->isVignetting(false);
+		if (hitCount_ != 0) {
 			behaviorRequest_ = Behavior::kRoot;
-			nockBack_ = false;
-			animation_->SetAnimationTimer(0, 8.0f);
-			animation_->SetpreAnimationTimer(0);
 		}
+		else {
+			behaviorRequest_ = Behavior::kDead;
+		}
+		
+		nockBack_ = false;
+		animation_->SetAnimationTimer(0, 8.0f);
+		animation_->SetpreAnimationTimer(0);
 	}
-	else {
-		behaviorRequest_ = Behavior::kRoot;
-	}
-
+	
+	
 	
 };
 
@@ -549,7 +551,7 @@ void Player::AttackUpdata() {
 
 void Player::DeadInitilize() {
 	threshold_ = 0.0f;
-	
+	PostEffect::GetInstance()->isRadialBlur(false)
 };
 void Player::DeadUpdata() { 
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f});

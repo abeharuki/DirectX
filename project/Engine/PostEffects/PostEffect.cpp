@@ -18,8 +18,7 @@ void PostEffect::Destroy()
 		delete instance_;
 		instance_ = nullptr;
 	}
-
-
+	
 }
 
 
@@ -31,6 +30,12 @@ void PostEffect::Initialize() {
 
 	dissolve_ = std::make_unique<Dissolve>();
 	dissolve_->Initialize();
+
+	gasianBlur_ = std::make_unique<GasianBlur>();
+	gasianBlur_->Initialize();
+
+	bloom_ = std::make_unique<Bloom>();
+	bloom_->Initialize();
 }
 
 void PostEffect::Update() {}
@@ -48,7 +53,7 @@ void PostEffect::Draw() {
 		Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		//Engine::GetList()->SetGraphicsRootDescriptorTable(0, Engine::GetInstance()->GetHandle());
-		Engine::GetList()->SetGraphicsRootDescriptorTable(0, dissolve_->GetHandle());
+		Engine::GetList()->SetGraphicsRootDescriptorTable(0, gasianBlur_->GetHandle());
 		Engine::GetList()->SetGraphicsRootConstantBufferView(1, postEffectResource_->GetGPUVirtualAddress());
 
 		// 三角形の描画
@@ -60,6 +65,8 @@ void PostEffect::Draw() {
 void PostEffect::Apply() {
 	outline_->Draw();
 	dissolve_->Draw(outline_->GetHandle());
+	bloom_->Draw(dissolve_->GetHandle());
+	gasianBlur_->Draw(bloom_->GetHandle());
 }
 
 void PostEffect::CreateResource() {

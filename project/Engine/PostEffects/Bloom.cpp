@@ -1,9 +1,6 @@
-#include "Dissolve.h"
-#include <TextureManeger.h>
+#include "Bloom.h"
 
-void Dissolve::Initialize(){
-	TextureManager::GetInstance()->Load("resources/Mask/noise0.png");
-	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/noise0.png");
+void Bloom::Initialize() {
 	sPipeline();
 	CreateResource();
 
@@ -12,9 +9,9 @@ void Dissolve::Initialize(){
 
 }
 
-void Dissolve::Draw(DescriptorHandle srvHandle){
+void Bloom::Draw(DescriptorHandle srvHandle) {
 	PreDraw();
-
+	//ゼロなら止まる
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
@@ -23,7 +20,6 @@ void Dissolve::Draw(DescriptorHandle srvHandle){
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	Engine::GetList()->SetGraphicsRootDescriptorTable(0, srvHandle);
-	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, resource_->GetGPUVirtualAddress());
 
 	//  コマンドを積む
@@ -41,7 +37,7 @@ void Dissolve::Draw(DescriptorHandle srvHandle){
 
 }
 
-void Dissolve::PreDraw(){
+void Bloom::PreDraw() {
 	//バリアの設定
 	Engine::GetInstance()->TransitionResource(*colorBuffer_, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	//レンダーターゲット
@@ -51,39 +47,28 @@ void Dissolve::PreDraw(){
 
 }
 
-void Dissolve::PostDraw(){
+void Bloom::PostDraw() {
 	//バリアの変更
 	Engine::GetInstance()->TransitionResource(*colorBuffer_, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 }
 
-void Dissolve::CreateResource(){
-	resource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(Dissolve));
-	resource_->Map(0, nullptr, reinterpret_cast<void**>(&dissolveData));
-	dissolveData->isEnble = false;
-	dissolveData->threshold = 1.0f;
-	dissolveData->edgeColor = { 1.0f,0.4f,0.3f };
+void Bloom::CreateResource() {
+	resource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(BloomStyle));
+	resource_->Map(0, nullptr, reinterpret_cast<void**>(&bloomData));
+	bloomData->stepWidth = 0.001f;
+	bloomData->sigma = 0.005f;
+	bloomData->lightStrength = 1.0;
+	bloomData->bloomThreshold = 0.5f;
 }
 
-void Dissolve::sPipeline(){
-	GraphicsPipeline::GetInstance()->CreateDissolvePSShader();
+void Bloom::sPipeline() {
+	GraphicsPipeline::GetInstance()->CreatePostEffectVSShader();
+	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePostEffectPSShader(L"Bloom.PS.hlsl");
 
 
-	rootSignature_ = GraphicsPipeline::GetInstance()->CreateDissolveRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateDissolveGraphicsPipeline();
-}
-
-void Dissolve::LoadTexture(const std::string& texturePath) {
-
-	//テクスチャを設定
-	if ("resources/Mask/" + texturePath != "")
-	{
-		TextureManager::GetInstance()->Load("resources/Mask/" + texturePath);
-		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/" + texturePath);
-	}
-	else
-	{
-		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/noise0.png");
-	}
+	rootSignature_ = GraphicsPipeline::GetInstance()->CreatePostEffectRootSignature();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreatePostEffectGraphicsPipeline(pixelShaderBlob_);
 
 }
+

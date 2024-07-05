@@ -17,6 +17,8 @@
 #include "ModelManager.h"
 #include "OutLine.h"
 #include "Dissolve.h"
+#include "GasianBlur.h"
+#include "Bloom.h"
 
 struct Grayscale {
 	int32_t isEnable;
@@ -93,10 +95,20 @@ public:
 	void RadialBlurWidth(float num) { postEffectData->radialBlur.blurWidth = num; }
 	//ディゾルブ
 	void isDissolve(bool flag) { dissolve_->isDissolve(flag); }
-	void Threshold(float num) { dissolve_->Threshold(num); }
+	void dissolveThreshold(float num) { dissolve_->Threshold(num); }
 	void EdgeColor(Vector3 num) { dissolve_->SetColor(num); }
 	//ノイズエフェクト
 	void isRandom(bool flag) { postEffectData->random.isEnble = flag; }
+	//ガウシアンブラー
+	void SetBlurWidth(float num) { gasianBlur_->SetWidth(num); }
+	void SetBlurSigma(float sigma) { gasianBlur_->SetSigma(sigma); }
+	void isGasianBlur(bool flag) { gasianBlur_->isGasianBlur(flag); }
+	//ブルーム
+	void SetBloomWidth(float num) { bloom_->SetWidth(num); }
+	void SetBloomSigma(float num) { bloom_->SetSigma(num); }
+	void BloomLightStrength(float num) { bloom_->lightStrength(num); }
+	void BloomTreshold(float num) { bloom_->Threshold(num); }
+	void isBloom(bool flag) { bloom_->isBloom(flag); }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;
@@ -121,6 +133,9 @@ private:
 	PostEffects* postEffectData = nullptr;
 	std::unique_ptr<OutLine> outline_;
 	std::unique_ptr<Dissolve> dissolve_;
+	std::unique_ptr<GasianBlur> gasianBlur_;
+	std::unique_ptr<Bloom> bloom_;
+
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
