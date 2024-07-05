@@ -65,12 +65,13 @@ void DebugScene::Initialize() {
 	radialBlur_.center = { 0.5f,0.5f };
 	radialBlur_.blurWidth = 0.01f;
 	dissolve_.edgeColor = { 1.0f,-1.0f,-1.0f };
-
-
+	bloom_.stepWidth = 0.001f;
+	bloom_.sigma = 0.005f;
+	directionLight_.direction.z = 2;
 }
 
 void DebugScene::Update() {
-	worldTransformAnimation_.rotate.y = 0.05f;
+	worldTransformAnimation_.rotate.y += 0.01f;
 	animation_->DirectionalLightDraw(directionLight_);
 	sphere_->DirectionalLightDraw(directionLight_);
 	modelGround_->DirectionalLightDraw(directionLight_);
@@ -134,6 +135,15 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->isBloom(bloom_.isEnble);
 	ImGui::Begin("Setting");
 	
+	if (ImGui::TreeNode("Light")) {
+		ImGui::DragFloat3("Pos", &directionLight_.direction.x, 0.1f);
+		ImGui::DragFloat3("Color", &directionLight_.color.x, 0.1f);
+		ImGui::DragFloat("Intensity", &directionLight_.intensity, 0.1f);
+
+		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
+		ImGui::TreePop();
+	}
+
 	if (ImGui::TreeNode("LineBox")) {
 
 		ImGui::DragFloat3("Pos", &worldTransformLineBox_.translate.x, 0.1f);

@@ -116,15 +116,19 @@ PixelShaderOutput main(VertexShaderOutput input)
 		// 拡散反射
         float NdotL = dot(normalize(input.normal), -gLight.directionLight.direction);
         float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
-        float32_t3 diffuse = gMaterial.color.rbg * textureColor.rgb * gLight.directionLight.color.rgb * cos * gLight.directionLight.intensity;
+       // float32_t3 diffuse = gMaterial.color.rbg * textureColor.rgb * gLight.directionLight.color.rgb * cos * gLight.directionLight.intensity;
         // トゥーンシェーディングの段階的な色分け
-        //float toonIntensity;
-        //if (cos > 0.95) toonIntensity = 1.0;
-        //else if (cos > 0.5)toonIntensity = 0.7;
-        //else if (cos > 0.25)toonIntensity = 0.5;
-        //else toonIntensity = 0.3;
-        //
-        //float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gLight.directionLight.color.rgb * toonIntensity * gLight.directionLight.intensity;
+        float toonIntensity;
+        if (cos > 0.95)
+            toonIntensity = 1.0;
+        else if (cos > 0.5)
+            toonIntensity = 0.7;
+        else if (cos > 0.25)
+            toonIntensity = 0.5;
+        else
+            toonIntensity = 0.3;
+        
+        float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gLight.directionLight.color.rgb * toonIntensity * gLight.directionLight.intensity;
         
         
 		// 鏡面反射
@@ -137,8 +141,16 @@ PixelShaderOutput main(VertexShaderOutput input)
 
         if (gLight.directionLight.isEnable != 0)
         {
+           
             // 拡散反射＋鏡面反射
-            finalColor.rgb += diffuse +specular;
+            finalColor.rgb += diffuse; //+ specular;
+            
+            // ハッチングの例
+            float shadowIntensity = 1.0 - cos; // 影の強度
+            float3 hatchingColor = lerp(float3(1.0, 1.0, 1.0), float3(0.0, 0.0, 0.0), shadowIntensity); // 白から黒へのグラデーション
+
+            finalColor.rgb *= hatchingColor;
+
         }
 		//PointLight
         if (gLight.pointLight.isEnable != 0)
