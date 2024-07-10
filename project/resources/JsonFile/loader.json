@@ -3,7 +3,7 @@
     "objects": [
         {
             "type": "MESH",
-            "name": "立方体",
+            "name": "Cube",
             "transform": {
                 "translation": [
                     0.0,
@@ -21,7 +21,20 @@
                     1.0
                 ]
             },
-            "file_name": "box"
+            "file_name": "box",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    2.0,
+                    4.590373509435236e-41,
+                    1.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -43,51 +56,20 @@
                     1.0
                 ]
             },
-            "file_name": "bowl"
-        },
-        {
-            "type": "MESH",
-            "name": "立方体.001",
-            "transform": {
-                "translation": [
+            "file_name": "ICO",
+            "collider": {
+                "type": "BOX",
+                "center": [
                     0.0,
-                    0.0,
-                    0.0
+                    4.5,
+                    2.5
                 ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
+                "size": [
+                    4.0,
+                    2.0,
+                    2.0
                 ]
-            },
-            "file_name": "box"
-        },
-        {
-            "type": "MESH",
-            "name": "ICO球.001",
-            "transform": {
-                "translation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            },
-            "file_name": "bowl"
+            }
         }
     ]
 }

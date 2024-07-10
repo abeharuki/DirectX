@@ -2,6 +2,7 @@
 #include <string>
 #include <Model.h>
 #include "Animation/Animation.h"
+#include "LineBox.h"
 
 class ModelLoader {
 
@@ -19,6 +20,8 @@ public:
 
 	void Update();
 	void Draw(const ViewProjection& viewProjection, bool flag);
+
+	void Delete();
 
 	//色とアルファ値
 	void SetColor(Vector4 color);
@@ -42,5 +45,5 @@ private:
 	std::map<std::string, Model*> models;
 	std::map<std::string, Animation*> animationModels;
 	std::vector<WorldTransform*> worldTransforms;
-
+	std::map<std::string, LineBox*>lineboxs_;
 };

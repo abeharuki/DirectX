@@ -225,6 +225,18 @@ void ModelManager::LoadJsonObject(nlohmann::json& object, Scene::ObjectData& obj
 		objectData.transform.scale.z = transform["scaling"][1].get<float>();
 
 		//TODO: コライダーのパラメータ読み込み
+		nlohmann::json collider = object["collider"];
+		//タイプ
+		objectData.collider.typeName = collider["type"];
+		//中心
+		objectData.collider.center.x = collider["center"][0].get<float>();
+		objectData.collider.center.y = collider["center"][2].get<float>();
+		objectData.collider.center.z = collider["center"][1].get<float>();
+		//サイズ
+		objectData.collider.size.x = collider["size"][0].get<float>();
+		objectData.collider.size.y = collider["size"][2].get<float>();
+		objectData.collider.size.z = collider["size"][1].get<float>();
+
 	}
 
 	// 子オブジェクトの処理

@@ -1,6 +1,7 @@
 #include "ModelLoader.h"
 
 void ModelLoader::Initialize(const std::string& filename) {
+	
 	LoadJsonObjFile(filename);
 }
 
@@ -19,8 +20,46 @@ void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
 		if (it != models.end()) { model = it->second; }
 
 		model->Draw(*worldTransforms[i], viewProjection, flag);
+		
+		if (objectData.collider.typeName != "") {
+			LineBox* lineBox = nullptr;
+			decltype(lineboxs_)::iterator itcollider = lineboxs_.find(objectData.filename);
+			if (itcollider != lineboxs_.end()) { lineBox = itcollider->second; }
+			lineBox->Draw(*worldTransforms[i], viewProjection, flag);
+
+		}
+
+		
 		i++;
 	}
+}
+
+
+void ModelLoader::Delete() {
+	// worldTransformsのクリアとメモリ解放
+	for (auto& transform : worldTransforms) {
+		delete transform;
+	}
+	worldTransforms.clear();
+
+	// modelsのクリアとメモリ解放
+	for (auto& pair : models) {
+		delete pair.second;
+	}
+	models.clear();
+
+	// animationModelsのクリアとメモリ解放
+	for (auto& pair : animationModels) {
+		delete pair.second;
+	}
+	animationModels.clear();
+
+	// lineboxs_のクリアとメモリ解放
+	for (auto& pair : lineboxs_) {
+		delete pair.second;
+	}
+	lineboxs_.clear();
+
 }
 
 ModelLoader* ModelLoader::Create(const std::string& filename) {
@@ -59,9 +98,15 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 	std::string name = deserialized["name"].get<std::string>();
 	assert(name.compare("scene") == 0);
 
+	//古いデータの削除と更新
+	delete levelData;
+	levelData = nullptr;
+	Delete();
+
+
 	//レベルデータ格納用インスタンスを作成
 	levelData = new Scene();
-
+	
 	//"objects"のすべてのオブジェクトを走査
 	for (nlohmann::json& object : deserialized["objects"]) {
 		//要素追加
@@ -83,21 +128,23 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 		decltype(models)::iterator it = models.find(objectData.filename);
 
 		if (it == models.end()) {
-			/*ファイル形式別の読み込み作り途中
-			std::wstring filePathW = Utility::ConvertString(objectData.filename);
-			HRESULT hr{};
-			if (filePathW.ends_with(L".obj")) {
-				Model* model = Model::CreateFromObj(objectData.filename);
-				models[objectData.filename] = model;
-			}
-			else {
-				//Animations* animetion = Animations::Create(objectData.filename);
-			}*/
-
-			
+			//blenderでlightcamerを消さないとここでエラーが出る
 			Model* model = Model::CreateFromObj(objectData.filename);
 			models[objectData.filename] = model;
+
+			if (objectData.collider.typeName != "") {
+				AABB aabb = { {-objectData.collider.size.x/2.0f,-objectData.collider.size.y/2.0f,-objectData.collider.size.z/2.0f},{objectData.collider.size.x/2.0f,objectData.collider.size.y/2.0f,objectData.collider.size.z/2.0f} };
+				LineBox* linebox = LineBox::Create(aabb);
+				linebox->SetCenter(objectData.collider.center);
+				linebox->Updata();
+				lineboxs_[objectData.filename] = linebox;
+			}
+			
 		}
+
+		
+
+
 	}
 
 	//レベルデータからオブジェクトの生成,配置
@@ -115,6 +162,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 		//配列に登録
 		worldTransforms.push_back(newObject);
 	}
+
 }
 
 

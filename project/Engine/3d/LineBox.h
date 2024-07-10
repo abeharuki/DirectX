@@ -31,8 +31,23 @@ public:
 	void Initialize(AABB aabb);
 	void Initialize(OBB obb);
 
+	void Updata();
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
+
+	void SetCenter(Vector3 center) {
+		obb_.center = center;
+		//aabb_.min = aabb_.min + center;
+		//aabb_.max = aabb_.max + center;
+	}
+
+	Vector3 GetCenter() { return obb_.center; }
+	void SetWorldTransform(WorldTransform worldtransform) { 
+		worldTransform_ = worldtransform;
+		worldTransform_.translate = worldtransform.translate + obb_.center;
+		worldTransform_.UpdateMatrix();
+	}
+	WorldTransform& GetWorldTramnsform() { return worldTransform_; }
 
 	//光の色　向き　明るさ
 	void LightDraw(Vector4 color, Vector3 direction, float intensity);
@@ -55,7 +70,9 @@ public:
 	void SetShininess(float i);
 
 private:
+	WorldTransform worldTransform_;
 	std::unique_ptr<Line> lines_[12];
 	Vector3 vertex[8];
 	AABB aabb_;
+	OBB obb_;
 };

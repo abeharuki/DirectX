@@ -17,10 +17,17 @@
 #include <DirectXTex.h>
 #include <json.hpp>
 
+struct ColliderData {
+	std::string typeName;
+	Vector3 center;
+	Vector3 size;
+};
+
 struct Scene {
 	struct ObjectData {
 		std::string filename;
 		Transform transform;
+		ColliderData collider;
 		std::vector<ObjectData> children;
 	};
 

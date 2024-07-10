@@ -247,6 +247,7 @@ void DebugScene::Update() {
 }
 
 void DebugScene::Draw() {
+	
 	loader_->Draw(viewProjection_, true);
 	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
