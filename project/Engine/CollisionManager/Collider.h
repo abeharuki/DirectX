@@ -1,7 +1,7 @@
 #pragma once
 #include "3d/WorldTransform.h"
 #include "Math/math.h"
-#include <Line.h>
+#include <LineBox.h>
 
 class Collider
 {
@@ -18,7 +18,7 @@ public:
 
 	const AABB& GetAABB() const { return aabb_; };
 
-	void SetAABB(AABB& aabb) { aabb_ = aabb; };
+	void SetAABB(AABB& aabb) { aabb_ = aabb; SetBounds(); };
 
 	const OBB& GetOBB() const { return obb_; };
 
@@ -36,6 +36,15 @@ public:
 
 	void SetCollisionPrimitive(uint32_t collisionPrimitive) { collisionPrimitive_ = collisionPrimitive; };
 
+	void SetBounds() {
+		lineBox_ = std::make_unique<LineBox>();
+		lineBox_.reset(LineBox::Create(aabb_));
+	};
+
+	void RenderCollisionBounds(WorldTransform& world, const ViewProjection& camera) {
+		lineBox_->Draw(world, camera,true);
+	};
+
 private:
 	float radius_ = 1.0f;
 
@@ -48,5 +57,7 @@ private:
 	uint32_t collisionMask_ = 0xffffffff;
 
 	uint32_t collisionPrimitive_ = 0b1;
+
+	std::unique_ptr<LineBox> lineBox_;
 };
 

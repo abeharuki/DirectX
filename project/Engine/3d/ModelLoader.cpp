@@ -19,7 +19,9 @@ void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
 		decltype(models)::iterator it = models.find(objectData.filename);
 		if (it != models.end()) { model = it->second; }
 
-		model->Draw(*worldTransforms[i], viewProjection, flag);
+		if (model && i < worldTransforms.size()) {
+			model->Draw(*worldTransforms[i], viewProjection, flag);
+		}
 		
 		if (objectData.collider.typeName != "") {
 			LineBox* lineBox = nullptr;
@@ -133,18 +135,13 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 			models[objectData.filename] = model;
 
 			if (objectData.collider.typeName != "") {
-				AABB aabb = { {-objectData.collider.size.x/2.0f,-objectData.collider.size.y/2.0f,-objectData.collider.size.z/2.0f},{objectData.collider.size.x/2.0f,objectData.collider.size.y/2.0f,objectData.collider.size.z/2.0f} };
+				AABB aabb = { {-objectData.collider.size.x / 2.0f,-objectData.collider.size.y / 2.0f,-objectData.collider.size.z / 2.0f},{objectData.collider.size.x / 2.0f,objectData.collider.size.y / 2.0f,objectData.collider.size.z / 2.0f} };
 				LineBox* linebox = LineBox::Create(aabb);
-				linebox->SetCenter(objectData.collider.center);
 				linebox->Updata();
 				lineboxs_[objectData.filename] = linebox;
 			}
-			
+
 		}
-
-		
-
-
 	}
 
 	//レベルデータからオブジェクトの生成,配置
@@ -161,6 +158,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 
 		//配列に登録
 		worldTransforms.push_back(newObject);
+		lineboxs_[objectData.filename]->Updata();
 	}
 
 }

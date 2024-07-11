@@ -4,6 +4,9 @@
 #include <numbers>
 
 void DebugScene::Initialize() {
+	//衝突マネージャーの作成
+	collisionManager_ = std::make_unique<CollisionManager>();
+
 	viewProjection_.Initialize();
 	viewProjection_.rotation_.x = 0.28f;
 	viewProjection_.translation_ = { 0.0f, 3.0f, -9.0f };
@@ -44,8 +47,8 @@ void DebugScene::Initialize() {
 
 	//modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
 
-	//debugPlayer_ = std::make_unique<DebugPlayer>();
-	//debugPlayer_->Initialize();
+	debugPlayer_ = std::make_unique<DebugPlayer>();
+	debugPlayer_->Initialize();
 
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
@@ -54,7 +57,7 @@ void DebugScene::Initialize() {
 	followCamera_->SetTarget(&worldTransform_);
 
 	// 自キャラの生成と初期化処理
-	//debugPlayer_->SetViewProjection(&followCamera_->GetViewProjection());
+	debugPlayer_->SetViewProjection(&followCamera_->GetViewProjection());
 
 	PostEffect::GetInstance()->isGrayscale(false);
 
@@ -79,8 +82,8 @@ void DebugScene::Update() {
 	//animation_->Environment(env_, true);
 
 	loader_->Update();
-	//debugPlayer_->Update();
-	CameraMove();
+	debugPlayer_->Update();
+	//CameraMove();
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
@@ -253,8 +256,8 @@ void DebugScene::Draw() {
 	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 
-	linebox_->Draw(worldTransformLineBox_, viewProjection_, true);
-	//debugPlayer_->Draw(viewProjection_);
+	//linebox_->Draw(worldTransformLineBox_, viewProjection_, true);
+	debugPlayer_->Draw(viewProjection_);
 	//ground_->Draw(viewProjection_, false);
 	//skybox_->Draw(worldTransform_, viewProjection_);
 }
@@ -374,6 +377,13 @@ void DebugScene::CameraMove() {
 	worldTransform_.rotate.y = Math::LerpShortAngle(worldTransform_.rotate.y, destinationAngleY_, 0.5f);
 
 	worldTransform_.UpdateMatrix();
+}
+
+void DebugScene::CheckAllCollision() {
+	//コリジョン関係
+	collisionManager_->ClearColliderList();
+	collisionManager_->SetColliderList(debugPlayer_.get());
+	collisionManager_->CheckAllCollisions();
 }
 
 Vector3 DebugScene::GetLocalPosition() {

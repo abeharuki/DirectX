@@ -5,8 +5,6 @@
 #include "LineBox.h"
 
 class ModelLoader {
-
-
 public:
 	/// <summary>
 	/// シングルトンインスタンスの取得

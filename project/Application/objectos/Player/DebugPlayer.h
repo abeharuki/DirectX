@@ -10,8 +10,9 @@
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>
 #include "PostEffects/PostEffect.h"
+#include <Sphere.h>
 
-class DebugPlayer{
+class DebugPlayer :public Collider{
 public:
 
 	// 攻撃用定数
@@ -72,15 +73,20 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdata();
 
+
+	void OnCollision(Collider* collider) override;
+	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
-	const WorldTransform& GetWorldTransform() const { return worldTransformBase_; }
+	const WorldTransform& GetWorldTransform() const override{ return worldTransformBase_; }
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
 	}
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformSphere_;
 	const ViewProjection* viewProjection_;
 	std::unique_ptr<Animations>animation_;
+	std::unique_ptr<Sphere> sphere_;
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;

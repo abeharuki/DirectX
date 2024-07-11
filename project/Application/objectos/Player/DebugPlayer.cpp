@@ -1,5 +1,6 @@
 #include "DebugPlayer.h"
 #include <numbers>
+#include <CollisionManager/CollisionConfig.h>
 
 void DebugPlayer::Initialize() {
 
@@ -8,15 +9,24 @@ void DebugPlayer::Initialize() {
 	worldTransformBase_.scale = { 3.0f,3.0f,3.0f };
 	worldTransformBase_.translate.x = 2.0f;
 	worldTransformBase_.translate.y = 1.0f;
+	worldTransformSphere_.Initialize();
+	worldTransformSphere_.translate.y = 1.0f;
+	sphere_ = std::make_unique<Sphere>();
+	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
+
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/human", "uvChecker.png", "Human.gltf"));
 	animation_->SetAnimationTimer(0.0f, 30.0f);
-	
+	AABB aabbSize{ .min{-1.0f,-1.0f,-1.0f},.max{1.0f,1.0f,1.0f} };
+	SetAABB(aabbSize);
+	SetCollisionPrimitive(kCollisionPrimitiveAABB);
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	SetCollisionMask(kCollisionMaskPlayer);
 }
 
 void DebugPlayer::Update() {
-
+	/*
 	preNoAttack_ = noAttack_;
 	noAttack_ = false;
 
@@ -64,15 +74,57 @@ void DebugPlayer::Update() {
 		AttackUpdata();
 		break;
 
-	}
+	}*/
 
 	
+
+	velocity_ = { 0.0f,0.0f,0.0f };
+	// 上下移動
+	if (Input::PressKey(DIK_W)) {
+		velocity_.z = 0.3f;
+
+	}
+	else if (Input::PressKey(DIK_S)) {
+		velocity_.z = -0.3f;
+	}
+
+
+	// 左右移動
+	if (Input::PressKey(DIK_A)) {
+		velocity_.x = -0.3f;
+
+	}
+	else if (Input::PressKey(DIK_D)) {
+		velocity_.x = 0.3f;
+	}
+
+
+	Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_->rotation_.y);
+	velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+	// 現在の位置から移動する位置へのベクトル
+	Vector3 sub = (worldTransformSphere_.translate + velocity_) - GetLocalPosition();
+	// 平行移動
+	worldTransformSphere_.translate = Math::Add(worldTransformSphere_.translate, velocity_);
+	if (sub.z != 0.0) {
+		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+		if (sub.z < 0.0) {
+			destinationAngleY_ = (sub.x >= 0.0)
+				? std::numbers::pi_v<float> -destinationAngleY_
+				: -std::numbers::pi_v<float> -destinationAngleY_;
+		}
+	}
+	else {
+		destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			: -std::numbers::pi_v<float> / 2.0f;
+	}
+	
+
 	// 回転
-	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+	//worldTransformSphere_.rotate.y = Math::LerpShortAngle(worldTransformSphere_.rotate.y, destinationAngleY_, 0.2f);
 
 	worldTransformBase_.UpdateMatrix();
-
-	animation_->AnimationDebug();
+	worldTransformSphere_.UpdateMatrix();
 
 	ImGui::Begin("Setting");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
@@ -80,8 +132,10 @@ void DebugPlayer::Update() {
 }
 
 void DebugPlayer::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformBase_, camera, false);
-
+	//animation_->Draw(worldTransformBase_, camera, false);
+	//RenderCollisionBounds(worldTransformSphere_, camera);
+	sphere_->Draw(worldTransformSphere_, camera, false);
+	RenderCollisionBounds(worldTransformSphere_, camera);
 }
 
 // 移動
@@ -246,13 +300,28 @@ void DebugPlayer::AttackUpdata(){
 	animation_->Update(3);
 }
 
+void DebugPlayer::OnCollision(Collider* collider){
+
+}
+
+const Vector3 DebugPlayer::GetWorldPosition() const
+{
+	// ワールド座標を入れる関数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransformBase_.matWorld_.m[3][0];
+	worldPos.y = worldTransformBase_.matWorld_.m[3][1];
+	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
+	return worldPos;
+}
+
 Vector3 DebugPlayer::GetLocalPosition() {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransformBase_.translate.x;
-	worldPos.y = worldTransformBase_.translate.y;
-	worldPos.z = worldTransformBase_.translate.z;
+	worldPos.x = worldTransformSphere_.translate.x;
+	worldPos.y = worldTransformSphere_.translate.y;
+	worldPos.z = worldTransformSphere_.translate.z;
 	return worldPos;
 }
 

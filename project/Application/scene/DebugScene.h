@@ -11,6 +11,7 @@
 #include <Ground.h>
 #include <Sphere.h>
 #include "3d/LineBox.h"
+#include "CollisionManager/CollisionManager.h"
 
 class DebugScene: public IScene {
 public:
@@ -20,6 +21,7 @@ public:
 	void RenderDirect() override;
 	void CameraMove();
 	Vector3 GetLocalPosition();
+	void CheckAllCollision();
 private:
 	// 光の数値
 	DirectionLight directionLight_{
@@ -28,6 +30,9 @@ private:
 		1.0f,
 		true,
 	};
+
+	//衝突マネージャー
+	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
 
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
