@@ -18,6 +18,7 @@
 #include <Tank/TankManager.h>
 #include <Renju/RenjuManager.h>
 #include "CollisionManager/CollisionManager.h"
+#include <Command/Command.h>
 
 /// <summary>
 /// ゲームシーン
@@ -79,6 +80,9 @@ private: // メンバ変数
 	std::unique_ptr<HealerManager> healerManager_;
 	//レンジャー
 	std::unique_ptr<RenjuManager> renjuManager_;
+
+	//コマンド
+	std::unique_ptr<Command> command_;
 
 	bool isFadeOut_;
 	bool isFadeIn_;

@@ -69,6 +69,10 @@ void GameScene::Initialize() {
 	healerManager_ = std::make_unique<HealerManager>();
 	healerManager_->Initialize();
 
+	//コマンド
+	command_ = std::make_unique<Command>();
+	command_->Initialize();
+
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 
@@ -114,6 +118,9 @@ void GameScene::Update() {
 		renjuManager_->Dissolve();
 		tankManager_->Dissolve();
 	}
+
+	//コマンドの更新
+	command_->Update();
 
 	// 追従カメラの更新
 	followCamera_->Update();
@@ -177,6 +184,8 @@ void GameScene::Draw() {
 
 	
 
+	//コマンド
+	command_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -188,6 +197,8 @@ void GameScene::Draw() {
 	enemyManager_->DrawUI();
 	playerManager_->DrawUI();
 
+	//コマンド
+	command_->DrawUI();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
