@@ -32,6 +32,7 @@ void Tank::Initialize() {
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
+	SetCenter({ 0.0f,0.5f,0.0f });
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeTank);
 	SetCollisionMask(kCollisionMaskTank);
@@ -114,7 +115,7 @@ void Tank::Update() {
 
 void Tank::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera,true);
-
+	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
 // 移動

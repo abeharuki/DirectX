@@ -6,6 +6,7 @@
 class Collider
 {
 public:
+	
 	virtual void OnCollision(Collider* collider) = 0;
 
 	virtual const Vector3 GetWorldPosition() const = 0;
@@ -36,14 +37,31 @@ public:
 
 	void SetCollisionPrimitive(uint32_t collisionPrimitive) { collisionPrimitive_ = collisionPrimitive; };
 
+	void SetCenter(Vector3 center) { lineBox_->SetCenter(center); }
+
 	void SetBounds() {
 		lineBox_ = std::make_unique<LineBox>();
 		lineBox_.reset(LineBox::Create(aabb_));
 	};
 
 	void RenderCollisionBounds(WorldTransform& world, const ViewProjection& camera) {
-		lineBox_->Draw(world, camera,true);
+#ifdef _DEBUG
+		lineBox_->Draw(world, camera, false);
+#endif // DEBUG
+
+		
 	};
+
+	void CheckCollision(bool flag) { 
+		if (flag == 1) {
+			lineBox_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+		}
+		else {
+			lineBox_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+		}
+
+		
+	}
 
 private:
 	float radius_ = 1.0f;

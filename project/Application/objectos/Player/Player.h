@@ -137,6 +137,7 @@ private: // メンバ変数
 	WorldTransform worldTransformCollision_;
 	std::unique_ptr<Animations>animation_;
 	const ViewProjection* viewProjection_;
+	std::unique_ptr<LineBox> linebox_;
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;

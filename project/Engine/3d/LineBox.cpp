@@ -159,9 +159,17 @@ void LineBox::Updata() {
 
 }
 
-void LineBox::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light){
+void LineBox::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection,bool flag){
 	
 	for (int i = 0; i < 12; ++i) {
-		lines_[i]->Draw(worldTransform, viewProjection, light);
+		lines_[i]->Draw(worldTransform, viewProjection, false);
 	}
+}
+
+void LineBox::SetColor(Vector4 color)
+{
+	for (int i = 0; i < 12; ++i) {
+		lines_[i]->SetColor(color);
+	}
+
 }

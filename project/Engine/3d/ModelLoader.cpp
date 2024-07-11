@@ -1,13 +1,18 @@
 #include "ModelLoader.h"
+#include <CollisionManager/CollisionConfig.h>
 
 void ModelLoader::Initialize(const std::string& filename) {
-	
 	LoadJsonObjFile(filename);
 }
 
 void ModelLoader::Update() {
+	int i = 0;
 	for (WorldTransform* object : worldTransforms) {
 		object->UpdateMatrix();
+		colliderManager_[i]->SetWorldTransform(*worldTransforms[i]);
+		colliderManager_[i]->Chack(false);
+		++i;
+
 	}
 }
 
@@ -21,19 +26,13 @@ void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
 
 		if (model && i < worldTransforms.size()) {
 			model->Draw(*worldTransforms[i], viewProjection, flag);
+			colliderManager_[i]->Draw(viewProjection);
 		}
 		
-		if (objectData.collider.typeName != "") {
-			LineBox* lineBox = nullptr;
-			decltype(lineboxs_)::iterator itcollider = lineboxs_.find(objectData.filename);
-			if (itcollider != lineboxs_.end()) { lineBox = itcollider->second; }
-			lineBox->Draw(*worldTransforms[i], viewProjection, flag);
-
-		}
-
 		
 		i++;
 	}
+
 }
 
 
@@ -55,13 +54,7 @@ void ModelLoader::Delete() {
 		delete pair.second;
 	}
 	animationModels.clear();
-
-	// lineboxs_のクリアとメモリ解放
-	for (auto& pair : lineboxs_) {
-		delete pair.second;
-	}
-	lineboxs_.clear();
-
+	colliderManager_.clear();
 }
 
 ModelLoader* ModelLoader::Create(const std::string& filename) {
@@ -135,16 +128,35 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 			models[objectData.filename] = model;
 
 			if (objectData.collider.typeName != "") {
-				AABB aabb = { {-objectData.collider.size.x / 2.0f,-objectData.collider.size.y / 2.0f,-objectData.collider.size.z / 2.0f},{objectData.collider.size.x / 2.0f,objectData.collider.size.y / 2.0f,objectData.collider.size.z / 2.0f} };
-				LineBox* linebox = LineBox::Create(aabb);
-				linebox->Updata();
-				lineboxs_[objectData.filename] = linebox;
+				if (objectData.collider.typeName == "BOX") {
+					AABB aabb = { {-objectData.collider.size.x / 2.0f,-objectData.collider.size.y / 2.0f,-objectData.collider.size.z / 2.0f},{objectData.collider.size.x / 2.0f,objectData.collider.size.y / 2.0f,objectData.collider.size.z / 2.0f} };
+					ColliderManager* colliderManager = new ColliderManager();
+					if (objectData.filename == "ICO") {
+						colliderManager->SetAABB(aabb);
+						colliderManager->SetCollisionAttribute(kCollisionAttributeLoderICO);
+						colliderManager->SetCollisionMask(kCollisionMaskICO);
+						colliderManager->SetCollisionPrimitive(kCollisionPrimitiveAABB);
+					}
+
+					if (objectData.filename == "BOX") {
+						colliderManager->SetAABB(aabb);
+						colliderManager->SetCollisionAttribute(kCollisionAttributeEnemy);
+						colliderManager->SetCollisionMask(kCollisionMaskEnemy);
+						colliderManager->SetCollisionPrimitive(kCollisionPrimitiveAABB);
+
+					}
+
+
+					colliderManager_.push_back(colliderManager);
+				}
+				
 			}
 
 		}
 	}
 
 	//レベルデータからオブジェクトの生成,配置
+	
 	for (auto& objectData : levelData->objects) {
 		//モデルを指定して3Dオブジェクトを生成
 		WorldTransform* newObject = new WorldTransform;
@@ -158,7 +170,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 
 		//配列に登録
 		worldTransforms.push_back(newObject);
-		lineboxs_[objectData.filename]->Updata();
+		
 	}
 
 }

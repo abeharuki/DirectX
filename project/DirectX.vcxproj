@@ -153,6 +153,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\base\DescriptorHeap.cpp" />
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="Engine\base\WinApp.cpp" />
+    <ClCompile Include="Engine\CollisionManager\ColliderManager.cpp" />
     <ClCompile Include="Engine\CollisionManager\CollisionManager.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Engine\Framework\Framework.cpp" />
@@ -334,6 +335,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\base\GpuResource.h" />
     <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="Engine\CollisionManager\Collider.h" />
+    <ClInclude Include="Engine\CollisionManager\ColliderManager.h" />
     <ClInclude Include="Engine\CollisionManager\CollisionConfig.h" />
     <ClInclude Include="Engine\CollisionManager\CollisionManager.h" />
     <ClInclude Include="Engine\Engine.h" />

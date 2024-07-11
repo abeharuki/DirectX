@@ -77,7 +77,7 @@ public: // メンバ関数
 	void OnCollision(Collider* collider) override;
 	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
-	const WorldTransform& GetWorldTransform() const override{ return worldTransformBase_; }
+	const WorldTransform& GetWorldTransform() const override{ return worldTransformSphere_; }
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
 	}

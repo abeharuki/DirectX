@@ -29,8 +29,9 @@ void Enemy::Initialize() {
 
 
 
-	AABB aabbSize{ .min{-1.0f,-3.0f,-0.525f},.max{1.0f,3.0f,0.525f} };
+	AABB aabbSize{ .min{-1.0f,-3.0f,-0.8f},.max{1.0f,3.0f,0.8f} };
 	SetAABB(aabbSize);
+	SetCenter({ 0.0f,3.0f,0.0f });
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
@@ -40,7 +41,7 @@ void Enemy::Initialize() {
 
 void Enemy::Update() {
 
-
+	/*
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -76,7 +77,7 @@ void Enemy::Update() {
 		break;
 	}
 
-
+	*/
 
 	Relationship();
 	worldTransformBase_.UpdateMatrix();
@@ -99,7 +100,7 @@ void Enemy::Update() {
 
 void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
-
+	RenderCollisionBounds(worldTransformBody_, camera);
 }
 
 //移動

@@ -136,6 +136,10 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->BloomLightStrength(bloom_.lightStrength);
 	PostEffect::GetInstance()->BloomTreshold(bloom_.bloomThreshold);
 	PostEffect::GetInstance()->isBloom(bloom_.isEnble);
+
+	CheckAllCollision();
+	
+
 	ImGui::Begin("Setting");
 	
 	if (ImGui::TreeNode("Light")) {
@@ -383,6 +387,9 @@ void DebugScene::CheckAllCollision() {
 	//コリジョン関係
 	collisionManager_->ClearColliderList();
 	collisionManager_->SetColliderList(debugPlayer_.get());
+	for (int i = 0; i < loader_->GetColliderSize(); ++i ) {
+		collisionManager_->SetColliderList(loader_->GetCollider(i));
+	}
 	collisionManager_->CheckAllCollisions();
 }
 

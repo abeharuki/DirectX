@@ -29,6 +29,8 @@ void Player::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
+	
+
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -36,14 +38,19 @@ void Player::Initialize() {
 
 	
 
-	AABB aabbSize{ .min{-0.3f,-0.2f,-0.1f},.max{0.3f,0.2f,0.1f} };
+	AABB aabbSize{ .min{-0.5f,-0.4f,-0.4f},.max{0.5f,0.4f,0.4f} };
 	SetAABB(aabbSize);
+	SetCenter({ 0.0f,0.5f,0.0f });
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionMaskPlayer);
+
+	//linebox_ = std::make_unique<LineBox>();
+	//linebox_.reset(LineBox::Create(AABB({ - worldTransformCollision_.scale.x, -worldTransformCollision_.scale.y, -worldTransformCollision_.scale.z }, {worldTransformCollision_.scale.x,worldTransformCollision_.scale.y,worldTransformCollision_.scale.z})));
 }
 
 void Player::Update() {
+	CheckCollision(false);
 
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
@@ -134,6 +141,7 @@ void Player::Update() {
 	animation_->SetThreshold(threshold_);
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
+	ImGui::SliderFloat3("pos", &worldTransformHead_.translate.x, -10.0f, 10.0f);
 	ImGui::Text("%d", noAttack_);
 	ImGui::Text("%d", hitCount_);
 	ImGui::SliderFloat("Thres", &threshold_, 0.0f, 1.0f);
@@ -142,7 +150,8 @@ void Player::Update() {
 
 void Player::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera,true);
-
+	RenderCollisionBounds(worldTransformHead_, camera);
+	//linebox_->Draw(worldTransformHammer_, camera, true);
 }
 
 // 移動
@@ -588,6 +597,7 @@ void Player::OnCollision(const WorldTransform& worldTransform) {
 
 
 void Player::OnCollision(Collider* collider) {
+	CheckCollision(true);
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (isEnemyAttack_) {
@@ -604,7 +614,7 @@ void Player::OnCollision(Collider* collider) {
 			}
 
 		}
-
+	
 
 	}
 

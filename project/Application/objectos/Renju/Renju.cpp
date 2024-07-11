@@ -34,6 +34,7 @@ void Renju::Initialize() {
 	
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
+	SetCenter({ 0.0f,0.5f,0.0f });
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeRenju);
 	SetCollisionMask(kCollisionMaskRenju);
@@ -134,7 +135,7 @@ void Renju::Draw(const ViewProjection& view) {
 
 	
 	animation_->Draw(worldTransformHead_, view,true);
-
+	RenderCollisionBounds(worldTransformHead_, view);
 	
 }
 

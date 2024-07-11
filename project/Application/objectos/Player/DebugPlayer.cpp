@@ -76,7 +76,7 @@ void DebugPlayer::Update() {
 
 	}*/
 
-	
+	CheckCollision(false);
 
 	velocity_ = { 0.0f,0.0f,0.0f };
 	// 上下移動
@@ -127,13 +127,14 @@ void DebugPlayer::Update() {
 	worldTransformSphere_.UpdateMatrix();
 
 	ImGui::Begin("Setting");
-	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
+	ImGui::Text("posX%f", GetWorldPosition().x);
+	ImGui::Text("posY%f", GetWorldPosition().y);
+	ImGui::Text("posZ%f", GetWorldPosition().z);
 	ImGui::End();
 }
 
 void DebugPlayer::Draw(const ViewProjection& camera) {
 	//animation_->Draw(worldTransformBase_, camera, false);
-	//RenderCollisionBounds(worldTransformSphere_, camera);
 	sphere_->Draw(worldTransformSphere_, camera, false);
 	RenderCollisionBounds(worldTransformSphere_, camera);
 }
@@ -301,7 +302,15 @@ void DebugPlayer::AttackUpdata(){
 }
 
 void DebugPlayer::OnCollision(Collider* collider){
+	
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+		CheckCollision(true);
+	}
 
+	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderICO) {
+		CheckCollision(true);
+	}
+	
 }
 
 const Vector3 DebugPlayer::GetWorldPosition() const
@@ -309,9 +318,9 @@ const Vector3 DebugPlayer::GetWorldPosition() const
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransformBase_.matWorld_.m[3][0];
-	worldPos.y = worldTransformBase_.matWorld_.m[3][1];
-	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
+	worldPos.x = worldTransformSphere_.matWorld_.m[3][0];
+	worldPos.y = worldTransformSphere_.matWorld_.m[3][1];
+	worldPos.z = worldTransformSphere_.matWorld_.m[3][2];
 	return worldPos;
 }
 

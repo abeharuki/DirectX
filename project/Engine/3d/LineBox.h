@@ -37,8 +37,7 @@ public:
 
 	void SetCenter(Vector3 center) {
 		obb_.center = center;
-		//aabb_.min = aabb_.min + center;
-		//aabb_.max = aabb_.max + center;
+		Updata();
 	}
 
 	Vector3 GetCenter() { return obb_.center; }
