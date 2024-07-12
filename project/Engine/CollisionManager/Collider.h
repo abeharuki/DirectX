@@ -3,6 +3,12 @@
 #include "Math/math.h"
 #include <LineBox.h>
 
+enum class Primitive {
+	kAABB,
+	kOBB,
+	kSphere,
+};
+
 class Collider
 {
 public:
@@ -15,15 +21,15 @@ public:
 
 	const float GetRadius() const { return radius_; };
 
-	void SetRadius(float radius) { radius_ = radius; };
+	void SetRadius(float radius) { radius_ = radius; priType = Primitive::kSphere;};
 
 	const AABB& GetAABB() const { return aabb_; };
 
-	void SetAABB(AABB& aabb) { aabb_ = aabb; SetBounds(); };
+	void SetAABB(AABB& aabb) { aabb_ = aabb; SetBounds(); priType = Primitive::kAABB;};
 
 	const OBB& GetOBB() const { return obb_; };
 
-	void SetOBB(OBB& obb) { obb_ = obb; };
+	void SetOBB(OBB& obb) { obb_ = obb; priType = Primitive::kOBB;};
 
 	const uint32_t GetCollisionAttribute() const { return collisionAttribute_; };
 
@@ -46,19 +52,25 @@ public:
 
 	void RenderCollisionBounds(WorldTransform& world, const ViewProjection& camera) {
 #ifdef _DEBUG
-		lineBox_->Draw(world, camera, false);
+		if (priType == Primitive::kAABB) {
+			lineBox_->Draw(world, camera, false);
+		}
+		
 #endif // DEBUG
 
 		
 	};
 
 	void CheckCollision(bool flag) { 
-		if (flag == 1) {
-			lineBox_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+		if (priType == Primitive::kAABB) {
+			if (flag == 1) {
+				lineBox_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+			}
+			else {
+				lineBox_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+			}
 		}
-		else {
-			lineBox_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
-		}
+		
 
 		
 	}
@@ -77,5 +89,7 @@ private:
 	uint32_t collisionPrimitive_ = 0b1;
 
 	std::unique_ptr<LineBox> lineBox_;
+
+	Primitive priType;
 };
 

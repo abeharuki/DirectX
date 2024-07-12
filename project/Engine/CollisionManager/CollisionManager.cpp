@@ -169,6 +169,27 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 			}
 		}
 	}
+
+	//OBBとOBBの判定
+	if (((colliderA->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0 && (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0) ||
+		((colliderA->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0 && (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0))
+	{
+		//コライダーAのAABBを取得
+		OBB obbA = colliderA->GetOBB();
+		//コライダーBのOBBを取得
+		OBB obbB = colliderB->GetOBB();
+
+		/*/衝突判定
+		if (CheckCollisionOBB(aabb, obb))
+		{
+			//コライダーAの衝突時コールバックを呼び出す
+			colliderA->OnCollision(colliderB);
+			//コライダーBの衝突時コールバックを呼び出す
+			colliderB->OnCollision(colliderA);
+		}*/
+	
+	}
+
 }
 
 bool CollisionManager::CheckCollisionSphere(const sphere& sphereA, const sphere& sphereB)

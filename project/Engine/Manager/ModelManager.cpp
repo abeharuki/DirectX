@@ -1,4 +1,5 @@
 #include "ModelManager.h"
+#include <corecrt_math_defines.h>
 
 ModelManager* ModelManager::instance_ = nullptr;
 
@@ -216,9 +217,9 @@ void ModelManager::LoadJsonObject(nlohmann::json& object, Scene::ObjectData& obj
 		objectData.transform.translate.y = transform["translation"][2].get<float>();
 		objectData.transform.translate.z = transform["translation"][1].get<float>();
 		// 回転角
-		objectData.transform.rotate.x = -transform["rotation"][0].get<float>();
-		objectData.transform.rotate.y = -transform["rotation"][2].get<float>();
-		objectData.transform.rotate.z = -transform["rotation"][1].get<float>();
+		objectData.transform.rotate.x = -transform["rotation"][0].get<float>() * static_cast<float>(M_PI) / 180.0f;
+		objectData.transform.rotate.y = -transform["rotation"][2].get<float>() * static_cast<float>(M_PI) / 180.0f;
+		objectData.transform.rotate.z = -transform["rotation"][1].get<float>() * static_cast<float>(M_PI) / 180.0f;
 		// スケーリング
 		objectData.transform.scale.x = transform["scaling"][0].get<float>();
 		objectData.transform.scale.y = transform["scaling"][2].get<float>();
@@ -226,17 +227,51 @@ void ModelManager::LoadJsonObject(nlohmann::json& object, Scene::ObjectData& obj
 
 		//TODO: コライダーのパラメータ読み込み
 		nlohmann::json collider = object["collider"];
-		//タイプ
-		objectData.collider.typeName = collider["type"];
-		//中心
-		objectData.collider.center.x = collider["center"][0].get<float>();
-		objectData.collider.center.y = collider["center"][2].get<float>();
-		objectData.collider.center.z = collider["center"][1].get<float>();
-		//サイズ
-		objectData.collider.size.x = collider["size"][0].get<float>();
-		objectData.collider.size.y = collider["size"][2].get<float>();
-		objectData.collider.size.z = collider["size"][1].get<float>();
 
+		//からじゃないなら
+		if (!collider.empty()) {
+			//タイプ
+			objectData.collider.typeName = collider["type"];
+			//中心
+			objectData.collider.center.x = collider["center"][0].get<float>();
+			objectData.collider.center.y = collider["center"][2].get<float>();
+			objectData.collider.center.z = collider["center"][1].get<float>();
+			if (objectData.collider.typeName == "BOX") {
+				//サイズ
+				objectData.collider.size.x = collider["size"][0].get<float>();
+				objectData.collider.size.y = collider["size"][2].get<float>();
+				objectData.collider.size.z = collider["size"][1].get<float>();
+			}
+			else if (objectData.collider.typeName == "SPHERE") {
+				objectData.collider.radius = collider["radius"].get<float>();
+			}
+		}
+		
+	
+
+	}
+
+	// MESH
+	if (type.compare("CAMERA") == 0) {
+
+		if (object.contains("file_name")) {
+			// ファイル名
+			objectData.filename = object["file_name"].get<std::string>();
+		}
+
+		nlohmann::json transform = object["transform"];
+		// 平行移動
+		objectData.transform.translate.x = transform["translation"][0].get<float>();
+		objectData.transform.translate.y = transform["translation"][2].get<float>();
+		objectData.transform.translate.z = transform["translation"][1].get<float>();
+		// 回転角
+		objectData.transform.rotate.x = (-transform["rotation"][0].get<float>() + 90)* static_cast<float>(M_PI) / 180.0f;
+		objectData.transform.rotate.y = -transform["rotation"][2].get<float>() * static_cast<float>(M_PI) / 180.0f;
+		objectData.transform.rotate.z = -transform["rotation"][1].get<float>() * static_cast<float>(M_PI) / 180.0f;
+		// スケーリング
+		objectData.transform.scale.x = transform["scaling"][0].get<float>();
+		objectData.transform.scale.y = transform["scaling"][2].get<float>();
+		objectData.transform.scale.z = transform["scaling"][1].get<float>();
 	}
 
 	// 子オブジェクトの処理

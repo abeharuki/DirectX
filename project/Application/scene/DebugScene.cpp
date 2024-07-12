@@ -40,7 +40,7 @@ void DebugScene::Initialize() {
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
 
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
-	loader_->SetTexture("skydome/sky.png");
+	//loader_->SetTexture("skydome/sky.png");
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/human", "white.png", "walk.gltf"));
@@ -85,10 +85,12 @@ void DebugScene::Update() {
 	debugPlayer_->Update();
 	//CameraMove();
 	followCamera_->Update();
-	viewProjection_.matView = followCamera_->GetViewProjection().matView;
-	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-	viewProjection_.TransferMatrix();
-	
+	//viewProjection_.matView = followCamera_->GetViewProjection().matView;
+	//viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+	//viewProjection_.TransferMatrix();
+	viewProjection_ = loader_->GetCamera();
+	debugPlayer_->SetViewProjection(&viewProjection_);
+
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
 	worldTransformGround_.UpdateMatrix();
@@ -257,7 +259,7 @@ void DebugScene::Draw() {
 	
 	loader_->Draw(viewProjection_, true);
 	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
-	sphere_->Draw(worldTransformSphere_, viewProjection_, true);
+	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 
 	//linebox_->Draw(worldTransformLineBox_, viewProjection_, true);

@@ -3,13 +3,14 @@
 
 void ColliderManager::Draw(const ViewProjection& camera) {
 	RenderCollisionBounds(worldTransform_, camera);
+	
+	
 }
 
 void ColliderManager::OnCollision(Collider* collider){
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {
 		CheckCollision(true);
-
 	}
 
 }

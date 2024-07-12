@@ -37,6 +37,10 @@ public:
 
 	void SetTexture(const std::string& filename);
 
+	//カメラ
+	ViewProjection GetCamera() { return camera_; }
+
+	//コライダー
 	int GetColliderSize() { return int(colliderManager_.size()); }
 	Collider* GetCollider(int i) { return colliderManager_[i]; }
 
@@ -48,6 +52,7 @@ private:
 	std::map<std::string, Model*> models;
 	std::map<std::string, Animation*> animationModels;
 	std::vector<WorldTransform*> worldTransforms;
+	ViewProjection camera_;
 	//std::map<std::string, LineBox*>lineboxs_;
 
 	std::vector<ColliderManager*> colliderManager_;

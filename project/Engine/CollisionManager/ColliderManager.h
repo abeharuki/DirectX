@@ -1,10 +1,21 @@
 #pragma once
 #include "CollisionManager/Collider.h"
 
+
+
 class ColliderManager :public Collider {
 public:
 
-	void SetManagerAABB(AABB aabb) { SetAABB(aabb); }
+	
+
+	void SetManagerRadius(float radius) { 
+		SetRadius(radius);
+		priType = Primitive::kSphere;
+	};
+	void SetManagerAABB(AABB aabb) { 
+		SetAABB(aabb); 
+		priType = Primitive::kAABB;
+	}
 	void SetAttribute(uint32_t collisionAttribute) { SetCollisionAttribute(collisionAttribute); };
 	void SetMask(uint32_t collisionMask) { SetCollisionMask(collisionMask); };
 	void SetPrimitive(uint32_t collisionPrimitive) { SetCollisionPrimitive(collisionPrimitive); };
@@ -20,4 +31,6 @@ public:
 	
 private:
 	WorldTransform worldTransform_;
+	Primitive priType;
+
 };

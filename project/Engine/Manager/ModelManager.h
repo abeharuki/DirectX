@@ -21,6 +21,7 @@ struct ColliderData {
 	std::string typeName;
 	Vector3 center;
 	Vector3 size;
+	float radius;
 };
 
 struct Scene {

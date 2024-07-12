@@ -9,28 +9,42 @@ void ModelLoader::Update() {
 	int i = 0;
 	for (WorldTransform* object : worldTransforms) {
 		object->UpdateMatrix();
-		colliderManager_[i]->SetWorldTransform(*worldTransforms[i]);
-		colliderManager_[i]->Chack(false);
-		++i;
+		if (i < colliderManager_.size()) {
+			colliderManager_[i]->SetWorldTransform(*worldTransforms[i]);
+			colliderManager_[i]->Chack(false);
+			++i;
+		}
 
 	}
+	for (auto& objectData : levelData->objects) {
+		if (objectData.filename == "Camera") {
+			camera_.UpdateMatrix();
+		}
+	}
+	
 }
 
 void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
 	int i = 0;
 	for (auto& objectData : levelData->objects) {
-		//ファイル名から登録済みモデルを検索
-		Model* model = nullptr;
-		decltype(models)::iterator it = models.find(objectData.filename);
-		if (it != models.end()) { model = it->second; }
+		if (objectData.filename != "Camera") {
+			//ファイル名から登録済みモデルを検索
+			Model* model = nullptr;
+			decltype(models)::iterator it = models.find(objectData.filename);
+			if (it != models.end()) { model = it->second; }
 
-		if (model && i < worldTransforms.size()) {
-			model->Draw(*worldTransforms[i], viewProjection, flag);
-			colliderManager_[i]->Draw(viewProjection);
+			if (model && i < worldTransforms.size()) {
+				model->Draw(*worldTransforms[i], viewProjection, flag);
+				if (i < colliderManager_.size()) {
+					colliderManager_[i]->Draw(viewProjection);
+				}
+
+			}
+
+
+			i++;
 		}
 		
-		
-		i++;
 	}
 
 }
@@ -121,9 +135,8 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 	for (auto& objectData : levelData->objects) {
 		//ファイル名から登録済みモデルを検索
 		decltype(models)::iterator it = models.find(objectData.filename);
-
-		if (it == models.end()) {
-			//blenderでlightcamerを消さないとここでエラーが出る
+		if (it == models.end() && objectData.filename !="Camera") {
+			//blenderでlightを消さないとここでエラーが出る又はファイルネームを設定してないと
 			Model* model = Model::CreateFromObj(objectData.filename);
 			models[objectData.filename] = model;
 
@@ -135,41 +148,61 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 						colliderManager->SetAABB(aabb);
 						colliderManager->SetCollisionAttribute(kCollisionAttributeLoderICO);
 						colliderManager->SetCollisionMask(kCollisionMaskICO);
-						colliderManager->SetCollisionPrimitive(kCollisionPrimitiveAABB);
+
 					}
 
 					if (objectData.filename == "BOX") {
 						colliderManager->SetAABB(aabb);
 						colliderManager->SetCollisionAttribute(kCollisionAttributeEnemy);
 						colliderManager->SetCollisionMask(kCollisionMaskEnemy);
-						colliderManager->SetCollisionPrimitive(kCollisionPrimitiveAABB);
 
 					}
-
+					colliderManager->SetCollisionPrimitive(kCollisionPrimitiveAABB);
 
 					colliderManager_.push_back(colliderManager);
 				}
-				
+
+				if (objectData.collider.typeName == "SPHERE") {
+					ColliderManager* colliderManager = new ColliderManager();
+					if (objectData.filename == "BOX") {
+						colliderManager->SetRadius(objectData.collider.radius);
+						colliderManager->SetCollisionAttribute(kCollisionAttributeLoderICO);
+						colliderManager->SetCollisionMask(kCollisionMaskICO);
+
+					}
+					colliderManager->SetCollisionPrimitive(kCollisionPrimitiveSphere);
+					colliderManager_.push_back(colliderManager);
+
+				}
+
 			}
 
 		}
 	}
 
 	//レベルデータからオブジェクトの生成,配置
-	
 	for (auto& objectData : levelData->objects) {
-		//モデルを指定して3Dオブジェクトを生成
-		WorldTransform* newObject = new WorldTransform;
-		//座標
-		newObject->translate = objectData.transform.translate;
-		//回転角
-		newObject->rotate = objectData.transform.rotate;
-		//スケール
-		newObject->scale = objectData.transform.scale;
-		newObject->Initialize();
+		if (objectData.filename != "Camera") {
+			//モデルを指定して3Dオブジェクトを生成
+			WorldTransform* newObject = new WorldTransform;
+			//座標
+			newObject->translate = objectData.transform.translate;
+			//回転角
+			newObject->rotate = objectData.transform.rotate;
+			//スケール
+			newObject->scale = objectData.transform.scale;
+			newObject->Initialize();
 
-		//配列に登録
-		worldTransforms.push_back(newObject);
+			//配列に登録
+			worldTransforms.push_back(newObject);
+		}
+		else {
+			camera_.Initialize();
+			camera_.translation_ = objectData.transform.translate;
+			camera_.rotation_ = objectData.transform.rotate;
+			
+		}
+		
 		
 	}
 
