@@ -2,6 +2,27 @@
 #include <ViewProjection.h>
 #include <Sprite.h>
 
+enum priteType {
+	kFight,
+	kEscape,
+	kReturn,
+	kMax,
+};
+
+enum Task {
+	kTask1,
+	kTask2,
+	kTask3,
+	kTaskMax,
+};
+
+enum class TaskType {
+	kInitial,
+	kMagic,
+	kSkill,
+	kOperation,
+	kTool,
+};
 
 class Command {
 public:
@@ -20,11 +41,40 @@ public:
 
 	void DrawUI();
 
-private:
-	void MoveArrow();
+	
 
 private:
-	std::unique_ptr<Sprite> backgroundTask;
+	//初期タスク
+	void InitialInitialize();
+	void InitialUpdate();
+	void InitialTask();
+	//作戦タスク
+	void OperationInitialize();
+	void OperationUpdate();
+	void OperationTask();
+	//呪文タスク
+	void MagicInitialize();
+	void MagicUpdate();
+	void MagicTask();
+	//特技タスク
+	void SkillInitialize();
+	void SkillUpdate();
+	void SkillTask();
+	//道具タスク
+	void ToolInitialize();
+	void ToolUpdate();
+	void ToolTask();
+
+	void MoveArrow();
+	void OperationMoveArrow();
+	void MagicMoveArrow();
+	void SkillMoveArrow();
+	void ToolMoveArrow();
+
+	void AnimationArrow();
+
+private:
+	std::vector<std::unique_ptr<Sprite>> backgroundTask;
 	std::unique_ptr<Sprite> attack;
 	std::unique_ptr<Sprite> magic;
 	std::unique_ptr<Sprite> skill;
@@ -32,10 +82,16 @@ private:
 	std::unique_ptr<Sprite> operation;
 	std::unique_ptr<Sprite> arrow;
 
+	std::vector<std::unique_ptr<Sprite>> sprites_;
+
+	TaskType taskType_ = TaskType::kInitial;
+	// 次の振る舞いリクエスト
+	std::optional<TaskType> behaviorRequest_ = std::nullopt;
 
 	Vector3 arrowPos_;
+	int arrowMoveSpeed_ = 31;
 	bool arrowFlag_;
 
-	Vector2 pos;
-	Vector2 size;
+	std::vector<Vector2> pos;
+	std::vector<Vector2> size;
 };
