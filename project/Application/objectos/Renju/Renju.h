@@ -105,6 +105,7 @@ public: // メンバ関数
 		animation_->SetThreshold(threshold_);
 	}
 
+	void SetOperation(bool flag) { operation_ = flag; }
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHp_[3];
@@ -166,4 +167,7 @@ private: // メンバ変数
 
 	//敵の攻撃フラグ
 	bool isEnemyAttack_;
+
+	//作戦
+	bool operation_;
 };

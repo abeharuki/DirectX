@@ -134,12 +134,12 @@ void Healer::Draw(const ViewProjection& camera) {
 void Healer::MoveInitialize() { searchTarget_ = false; };
 void Healer::MoveUpdata() {
 	// プレイヤーに集合
-	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X) || !searchTarget_) {
+	if (operation_ || !searchTarget_) {
 		followPlayer_ = true;
 	}
 
 	// 敵を探す
-	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_Y)) {
+	if (!operation_) {
 		searchTarget_ = true;
 	}
 };
@@ -220,7 +220,7 @@ void Healer::AttackUpdata() {
 
 
 	// プレイヤーに集合
-	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X)) {
+	if (operation_) {
 		behaviorRequest_ = Behavior::kRoot;
 		workAttack_.isAttack = false;
 		followPlayer_ = true;

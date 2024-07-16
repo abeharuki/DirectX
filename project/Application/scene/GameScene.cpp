@@ -122,6 +122,10 @@ void GameScene::Update() {
 	//コマンドの更新
 	command_->Update();
 
+	healerManager_->GetHealer()->SetOperation(command_->GetOperatin());
+	renjuManager_->GetRenju()->SetOperation(command_->GetOperatin());
+	tankManager_->GetTank()->SetOperation(command_->GetOperatin());
+
 	// 追従カメラの更新
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;

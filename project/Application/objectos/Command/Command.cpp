@@ -193,6 +193,7 @@ void Command::OperationInitialize()
 
 void Command::OperationUpdate(){
 	OperationMoveArrow();
+
 }
 
 
@@ -329,10 +330,15 @@ void Command::OperationMoveArrow(){
 
 	//決定
 	if (Input::PushKey(DIK_3)) {
+		//こうげきの命令
 		if (int(arrowPos_.y) == 510) {
+			follow_ = false;
+			behaviorRequest_ = TaskType::kInitial;
 		}
-
+		//ついてくる命令
 		if (int(arrowPos_.y) == 541) {
+			follow_ = true;
+			behaviorRequest_ = TaskType::kInitial;
 		}
 
 		if (int(arrowPos_.y) == 572) {

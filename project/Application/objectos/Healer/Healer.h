@@ -63,6 +63,7 @@ public: // メンバ関数
 
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
 
+	void SetOperation(bool flag) { operation_ = flag; }
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
@@ -154,7 +155,7 @@ private: // メンバ変数
 
 	//プレイヤー座標
 	float minDistance_ = 10.0f;
-	bool followPlayer_ = false;
+	bool followPlayer_;
 	
 
 	// 敵を探すフラグ
@@ -181,4 +182,7 @@ private: // メンバ変数
 
 	//敵の攻撃フラグ
 	bool isEnemyAttack_;
+
+	//作戦
+	bool operation_;
 };

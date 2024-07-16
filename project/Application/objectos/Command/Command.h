@@ -41,7 +41,8 @@ public:
 
 	void DrawUI();
 
-	
+	//作戦フラグ
+	bool GetOperatin() { return follow_; }
 
 private:
 	//初期タスク
@@ -65,6 +66,7 @@ private:
 	void ToolUpdate();
 	void ToolTask();
 
+	//矢印のアニメーションと動き
 	void MoveArrow();
 	void OperationMoveArrow();
 	void MagicMoveArrow();
@@ -94,4 +96,8 @@ private:
 
 	std::vector<Vector2> pos;
 	std::vector<Vector2> size;
+
+
+	//作戦フラグ
+	bool follow_ = true;
 };

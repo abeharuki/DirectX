@@ -47,9 +47,6 @@ void HealerManager::Update() {
 	healer_->Update();
 	healer_->followPlayer(playerPos_);
 	healer_->searchTarget(enemyPos_);
-	
-
-	
 };
 
 void HealerManager::Draw(const ViewProjection& camera) {

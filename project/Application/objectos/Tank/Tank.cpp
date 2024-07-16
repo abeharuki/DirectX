@@ -123,12 +123,12 @@ void Tank::MoveInitialize() { searchTarget_ = false; };
 void Tank::MoveUpdata() {
 
 	// プレイヤーに集合
-	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X) || !searchTarget_) {
+	if (operation_ || !searchTarget_) {
 		followPlayer_ = true;
 	}
 
 	// 敵を探す
-	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_Y)) {
+	if (!operation_) {
 		searchTarget_ = true;
 	}
 
@@ -224,7 +224,7 @@ void Tank::AttackUpdata() {
 
 
 	// プレイヤーに集合
-	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_X)) {
+	if (operation_) {
 		behaviorRequest_ = Behavior::kRoot;
 		followPlayer_ = true;
 		searchTarget_ = false;
