@@ -19,6 +19,7 @@ void Command::Initialize() {
 	
 	sprites_.resize(priteType::kMax);
 	backgroundTask.resize(Task::kTaskMax);
+	attackType_.resize(AttackType::kAttackMax);
 
 	backgroundTask[kTask1].reset(Sprite::Create("resources/Command/task.png"));
 	backgroundTask[kTask2].reset(Sprite::Create("resources/Command/task2.png"));
@@ -33,9 +34,14 @@ void Command::Initialize() {
 		backgroundTask[i]->SetColor({ 1.0f,1.0f,1.0f,0.8f });
 		backgroundTask[i]->SetPosition({ 30.0f,450.0f });
 	}
+	
 
 	for (int i = 0; i < priteType::kMax; ++i) {
 		sprites_[i]->SetSize({ 91.0f,46.0f });
+	}
+
+	for (int i = 0; i < AttackType::kAttackMax; ++i) {
+		attackType_[i] = false;
 	}
 
 	attack->SetPosition({ 85.0f, 472.0f});
@@ -125,6 +131,8 @@ void Command::Update() {
 	ImGui::DragFloat2("Pos3", &pos[2].x, 1.0f);
 	ImGui::DragFloat2("size3", &size[2].x, 1.0f);
 	ImGui::DragFloat3("ArrowPos", &arrowPos_.x, 1.0f);
+	ImGui::Text("TaskSize%f", taskSize_.y);
+	ImGui::Text("TaskAnimation%d", taskAnimation_);
 	ImGui::End();
 }
 
@@ -162,20 +170,31 @@ void Command::InitialInitialize(){
 	arrowPos_ = { 31.0f,469.0f,0.0f };
 	backgroundTask[kTask1]->SetPosition({ 30.0f,450.0f });
 	backgroundTask[kTask1]->SetSize({200.0f,200.0f});
+	taskSize_ = { 200.0f,0.0f,0.0f };
+	for (int i = 0; i < AttackType::kAttackMax; ++i) {
+		attackType_[i] = false;
+	}
 }
 
 void Command::InitialUpdate(){
-	MoveArrow();
+	if (!taskAnimation_) {
+		MoveArrow();
+	}
+	TaskAnimation();
+	
+
 }
 
 void Command::InitialTask(){
 	backgroundTask[kTask1]->Draw();
-	attack->Draw();
-	magic->Draw();
-	operation->Draw();
-	skill->Draw();
-	tool->Draw();
-	arrow->Draw();
+	if (!taskAnimation_) {
+		attack->Draw();
+		magic->Draw();
+		operation->Draw();
+		skill->Draw();
+		tool->Draw();
+		arrow->Draw();
+	}
 }
 
 void Command::OperationInitialize()
@@ -189,14 +208,12 @@ void Command::OperationInitialize()
 	backgroundTask[kTask3]->SetSize({196.0f,200.0f});
 
 	arrowPos_ = { 31.0f,510.0f,0.0f };
+	
 }
 
 void Command::OperationUpdate(){
 	OperationMoveArrow();
-
 }
-
-
 
 void Command::OperationTask(){
 	
@@ -276,6 +293,21 @@ void Command::ToolTask(){
 	arrow->Draw();
 }
 
+//タスクアニメーション
+void Command::TaskAnimation(){
+	if (taskAnimation_ && behaviorRoot_) {
+		backgroundTask[kTask1]->SetSize({ taskSize_.x,taskSize_.y });
+		backgroundTask[kTask1]->SetPosition({ 30.0f,665.0f });
+		taskSize_ = Math::Lerp({ Vector3{taskSize_.x,taskSize_.y,0.0f} }, Vector3{ taskSize_.x,-200.0f,0.0f }, 0.4f);
+		
+		if (taskSize_.y <= -199.9f) {
+			taskAnimation_ = false;
+		}
+	}
+	
+
+}
+
 void Command::MoveArrow() {
 	
 	
@@ -294,6 +326,14 @@ void Command::MoveArrow() {
 
 	//決定
 	if (Input::PushKey(DIK_3)) {
+		if (int(arrowPos_.y) == 468) {
+			attackType_[kNormalAttack] = true;
+			taskAnimation_ = true;
+			taskSize_ = { 200.0f,0.0f,0.0f };
+			backgroundTask[kTask1]->SetSize({ taskSize_.x,taskSize_.y});
+			behaviorRequest_ = TaskType::kInitial;
+		}
+
 		if (int(arrowPos_.y) == 499) {
 			behaviorRequest_ = TaskType::kMagic;
 		}
@@ -333,12 +373,15 @@ void Command::OperationMoveArrow(){
 		//こうげきの命令
 		if (int(arrowPos_.y) == 510) {
 			follow_ = false;
+			taskAnimation_ = true;
 			behaviorRequest_ = TaskType::kInitial;
 		}
 		//ついてくる命令
 		if (int(arrowPos_.y) == 541) {
 			follow_ = true;
+			taskAnimation_ = true;
 			behaviorRequest_ = TaskType::kInitial;
+			
 		}
 
 		if (int(arrowPos_.y) == 572) {

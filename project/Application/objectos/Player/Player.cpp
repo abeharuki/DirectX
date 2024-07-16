@@ -30,7 +30,10 @@ void Player::Initialize() {
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
 	
-
+	attackType_.resize(AttackType::kAttackMax);
+	for (int i = 0; i < AttackType::kAttackMax; ++i) {
+		attackType_[i] = false;
+	}
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -51,7 +54,6 @@ void Player::Initialize() {
 
 void Player::Update() {
 	CheckCollision(false);
-
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
@@ -60,6 +62,8 @@ void Player::Update() {
 
 	preNoAttack_ = noAttack_;
 	noAttack_ = false;
+
+	root_ = false;
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -145,6 +149,7 @@ void Player::Update() {
 	ImGui::Text("%d", noAttack_);
 	ImGui::Text("%d", hitCount_);
 	ImGui::SliderFloat("Thres", &threshold_, 0.0f, 1.0f);
+	ImGui::Text("%d", root_);
 	ImGui::End();
 }
 
@@ -162,6 +167,8 @@ void Player::MoveInitialize() {
 	combo_ = false;
 };
 void Player::MoveUpdata() {
+	root_ = true;
+
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
 
@@ -214,7 +221,7 @@ void Player::MoveUpdata() {
 		}
 
 		// 攻撃
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B) && !preNoAttack_) {
+		if (attackType_[kNormalAttack] && !preNoAttack_) {
 			behaviorRequest_ = Behavior::kAttack;
 		}
 
@@ -304,7 +311,7 @@ void Player::MoveUpdata() {
 		}
 
 		//攻撃
-		if (Input::PushKey(DIK_E)) {
+		if (attackType_[kNormalAttack]) {
 			behaviorRequest_ = Behavior::kAttack;
 		}
 

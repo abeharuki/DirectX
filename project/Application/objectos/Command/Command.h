@@ -24,6 +24,11 @@ enum class TaskType {
 	kTool,
 };
 
+enum AttackType {
+	kNormalAttack,
+	kAttackMax,
+};
+
 class Command {
 public:
 
@@ -41,8 +46,14 @@ public:
 
 	void DrawUI();
 
+	//こうげきフラグ
+	bool GetAttack(int i) { return attackType_[i]; }
+
 	//作戦フラグ
 	bool GetOperatin() { return follow_; }
+
+	//プレイヤーの状態
+	void  SetBehavior(bool flag) { behaviorRoot_ = flag; }
 
 private:
 	//初期タスク
@@ -65,6 +76,9 @@ private:
 	void ToolInitialize();
 	void ToolUpdate();
 	void ToolTask();
+
+	//タスク背景のアニメーション
+	void TaskAnimation();
 
 	//矢印のアニメーションと動き
 	void MoveArrow();
@@ -97,6 +111,15 @@ private:
 	std::vector<Vector2> pos;
 	std::vector<Vector2> size;
 
+	//タスクのアニメーション
+	bool taskAnimation_ = false;
+	Vector3 taskSize_ = { 0.0f,0.0f,0.0f };
+
+	//playerの状態がmoveかどうか
+	bool  behaviorRoot_ = true;
+
+	//攻撃フラグ
+	std::vector<bool> attackType_;
 
 	//作戦フラグ
 	bool follow_ = true;

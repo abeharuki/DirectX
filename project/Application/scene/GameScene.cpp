@@ -95,15 +95,20 @@ void GameScene::Update() {
 		SceneManager::GetInstance()->ChangeScene("OverScene");
 	}
 
+	
+	playerManager_->Update();
+	
 	//コマンドの更新
+	command_->SetBehavior(playerManager_->GetPlayer()->IsRoot());
 	command_->Update();
-
+	for (int i = 0; i < kAttackMax; ++i) {
+		playerManager_->GetPlayer()->SetAttack(command_->GetAttack(i), i);
+	}
 	healerManager_->GetHealer()->SetOperation(command_->GetOperatin());
 	renjuManager_->GetRenju()->SetOperation(command_->GetOperatin());
 	tankManager_->GetTank()->SetOperation(command_->GetOperatin());
 
 
-	playerManager_->Update();
 	if (!enemyManager_->IsClear()) {
 		healerManager_->Update();
 		renjuManager_->Update();

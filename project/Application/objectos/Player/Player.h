@@ -10,6 +10,7 @@
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>
 #include "PostEffects/PostEffect.h"
+#include "Command/Command.h"
 
 class Player : public Collider {
 public:
@@ -95,6 +96,9 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
 
+	//こうげきフラグ
+	bool SetAttack(bool flag,int i) { return attackType_[i] = flag; }
+	bool IsRoot() { return root_; }
 	bool IsAttack() { return workAttack_.isAttack; }
 	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }
@@ -179,6 +183,7 @@ private: // メンバ変数
 
 	WorkAttack workAttack_;
 
+	bool root_;
 	bool dash_;
 	bool combo_;
 	bool noAttack_;
@@ -197,6 +202,7 @@ private: // メンバ変数
 
 	bool isOver_;
 	float threshold_;
+	//アルファ値
 	float a;
 
 	//体力
@@ -214,4 +220,8 @@ private: // メンバ変数
 	bool healerDead_;
 	bool renjuDead_;
 	int revivalCount_;
+
+	//コマンドこうげきを受け取るよう
+	//攻撃フラグ
+	std::vector<bool> attackType_;
 };
