@@ -36,6 +36,10 @@ float32_t4 WeightCalc(float32_t2 texCoord)
         for (float32_t px = -sigma * 2; px <= sigma * 2; px += stepWidth)
         {
             float32_t2 pickUV = texCoord + float32_t2(px, py);
+            if (pickUV.x < 0 || pickUV.x > 1 || pickUV.y < 0 || pickUV.y > 1)
+            {
+                continue;
+            }
             float32_t weight = Gaussian(texCoord, pickUV, sigma);
             float32_t4 color = gTexture.Sample(gSampler, pickUV);
             col += color * weight;
@@ -52,7 +56,7 @@ float32_t4 WeightCalc(float32_t2 texCoord)
 float32_t4 ExtractLuminance(float32_t4 col)
 {
     float32_t grayScale = col.r * 0.299 + col.g * 0.587f + col.b * 0.114;
-    float32_t extract = smoothstep(0.6, 0.9, grayScale);
+    float32_t extract = smoothstep(gBloom.bloomThreshold,gBloom.bloomThreshold+0.3f, grayScale);
     return col * extract;
 }
 
@@ -71,7 +75,7 @@ PixelShaderOutput main(VertexShaderOutput input)
         float32_t4 normalColor = gTexture.Sample(gSampler, input.texcoord.xy);
     
          // 元の色と高輝度部分を合成する
-        float32_t4 LuminanceGaussian = LuminanceColor + normalColor;
+        float32_t4 LuminanceGaussian = LuminanceColor * gBloom.lightStrength + normalColor;
         
         output.color = LuminanceGaussian;
         

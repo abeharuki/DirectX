@@ -59,7 +59,7 @@ void Bloom::CreateResource() {
 	bloomData->stepWidth = 0.001f;
 	bloomData->sigma = 0.005f;
 	bloomData->lightStrength = 1.0;
-	bloomData->bloomThreshold = 0.5f;
+	bloomData->bloomThreshold = 0.6f;
 }
 
 void Bloom::sPipeline() {
