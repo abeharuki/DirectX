@@ -31,6 +31,13 @@ struct Random
     int32_t isEnble;
 };
 
+struct HSVMaterial
+{
+    float32_t hue;
+    float32_t saturation;
+    float32_t value;
+};
+
 struct PostEffectStyle
 {
     Grayscale grayscale;
@@ -38,6 +45,7 @@ struct PostEffectStyle
     Gaussian gaussian;
     RadialBlur radialBlur;
     Random random;
+    HSVMaterial material;
 };
 
 Texture2D<float32_t4> gTexture : register(t0);
@@ -68,6 +76,98 @@ float rand2dTo1d(float2 value)
     random = frac(sin(random) * 143758.5453);
     return random;
 }
+
+float32_t3 RGBToHSV(float32_t3 rgb){
+    float max = rgb.r > rgb.g ? rgb.r : rgb.g;
+    max = max > rgb.b ? max : rgb.b;
+    float min = rgb.r < rgb.g ? rgb.r : rgb.g;
+    min = min < rgb.b ? min : rgb.b;
+    float h = max - min;
+    if (h > 0.0f)
+    {
+        if (max == rgb.r)
+        {
+            h = (rgb.g - rgb.b) / h;
+            if (h < 0.0f)
+            {
+                h += 6.0f;
+            }
+        }
+        else if (max == rgb.g)
+        {
+            h = 2.0f + (rgb.b - rgb.r) / h;
+        }
+        else
+        {
+            h = 4.0f + (rgb.r - rgb.g) / h;
+        }
+    }
+    
+    h /= 6.0f;
+    float s = (max - min);
+    if (max != 0.0f)
+        s /= max;
+    float v = max;
+    
+    float32_t3 hsv = float32_t3(h,s,v);
+    return hsv;
+}
+
+float32_t3 HSVToRGB(float32_t3 hsv){
+    float r = hsv.z;
+    float g = hsv.z;
+    float b = hsv.z;
+    if (hsv.y > 0.0f)
+    {
+        hsv.x *= 6.0f;
+        int i = (int) hsv.x;
+        float f = hsv.x - (float) i;
+        switch (i)
+        {
+            default:
+            case 0:
+                g *= 1 - hsv.y * (1 - f);
+                b *= 1 - hsv.y;
+                break;
+            case 1:
+                r *= 1 - hsv.y * f;
+                b *= 1 - hsv.y;
+                break;
+            case 2:
+                r *= 1 - hsv.y;
+                b *= 1 - hsv.y * (1 - f);
+                break;
+            case 3:
+                r *= 1 - hsv.y;
+                g *= 1 - hsv.y * f;
+                break;
+            case 4:
+                r *= 1 - hsv.y * (1 - f);
+                g *= 1 - hsv.y;
+                break;
+            case 5:
+                g *= 1 - hsv.y;
+                b *= 1 - hsv.y * f;
+                break;
+        }
+    }
+    
+    float32_t3 rgb = float32_t3(r,g,b);
+    return rgb;
+    
+}
+
+float32_t WrapValue(float32_t value,float32_t minRange,float32_t maxRange)
+{
+    float32_t range = maxRange - minRange;
+    float32_t modValue = fmod(value - minRange, range);
+    if (modValue < 0)
+    {
+        modValue *= range;
+    }
+    return minRange + modValue;
+}
+
 
 static const float32_t2 kIndex3x3[3][3] =
 {
@@ -195,6 +295,18 @@ PixelShaderOutput main(VertexShaderOutput input)
 
     }
   
+    float32_t3 hsv = RGBToHSV(output.color.rgb);
+    hsv.x += gPostEffectStyle.material.hue;
+    hsv.y += gPostEffectStyle.material.saturation;
+    hsv.z += gPostEffectStyle.material.value;
     
-        return output;
+    hsv.x = WrapValue(hsv.x, 0.0f, 1.0f);
+    hsv.y = saturate(hsv.y);
+    hsv.z = saturate(hsv.z);
+    
+    float32_t3 rgb = HSVToRGB(hsv);
+    
+    output.color.rgb = rgb;
+    
+    return output;
 }

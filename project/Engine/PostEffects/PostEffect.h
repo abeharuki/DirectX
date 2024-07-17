@@ -48,6 +48,14 @@ struct RadialBlur {
 struct Random {
 	float time;
 	int32_t isEnble;
+	float padding[2];
+};
+
+struct HSVMaterial
+{
+	float hue;
+	float saturation;
+	float value;
 };
 
 struct PostEffects {
@@ -56,6 +64,7 @@ struct PostEffects {
 	Gaussian gaussian;
 	RadialBlur radialBlur;
 	Random random;
+	HSVMaterial material;
 };
 
 
@@ -109,6 +118,12 @@ public:
 	void BloomLightStrength(float num) { bloom_->lightStrength(num); }
 	void BloomTreshold(float num) { bloom_->Threshold(num); }
 	void isBloom(bool flag) { bloom_->isBloom(flag); }
+	//HSVフィルター
+	void SetHsv(HSVMaterial hsv) { postEffectData->material = hsv; }
+	void SetHsv(Vector3 hsv) { postEffectData->material.hue = hsv.x;  postEffectData->material.saturation = hsv.y;  postEffectData->material.value = hsv.y; }
+	void SetHsvHue(float num){ postEffectData->material.hue = num; }
+	void SetHsvSaturation(float num) { postEffectData->material.saturation = num; }
+	void SetHsvValue(float num) { postEffectData->material.value = num; }
 private:
 	PostEffect() = default;
 	~PostEffect() = default;

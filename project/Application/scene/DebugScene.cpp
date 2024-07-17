@@ -138,7 +138,7 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->BloomLightStrength(bloom_.lightStrength);
 	PostEffect::GetInstance()->BloomTreshold(bloom_.bloomThreshold);
 	PostEffect::GetInstance()->isBloom(bloom_.isEnble);
-
+	PostEffect::GetInstance()->SetHsv(hsv_);
 	CheckAllCollision();
 	
 
@@ -246,6 +246,13 @@ void DebugScene::Update() {
 			ImGui::DragFloat("sigma", &bloom_.sigma, 0.001f,0.001f, 0.05f);
 			ImGui::DragFloat("light", &bloom_.lightStrength, 0.1f,1.0f,5.0f);
 			ImGui::DragFloat("threshold", &bloom_.bloomThreshold, 0.1f,0.0, 1.0f);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("HSV")) {
+			ImGui::SliderFloat("Hue", &hsv_.hue, -1.0f, 1.0f);
+			ImGui::SliderFloat("Saturation", &hsv_.saturation, -1.0f, 1.0f);
+			ImGui::SliderFloat("Value", &hsv_.value,-1.0f,1.0f);
 			ImGui::TreePop();
 		}
 
