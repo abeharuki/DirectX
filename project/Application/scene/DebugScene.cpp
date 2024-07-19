@@ -14,7 +14,7 @@ void DebugScene::Initialize() {
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
-	worldTransformAnimation_.translate = { 2.3f,2.0f,-11.0f };
+	worldTransformAnimation_.translate = { 0.0f,3.0f,-10.0f };
 	worldTransformSphere_.Initialize();
 	worldTransformSphere_.translate.y = 1.6f;
 	worldTransformSphere_.rotate.y = -1.55f;
@@ -85,10 +85,10 @@ void DebugScene::Update() {
 	debugPlayer_->Update();
 	//CameraMove();
 	followCamera_->Update();
-	//viewProjection_.matView = followCamera_->GetViewProjection().matView;
-	//viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-	//viewProjection_.TransferMatrix();
-	viewProjection_ = loader_->GetCamera();
+	viewProjection_.matView = followCamera_->GetViewProjection().matView;
+	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+	viewProjection_.TransferMatrix();
+	//viewProjection_ = loader_->GetCamera();
 	debugPlayer_->SetViewProjection(&viewProjection_);
 
 	worldTransformSkybox_.UpdateMatrix();

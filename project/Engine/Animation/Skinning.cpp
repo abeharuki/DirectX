@@ -7,37 +7,19 @@ namespace SkinningPace {
 	SkinCluster CreateSkinCuster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize) {
 		SkinCluster skinCluster;
 		//palette用のResourceを確保
-		skinCluster.paletteResource = Mesh::CreateBufferResoure(device.Get(), sizeof(WellForGPU) * skeleton.joints.size());
-		WellForGPU* mappedPalette = nullptr;
-		skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
-		skinCluster.mappedPalette = { mappedPalette,skeleton.joints.size() };
-		DescriptorHandle srvHandle_ = {};
-		srvHandle_ = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		skinCluster.paletteSrvHandle.first = srvHandle_;//空いてるインデックスに入れるマネージャーがないので手動で入れてる
-		skinCluster.paletteSrvHandle.second = srvHandle_;//posteffectのアロケータを使えばできる気がする
-		
-		//palette用のsrvを作成
-		D3D12_SHADER_RESOURCE_VIEW_DESC paletteSrvDesc{};
-		paletteSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-		paletteSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		paletteSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-		paletteSrvDesc.Buffer.FirstElement = 0;
-		paletteSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-		paletteSrvDesc.Buffer.NumElements = UINT(skeleton.joints.size());
-		paletteSrvDesc.Buffer.StructureByteStride = sizeof(WellForGPU);
-		device->CreateShaderResourceView(skinCluster.paletteResource.Get(), &paletteSrvDesc, skinCluster.paletteSrvHandle.first);
+		skinCluster.paletteResource = std::make_unique<StructuredBuffer>();
+		skinCluster.paletteResource->Create(uint32_t(skeleton.joints.size()), sizeof(WellForGPU));
+		WellForGPU* mappedPalette = static_cast<WellForGPU*>(skinCluster.paletteResource->Map());
+		skinCluster.mappedPalette = { mappedPalette,skeleton.joints.size() };//spanを使ってアクセスするようにする
+
+
 
 		//influence用のResource確保
-		skinCluster.influenceResource = Mesh::CreateBufferResoure(device.Get(), sizeof(VertexInfluence) * modelData.meshData.vertices.size());
-		VertexInfluence* mappedInfluence = nullptr;
-		skinCluster.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
-		std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData.meshData.vertices.size());
+		skinCluster.influenceResource = std::make_unique<StructuredBuffer>();
+		skinCluster.influenceResource->Create((uint32_t)modelData.meshData.vertices.size(), sizeof(VertexInfluence));
+		VertexInfluence* mappedInfluence = static_cast<VertexInfluence*>(skinCluster.influenceResource->Map());
+		std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData.meshData.vertices.size());//0埋め。weightを0にしておく。
 		skinCluster.mappedInfluence = { mappedInfluence,modelData.meshData.vertices.size() };
-
-		//Influence用のVBV作成
-		skinCluster.influenceBufferView.BufferLocation = skinCluster.influenceResource->GetGPUVirtualAddress();
-		skinCluster.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.meshData.vertices.size());
-		skinCluster.influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
 
 		//InverceBindPoseMatrixの保存領域を作成
 		skinCluster.inverseBindPoseMatrixs.resize(skeleton.joints.size());

@@ -109,8 +109,8 @@ void TitleScene::Update() {
 		}
 
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B) && !isFadeIn_) {
-			rule_ = true;
-			isFadeOut_ = true;
+			//rule_ = true;
+			//isFadeOut_ = true;
 		}
 
 	}
@@ -120,8 +120,8 @@ void TitleScene::Update() {
 	}
 
 	if (Input::PushKey(DIK_H) && !isFadeIn_) {
-		rule_ = true;
-		isFadeOut_ = true;
+		//rule_ = true;
+		//isFadeOut_ = true;
 	}
 
 
@@ -219,7 +219,7 @@ void TitleScene::Fade() {
 		else {
 			alpha_ = 1.0f;
 			if (rule_) {
-				SceneManager::GetInstance()->ChangeScene("TutorialScene");
+				//SceneManager::GetInstance()->ChangeScene("TutorialScene");
 			}
 			else {
 				SceneManager::GetInstance()->ChangeScene("GameScene");

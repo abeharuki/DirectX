@@ -6,12 +6,15 @@
 #include <wrl.h>
 #include "Math/math.h"
 #include "WinApp.h"
+#include <ColorBuffer.h>
+#include <RWStructuredBuffer.h>
+#include <StructuredBuffer.h>
 
 class Mesh
 {
 public:
 
-	void Initialize(const MeshData& meshData);
+	void Initialize(const ModelData& meshData);
 
 	void Update();
 
@@ -27,18 +30,14 @@ public:
 
 	const uint32_t GetMaterialIndex() const { return meshData_.materialIndex; };
 
+	
 	//バッファーの作成
 	//読み込み用リソースの作成
 	static ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes);
-	//書き込み用リソースの作成
-	static ID3D12Resource* CreateUAVBufferResoure(ID3D12Device* device, size_t sizeInBytes);
 
 
-	//DescriptorHandleの作成
-	//const DescriptorHandle& CreateResourceView(ID3D12Resource* resource, size_t vertexSize, size_t sizeInBytes);
-
-	//UAVViewの作成
-	//const DescriptorHandle& CreateUAVView(ID3D12Resource* resource ,size_t vertexSize ,size_t sizeInBytes);
+	RWStructuredBuffer* GetOutputVertex() const { return outputVertices_.get(); };
+	StructuredBuffer* GetInputVertex() const { return inputVertices_.get(); };
 
 
 private:
@@ -47,6 +46,7 @@ private:
 	void CreateIndexBuffer();
 
 private:
+	ModelData modelData_{};
 	MeshData meshData_{};
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
@@ -55,6 +55,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 
+	std::unique_ptr<RWStructuredBuffer> outputVertices_ = nullptr;
+	std::unique_ptr<StructuredBuffer> inputVertices_ = nullptr;
 	
 };
 

@@ -144,6 +144,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 				if (objectData.collider.typeName == "BOX") {
 					AABB aabb = { {-objectData.collider.size.x / 2.0f,-objectData.collider.size.y / 2.0f,-objectData.collider.size.z / 2.0f},{objectData.collider.size.x / 2.0f,objectData.collider.size.y / 2.0f,objectData.collider.size.z / 2.0f} };
 					ColliderManager* colliderManager = new ColliderManager();
+					//BOXの当たり判定があるオブジェクトがあるならここに書く
 					if (objectData.filename == "ICO") {
 						colliderManager->SetAABB(aabb);
 						colliderManager->SetCollisionAttribute(kCollisionAttributeLoderICO);
@@ -164,6 +165,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 
 				if (objectData.collider.typeName == "SPHERE") {
 					ColliderManager* colliderManager = new ColliderManager();
+					//SPHEREの当たり判定があるオブジェクトがあるならここに書く
 					if (objectData.filename == "BOX") {
 						colliderManager->SetRadius(objectData.collider.radius);
 						colliderManager->SetCollisionAttribute(kCollisionAttributeLoderICO);

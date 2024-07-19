@@ -17,6 +17,8 @@ public:
 
 	void SetResourceState(D3D12_RESOURCE_STATES newState) { currentState_ = newState; };
 
+	//void SetResource(ID3D12Resource* resource) { resource_ = resource; }
+
 protected:
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
 

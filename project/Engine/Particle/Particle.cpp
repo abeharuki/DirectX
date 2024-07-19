@@ -130,7 +130,7 @@ void Particle::CreateVertexResource() {
 	}
 
 	meshData_ = std::make_unique<Mesh>();
-	meshData_->Initialize(modelData.meshData);
+	meshData_->Initialize(modelData);
 
 	// マテリアル
 	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(MaterialD));

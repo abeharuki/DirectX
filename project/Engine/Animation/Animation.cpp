@@ -92,7 +92,6 @@ Quaternion Animations::CalculateValue(const std::vector<KeyframeQuaternion>& key
 	return (*keyframes.rbegin()).value;
 }
 
-
 void Animations::Initialize(const std::string& directorPath, const std::string& filename, const std::string& motionPath) {
 	LoadAnimation(directorPath, motionPath);
 	LoadTexture(directorPath + "/" + filename);
@@ -284,23 +283,27 @@ void Animations::Update(const uint32_t animationNumber) {
 }
 
 void Animations::ComputeParameter() {
-	Engine::GetList()->SetComputeRootSignature(CSRootSignature_.Get());
-	Engine::GetList()->SetPipelineState(CSPipelineState_.Get());
-	Engine::GetList()->SetComputeRootDescriptorTable(0,skinCluster.paletteSrvHandle.second);
-	Engine::GetList()->SetComputeRootDescriptorTable(1,inputVertex);
-	Engine::GetList()->SetComputeRootDescriptorTable(2,influence);
-	Engine::GetList()->SetComputeRootDescriptorTable(3,outputVertex);
-	Engine::GetList()->SetComputeRootConstantBufferView(4, skinningInformation->GetGPUVirtualAddress());
-	Engine::GetList()->Dispatch(UINT(modelData.meshData.vertices.size() + 1023) / 1024, 1, 1);
-
-
+	if (!modelData.skinClusterData.empty()) {
+		//バリアの設定
+		Engine::GetInstance()->TransitionResource(*meshData_->GetOutputVertex(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+		Engine::GetList()->SetComputeRootSignature(CSRootSignature_.Get());
+		Engine::GetList()->SetPipelineState(CSPipelineState_.Get());
+		Engine::GetList()->SetComputeRootDescriptorTable(0, skinCluster.paletteResource.get()->GetSRVHandle());
+		Engine::GetList()->SetComputeRootDescriptorTable(1, meshData_->GetInputVertex()->GetSRVHandle());
+		Engine::GetList()->SetComputeRootDescriptorTable(2, skinCluster.influenceResource.get()->GetSRVHandle());
+		Engine::GetList()->SetComputeRootDescriptorTable(3, meshData_->GetOutputVertex()->GetUAVHandle());
+		Engine::GetList()->SetComputeRootConstantBufferView(4, skinningInformation->GetGPUVirtualAddress());
+		Engine::GetList()->Dispatch(UINT(modelData.meshData.vertices.size() + 1023) / 1024, 1, 1);
+		//バリアの変更
+		Engine::GetInstance()->TransitionResource(*meshData_->GetOutputVertex(), D3D12_RESOURCE_STATE_GENERIC_READ);
+	}
 }
 
 void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag) {
 	ApplyAnimation(modelData.rootNode.name, animationNumber_);
 	SkeletonUpdate();
 	SkinningUpdate();
-	//ComputeParameter();
+	ComputeParameter();
 
 	if (modelData.skinClusterData.empty()) {
 		worldTransform.matWorld_ = localMatrix * worldTransform.matWorld_;
@@ -317,11 +320,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	Engine::GetList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
-		meshData_->GetVertexBufferView(),
-		skinCluster.influenceBufferView
-	};
-	Engine::GetList()->IASetVertexBuffers(0, 2, vbvs);
+	Engine::GetList()->IASetVertexBuffers(0, 1, &meshData_.get()->GetVertexBufferView());
 	Engine::GetList()->IASetIndexBuffer(&meshData_->GetIndexBufferView());
 
 
@@ -331,9 +330,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	if (lightData->environment_.isEnble_) {
 		Engine::GetList()->SetGraphicsRootDescriptorTable(6, textureManager_->GetGPUHandle(Skybox::textureNum));
 	}
-	if (modelData.rootNode.children.size() != 0) {
-		Engine::GetList()->SetGraphicsRootDescriptorTable(8, skinCluster.paletteSrvHandle.second);
-	}
+	
 	
 
 	// wvp用のCBufferの場所を設定
@@ -358,6 +355,7 @@ void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& view
 	
 }
 
+
 Animations* Animations::Create(const std::string& directorPath, const std::string& filename, const std::string& motionPath)
 {
 	Animations* anime = new Animations;
@@ -376,6 +374,7 @@ Animations* Animations::Create(const std::string& directorPath,const std::string
 void Animations::sPipeline() {
 
 	if (modelData.rootNode.children.size() != 0) {
+
 		//スキニングアニメーションなら
 		vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateAnimationVSShader();
 		pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
@@ -403,7 +402,7 @@ void Animations::sPipeline() {
 void Animations::CreateResource() {
 	// モデルの読み込み
 	meshData_ = std::make_unique<Mesh>();
-	meshData_->Initialize(modelData.meshData);
+	meshData_->Initialize(modelData);
 	//マテリアル
 	materialData_ = std::make_unique<Material>();
 	materialData_->Initialize();
@@ -427,59 +426,18 @@ void Animations::CreateResource() {
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
 	cameraResorce_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData));
 
-	/*/UAVResourceの作成
-	uavResource_ = Mesh::CreateUAVBufferResoure(Engine::GetDevice().Get(), sizeof(VertexData) *meshData_->GetVerticesSize());
-	//uavResource_->Map(0, nullptr, reinterpret_cast<void**>(&uavData_));
-
+	
 	//スキニング
-	skinningInformation = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(SkinningInformation));
-	skinningInformation->Map(0, nullptr, reinterpret_cast<void**>(&skinningData_));
-	skinningData_->numVertices = uint32_t(modelData.meshData.vertices.size());
+	skinningInformation = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t));
+	skinningInformation->Map(0, nullptr, reinterpret_cast<void**>(&skinningData));
+	skinningData->numVertices = uint32_t(modelData.meshData.vertices.size());
+	skinningInformation->Unmap(0, nullptr);
 
-	//SRVの作成
-	D3D12_SHADER_RESOURCE_VIEW_DESC inputDesc{};
-	inputDesc.Format = DXGI_FORMAT_UNKNOWN;
-	inputDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	inputDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	inputDesc.Buffer.FirstElement = 0;
-	inputDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	inputDesc.Buffer.NumElements = UINT(meshData_->GetVerticesSize());
-	inputDesc.Buffer.StructureByteStride = sizeof(VertexData);
+	
 
-	inputVertex = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	Engine::GetDevice()->CreateShaderResourceView(meshData_->GetVertexResource().Get(), &inputDesc, inputVertex);
+	
 
-	//SRVの作成
-	D3D12_SHADER_RESOURCE_VIEW_DESC influenceDesc{};
-	influenceDesc.Format = DXGI_FORMAT_UNKNOWN;
-	influenceDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	influenceDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	influenceDesc.Buffer.FirstElement = 0;
-	influenceDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	influenceDesc.Buffer.NumElements = UINT(skinCluster.mappedInfluence.size());
-	influenceDesc.Buffer.StructureByteStride = sizeof(VertexInfluence);
 
-	influence = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	Engine::GetDevice()->CreateShaderResourceView(meshData_->GetVertexResource().Get(), &influenceDesc, influence);
-
-	//srv作成
-	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
-	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
-	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-	uavDesc.Buffer.FirstElement = 0;
-	uavDesc.Buffer.NumElements = UINT(meshData_->GetVerticesSize());//頂点数
-	uavDesc.Buffer.CounterOffsetInBytes = 0;
-	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
-	uavDesc.Buffer.StructureByteStride = sizeof(VertexData);
-
-	outputVertex = DirectXCommon::GetInstance()->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	// UAVビューを作成
-	Engine::GetDevice()->CreateUnorderedAccessView(uavResource_.Get(), nullptr, &uavDesc, outputVertex);
-	*/
-	//inputVertex = Mesh::CreateResourceView(meshData_->GetVertexResource().Get(),meshData_->GetVerticesSize(),sizeof(VertexData));
-	//influence = Mesh::CreateResourceView(skinCluster.influenceResource.Get(), skinCluster.mappedInfluence.size(), sizeof(VertexInfluence));
-	//outputVertex = Mesh::CreateUAVView(uavResource_.Get(), meshData_->GetVerticesSize(), sizeof(VertexData));
 };
 
 

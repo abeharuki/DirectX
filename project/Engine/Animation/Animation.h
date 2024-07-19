@@ -150,16 +150,7 @@ private:
 
 	//スキニングの情報
 	Microsoft::WRL::ComPtr<ID3D12Resource> skinningInformation;
-	std::unique_ptr<SkinningInformation> skinningData_;
-
-	//DescriptorHandle
-	DescriptorHandle inputVertex;
-	DescriptorHandle influence;
-	DescriptorHandle outputVertex;
-
-	//shader書き込み用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> uavResource_;
-	VertexData uavData_;
+	SkinningInformation* skinningData;
 
 	// ライティング
 	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
@@ -211,6 +202,9 @@ private:
 	bool debug_ = false;
 	bool isLoop_ = true;
 	Matrix4x4 localMatrix;
+
+	std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
+
 private:
 	std::vector<Animation> LoadAnimationFile(const std::string& directorPath, const std::string& filename);
 
@@ -226,6 +220,7 @@ private:
 	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
 
+	
 };
 
 	

@@ -27,18 +27,19 @@ StructuredBuffer<VertexInfluence> gInfluences : register(t2);
 //Skinning計算後の頂点データ
 RWStructuredBuffer<Vertex> gOutputVertices : register(u0);
 //Skinningに関するちょっとつぃた情報
-ConstantBuffer<SkinningInformation> gSkinnningInformation : register(b0);
+ConstantBuffer<SkinningInformation> gSkinningInformation : register(b0);
 
 
 [numthreads(1024, 1, 1)]
-void main( uint3 DTid : SV_DispatchThreadID ){
+void main(uint32_t3 DTid : SV_DispatchThreadID ){
     uint32_t vertexIndex = DTid.x;
-    if (vertexIndex < gSkinnningInformation.numVertices){
+    if (vertexIndex < gSkinningInformation.numVertices){
         //Skinning計算
         //必要なデータをStructuredBufferか受け取ってくる
         //SkinnningObj3d.Vsでは入力頂点として受け取った
         Vertex input = gInputVertices[vertexIndex];
         VertexInfluence influence = gInfluences[vertexIndex];
+      
         
         //skinnning後の頂点計算
         Vertex skinned;

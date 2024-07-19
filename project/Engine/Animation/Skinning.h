@@ -22,12 +22,10 @@ struct WellForGPU {
 
 struct SkinCluster {
 	std::vector<Matrix4x4>inverseBindPoseMatrixs;
-	Microsoft::WRL::ComPtr<ID3D12Resource> influenceResource;
-	D3D12_VERTEX_BUFFER_VIEW influenceBufferView;
+	std::unique_ptr<StructuredBuffer> influenceResource;
 	std::span<VertexInfluence>mappedInfluence;
-	Microsoft::WRL::ComPtr<ID3D12Resource> paletteResource;
+	std::unique_ptr<StructuredBuffer> paletteResource;
 	std::span<WellForGPU>mappedPalette;
-	std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE>paletteSrvHandle;
 
 };
 
