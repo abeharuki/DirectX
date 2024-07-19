@@ -28,19 +28,7 @@ void Mesh::Update()
 
 void Mesh::CreateVertexBuffer()
 {
-	//InputVerticeBufferの作成
-	inputVertices_ = std::make_unique<StructuredBuffer>();
-	inputVertices_->Create(  (uint32_t)meshData_.vertices.size(), sizeof(VertexData));
-	VertexData* inputVertexData = static_cast<VertexData*>(inputVertices_->Map());
-	std::memcpy(inputVertexData, meshData_.vertices.data(), sizeof(VertexData) * meshData_.vertices.size());
-	inputVertices_->Unmap();
-
-
-	//UAVResourceの作成
-	outputVertices_ = std::make_unique<RWStructuredBuffer>();
-	outputVertices_->Create((uint32_t)meshData_.vertices.size(),sizeof(VertexData));
-
-
+	
 	
 	// 頂点バッファビューを作成する
 	if (modelData_.skinClusterData.empty()) {
@@ -56,7 +44,17 @@ void Mesh::CreateVertexBuffer()
 
 	}
 	else {
+		//InputVerticeBufferの作成
+		inputVertices_ = std::make_unique<StructuredBuffer>();
+		inputVertices_->Create((uint32_t)meshData_.vertices.size(), sizeof(VertexData));
+		VertexData* inputVertexData = static_cast<VertexData*>(inputVertices_->Map());
+		std::memcpy(inputVertexData, meshData_.vertices.data(), sizeof(VertexData) * meshData_.vertices.size());
+		inputVertices_->Unmap();
 
+
+		//UAVResourceの作成
+		outputVertices_ = std::make_unique<RWStructuredBuffer>();
+		outputVertices_->Create((uint32_t)meshData_.vertices.size(), sizeof(VertexData));
 		vertexBufferView.BufferLocation = outputVertices_->GetResource()->GetGPUVirtualAddress(); // リソースの先頭のアドレスから使う
 		vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * meshData_.vertices.size()); // 使用するリソースのサイズは頂点サイズ
 		vertexBufferView.StrideInBytes = sizeof(VertexData); // 1頂点あたりのサイズ
