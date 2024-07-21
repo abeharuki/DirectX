@@ -6,7 +6,6 @@
 #include "StringUtility.h"
 #include "TextureManeger.h"
 #include "ViewProjection.h"
-#include "WorldTransform.h"
 #include <DirectXTex.h>
 #include <d3d12.h>
 #include <d3dx12.h>
@@ -32,9 +31,7 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
 	BlendMode blendMode_ = BlendMode::kAdd;
-	//BlendMode blendMode_ = BlendMode::kNone;
 	
-
 public:
 	/// <summary>
 	/// シングルトンインスタンスの取得
@@ -48,23 +45,9 @@ public:
 	// スタート
 	void Update();
 
-	void sPipeline();
-
-	/// <summary>
-	/// 3Dモデル生成
-	/// </summary>
-	/// <returns></returns>
-	void CreateVertexResource();
-
-	void CreateInstanceSRV();
-
 	void Draw(const ViewProjection& viewProjection);
 
 	static Particle*Create(const std::string& filename, Emitter emitter);
-
-	Particle_ MakeNewParticle(std::mt19937& randomEngine, const Transform transform);
-
-	std::list<Particle_> Emission(const Emitter& emitter, std::mt19937& randomEngine);
 
 	// パーティクルループ
 	void StopParticles();
@@ -83,19 +66,31 @@ public:
 	//フィールドをセット
 	void SetFiled(AccelerationField accelerationField);
 
+	void SetTexture(const std::string& filename);
 	void SetModel(const std::string& filename, std::string& path);
+private:
+
+	void UpdateBillboard(const ViewProjection& viewProjection);
+
+	void sPipeline();
+
+	void CreateVertexResource();
+
+	void CreateInstanceSRV();
+
+	void LoadTexture(const std::string& filename);
+
+	Particle_ MakeNewParticle(std::mt19937& randomEngine, const Transform transform);
+
+	std::list<Particle_> Emission(const Emitter& emitter, std::mt19937& randomEngine);
 
 private:
-	
-	//Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
+
 
 	// WVP用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResouce_;
 	// マテリアル用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
-
-	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandelCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandelGPU;
 
 	// データを書き込む
 	ParticleForGPU* instancingData;
@@ -103,7 +98,6 @@ private:
 	MaterialD* materialData = nullptr;
 	std::unique_ptr<Mesh> meshData_;
 
-	//TextureManager* textureManager_;
 	uint32_t texture_;
 	uint32_t instancing_;
 
@@ -124,9 +118,5 @@ private:
 	std::random_device seedGenerator;
 	uint32_t descriptorSizeSRV;
 
-private:
-	// DirectX::ScratchImage LoadTexture(const std::string& filePath);
-	void LoadTexture(const std::string& filename);
 
-	
 };

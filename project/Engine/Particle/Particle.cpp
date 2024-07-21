@@ -6,8 +6,8 @@
 
 bool IsCollision(const AABB& aabb, const Vector3& point) {
 	if ((aabb.min.x <= point.x && point.x <= aabb.max.x) &&
-	    (aabb.min.y <= point.y && point.y <= aabb.max.y) &&
-	    (aabb.min.z <= point.z && point.z <= aabb.max.z)) {
+		(aabb.min.y <= point.y && point.y <= aabb.max.y) &&
+		(aabb.min.z <= point.z && point.z <= aabb.max.z)) {
 		return true;
 	}
 
@@ -17,21 +17,13 @@ bool IsCollision(const AABB& aabb, const Vector3& point) {
 void Particle::Initialize(const std::string& filename, Emitter emitter) {
 	emitter_ = emitter;
 	instanceCount = emitter_.count;
-	accelerationField_.acceleration = {0.0f, 0.0f, 0.0f};
+	accelerationField_.acceleration = { 0.0f, 0.0f, 0.0f };
 	LoadTexture(filename);
 	CreateVertexResource();
 	sPipeline();
 	CreateInstanceSRV();
 }
 
-void Particle::sPipeline() {
-
-	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateParticleVSShader();
-	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreateParticlePSShader();
-
-	rootSignature_ = GraphicsPipeline::GetInstance()->CreateParticleRootSignature();
-	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
-};
 
 void Particle::Update() { particle = true; }
 
@@ -56,8 +48,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 		}
 	}
 
-	for (std::list<Particle_>::iterator particleIterator = particles.begin();
-	     particleIterator != particles.end();) {
+	for (std::list<Particle_>::iterator particleIterator = particles.begin();particleIterator != particles.end();) {
 
 		if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
 			particleIterator = particles.erase(particleIterator);
@@ -70,18 +61,17 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 		(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
 		(*particleIterator).currentTime += kDeltaTime;
+		float alph = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
 
 		if (numInstance < instanceCount) {
 			Matrix4x4 worldMatrix =
-			    Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
-			    Math::MakeTranslateMatrix((*particleIterator).transform.translate);
+				Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
+				Math::MakeTranslateMatrix((*particleIterator).transform.translate);
 
 			instancingData[numInstance].World = worldMatrix;
-
-			float alph = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
 			instancingData[numInstance].color = (*particleIterator).color;
 			instancingData[numInstance].color.w = alph;
-			numInstance++;
+			++numInstance;
 		}
 
 		++particleIterator;
@@ -97,28 +87,59 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetParticleGPUHandle(instancing_));
-	//Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandelGPU);
-
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
-	    0, materialResorce_->GetGPUVirtualAddress());
+		0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(
-	    4, viewProjection.constBuff_->GetGPUVirtualAddress());
+		4, viewProjection.constBuff_->GetGPUVirtualAddress());
 
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
-	
-	
+
+
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), numInstance, 0, 0);
 	numInstance = 0;
 }
 
+
+
+void Particle::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
+
+void Particle::SetColor(Vector4 color) {
+	color_ = color;
+	isColor = true;
+}
+
+void Particle::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+
+void Particle::SetFiled(AccelerationField accelerationField) {
+	accelerationField_ = accelerationField;
+}
+
+void Particle::SetTexture(const std::string& filename) {
+	TextureManager::GetInstance()->Load(filename);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
+}
+
+void Particle::SetModel(const std::string& filename, std::string& path) {
+	modelData = ModelManager::LoadObjFile("resources/" + filename + path);
+	if (modelData.material.textureFilePath != "") {
+		TextureManager::GetInstance()->Load("resources/" + filename + modelData.material.textureFilePath);
+		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/" + filename + modelData.material.textureFilePath);
+	}
+}
+
+Particle* Particle::Create(const std::string& filename, Emitter emitter) {
+	Particle* model = new Particle;
+	model->Initialize(filename, emitter);
+	return model;
+}
+
 // 頂点データの設定
 void Particle::CreateVertexResource() {
-	instancingResouce_ = Mesh::CreateBufferResoure(
-	    Engine::GetDevice().Get(), sizeof(ParticleForGPU) * instanceCount);
+	instancingResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(ParticleForGPU) * instanceCount);
 	// データを書き込む
 	instancingData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -146,78 +167,33 @@ void Particle::CreateVertexResource() {
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 };
+void Particle::CreateInstanceSRV() {
 
-void Particle::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
-
-void Particle::SetColor(Vector4 color) {
-	color_ = color;
-	isColor = true;
-}
-
-void Particle::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
-
-void Particle::SetFiled(AccelerationField accelerationField) {
-	accelerationField_ = accelerationField;
-}
-
-void Particle::SetModel(const std::string& filename, std::string& path){
-	modelData = ModelManager::LoadObjFile("resources/" + filename + path);
-	if (modelData.material.textureFilePath != "") {
-		TextureManager::GetInstance()->Load("resources/" + filename + modelData.material.textureFilePath);
-		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/" + filename + modelData.material.textureFilePath);
-	}
-}
-
-Particle* Particle::Create(const std::string& filename, Emitter emitter) {
-	Particle* model = new Particle;
-	model->Initialize(filename, emitter);
-	return model;
+	instancing_ = TextureManager::GetInstance()->ParticleLoad(instancingResouce_.Get(), instanceCount);
 }
 
 void Particle::LoadTexture(const std::string& filename) {
-	modelData = ModelManager::LoadObjFile("resources/plane.obj");
+	modelData = ModelManager::LoadObjFile("resources/particle/plane.obj");
 	TextureManager::GetInstance()->Load(filename);
-	//textureManager_->Initialize();
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
 
 }
 
-void Particle::CreateInstanceSRV() {
-
-	instancing_ = TextureManager::GetInstance()->ParticleLoad(instancingResouce_.Get(), instanceCount);
-
-	//descriptorSizeSRV = Engine::GetDevice()->GetDescriptorHandleIncrementSize(
-	//    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	//D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
-	//instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	//instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	//instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	//instancingSrvDesc.Buffer.FirstElement = 0;
-	//instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	//instancingSrvDesc.Buffer.NumElements = instanceCount;
-	//instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-	//instancingSrvHandelCPU = Engine::GetCPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
-	//instancingSrvHandelGPU = Engine::GetGPUDescriptorHandle(Engine::GetSRV().Get(), descriptorSizeSRV, 2);
-	//Engine::GetDevice()->CreateShaderResourceView(instancingResouce_.Get(), &instancingSrvDesc, instancingSrvHandelCPU);
-
-}
 
 Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {
 	std::uniform_real_distribution<float> distribution(-1.0, 1.0);
+	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
 	std::uniform_real_distribution<float> distTime(1.0, 3.0);
 	Particle_ particle;
 	particle.transform.scale = transform.scale;
 	particle.transform.rotate = transform.rotate;
 	particle.transform.translate = transform.translate + distribution(randomEngine);
-	particle.velocity = {
-	    distribution(randomEngine), distribution(randomEngine), distribution(randomEngine)};
+	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
 	if (isColor) {
 		particle.color = color_;
-	} else {
-		particle.color = {
-		    distribution(randomEngine), distribution(randomEngine), distribution(randomEngine),
-		    1.0f};
+	}
+	else {
+		particle.color = {distColor(randomEngine), distColor(randomEngine), distColor(randomEngine),1.0f };
 	}
 	particle.lifeTime = distTime(randomEngine);
 	particle.currentTime = 0;
@@ -232,5 +208,14 @@ std::list<Particle_> Particle::Emission(const Emitter& emitter, std::mt19937& ra
 	return particles;
 }
 
+void Particle::UpdateBillboard(const ViewProjection& viewProjection){
+}
 
-	
+void Particle::sPipeline() {
+
+	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateParticleVSShader();
+	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreateParticlePSShader();
+
+	rootSignature_ = GraphicsPipeline::GetInstance()->CreateParticleRootSignature();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
+};

@@ -12,6 +12,7 @@
 #include <Sphere.h>
 #include "3d/LineBox.h"
 #include "CollisionManager/CollisionManager.h"
+#include <Particle.h>
 
 class DebugScene: public IScene {
 public:
@@ -46,6 +47,9 @@ private:
 	std::unique_ptr<Model> modelBunny_;
 	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Model> modelGround_;
+
+	std::unique_ptr<Particle> particle_;
+	Emitter emitter_;
 
 	// 球
 	std::unique_ptr<Sphere> sphere_;

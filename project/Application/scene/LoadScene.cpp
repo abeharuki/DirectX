@@ -6,7 +6,6 @@ void LoadScene::Initialize() {
 	backSprite_.reset(Sprite::Create("resources/Black.png"));
 	nowLoadingSprite_.reset(Sprite::Create("resources/load/NowLoading.png"));
 	loadSprite_.reset(Sprite::Create("resources/load/LoadSprite.png"));
-	nowLoadingSprite_->SetAnchorPoint({ 0.5f, 0.5f });
 	nowLoadingSprite_->SetSize(Vector2(1280.0f, 720.0f));
 	backSprite_->SetSize({ 1290.0f,720.0f });
 	loadSprite_->SetAnchorPoint({ 0.5f, 0.5f });

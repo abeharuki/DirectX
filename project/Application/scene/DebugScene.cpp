@@ -40,15 +40,27 @@ void DebugScene::Initialize() {
 	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
 
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
-	//loader_->SetTexture("skydome/sky.png");
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/human", "white.png", "walk.gltf"));
 
-	//modelBunny_.reset(Model::CreateModelFromObj("resources/bunny.obj", "resources/moon.png"));
-
 	debugPlayer_ = std::make_unique<DebugPlayer>();
 	debugPlayer_->Initialize();
+
+
+	emitter_ = {
+		.transform{
+			{1.0f,1.0f,1.0f},
+	        {0.0f,0.0f,0.0f},
+	        {0.0f,4.0f,0.0f},
+		},
+		.count{50},
+		.frequency{1.0f},
+		.frequencyTime{0},
+
+	};
+	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));
+	particle_->SetColor({ 1.0f,1.0f,1.0f });
 
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
@@ -81,6 +93,7 @@ void DebugScene::Update() {
 	animation_->Update(0);
 	//animation_->Environment(env_, true);
 
+	particle_->Update();
 	loader_->Update();
 	debugPlayer_->Update();
 	//CameraMove();
@@ -140,10 +153,10 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->isBloom(bloom_.isEnble);
 	PostEffect::GetInstance()->SetHsv(hsv_);
 	CheckAllCollision();
-	
+
 
 	ImGui::Begin("Setting");
-	
+
 	if (ImGui::TreeNode("Light")) {
 		ImGui::DragFloat3("Pos", &directionLight_.direction.x, 0.1f);
 		ImGui::DragFloat3("Color", &directionLight_.color.x, 0.1f);
@@ -175,7 +188,7 @@ void DebugScene::Update() {
 
 		ImGui::TreePop();
 	}
-	
+
 	//アニメーション
 	if (ImGui::TreeNode("Animation")) {
 
@@ -186,7 +199,7 @@ void DebugScene::Update() {
 		ImGui::SliderFloat("Thresholed", &animeDissolve_.threshold, 0.01f, 1.0f);
 		ImGui::TreePop();
 	}
-	
+
 	//Posteffect
 	if (ImGui::TreeNode("PostEffect")) {
 		// Grayscale
@@ -220,14 +233,14 @@ void DebugScene::Update() {
 		if (ImGui::TreeNode("RadialBlur")) {
 			ImGui::Checkbox("isRadialBlur", &postEffects[4]);
 			ImGui::DragFloat2("Center", &radialBlur_.center.x);
-			ImGui::SliderFloat("Width", &radialBlur_.blurWidth,0.01f,1.0f);
+			ImGui::SliderFloat("Width", &radialBlur_.blurWidth, 0.01f, 1.0f);
 			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode("Dissolve")) {
 			ImGui::Checkbox("isDissolve", &postEffects[5]);
 			ImGui::SliderFloat("Thresholed", &dissolve_.threshold, 0.01f, 1.0f);
-			ImGui::DragFloat3("EdgeColor", &dissolve_.edgeColor.x,0.0f,1.0f);
+			ImGui::DragFloat3("EdgeColor", &dissolve_.edgeColor.x, 0.0f, 1.0f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Random")) {
@@ -237,22 +250,22 @@ void DebugScene::Update() {
 
 		if (ImGui::TreeNode("Blur")) {
 			ImGui::Checkbox("Blur", &postEffects[7]);
-			ImGui::DragFloat2("wight , sigma", &gasianBlur_.x,0.001f,0.001f,0.05f);
+			ImGui::DragFloat2("wight , sigma", &gasianBlur_.x, 0.001f, 0.001f, 0.05f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Bloom")) {
 			ImGui::Checkbox("Bloom", &postEffects[8]);
-			ImGui::DragFloat("wight", &bloom_.stepWidth, 0.001f,0.001f, 0.05f);
-			ImGui::DragFloat("sigma", &bloom_.sigma, 0.001f,0.001f, 0.05f);
-			ImGui::DragFloat("light", &bloom_.lightStrength, 0.1f,1.0f,5.0f);
-			ImGui::DragFloat("threshold", &bloom_.bloomThreshold, 0.1f,0.0, 1.0f);
+			ImGui::DragFloat("wight", &bloom_.stepWidth, 0.001f, 0.001f, 0.05f);
+			ImGui::DragFloat("sigma", &bloom_.sigma, 0.001f, 0.001f, 0.05f);
+			ImGui::DragFloat("light", &bloom_.lightStrength, 0.1f, 1.0f, 5.0f);
+			ImGui::DragFloat("threshold", &bloom_.bloomThreshold, 0.1f, 0.0, 1.0f);
 			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode("HSV")) {
 			ImGui::SliderFloat("Hue", &hsv_.hue, -1.0f, 1.0f);
 			ImGui::SliderFloat("Saturation", &hsv_.saturation, -1.0f, 1.0f);
-			ImGui::SliderFloat("Value", &hsv_.value,-1.0f,1.0f);
+			ImGui::SliderFloat("Value", &hsv_.value, -1.0f, 1.0f);
 			ImGui::TreePop();
 		}
 
@@ -263,14 +276,17 @@ void DebugScene::Update() {
 }
 
 void DebugScene::Draw() {
-	
+
+	particle_->Draw(viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 
-	//linebox_->Draw(worldTransformLineBox_, viewProjection_, true);
 	debugPlayer_->Draw(viewProjection_);
+
+	
+
 	//ground_->Draw(viewProjection_, false);
 	//skybox_->Draw(worldTransform_, viewProjection_);
 }
@@ -325,7 +341,7 @@ void DebugScene::CameraMove() {
 			}
 		}
 
-		
+
 
 	}
 	else {
@@ -396,7 +412,7 @@ void DebugScene::CheckAllCollision() {
 	//コリジョン関係
 	collisionManager_->ClearColliderList();
 	collisionManager_->SetColliderList(debugPlayer_.get());
-	for (int i = 0; i < loader_->GetColliderSize(); ++i ) {
+	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
 		collisionManager_->SetColliderList(loader_->GetCollider(i));
 	}
 	collisionManager_->CheckAllCollisions();

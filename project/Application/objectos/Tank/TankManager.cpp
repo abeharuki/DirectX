@@ -1,6 +1,9 @@
 #include "TankManager.h"
 
 void TankManager::Initialize() {
+
+
+	
 	emitter_.transform = {
 		{0.8f, 0.8f, 0.8f},
 		{0.0f, 0.0f, 0.0f},
@@ -8,15 +11,14 @@ void TankManager::Initialize() {
 	};
 	emitter_.count = 10;
 	emitter_.frequencyTime = 0;
-
 	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));
 	particle_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 	particle_->SetSpeed(5.0f);
-	isParticle_ = false;
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
+	isParticle_ = false;
 	for (int i = 0; i < 3; i++) {
-		nHpModel_[i].reset(Model::CreateModelFromObj("resources/plane.obj", "resources/Player/life0.png"));
-		HpModel_[i].reset(Model::CreateModelFromObj("resources/plane.obj", "resources/Player/life1.png"));
+		nHpModel_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Player/life0.png"));
+		HpModel_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Player/life1.png"));
 	}
 
 	tank_ = std::make_unique<Tank>();
