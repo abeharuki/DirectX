@@ -1,9 +1,9 @@
 #pragma once
-#include "Particle/Particle.h"
+#include "Particle/ParticleSystem.h"
 
 class RenjuParticle {
 public:
-	void Initialize(Particle* particle, Vector3& position);
+	void Initialize(ParticleSystem* particle, Vector3& position);
 
 	void Update();
 
@@ -12,6 +12,6 @@ public:
 
 
 private:
-	Particle* particle_;
+	ParticleSystem* particle_;
 	Emitter emitter_{};
 };

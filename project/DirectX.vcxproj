@@ -181,7 +181,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Manager\Input\Input.cpp" />
     <ClCompile Include="Application\base\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\particle\Particle.cpp" />
+    <ClCompile Include="Engine\particle\ParticleSystem.cpp" />
     <ClCompile Include="Application\objectos\Player\Player.cpp" />
     <ClCompile Include="Engine\base\StringUtility.cpp" />
     <ClCompile Include="Engine\Manager\TextureManeger.cpp" />
@@ -369,7 +369,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\base\GraphisPipeline\GraphicsPipeline.h" />
     <ClInclude Include="Engine\Manager\ImGuiManager.h" />
     <ClInclude Include="Engine\Manager\Input\Input.h" />
-    <ClInclude Include="Engine\particle\Particle.h" />
+    <ClInclude Include="Engine\particle\ParticleSystem.h" />
     <ClInclude Include="Application\objectos\Player\Player.h" />
     <ClInclude Include="Engine\base\StringUtility.h" />
     <ClInclude Include="Engine\Manager\TextureManeger.h" />

@@ -1,7 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "Renju.h"
-#include <Particle.h>
+#include <ParticleSystem.h>
 #include "RenjuParticle.h"
 
 class RenjuManager {
@@ -43,7 +43,7 @@ private:
 	std::unique_ptr<Model> nHpModel_[3];
 	std::unique_ptr<Model> Model_;
 	std::unique_ptr<Renju> renju_;
-	std::unique_ptr<Particle> particle_;
+	std::unique_ptr<ParticleSystem> particle_;
 	Emitter emitter_{};
 
 	//

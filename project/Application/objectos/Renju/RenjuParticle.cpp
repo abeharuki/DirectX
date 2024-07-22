@@ -1,6 +1,6 @@
 #include "RenjuParticle.h"
 
-void RenjuParticle::Initialize(Particle* particle, Vector3& position) {
+void RenjuParticle::Initialize(ParticleSystem* particle, Vector3& position) {
 	particle_ = particle;
 	particle_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 	particle_->SetSpeed(5.0f);

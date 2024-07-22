@@ -165,7 +165,7 @@
     <ClCompile Include="Engine\Manager\TextureManeger.cpp">
       <Filter>ソース ファイル\Engine\Maneger</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\particle\Particle.cpp">
+    <ClCompile Include="Engine\particle\ParticleSystem.cpp">
       <Filter>ソース ファイル\Engine\particle</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\DirectXCommon.cpp">
@@ -417,7 +417,7 @@
     <ClInclude Include="Engine\Manager\Input\Input.h">
       <Filter>ヘッダー ファイル\Engine\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\particle\Particle.h">
+    <ClInclude Include="Engine\particle\ParticleSystem.h">
       <Filter>ヘッダー ファイル\Engine\particle</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\StringUtility.h">

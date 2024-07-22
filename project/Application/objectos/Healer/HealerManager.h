@@ -1,7 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "Healer.h"
-#include <Particle.h>
+#include <ParticleSystem.h>
 
 class HealerManager {
 public:
@@ -49,7 +49,7 @@ private:
 	std::unique_ptr<Healer> healer_;
 
 	//パーティクル
-	std::unique_ptr<Particle> particle_;
+	std::unique_ptr<ParticleSystem> particle_;
 	Emitter emitter_{};
 	bool isParticle_ = false;
 

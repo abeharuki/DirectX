@@ -9,7 +9,7 @@
 #include "Sprite.h"
 #include "Skydome.h"
 #include "Sphere.h"
-#include "Particle.h"
+#include "ParticleSystem.h"
 #include "Ground.h"
 #include <Player/PlayerManager.h>
 #include "camera/followCamera.h"

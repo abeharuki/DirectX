@@ -1,4 +1,4 @@
-#include "Particle.h"
+#include "ParticleSystem.h"
 #include "ImGuiManager.h"
 #include <cassert>
 #include <format>
@@ -14,24 +14,34 @@ bool IsCollision(const AABB& aabb, const Vector3& point) {
 	return false;
 }
 
-void Particle::Initialize(const std::string& filename, Emitter emitter) {
+void ParticleSystem::Initialize(const std::string& filename, Emitter emitter) {
 	emitter_ = emitter;
-	instanceCount = emitter_.count;
 	accelerationField_.acceleration = { 0.0f, 0.0f, 0.0f };
 	LoadTexture(filename);
 	CreateVertexResource();
-	sPipeline();
 	CreateInstanceSRV();
+	sPipeline();
+	
 }
 
 
-void Particle::Update() { particle = true; }
-
-void Particle::StopParticles() { particle = false; }
-
-void Particle::Draw(const ViewProjection& viewProjection) {
+void ParticleSystem::Update() {
+	particle = true; 
 	// 乱数生成
 	std::mt19937 randomEngine(seedGenerator());
+	emitter_.frequencyTime += kDeltaTime;
+	if (particle) {
+		if (emitter_.frequency <= emitter_.frequencyTime) {
+			particles.splice(particles.end(), Emission(emitter_, randomEngine));
+			emitter_.frequencyTime -= emitter_.frequency;
+		}
+	}
+}
+
+void ParticleSystem::StopParticles() { particle = false; }
+
+void ParticleSystem::Draw(const ViewProjection& viewProjection) {
+	
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);
 	billboardMatrix.m[3][0] = 0.0f;
@@ -40,17 +50,9 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 	uint32_t numInstance = 0;
 
-	emitter_.frequencyTime += kDeltaTime;
-	if (particle) {
-		if (emitter_.frequency <= emitter_.frequencyTime) {
-			particles.splice(particles.end(), Emission(emitter_, randomEngine));
-			emitter_.frequencyTime -= emitter_.frequency;
-		}
-	}
+	for (std::list<Particle>::iterator particleIterator = particles.begin();particleIterator != particles.end();) {
 
-	for (std::list<Particle_>::iterator particleIterator = particles.begin();particleIterator != particles.end();) {
-
-		if ((*particleIterator).lifeTime <= (*particleIterator).currentTime) {
+		if ((*particleIterator).lifeTime < (*particleIterator).currentTime) {
 			particleIterator = particles.erase(particleIterator);
 			continue;
 		}
@@ -63,7 +65,7 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 		(*particleIterator).currentTime += kDeltaTime;
 		float alph = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
 
-		if (numInstance < instanceCount) {
+		if (numInstance < kNumMaxInstance) {
 			Matrix4x4 worldMatrix =
 				Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
 				Math::MakeTranslateMatrix((*particleIterator).transform.translate);
@@ -100,30 +102,29 @@ void Particle::Draw(const ViewProjection& viewProjection) {
 
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), numInstance, 0, 0);
-	numInstance = 0;
 }
 
 
 
-void Particle::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
+void ParticleSystem::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
 
-void Particle::SetColor(Vector4 color) {
+void ParticleSystem::SetColor(Vector4 color) {
 	color_ = color;
 	isColor = true;
 }
 
-void Particle::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+void ParticleSystem::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 
-void Particle::SetFiled(AccelerationField accelerationField) {
+void ParticleSystem::SetFiled(AccelerationField accelerationField) {
 	accelerationField_ = accelerationField;
 }
 
-void Particle::SetTexture(const std::string& filename) {
+void ParticleSystem::SetTexture(const std::string& filename) {
 	TextureManager::GetInstance()->Load(filename);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
 }
 
-void Particle::SetModel(const std::string& filename, std::string& path) {
+void ParticleSystem::SetModel(const std::string& filename, std::string& path) {
 	modelData = ModelManager::LoadObjFile("resources/" + filename + path);
 	if (modelData.material.textureFilePath != "") {
 		TextureManager::GetInstance()->Load("resources/" + filename + modelData.material.textureFilePath);
@@ -131,21 +132,21 @@ void Particle::SetModel(const std::string& filename, std::string& path) {
 	}
 }
 
-Particle* Particle::Create(const std::string& filename, Emitter emitter) {
-	Particle* model = new Particle;
+ParticleSystem* ParticleSystem::Create(const std::string& filename, Emitter emitter) {
+	ParticleSystem* model = new ParticleSystem;
 	model->Initialize(filename, emitter);
 	return model;
 }
 
 // 頂点データの設定
-void Particle::CreateVertexResource() {
-	instancingResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(ParticleForGPU) * instanceCount);
+void ParticleSystem::CreateVertexResource() {
+	instancingResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(ParticleForGPU) * kNumMaxInstance);
 	// データを書き込む
 	instancingData = nullptr;
 	// 書き込むためのアドレスを取得
 	instancingResouce_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData));
 	// 単位行列を書き込む
-	for (uint32_t i = 0; i < instanceCount; ++i) {
+	for (uint32_t i = 0; i < kNumMaxInstance; ++i) {
 		instancingData[i].World = Math::MakeIdentity4x4();
 		instancingData[i].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
@@ -167,12 +168,12 @@ void Particle::CreateVertexResource() {
 	// 初期化
 	materialData->uvTransform = Math::MakeIdentity4x4();
 };
-void Particle::CreateInstanceSRV() {
+void ParticleSystem::CreateInstanceSRV() {
 
-	instancing_ = TextureManager::GetInstance()->ParticleLoad(instancingResouce_.Get(), instanceCount);
+	instancing_ = TextureManager::GetInstance()->ParticleLoad(instancingResouce_.Get(), kNumMaxInstance);
 }
 
-void Particle::LoadTexture(const std::string& filename) {
+void ParticleSystem::LoadTexture(const std::string& filename) {
 	modelData = ModelManager::LoadObjFile("resources/particle/plane.obj");
 	TextureManager::GetInstance()->Load(filename);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
@@ -180,14 +181,15 @@ void Particle::LoadTexture(const std::string& filename) {
 }
 
 
-Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {
+Particle ParticleSystem::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {
 	std::uniform_real_distribution<float> distribution(-1.0, 1.0);
 	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
 	std::uniform_real_distribution<float> distTime(1.0, 3.0);
-	Particle_ particle;
+	Particle particle;
 	particle.transform.scale = transform.scale;
 	particle.transform.rotate = transform.rotate;
-	particle.transform.translate = transform.translate + distribution(randomEngine);
+	Vector3 randomTranslate{ distribution(randomEngine) ,distribution(randomEngine) ,distribution(randomEngine) };
+	particle.transform.translate = transform.translate + randomTranslate;
 	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
 	if (isColor) {
 		particle.color = color_;
@@ -200,18 +202,18 @@ Particle_ Particle::MakeNewParticle(std::mt19937& randomEngine, const Transform 
 	return particle;
 }
 
-std::list<Particle_> Particle::Emission(const Emitter& emitter, std::mt19937& randomEngine) {
-	std::list<Particle_> particles;
+std::list<Particle> ParticleSystem::Emission(const Emitter& emitter, std::mt19937& randomEngine) {
+	std::list<Particle> particles;
 	for (uint32_t count = 0; count < emitter.count; ++count) {
 		particles.push_back(MakeNewParticle(randomEngine, emitter.transform));
 	}
 	return particles;
 }
 
-void Particle::UpdateBillboard(const ViewProjection& viewProjection){
+void ParticleSystem::UpdateBillboard(const ViewProjection& viewProjection){
 }
 
-void Particle::sPipeline() {
+void ParticleSystem::sPipeline() {
 
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateParticleVSShader();
 	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreateParticlePSShader();

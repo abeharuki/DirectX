@@ -1,7 +1,7 @@
 #pragma once
 #include "Player.h"
 #include "Model.h"
-#include <Particle.h>
+#include <ParticleSystem.h>
 #include <Animation/Animation.h>
 
 class PlayerManager {
@@ -88,7 +88,7 @@ private:
 	Transform revivalTransform_;
 	
 	//パーティクル
-	std::unique_ptr<Particle> particle_;
+	std::unique_ptr<ParticleSystem> particle_;
 	Emitter emitter_{};
 	bool isParticle_ = false;
 

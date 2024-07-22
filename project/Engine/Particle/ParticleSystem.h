@@ -17,7 +17,7 @@
 #include <random>
 #include "ModelManager.h"
 
-class Particle {
+class ParticleSystem {
 public: // 静的メンバ変数
 	// デスクリプタサイズ
 	static UINT sDescriptorHandleIncrementSize_;
@@ -37,7 +37,7 @@ public:
 	/// シングルトンインスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static Particle* GetInstance();
+	static ParticleSystem* GetInstance();
 
 	// 初期化
 	void Initialize(const std::string& filename, Emitter emitter);
@@ -47,7 +47,7 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	static Particle*Create(const std::string& filename, Emitter emitter);
+	static ParticleSystem*Create(const std::string& filename, Emitter emitter);
 
 	// パーティクルループ
 	void StopParticles();
@@ -80,12 +80,13 @@ private:
 
 	void LoadTexture(const std::string& filename);
 
-	Particle_ MakeNewParticle(std::mt19937& randomEngine, const Transform transform);
+	Particle MakeNewParticle(std::mt19937& randomEngine, const Transform transform);
 
-	std::list<Particle_> Emission(const Emitter& emitter, std::mt19937& randomEngine);
+	std::list<Particle> Emission(const Emitter& emitter, std::mt19937& randomEngine);
 
 private:
-
+	//インスタンスの最大数
+	const uint32_t kNumMaxInstance = 100;
 
 	// WVP用リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResouce_;
@@ -101,8 +102,8 @@ private:
 	uint32_t texture_;
 	uint32_t instancing_;
 
-	uint32_t instanceCount = 1;
-	std::list<Particle_> particles;
+	
+	std::list<Particle> particles;
 
 	Emitter emitter_{};
 	AccelerationField accelerationField_;

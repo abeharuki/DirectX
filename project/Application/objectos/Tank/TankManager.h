@@ -1,7 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "Tank.h"
-#include <Particle.h>
+#include <ParticleSystem.h>
 
 class TankManager {
 	public:
@@ -44,7 +44,7 @@ class TankManager {
 		std::unique_ptr<Model> nHpModel_[3];
 		std::unique_ptr<Tank> tank_;
 
-		std::unique_ptr<Particle> particle_;
+		std::unique_ptr<ParticleSystem> particle_;
 		Emitter emitter_{};
 		bool isParticle_ = false;
 

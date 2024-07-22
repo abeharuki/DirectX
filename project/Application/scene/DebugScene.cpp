@@ -14,7 +14,7 @@ void DebugScene::Initialize() {
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
-	worldTransformAnimation_.translate = { 0.0f,3.0f,-10.0f };
+	worldTransformAnimation_.translate = { 2.0f,3.0f,-10.0f };
 	worldTransformSphere_.Initialize();
 	worldTransformSphere_.translate.y = 1.6f;
 	worldTransformSphere_.rotate.y = -1.55f;
@@ -54,13 +54,12 @@ void DebugScene::Initialize() {
 	        {0.0f,0.0f,0.0f},
 	        {0.0f,4.0f,0.0f},
 		},
-		.count{50},
-		.frequency{1.0f},
-		.frequencyTime{0},
+		.count{10},
+		.frequency{0.5f},
+		.frequencyTime{0.5f},
 
 	};
-	particle_.reset(Particle::Create("resources/particle/circle.png", emitter_));
-	particle_->SetColor({ 1.0f,1.0f,1.0f });
+	particle_.reset(ParticleSystem::Create("resources/particle/circle.png", emitter_));
 
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
