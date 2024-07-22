@@ -18,10 +18,8 @@ void ParticleSystem::Initialize(const std::string& filename, Emitter emitter) {
 	emitter_ = emitter;
 	accelerationField_.acceleration = { 0.0f, 0.0f, 0.0f };
 	LoadTexture(filename);
-	CreateVertexResource();
-	CreateInstanceSRV();
+	CreateResource();
 	sPipeline();
-	
 }
 
 
@@ -29,28 +27,51 @@ void ParticleSystem::Update() {
 	particle = true; 
 	// 乱数生成
 	std::mt19937 randomEngine(seedGenerator());
-	emitter_.frequencyTime += kDeltaTime;
+	/*emitter_.frequencyTime += kDeltaTime;
 	if (particle) {
 		if (emitter_.frequency <= emitter_.frequencyTime) {
 			particles.splice(particles.end(), Emission(emitter_, randomEngine));
 			emitter_.frequencyTime -= emitter_.frequency;
 		}
-	}
+	}*/
+	
 }
 
-void ParticleSystem::StopParticles() { particle = false; }
-
-void ParticleSystem::Draw(const ViewProjection& viewProjection) {
-	
+void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection){
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);
 	billboardMatrix.m[3][0] = 0.0f;
 	billboardMatrix.m[3][1] = 0.0f;
 	billboardMatrix.m[3][2] = 0.0f;
 
-	uint32_t numInstance = 0;
+	perViewData_->view = viewProjection.matView;
+	perViewData_->projection = viewProjection.matProjection;
+	perViewData_->billboardMatrix = billboardMatrix;
+}
 
-	for (std::list<Particle>::iterator particleIterator = particles.begin();particleIterator != particles.end();) {
+
+void ParticleSystem::StopParticles() { particle = false; }
+
+void ParticleSystem::Draw(const ViewProjection& viewProjection) {
+	
+	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+	Engine::GetList()->SetComputeRootSignature(CSRootSignature_.Get());
+	Engine::GetList()->SetPipelineState(CSPipelineState_.Get());
+	Engine::GetList()->SetComputeRootDescriptorTable(0, particleResource_->GetUAVHandle());
+	Engine::GetList()->Dispatch(1, 1, 1);
+	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+	UpdatePerViewResource(viewProjection);
+
+	/*Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);
+	billboardMatrix.m[3][0] = 0.0f;
+	billboardMatrix.m[3][1] = 0.0f;
+	billboardMatrix.m[3][2] = 0.0f;*/
+
+	//uint32_t numInstance = 0;
+
+	/*for (std::list<Particle>::iterator particleIterator = particles.begin();particleIterator != particles.end();) {
 
 		if ((*particleIterator).lifeTime < (*particleIterator).currentTime) {
 			particleIterator = particles.erase(particleIterator);
@@ -70,15 +91,15 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 				Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
 				Math::MakeTranslateMatrix((*particleIterator).transform.translate);
 
-			instancingData[numInstance].World = worldMatrix;
-			instancingData[numInstance].color = (*particleIterator).color;
-			instancingData[numInstance].color.w = alph;
+			instancingData_[numInstance].World = worldMatrix;
+			instancingData_[numInstance].color = (*particleIterator).color;
+			instancingData_[numInstance].color.w = alph;
 			++numInstance;
 		}
 
 		++particleIterator;
-	}
-
+	}*/
+	
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
@@ -88,23 +109,23 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 	Engine::GetList()->IASetVertexBuffers(0, 1, &meshData_->GetVertexBufferView());
 
 	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	Engine::GetList()->SetGraphicsRootDescriptorTable(1, TextureManager::GetInstance()->GetParticleGPUHandle(instancing_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(1, particleResource_->GetSRVHandle());
+	//Engine::GetList()->SetGraphicsRootDescriptorTable(1, instancingResource_->GetSRVHandle());
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
-	Engine::GetList()->SetGraphicsRootConstantBufferView(
-		0, materialResorce_->GetGPUVirtualAddress());
-	Engine::GetList()->SetGraphicsRootConstantBufferView(
-		4, viewProjection.constBuff_->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialData_->GetResource()->GetGPUVirtualAddress());
+	Engine::GetList()->SetGraphicsRootConstantBufferView(3, perViewResource_->GetGPUVirtualAddress());
+	//Engine::GetList()->SetGraphicsRootConstantBufferView(4, viewProjection.constBuff_->GetGPUVirtualAddress());
 
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
 
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), numInstance, 0, 0);
+	Engine::GetList()->DrawInstanced(6, 1024, 0, 0);
+	// Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), numInstance, 0, 0);
+	
 }
-
-
 
 void ParticleSystem::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
 
@@ -138,40 +159,46 @@ ParticleSystem* ParticleSystem::Create(const std::string& filename, Emitter emit
 	return model;
 }
 
+void ParticleSystem::CreateResource() {
+	particleResource_ = std::make_unique<RWStructuredBuffer>();
+	particleResource_->Create(1024, sizeof(ParticleCS));
+
+	perViewResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(PerView));
+	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
+
+
+	CreateVertexResource();
+	CreateInstanceResource();
+
+}
+
 // 頂点データの設定
 void ParticleSystem::CreateVertexResource() {
-	instancingResouce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(ParticleForGPU) * kNumMaxInstance);
-	// データを書き込む
-	instancingData = nullptr;
-	// 書き込むためのアドレスを取得
-	instancingResouce_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData));
-	// 単位行列を書き込む
-	for (uint32_t i = 0; i < kNumMaxInstance; ++i) {
-		instancingData[i].World = Math::MakeIdentity4x4();
-		instancingData[i].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	}
+	
 
 	meshData_ = std::make_unique<Mesh>();
 	meshData_->Initialize(modelData);
 
-	// マテリアル
-	materialResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(MaterialD));
-
-	// マテリアルにデータを書き込む
-	// 書き込むためのアドレスを取得
-	materialResorce_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	// 今回は白を書き込む
-	materialData->color.rgb = Vector3(1.0f, 1.0f, 1.0f);
-	materialData->color.a = float(1.0f);
-	// Lightingを有効にする
-	materialData->enableLighting = false;
-	// 初期化
-	materialData->uvTransform = Math::MakeIdentity4x4();
+	materialData_ = std::make_unique<Material>();
+	materialData_->Initialize();
 };
-void ParticleSystem::CreateInstanceSRV() {
+void ParticleSystem::CreateInstanceResource() {
+	instancingResource_ = std::make_unique<StructuredBuffer>();
+	instancingResource_->Create(kNumMaxInstance, sizeof(ParticleForGPU));
 
-	instancing_ = TextureManager::GetInstance()->ParticleLoad(instancingResouce_.Get(), kNumMaxInstance);
+	//書き込むためのアドレスを取得
+	instancingData_ = static_cast<ParticleForGPU*>(instancingResource_->Map());
+	//単位行列を書き込んでおく
+	for (uint32_t index = 0; index < kNumMaxInstance; ++index)
+	{
+		instancingData_[index].World = Math::MakeIdentity4x4();
+		instancingData_[index].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+	instancingResource_->Unmap();
+
 }
+
+
 
 void ParticleSystem::LoadTexture(const std::string& filename) {
 	modelData = ModelManager::LoadObjFile("resources/particle/plane.obj");
@@ -179,7 +206,6 @@ void ParticleSystem::LoadTexture(const std::string& filename) {
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
 
 }
-
 
 Particle ParticleSystem::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {
 	std::uniform_real_distribution<float> distribution(-1.0, 1.0);
@@ -210,9 +236,6 @@ std::list<Particle> ParticleSystem::Emission(const Emitter& emitter, std::mt1993
 	return particles;
 }
 
-void ParticleSystem::UpdateBillboard(const ViewProjection& viewProjection){
-}
-
 void ParticleSystem::sPipeline() {
 
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateParticleVSShader();
@@ -220,4 +243,9 @@ void ParticleSystem::sPipeline() {
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateParticleRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
+
+	GraphicsPipeline::GetInstance()->CreateParticleCSShader();
+	CSRootSignature_ = GraphicsPipeline::GetInstance()->CreateParticleCSRootSignature();
+	CSPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleCSGraphicsPipeline();
+
 };

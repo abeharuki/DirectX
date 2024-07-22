@@ -37,6 +37,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> lineRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> spriteRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> particleRootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> particleCSRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> animationRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> animationCSRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> postEffectRootSignature_ = nullptr;
@@ -48,6 +49,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> linePipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> spritePipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> particlesPipelineState_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> particleCSPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> animationPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> animationCSPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> outLinePipelineState_ = nullptr;
@@ -69,6 +71,7 @@ public:
 	//Particle
 	Microsoft::WRL::ComPtr<IDxcBlob> particleVertexShaderBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<IDxcBlob> particlePixelShaderBlob_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcBlob> particleComputeShaderBlob_ = nullptr;
 	//animation
 	Microsoft::WRL::ComPtr<IDxcBlob> animationVertexShaderBlob_ = nullptr;
 	Microsoft::WRL::ComPtr<IDxcBlob> animationComputeShaderBlob_ = nullptr;
@@ -83,6 +86,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateLineGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateSpritePipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleGraphicsPipeline(BlendMode blendMode_);
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleCSGraphicsPipeline();
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateAnimationGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateAnimationCSGraphicsPipeline();
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreatePostEffectGraphicsPipeline(Microsoft::WRL::ComPtr<IDxcBlob> postEffectPixelShaderBlob_);
@@ -98,6 +102,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>CreateLineRootSignature();
 	// ParticleRootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateParticleRootSignature();
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateParticleCSRootSignature();
 	// AnimationRootSignatureの生成
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateAnimationRootSignature();
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateAnimationCSRootSignature();
@@ -127,6 +132,8 @@ public:
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateParticleVSShader();
 	//	ParticlePixelshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateParticlePSShader();
+	//ParticleCSの生成
+	Microsoft::WRL::ComPtr<IDxcBlob> CreateParticleCSShader();
 
 	//	animationVertexshaderの生成
 	Microsoft::WRL::ComPtr<IDxcBlob> CreateAnimationVSShader();

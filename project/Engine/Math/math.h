@@ -219,17 +219,22 @@ struct Environment {
 	float padding[2];
 };
 
-
-
-
-
-
 struct Particle {
 	Transform transform;
 	Vector3 velocity;
 	Vector4 color;
 	float lifeTime;
 	float currentTime;
+};
+
+struct ParticleCS {
+	Vector3 translate;
+	float padding;
+	Vector3 scsle;
+	float lifeTime;
+	Vector3 velocity;
+	float currentTime;
+	Vector4 color;
 };
 
 struct ParticleForGPU {
@@ -249,6 +254,13 @@ struct AccelerationField {
 	Vector3 acceleration;//加速度
 	AABB area;//範囲
 };
+
+struct PerView {
+	Matrix4x4 view;
+	Matrix4x4 projection;
+	Matrix4x4 billboardMatrix;
+};
+
 
 class Math {
 public:

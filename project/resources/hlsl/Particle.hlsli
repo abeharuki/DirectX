@@ -6,6 +6,16 @@ struct VertexShaderInput {
 	
 };
 
+struct Particle
+{
+    float32_t3 translate;
+    float32_t3 scale;
+    float32_t lifeTime;
+    float32_t3 velocity;
+    float32_t currentTime;
+    float32_t4 color;
+};
+
 struct ParticleForGPU {
 	float32_t4x4 WVP;
 	float32_t4x4 World;
@@ -18,6 +28,11 @@ struct ViewProjectionMatrix {
 	float32_t3 camera;
 };
 
+struct PreView{
+    float32_t4x4 view;
+    float32_t4x4 projection;
+    float32_t4x4 billboardMatrix;
+};
 
 struct VertexShaderOutput {
 	float32_t4 position : SV_POSITION;

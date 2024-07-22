@@ -202,9 +202,6 @@ private:
 	bool debug_ = false;
 	bool isLoop_ = true;
 	Matrix4x4 localMatrix;
-
-	std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
-
 private:
 	std::vector<Animation> LoadAnimationFile(const std::string& directorPath, const std::string& filename);
 

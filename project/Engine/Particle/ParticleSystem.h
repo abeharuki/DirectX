@@ -16,6 +16,7 @@
 #include <wrl.h>
 #include <random>
 #include "ModelManager.h"
+#include <Material.h>
 
 class ParticleSystem {
 public: // 静的メンバ変数
@@ -24,8 +25,10 @@ public: // 静的メンバ変数
 
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> CSRootSignature_;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CSPipelineState_;
 
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
@@ -33,12 +36,7 @@ public: // 静的メンバ変数
 	BlendMode blendMode_ = BlendMode::kAdd;
 	
 public:
-	/// <summary>
-	/// シングルトンインスタンスの取得
-	/// </summary>
-	/// <returns></returns>
-	static ParticleSystem* GetInstance();
-
+	
 	// 初期化
 	void Initialize(const std::string& filename, Emitter emitter);
 
@@ -70,13 +68,15 @@ public:
 	void SetModel(const std::string& filename, std::string& path);
 private:
 
-	void UpdateBillboard(const ViewProjection& viewProjection);
-
 	void sPipeline();
+
+	void CreateResource();
 
 	void CreateVertexResource();
 
-	void CreateInstanceSRV();
+	void CreateInstanceResource();
+
+	void UpdatePerViewResource(const ViewProjection& viewProjection);
 
 	void LoadTexture(const std::string& filename);
 
@@ -88,20 +88,20 @@ private:
 	//インスタンスの最大数
 	const uint32_t kNumMaxInstance = 100;
 
-	// WVP用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResouce_;
-	// マテリアル用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResorce_;
+	std::unique_ptr<Material> materialData_;
+	std::unique_ptr<Mesh> meshData_;
+	std::unique_ptr<RWStructuredBuffer> particleResource_ = nullptr;
+	std::unique_ptr<StructuredBuffer> instancingResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> perViewResource_ = nullptr;
+
 
 	// データを書き込む
-	ParticleForGPU* instancingData;
+	ParticleForGPU* instancingData_;
+	PerView* perViewData_;
 	ModelData modelData;
-	MaterialD* materialData = nullptr;
-	std::unique_ptr<Mesh> meshData_;
+	
 
 	uint32_t texture_;
-	uint32_t instancing_;
-
 	
 	std::list<Particle> particles;
 
@@ -117,7 +117,5 @@ private:
 	bool isColor = false;
 
 	std::random_device seedGenerator;
-	uint32_t descriptorSizeSRV;
-
 
 };

@@ -379,6 +379,7 @@
     <FxCompile Include="resources\hlsl\Dissolve.PS.hlsl" />
     <FxCompile Include="resources\hlsl\GasianBlur.PS.hlsl" />
     <FxCompile Include="resources\hlsl\Bloom.PS.hlsl" />
+    <FxCompile Include="resources\hlsl\InitializeParticle.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
