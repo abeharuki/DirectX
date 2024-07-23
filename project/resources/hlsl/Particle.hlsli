@@ -6,6 +6,8 @@ struct VertexShaderInput {
 	
 };
 
+static const uint32_t kMaxParticles = 1024;
+
 struct Particle
 {
     float32_t3 translate;
@@ -22,6 +24,12 @@ struct ParticleForGPU {
 	float32_t4 color;
 };
 
+struct PerFrame
+{
+    float32_t time;
+    float32_t deltaTime;
+};
+
 struct ViewProjectionMatrix {
 	float32_t4x4 view;
 	float32_t4x4 projection;
@@ -33,6 +41,8 @@ struct PreView{
     float32_t4x4 projection;
     float32_t4x4 billboardMatrix;
 };
+
+
 
 struct VertexShaderOutput {
 	float32_t4 position : SV_POSITION;

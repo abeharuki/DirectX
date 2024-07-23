@@ -229,7 +229,6 @@ struct Particle {
 
 struct ParticleCS {
 	Vector3 translate;
-	float padding;
 	Vector3 scsle;
 	float lifeTime;
 	Vector3 velocity;
@@ -261,6 +260,12 @@ struct PerView {
 	Matrix4x4 billboardMatrix;
 };
 
+struct PerFrame{
+	//ゲームを起動してからの時間
+	float time;
+	//1フレームの経過時間
+	float deltaTime;
+};
 
 class Math {
 public:

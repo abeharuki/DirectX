@@ -278,7 +278,7 @@ void DebugScene::Draw() {
 	//loader_->Draw(viewProjection_, true);
 	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	//modelGround_->Draw(worldTransformGround_, viewProjection_, true);
-	debugPlayer_->Draw(viewProjection_);
+	//debugPlayer_->Draw(viewProjection_);
 
 	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	//ground_->Draw(viewProjection_, false);

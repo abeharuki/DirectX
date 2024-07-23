@@ -162,7 +162,7 @@ private:
 	std::unique_ptr<Material> materialData_;
 
 	// カメラ用リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResorce_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource_;
 
 	CameraForGPU* cameraData = nullptr;
 	TransformationMatrix* transformData = nullptr;

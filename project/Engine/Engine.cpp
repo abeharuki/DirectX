@@ -22,7 +22,7 @@ DirectXCommon* dxCommon = nullptr;
 ImGuiManager* imguiManager = nullptr;
 Input* keyInput = nullptr;
 Audio* audio = nullptr;
-
+float Engine::gameTime = 0;
 
 Engine* Engine::GetInstance() {
 	static Engine instance;
@@ -70,7 +70,7 @@ void Engine::BeginFrame() {
 	//	Input初期の更新
 	keyInput->Update();
 
-
+	++gameTime;
 
 }
 
@@ -110,6 +110,16 @@ void Engine::DepthPreDraw() {
 void Engine::DepthPostDraw() {
 	dxCommon->DepthPostDraw();
 }
+
+void Engine::UAVBarrier(GpuResource& resource){
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.UAV.pResource = resource.GetResource();
+	dxCommon->GetCommandList()->ResourceBarrier(1, &barrier);
+}
+
+
 
 void Engine::PreDraw() {
 	// 描画開始
