@@ -35,7 +35,7 @@ void PlayerManager::Initialize() {
 	emitter_.count = 10;
 	emitter_.frequencyTime = 0;
 
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png", emitter_));
+	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 	isParticle_ = false;
 	HpTransform_.scale = { 70.0f, 70.0f, 70.0f };
 	HpTransform_.translate = { 690.0f, 600.0f, 1.0f };

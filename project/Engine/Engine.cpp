@@ -70,7 +70,7 @@ void Engine::BeginFrame() {
 	//	Input初期の更新
 	keyInput->Update();
 
-	++gameTime;
+	gameTime += 1.0f/60.0f;
 
 }
 

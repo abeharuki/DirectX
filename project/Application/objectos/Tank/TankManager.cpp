@@ -11,7 +11,7 @@ void TankManager::Initialize() {
 	};
 	emitter_.count = 10;
 	emitter_.frequencyTime = 0;
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png", emitter_));
+	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 	isParticle_ = false;
 	for (int i = 0; i < 3; i++) {

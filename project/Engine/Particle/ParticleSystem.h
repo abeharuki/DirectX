@@ -60,6 +60,9 @@ public: // 静的メンバ変数
 
 	BlendMode blendMode_ = BlendMode::kAdd;
 	
+	//パーティクルの最大数
+	static const uint32_t kMaxParticles = 1024;
+
 public:
 	
 	static ParticleSystem* GetInstance();
@@ -72,18 +75,25 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	static ParticleSystem*Create(const std::string& filename, Emitter emitter);
+	static ParticleSystem*Create(const std::string& filename);
 
 	// パーティクルループ
 	void StopParticles();
+
+	void SetEmitter(EmitterSphere emite) { 
+		emitterSphere_->translate = emite.translate;
+		emitterSphere_->count = emite.count;
+		emitterSphere_->frequency = emite.frequency;
+		emitterSphere_->scaleRange = emite.scaleRange;
+		emitterSphere_->translateRange = emite.translateRange;
+		emitterSphere_->colorRange = emite.colorRange;
+		emitterSphere_->velocityRange = emite.velocityRange;
+	}
 
 	void SetTranslate(Vector3 transform) { emitterSphere_->translate = transform; }
 
 	// 色とアルファ値
 	void SetColor(Range color) { emitterSphere_->colorRange = color; };
-
-	// ブレンドモード
-	void SetBlendMode(BlendMode blendMode);
 
 	// パーティクル速度
 	void SetSpeed(Range speed) { emitterSphere_->velocityRange = speed; };
@@ -108,10 +118,6 @@ private:
 	void UpdatePerViewResource(const ViewProjection& viewProjection);
 
 	void LoadTexture(const std::string& filename);
-
-	Particle MakeNewParticle(std::mt19937& randomEngine, const Transform transform);
-
-	std::list<Particle> Emission(const Emitter& emitter, std::mt19937& randomEngine);
 
 private:
 	static ParticleSystem* instance_;

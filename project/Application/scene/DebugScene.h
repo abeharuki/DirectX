@@ -49,7 +49,9 @@ private:
 	std::unique_ptr<Model> modelGround_;
 
 	std::unique_ptr<ParticleSystem> particle_;
-	Emitter emitter_;
+	EmitterSphere emitter_;
+	int particleCount_;
+	bool particleFlag_;
 
 	// 球
 	std::unique_ptr<Sphere> sphere_;

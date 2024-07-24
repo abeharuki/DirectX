@@ -48,17 +48,16 @@ void DebugScene::Initialize() {
 
 
 	emitter_ = {
-		.transform{
-			{1.0f,1.0f,1.0f},
-	        {0.0f,0.0f,0.0f},
-	        {0.0f,4.0f,0.0f},
-		},
+		.translate{0,0,0},
 		.count{10},
 		.frequency{0.5f},
 		.frequencyTime{0.5f},
-
+		.scaleRange{.min{1,1,1},.max{1,1,1}},
+		.translateRange{.min{0,0,0},.max{0,0,0}},
+		.colorRange{.min{1,1,1},.max{1,1,1}},
+		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
 	};
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png", emitter_));
+	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
@@ -91,7 +90,12 @@ void DebugScene::Update() {
 	animation_->Update(0);
 	//animation_->Environment(env_, true);
 
-	particle_->Update();
+	emitter_.count = particleCount_;
+	particle_->SetEmitter(emitter_);
+	if (particleFlag_) {
+		particle_->Update();
+	}
+
 	loader_->Update();
 	debugPlayer_->Update();
 	//CameraMove();
@@ -155,13 +159,27 @@ void DebugScene::Update() {
 
 	ImGui::Begin("Setting");
 
+	if (ImGui::TreeNode("Particle")) {
+		ImGui::Checkbox("ParticleFlag", &particleFlag_);
+		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
+		ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);
+		ImGui::DragFloat3("Pos", &emitter_.translate.x, 0.1f);
+		ImGui::DragFloat3("PosRangeMin", &emitter_.translateRange.min.x, 0.1f);
+		ImGui::DragFloat3("PosRangeMax", &emitter_.translateRange.max.x, 0.1f);
+		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f,1.0f);
+		ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f,1.0f);
+		ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
+		ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
+		ImGui::TreePop();
+	}
+
 	if (ImGui::TreeNode("Light")) {
 		ImGui::DragFloat3("Pos", &directionLight_.direction.x, 0.1f);
 		ImGui::DragFloat3("Color", &directionLight_.color.x, 0.1f);
 		ImGui::DragFloat("Intensity", &directionLight_.intensity, 0.1f);
-
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::TreePop();
+		
 	}
 
 	if (ImGui::TreeNode("LineBox")) {
@@ -282,7 +300,7 @@ void DebugScene::Draw() {
 
 	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
 	//ground_->Draw(viewProjection_, false);
-	skybox_->Draw(worldTransform_, viewProjection_);
+	//skybox_->Draw(worldTransform_, viewProjection_);
 	particle_->Draw(viewProjection_);
 }
 

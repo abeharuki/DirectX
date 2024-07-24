@@ -42,34 +42,34 @@ void ParticleSystem::Initialize(const std::string& filename) {
 	LoadTexture(filename);
 	CreateResource();
 	sPipeline();
-	
-	
+
+
 }
 
 
 void ParticleSystem::Update() {
-	particle = true; 
+	perFrame_->time = Engine::gameTime;
 	emitterSphere_->frequencyTime += kDeltaTime;//タイムの加算
 	//射出間隔を上回ったら射出許可を出して時間を調整
-	if (particle) {
-		if (emitterSphere_->frequency <= emitterSphere_->frequencyTime){
-			emitterSphere_->frequencyTime -= emitterSphere_->frequency;
-			emitterSphere_->emit = 1;
-		}
-		else {
-			emitterSphere_->emit = 0;
-		}
+	if (emitterSphere_->frequency <= emitterSphere_->frequencyTime) {
+		emitterSphere_->frequencyTime -= emitterSphere_->frequency;
+		emitterSphere_->emit = 1;
 	}
-	++perFrame_->time;// = Engine::gameTime;
+	else {
+		emitterSphere_->emit = 0;
+	}
 
 	if (IsCollision(accelerationField_.area, emitterSphere_->translate)) {
 		emitterSphere_->velocityRange.min -= accelerationField_.acceleration;
 		emitterSphere_->velocityRange.max += accelerationField_.acceleration;
 	}
-
+	ImGui::Begin("GameTime");
+	ImGui::Text("perFrame%f", perFrame_->time);
+	ImGui::Text("gameTime%f", Engine::gameTime);
+	ImGui::End();
 }
 
-void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection){
+void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection) {
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection.matView);
 	billboardMatrix.m[3][0] = 0.0f;
@@ -86,19 +86,17 @@ void ParticleSystem::StopParticles() { particle = false; }
 
 void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
-	
+
 
 	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	if (!initializeCS_) {
 		InitilaizeCS();
 		initializeCS_ = true;
 	}
-
 	UpdateCS();
 	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_GENERIC_READ);
-
 	UpdatePerViewResource(viewProjection);
-	
+
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());
@@ -109,7 +107,7 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
 	//Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
 	Engine::GetList()->SetGraphicsRootDescriptorTable(1, particleResource_->GetSRVHandle());
-	
+
 
 	// wvp用のCBufferの場所を設定
 	// マテリアルCBufferの場所を設定
@@ -121,12 +119,10 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(6, 1024, 0, 0);
-	
-	
-}
+	Engine::GetList()->DrawInstanced(6, kMaxParticles, 0, 0);
 
-void ParticleSystem::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+
+}
 
 void ParticleSystem::SetFiled(AccelerationField accelerationField) {
 	accelerationField_ = accelerationField;
@@ -145,26 +141,26 @@ void ParticleSystem::SetModel(const std::string& filename, std::string& path) {
 	}
 }
 
-ParticleSystem* ParticleSystem::Create(const std::string& filename, Emitter emitter) {
+ParticleSystem* ParticleSystem::Create(const std::string& filename) {
 	ParticleSystem* model = new ParticleSystem;
 	model->Initialize(filename);
 	return model;
 }
 
-void ParticleSystem::InitilaizeCS(){
-	
+void ParticleSystem::InitilaizeCS() {
+
 	Engine::GetList()->SetComputeRootSignature(CSRootSignature_.Get());
 	Engine::GetList()->SetPipelineState(CSPipelineState_.Get());
 	Engine::GetList()->SetComputeRootDescriptorTable(0, particleResource_->GetUAVHandle());
 	Engine::GetList()->SetComputeRootDescriptorTable(1, freeListIndexResource_->GetUAVHandle());
 	Engine::GetList()->SetComputeRootDescriptorTable(2, freeListResource_->GetUAVHandle());
 	Engine::GetList()->Dispatch(1, 1, 1);
-	
-	
+
+
 }
 
 void ParticleSystem::UpdateCS() {
-	
+
 	Engine::GetList()->SetComputeRootSignature(emiteCSRootSignature_.Get());
 	Engine::GetList()->SetPipelineState(emiteCSPipelineState_.Get());
 	Engine::GetList()->SetComputeRootDescriptorTable(0, particleResource_->GetUAVHandle());
@@ -186,13 +182,13 @@ void ParticleSystem::UpdateCS() {
 
 void ParticleSystem::CreateResource() {
 	particleResource_ = std::make_unique<RWStructuredBuffer>();
-	particleResource_->Create(1024, sizeof(ParticleCS));
+	particleResource_->Create(kMaxParticles, sizeof(ParticleCS));
 
 	freeListIndexResource_ = std::make_unique<RWStructuredBuffer>();
 	freeListIndexResource_->Create(1, sizeof(int32_t));
 
 	freeListResource_ = std::make_unique<RWStructuredBuffer>();
-	freeListResource_->Create(1024, sizeof(uint32_t));
+	freeListResource_->Create(kMaxParticles, sizeof(uint32_t));
 
 
 	perViewResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(PerView));
@@ -235,31 +231,6 @@ void ParticleSystem::LoadTexture(const std::string& filename) {
 	TextureManager::GetInstance()->Load(filename);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
 
-}
-
-Particle ParticleSystem::MakeNewParticle(std::mt19937& randomEngine, const Transform transform) {
-	std::uniform_real_distribution<float> distribution(-1.0, 1.0);
-	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
-	std::uniform_real_distribution<float> distTime(1.0, 3.0);
-	Particle particle;
-	particle.transform.scale = transform.scale;
-	particle.transform.rotate = transform.rotate;
-	Vector3 randomTranslate{ distribution(randomEngine) ,distribution(randomEngine) ,distribution(randomEngine) };
-	particle.transform.translate = transform.translate + randomTranslate;
-	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
-	particle.color = {distColor(randomEngine), distColor(randomEngine), distColor(randomEngine),1.0f };
-	
-	particle.lifeTime = distTime(randomEngine);
-	particle.currentTime = 0;
-	return particle;
-}
-
-std::list<Particle> ParticleSystem::Emission(const Emitter& emitter, std::mt19937& randomEngine) {
-	std::list<Particle> particles;
-	for (uint32_t count = 0; count < emitter.count; ++count) {
-		particles.push_back(MakeNewParticle(randomEngine, emitter.transform));
-	}
-	return particles;
 }
 
 void ParticleSystem::sPipeline() {

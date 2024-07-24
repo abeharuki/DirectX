@@ -32,7 +32,7 @@ float32_t rand3dTo1d(float32_t3 value, float32_t3 dotDir = float32_t3(12.9898, 7
 {
     float32_t3 smallValue = sin(value);
     float32_t random = dot(smallValue, dotDir);
-    random = frac(sin(random) * 143758.5453);
+    random = frac(sin(random) * 43758.5453);
     return random;
 }
 
@@ -65,10 +65,10 @@ class RandomGenerator
 
 [numthreads(1, 1, 1)]
 void main(uint32_t3 DTid : SV_DispatchThreadID ){
+      //初期化
+    RandomGenerator generator;
+    generator.speed = (DTid + gPerFrame.time) * gPerFrame.time;
     if (gEmitter.emit != 0){//射出許可の有無
-        //初期化
-        RandomGenerator generator;
-        generator.speed = (DTid + gPerFrame.time) * gPerFrame.time;
         for (uint32_t countIndex = 0; countIndex < gEmitter.count; ++countIndex){
             int32_t freeListIndex;
             //FreeListのIndexを1つ前に設定し,現在のIndexを取得
@@ -81,7 +81,7 @@ void main(uint32_t3 DTid : SV_DispatchThreadID ){
                 gParticle[particleIndex].color.rgb = generator.Generate3d(float3(gEmitter.colorRange.min), float3(gEmitter.colorRange.max));
                 gParticle[particleIndex].color.a = 1.0f;
             
-                gParticle[particleIndex].lifeTime = generator.Generate1d(3, 3); //0から3の間のランダム値
+                gParticle[particleIndex].lifeTime = generator.Generate1d(1, 1); //1から1の間のランダム値
                 gParticle[particleIndex].velocity = generator.Generate3d(float3(gEmitter.velocityRange.min), float3(gEmitter.velocityRange.max)); //速度ベクトルをランダムに設定
                 gParticle[particleIndex].currentTime = 0.0f; // 初期化時点での経過時間は0
             }else{
