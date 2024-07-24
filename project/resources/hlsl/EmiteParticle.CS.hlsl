@@ -1,5 +1,11 @@
 #include "Particle.hlsli"
 
+struct Range
+{
+    float32_t3 min;
+    float32_t3 max;
+};
+
 struct EmitterSphere
 {
     float32_t3 translate; //位置
@@ -7,7 +13,11 @@ struct EmitterSphere
     uint32_t count; //射出数
     float32_t frequency; //射出間隔
     float32_t frequencyTime; //射出間隔調整時間
-    uint32_t emit; //射出許可
+    uint32_t emit; //射出許可]
+    Range scaleRange;
+    Range translateRange;
+    Range colorRange;
+    Range velocityRange; 
 };
 
 
@@ -18,43 +28,21 @@ ConstantBuffer<PerFrame> gPerFrame : register(b1);
 RWStructuredBuffer<int32_t> gFreeListIndex : register(u1);
 RWStructuredBuffer<uint32_t> gFreeList : register(u2);
 
-float3 rand3dTo3d(float3 value, float3 minRange, float3 maxRange)
+float32_t rand3dTo1d(float32_t3 value, float32_t3 dotDir = float32_t3(12.9898, 78.233, 37.719))
 {
-    // 各成分を個別に扱い、独立したランダム値を生成する
-    float3 smallValue = sin(value);
-    float3 dotDir = float3(12.9898, 78.233, 37.719);
-    
-    float randomX = dot(smallValue, dotDir);
-    randomX = frac(sin(randomX) * 143758.5453);
-
-    // 別の方向ベクトルを使って、次の成分のランダム値を生成
-    dotDir = float3(39.346, 11.135, 97.693);
-    float randomY = dot(smallValue, dotDir);
-    randomY = frac(sin(randomY) * 428758.5431);
-
-    // さらに別の方向ベクトルを使って、次の成分のランダム値を生成
-    dotDir = float3(27.034, 87.491, 13.874);
-    float randomZ = dot(smallValue, dotDir);
-    randomZ = frac(sin(randomZ) * 234758.5465);
-
-    // 0.0から1.0の範囲にあるランダム値を、指定された範囲にスケーリングする
-    float3 randomValue = float3(randomX, randomY, randomZ);
-    randomValue = lerp(minRange, maxRange, randomValue);
-
-    return randomValue;
+    float32_t3 smallValue = sin(value);
+    float32_t random = dot(smallValue, dotDir);
+    random = frac(sin(random) * 143758.5453);
+    return random;
 }
 
-float rand3dTo1d(float3 value, float minRange, float maxRange)
+float32_t3 rand3dTo3d(float32_t3 value)
 {
-    // 各成分を個別に扱い、独立したランダム値を生成する
-    float3 smallValue = sin(value);
-    float3 dotDir = float3(12.9898, 78.233, 37.719);
-    
-    float random = dot(smallValue, dotDir);
-    random = frac(sin(random) * 143758.5453);
-
-    
-    return lerp(minRange, maxRange, random);
+    return float32_t3(
+        rand3dTo1d(value, float32_t3(12.989, 78.233, 37.719)),
+        rand3dTo1d(value, float32_t3(39.346, 11.135, 83.155)),
+        rand3dTo1d(value, float32_t3(73.156, 52.235, 09.151))
+    );
 }
 
 class RandomGenerator
@@ -62,15 +50,15 @@ class RandomGenerator
     float32_t3 speed;
     float32_t3 Generate3d(float3 minRange, float3 maxRange)
     {
-        speed = rand3dTo3d(speed,minRange,maxRange);
-        return speed;
+        speed = rand3dTo3d(speed);
+        return lerp(minRange,maxRange,speed);
     }
     
     float32_t Generate1d(float minRange, float maxRange)
     {
-        float32_t result = rand3dTo1d(speed, minRange, maxRange);
+        float32_t result = rand3dTo1d(speed);
         speed.x = result;
-        return result;
+        return lerp(minRange, maxRange,result);
     }
     
 };
@@ -88,13 +76,13 @@ void main(uint32_t3 DTid : SV_DispatchThreadID ){
             if (0 <= freeListIndex && freeListIndex < kMaxParticles)
             {
                 uint32_t particleIndex = gFreeList[freeListIndex];
-                gParticle[particleIndex].scale = generator.Generate3d(float3(0, 0, 0), float3(1, 1, 1));
-                gParticle[particleIndex].translate = generator.Generate3d(float3(0, 0, 0), float3(1, 1, 1));
-                gParticle[particleIndex].color.rgb = generator.Generate3d(float3(0, 0, 0), float3(1, 1, 1));
+                gParticle[particleIndex].scale = generator.Generate3d(float3(gEmitter.scaleRange.min), float3(gEmitter.scaleRange.max));
+                gParticle[particleIndex].translate = gEmitter.translate + generator.Generate3d(float3(gEmitter.translateRange.min), float3(gEmitter.translateRange.max));
+                gParticle[particleIndex].color.rgb = generator.Generate3d(float3(gEmitter.colorRange.min), float3(gEmitter.colorRange.max));
                 gParticle[particleIndex].color.a = 1.0f;
             
-                gParticle[particleIndex].lifeTime = generator.Generate1d(0, 3); //0から3の間のランダム値
-                gParticle[particleIndex].velocity = generator.Generate3d(float3(-1, -1, -1), float3(1, 1, 1)); //速度ベクトルをランダムに設定
+                gParticle[particleIndex].lifeTime = generator.Generate1d(3, 3); //0から3の間のランダム値
+                gParticle[particleIndex].velocity = generator.Generate3d(float3(gEmitter.velocityRange.min), float3(gEmitter.velocityRange.max)); //速度ベクトルをランダムに設定
                 gParticle[particleIndex].currentTime = 0.0f; // 初期化時点での経過時間は0
             }else{
              //発生させられなかったので、減らしてしまった分元に戻す。

@@ -23,8 +23,6 @@ void HealerManager::Initialize() {
 	emitter_.frequencyTime = 0;
 
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png", emitter_));
-	particle_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-	particle_->SetSpeed(5.0f);
 	isParticle_ = false;
 
 }

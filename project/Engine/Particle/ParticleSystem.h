@@ -18,6 +18,14 @@
 #include "ModelManager.h"
 #include <Material.h>
 
+struct Range
+{
+	Vector3 min;
+	float padding1;
+	Vector3 max;
+	float padding2;
+};
+
 struct EmitterSphere {
 	Vector3 translate;//位置
 	float radius;//射出半径
@@ -25,6 +33,10 @@ struct EmitterSphere {
 	float frequency;//射出間隔
 	float frequencyTime;//射出間隔調整時間
 	uint32_t emit;//射出許可
+	Range scaleRange;
+	Range translateRange;
+	Range colorRange;
+	Range velocityRange;
 };
 
 class ParticleSystem {
@@ -53,7 +65,7 @@ public:
 	static ParticleSystem* GetInstance();
 	static void Destroy();
 	// 初期化
-	void Initialize(const std::string& filename, Emitter emitter);
+	void Initialize(const std::string& filename);
 
 	// スタート
 	void Update();
@@ -65,16 +77,16 @@ public:
 	// パーティクルループ
 	void StopParticles();
 
-	void SetTranslate(Vector3 transform) { emitter_.transform.translate = transform; }
+	void SetTranslate(Vector3 transform) { emitterSphere_->translate = transform; }
 
 	// 色とアルファ値
-	void SetColor(Vector4 color);
+	void SetColor(Range color) { emitterSphere_->colorRange = color; };
 
 	// ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
 
 	// パーティクル速度
-	void SetSpeed(float speed);
+	void SetSpeed(Range speed) { emitterSphere_->velocityRange = speed; };
 
 	//フィールドをセット
 	void SetFiled(AccelerationField accelerationField);
@@ -127,19 +139,12 @@ private:
 	uint32_t texture_;
 	
 	std::list<Particle> particles;
-
-	Emitter emitter_{};
 	AccelerationField accelerationField_;
 
 	float kDeltaTime = 1.0f / 60.0f;
 	
 	bool loop_ = false;
 	bool particle = false;
-
-	Vector4 color_;
-	bool isColor = false;
-
-	std::random_device seedGenerator;
 
 	bool initializeCS_ = false;
 };

@@ -36,9 +36,8 @@ bool IsCollision(const AABB& aabb, const Vector3& point) {
 	return false;
 }
 
-void ParticleSystem::Initialize(const std::string& filename, Emitter emitter) {
+void ParticleSystem::Initialize(const std::string& filename) {
 	initializeCS_ = false;
-	emitter_ = emitter;
 	accelerationField_.acceleration = { 0.0f, 0.0f, 0.0f };
 	LoadTexture(filename);
 	CreateResource();
@@ -50,15 +49,6 @@ void ParticleSystem::Initialize(const std::string& filename, Emitter emitter) {
 
 void ParticleSystem::Update() {
 	particle = true; 
-	// 乱数生成
-	std::mt19937 randomEngine(seedGenerator());
-	/*emitter_.frequencyTime += kDeltaTime;
-	if (particle) {
-		if (emitter_.frequency <= emitter_.frequencyTime) {
-			particles.splice(particles.end(), Emission(emitter_, randomEngine));
-			emitter_.frequencyTime -= emitter_.frequency;
-		}
-	}*/
 	emitterSphere_->frequencyTime += kDeltaTime;//タイムの加算
 	//射出間隔を上回ったら射出許可を出して時間を調整
 	if (particle) {
@@ -71,6 +61,12 @@ void ParticleSystem::Update() {
 		}
 	}
 	++perFrame_->time;// = Engine::gameTime;
+
+	if (IsCollision(accelerationField_.area, emitterSphere_->translate)) {
+		emitterSphere_->velocityRange.min -= accelerationField_.acceleration;
+		emitterSphere_->velocityRange.max += accelerationField_.acceleration;
+	}
+
 }
 
 void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection){
@@ -90,6 +86,7 @@ void ParticleSystem::StopParticles() { particle = false; }
 
 void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
+	
 
 	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	if (!initializeCS_) {
@@ -101,35 +98,6 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_GENERIC_READ);
 
 	UpdatePerViewResource(viewProjection);
-
-	/*for (std::list<Particle>::iterator particleIterator = particles.begin();particleIterator != particles.end();) {
-
-		if ((*particleIterator).lifeTime < (*particleIterator).currentTime) {
-			particleIterator = particles.erase(particleIterator);
-			continue;
-		}
-
-		if (IsCollision(accelerationField_.area, (*particleIterator).transform.translate)) {
-			(*particleIterator).velocity += accelerationField_.acceleration * kDeltaTime;
-		}
-
-		(*particleIterator).transform.translate += (*particleIterator).velocity * kDeltaTime;
-		(*particleIterator).currentTime += kDeltaTime;
-		float alph = 1.0f - ((*particleIterator).currentTime / (*particleIterator).lifeTime);
-
-		if (numInstance < kNumMaxInstance) {
-			Matrix4x4 worldMatrix =
-				Math::MakeScaleMatrix((*particleIterator).transform.scale) * billboardMatrix *
-				Math::MakeTranslateMatrix((*particleIterator).transform.translate);
-
-			instancingData_[numInstance].World = worldMatrix;
-			instancingData_[numInstance].color = (*particleIterator).color;
-			instancingData_[numInstance].color.w = alph;
-			++numInstance;
-		}
-
-		++particleIterator;
-	}*/
 	
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
@@ -158,13 +126,6 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 	
 }
 
-void ParticleSystem::SetSpeed(float speed) { kDeltaTime = speed / 60.0f; }
-
-void ParticleSystem::SetColor(Vector4 color) {
-	color_ = color;
-	isColor = true;
-}
-
 void ParticleSystem::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 
 void ParticleSystem::SetFiled(AccelerationField accelerationField) {
@@ -186,7 +147,7 @@ void ParticleSystem::SetModel(const std::string& filename, std::string& path) {
 
 ParticleSystem* ParticleSystem::Create(const std::string& filename, Emitter emitter) {
 	ParticleSystem* model = new ParticleSystem;
-	model->Initialize(filename, emitter);
+	model->Initialize(filename);
 	return model;
 }
 
@@ -245,6 +206,10 @@ void ParticleSystem::CreateResource() {
 	emitterSphere_->translate = Vector3(0.0f, 0.0f, 0.0f);
 	emitterSphere_->radius = 1.0f;
 	emitterSphere_->emit = 0;
+	emitterSphere_->scaleRange = { .min{1,1,1},.max{1,1,1} };
+	emitterSphere_->translateRange = { .min{0,0,0},.max{0,0,0} };
+	emitterSphere_->colorRange = { .min{1,1,1},.max{1,1,1} };
+	emitterSphere_->velocityRange = { .min{-0.1f,-0.1f,-0.1f},.max{0.1f,0.1f,0.1f} };
 
 	perFrameResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(EmitterSphere));
 	perFrameResource_->Map(0, nullptr, reinterpret_cast<void**>(&perFrame_));
@@ -253,7 +218,6 @@ void ParticleSystem::CreateResource() {
 
 
 	CreateVertexResource();
-	//CreateInstanceResource();
 
 }
 
@@ -283,12 +247,8 @@ Particle ParticleSystem::MakeNewParticle(std::mt19937& randomEngine, const Trans
 	Vector3 randomTranslate{ distribution(randomEngine) ,distribution(randomEngine) ,distribution(randomEngine) };
 	particle.transform.translate = transform.translate + randomTranslate;
 	particle.velocity = {distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
-	if (isColor) {
-		particle.color = color_;
-	}
-	else {
-		particle.color = {distColor(randomEngine), distColor(randomEngine), distColor(randomEngine),1.0f };
-	}
+	particle.color = {distColor(randomEngine), distColor(randomEngine), distColor(randomEngine),1.0f };
+	
 	particle.lifeTime = distTime(randomEngine);
 	particle.currentTime = 0;
 	return particle;
