@@ -17,6 +17,8 @@
 #include <random>
 #include "ModelManager.h"
 #include <Material.h>
+#include <WorldTransform.h>
+#include <LineBox.h>
 
 struct Range
 {
@@ -153,4 +155,7 @@ private:
 	bool particle = false;
 
 	bool initializeCS_ = false;
+
+	WorldTransform worldTransform_;
+	std::unique_ptr<LineBox> linebox_;
 };

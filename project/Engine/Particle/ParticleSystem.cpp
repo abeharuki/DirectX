@@ -42,12 +42,16 @@ void ParticleSystem::Initialize(const std::string& filename) {
 	LoadTexture(filename);
 	CreateResource();
 	sPipeline();
-
+	worldTransform_.Initialize();
+	linebox_ = std::make_unique<LineBox>();
+	AABB aabb = { emitterSphere_->translateRange.min, emitterSphere_->translateRange.max };
+	linebox_.reset(LineBox::Create(aabb));
 
 }
 
 
 void ParticleSystem::Update() {
+	
 	perFrame_->time = Engine::gameTime;
 	emitterSphere_->frequencyTime += kDeltaTime;//タイムの加算
 	//射出間隔を上回ったら射出許可を出して時間を調整
@@ -63,6 +67,8 @@ void ParticleSystem::Update() {
 		emitterSphere_->velocityRange.min -= accelerationField_.acceleration;
 		emitterSphere_->velocityRange.max += accelerationField_.acceleration;
 	}
+	
+
 	ImGui::Begin("GameTime");
 	ImGui::Text("perFrame%f", perFrame_->time);
 	ImGui::Text("gameTime%f", Engine::gameTime);
@@ -87,7 +93,7 @@ void ParticleSystem::StopParticles() { particle = false; }
 void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
 
-
+	//CSでの初期化と更新
 	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	if (!initializeCS_) {
 		InitilaizeCS();
@@ -95,6 +101,14 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 	}
 	UpdateCS();
 	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_GENERIC_READ);
+	
+#ifdef _DEBUG
+	linebox_->Update({ emitterSphere_->translateRange.min, emitterSphere_->translateRange.max });
+	worldTransform_.translate = emitterSphere_->translate;
+	worldTransform_.UpdateMatrix();
+#endif // DEBUG
+	
+
 	UpdatePerViewResource(viewProjection);
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
@@ -121,7 +135,12 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(6, kMaxParticles, 0, 0);
 
+#ifdef _DEBUG
 
+	linebox_->Draw(worldTransform_, viewProjection, false);
+
+#endif // DEBUG
+	
 }
 
 void ParticleSystem::SetFiled(AccelerationField accelerationField) {

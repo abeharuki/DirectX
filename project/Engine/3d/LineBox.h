@@ -31,6 +31,7 @@ public:
 	void Initialize(AABB aabb);
 	void Initialize(OBB obb);
 
+	void Update(AABB aabb);
 	void Updata();
 
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
@@ -39,6 +40,8 @@ public:
 		obb_.center = center;
 		Updata();
 	}
+
+	
 
 	Vector3 GetCenter() { return obb_.center; }
 	void SetWorldTransform(WorldTransform worldtransform) { 
