@@ -195,7 +195,8 @@ void ParticleSystem::InitilaizeCS(){
 	Engine::GetList()->SetComputeRootSignature(CSRootSignature_.Get());
 	Engine::GetList()->SetPipelineState(CSPipelineState_.Get());
 	Engine::GetList()->SetComputeRootDescriptorTable(0, particleResource_->GetUAVHandle());
-	Engine::GetList()->SetComputeRootDescriptorTable(1, freeCounterResource_->GetUAVHandle());
+	Engine::GetList()->SetComputeRootDescriptorTable(1, freeListIndexResource_->GetUAVHandle());
+	Engine::GetList()->SetComputeRootDescriptorTable(2, freeListResource_->GetUAVHandle());
 	Engine::GetList()->Dispatch(1, 1, 1);
 	
 	
@@ -208,13 +209,16 @@ void ParticleSystem::UpdateCS() {
 	Engine::GetList()->SetComputeRootDescriptorTable(0, particleResource_->GetUAVHandle());
 	Engine::GetList()->SetComputeRootConstantBufferView(1, emitterResource_->GetGPUVirtualAddress());
 	Engine::GetList()->SetComputeRootConstantBufferView(2, perFrameResource_->GetGPUVirtualAddress());
-	Engine::GetList()->SetComputeRootDescriptorTable(3, freeCounterResource_->GetUAVHandle());
+	Engine::GetList()->SetComputeRootDescriptorTable(3, freeListIndexResource_->GetUAVHandle());
+	Engine::GetList()->SetComputeRootDescriptorTable(4, freeListResource_->GetUAVHandle());
 	Engine::GetList()->Dispatch(1, 1, 1);
 	Engine::UAVBarrier(*particleResource_);//emiterCSの実行が終わってからupdateCSの実行に移る
 	Engine::GetList()->SetComputeRootSignature(updateParticleCSRootSignature_.Get());
 	Engine::GetList()->SetPipelineState(updateParticleCSPipelineState_.Get());
 	Engine::GetList()->SetComputeRootDescriptorTable(0, particleResource_->GetUAVHandle());
 	Engine::GetList()->SetComputeRootConstantBufferView(1, perFrameResource_->GetGPUVirtualAddress());
+	Engine::GetList()->SetComputeRootDescriptorTable(2, freeListIndexResource_->GetUAVHandle());
+	Engine::GetList()->SetComputeRootDescriptorTable(3, freeListResource_->GetUAVHandle());
 	Engine::GetList()->Dispatch(1, 1, 1);
 
 }
@@ -223,8 +227,12 @@ void ParticleSystem::CreateResource() {
 	particleResource_ = std::make_unique<RWStructuredBuffer>();
 	particleResource_->Create(1024, sizeof(ParticleCS));
 
-	freeCounterResource_ = std::make_unique<RWStructuredBuffer>();
-	freeCounterResource_->Create(1, sizeof(int32_t));
+	freeListIndexResource_ = std::make_unique<RWStructuredBuffer>();
+	freeListIndexResource_->Create(1, sizeof(int32_t));
+
+	freeListResource_ = std::make_unique<RWStructuredBuffer>();
+	freeListResource_->Create(1024, sizeof(uint32_t));
+
 
 	perViewResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(PerView));
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));

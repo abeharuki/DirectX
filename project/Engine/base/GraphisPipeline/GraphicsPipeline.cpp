@@ -1733,7 +1733,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateParticleCSRo
 	}
 
 #pragma region RootSignature
-	D3D12_DESCRIPTOR_RANGE descriptorRangeUAV[2] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRangeUAV[3] = {};
 	descriptorRangeUAV[0].BaseShaderRegister = 0;
 	descriptorRangeUAV[0].NumDescriptors = 1;
 	descriptorRangeUAV[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
@@ -1742,19 +1742,28 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateParticleCSRo
 	descriptorRangeUAV[1].NumDescriptors = 1;
 	descriptorRangeUAV[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
 	descriptorRangeUAV[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	descriptorRangeUAV[2].BaseShaderRegister = 2;
+	descriptorRangeUAV[2].NumDescriptors = 1;
+	descriptorRangeUAV[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+	descriptorRangeUAV[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	// RootSignature作成. 複数設定できるので配列。
-	D3D12_ROOT_PARAMETER rootParameters[2] = {};
+	D3D12_ROOT_PARAMETER rootParameters[3] = {};
 	//particle書き込み用
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	rootParameters[0].DescriptorTable.pDescriptorRanges = &descriptorRangeUAV[0];
 	rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
-	//カウンター書き込み用
+	//リストインデックス書き込み用
 	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	rootParameters[1].DescriptorTable.pDescriptorRanges = &descriptorRangeUAV[1];
 	rootParameters[1].DescriptorTable.NumDescriptorRanges = 1;
+	//リスト書き込み用
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[2].DescriptorTable.pDescriptorRanges = &descriptorRangeUAV[2];
+	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
 
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
@@ -1807,7 +1816,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateEmiteCSRootS
 	}
 
 #pragma region RootSignature
-	D3D12_DESCRIPTOR_RANGE descriptorRangeUAV[2] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRangeUAV[3] = {};
 	descriptorRangeUAV[0].BaseShaderRegister = 0;
 	descriptorRangeUAV[0].NumDescriptors = 1;
 	descriptorRangeUAV[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
@@ -1816,9 +1825,13 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateEmiteCSRootS
 	descriptorRangeUAV[1].NumDescriptors = 1;
 	descriptorRangeUAV[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
 	descriptorRangeUAV[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	descriptorRangeUAV[2].BaseShaderRegister = 2;
+	descriptorRangeUAV[2].NumDescriptors = 1;
+	descriptorRangeUAV[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+	descriptorRangeUAV[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	// RootSignature作成. 複数設定できるので配列。
-	D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	D3D12_ROOT_PARAMETER rootParameters[5] = {};
 	//particle書き込み用
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -1832,11 +1845,16 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateEmiteCSRootS
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;     // CBVを使う
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; // CSで使う
 	rootParameters[2].Descriptor.ShaderRegister = 1; // レジスタ番号を1にバインド
-	//カウンター書き込み用
+	//ListIndex書き込み用
 	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	rootParameters[3].DescriptorTable.pDescriptorRanges = &descriptorRangeUAV[1];
 	rootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
+	//List
+	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[4].DescriptorTable.pDescriptorRanges = &descriptorRangeUAV[2];
+	rootParameters[4].DescriptorTable.NumDescriptorRanges = 1;
 
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
@@ -1889,15 +1907,22 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateUpdatePartic
 	}
 
 #pragma region RootSignature
-	D3D12_DESCRIPTOR_RANGE descriptorRangeUAV[1] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRangeUAV[3] = {};
 	descriptorRangeUAV[0].BaseShaderRegister = 0;
 	descriptorRangeUAV[0].NumDescriptors = 1;
 	descriptorRangeUAV[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
 	descriptorRangeUAV[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-	
+	descriptorRangeUAV[1].BaseShaderRegister = 1;
+	descriptorRangeUAV[1].NumDescriptors = 1;
+	descriptorRangeUAV[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+	descriptorRangeUAV[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	descriptorRangeUAV[2].BaseShaderRegister = 2;
+	descriptorRangeUAV[2].NumDescriptors = 1;
+	descriptorRangeUAV[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+	descriptorRangeUAV[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	// RootSignature作成. 複数設定できるので配列。
-	D3D12_ROOT_PARAMETER rootParameters[2] = {};
+	D3D12_ROOT_PARAMETER rootParameters[4] = {};
 	//particle書き込み用
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -1907,6 +1932,16 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateUpdatePartic
 	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;     // CBVを使う
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; // CSで使う
 	rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号を0にバインド
+	//リストインデックス書き込み用
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[2].DescriptorTable.pDescriptorRanges = &descriptorRangeUAV[1];
+	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
+	//リスト書き込み用
+	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[3].DescriptorTable.pDescriptorRanges = &descriptorRangeUAV[2];
+	rootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
 
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};

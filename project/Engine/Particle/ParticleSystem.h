@@ -110,7 +110,8 @@ private:
 	std::unique_ptr<Material> materialData_;
 	std::unique_ptr<Mesh> meshData_;
 	std::unique_ptr<RWStructuredBuffer> particleResource_ = nullptr;
-	std::unique_ptr<RWStructuredBuffer> freeCounterResource_ = nullptr;
+	std::unique_ptr<RWStructuredBuffer> freeListIndexResource_ = nullptr;
+	std::unique_ptr<RWStructuredBuffer> freeListResource_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> perViewResource_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> emitterResource_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> perFrameResource_ = nullptr;

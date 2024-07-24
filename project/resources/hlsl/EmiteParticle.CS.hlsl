@@ -15,7 +15,8 @@ struct EmitterSphere
 RWStructuredBuffer<Particle> gParticle : register(u0);
 ConstantBuffer<EmitterSphere> gEmitter : register(b0);
 ConstantBuffer<PerFrame> gPerFrame : register(b1);
-RWStructuredBuffer<int32_t> gFreeCounter : register(u1);
+RWStructuredBuffer<int32_t> gFreeListIndex : register(u1);
+RWStructuredBuffer<uint32_t> gFreeList : register(u2);
 
 float3 rand3dTo3d(float3 value, float3 minRange, float3 maxRange)
 {
@@ -81,21 +82,26 @@ void main(uint32_t3 DTid : SV_DispatchThreadID ){
         RandomGenerator generator;
         generator.speed = (DTid + gPerFrame.time) * gPerFrame.time;
         for (uint32_t countIndex = 0; countIndex < gEmitter.count; ++countIndex){
-            int32_t particleIndex;
-            InterlockedAdd(gFreeCounter[0], 1, particleIndex);
-            if (particleIndex < kMaxParticles){
-                 //カウント分Particle
+            int32_t freeListIndex;
+            //FreeListのIndexを1つ前に設定し,現在のIndexを取得
+            InterlockedAdd(gFreeListIndex[0], -1, freeListIndex);
+            if (0 <= freeListIndex && freeListIndex < kMaxParticles)
+            {
+                uint32_t particleIndex = gFreeList[freeListIndex];
                 gParticle[particleIndex].scale = generator.Generate3d(float3(0, 0, 0), float3(1, 1, 1));
                 gParticle[particleIndex].translate = generator.Generate3d(float3(0, 0, 0), float3(1, 1, 1));
                 gParticle[particleIndex].color.rgb = generator.Generate3d(float3(0, 0, 0), float3(1, 1, 1));
                 gParticle[particleIndex].color.a = 1.0f;
             
-                gParticle[particleIndex].lifeTime = generator.Generate1d(0,3); //0から3の間のランダム値
+                gParticle[particleIndex].lifeTime = generator.Generate1d(0, 3); //0から3の間のランダム値
                 gParticle[particleIndex].velocity = generator.Generate3d(float3(-1, -1, -1), float3(1, 1, 1)); //速度ベクトルをランダムに設定
                 gParticle[particleIndex].currentTime = 0.0f; // 初期化時点での経過時間は0
-            }
-            
-           
+            }else{
+             //発生させられなかったので、減らしてしまった分元に戻す。
+                InterlockedAdd(gFreeListIndex[0], 1);
+                
+              break;
+            }   
         }
 
     }
