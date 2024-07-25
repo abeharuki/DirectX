@@ -44,13 +44,10 @@ private:
 	std::unique_ptr<Model> Model_;
 	std::unique_ptr<Renju> renju_;
 	std::unique_ptr<ParticleSystem> particle_;
-	Emitter emitter_{};
-
-	//
-	std::list<RenjuParticle*> particles_;
-	float threshold_ = 0.0f;
-	bool isDead_ = false;
+	EmitterSphere emitter_;
 	bool isParticle_ = false;
+
+	float threshold_ = 0.0f;
 	Vector3 playerPos_;
 	Vector3 enemyPos_;
 

@@ -79,9 +79,19 @@ public:
 
 	static ParticleSystem*Create(const std::string& filename);
 
-	// パーティクルループ
-	void StopParticles();
+	void StopParticle() { emitterSphere_->frequencyTime = 0.0f; }
 
+	bool GetEmit() {
+		if (emitterSphere_->emit != 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+		
+	}
+
+	//emitter
 	void SetEmitter(EmitterSphere emite) { 
 		emitterSphere_->translate = emite.translate;
 		emitterSphere_->count = emite.count;
@@ -91,19 +101,20 @@ public:
 		emitterSphere_->colorRange = emite.colorRange;
 		emitterSphere_->velocityRange = emite.velocityRange;
 	}
-
+	//座標
 	void SetTranslate(Vector3 transform) { emitterSphere_->translate = transform; }
-
+	//射出間隔
+	void SetFrequency(float frequency) { emitterSphere_->frequency = frequency; }
+	void SetFrequencyTime(float frequencyTime) { emitterSphere_->frequencyTime = frequencyTime; }
 	// 色とアルファ値
 	void SetColor(Range color) { emitterSphere_->colorRange = color; };
-
 	// パーティクル速度
 	void SetSpeed(Range speed) { emitterSphere_->velocityRange = speed; };
-
 	//フィールドをセット
 	void SetFiled(AccelerationField accelerationField);
-
+	//テクスチャ
 	void SetTexture(const std::string& filename);
+	//モデル
 	void SetModel(const std::string& filename, std::string& path);
 private:
 

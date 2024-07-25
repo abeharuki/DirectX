@@ -95,7 +95,9 @@ void GameScene::Update() {
 		SceneManager::GetInstance()->ChangeScene("OverScene");
 	}
 
-	
+	//当たり判定
+	CheckAllCollision();
+
 	playerManager_->Update();
 	
 	//コマンドの更新
@@ -158,8 +160,7 @@ void GameScene::Update() {
 	healerManager_->SetViewProjection(viewProjection_);
 	renjuManager_->SetViewProjection(viewProjection_);
 	tankManager_->SetViewProjection(viewProjection_);
-	//当たり判定
-	CheckAllCollision();
+	
 
 	//ライティングの設定
 	playerManager_->GetPlayer()->SetLight(directionLight_);
@@ -326,7 +327,7 @@ void GameScene::CheckAllCollision() {
 	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x,enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
 	posB = healerManager_->GetCanePos();
 
-	if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.0f }, posB, { 0.27f, 0.27f, 1.0f })) {
+	if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.6f }, posB, { 0.25f, 0.4f, 1.0f })) {
 		if (healerManager_->IsAttack()) {
 			enemyManager_->OnCollision();
 			healerManager_->SetParticlePos(posB);

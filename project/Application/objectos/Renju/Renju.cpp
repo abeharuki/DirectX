@@ -15,7 +15,6 @@ void Renju::Initialize() {
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = -2.0f;
-	//worldTransformBase_.rotate.y = 3.14f;
 	worldTransformHead_.Initialize();
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
 
@@ -52,6 +51,9 @@ void Renju::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
+	if (hitCount_ == 0) {
+		behaviorRequest_ = Behavior::kDead;
+	}
 
 	if (behaviorRequest_) {
 		// 振る舞い変更

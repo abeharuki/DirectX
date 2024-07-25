@@ -164,6 +164,8 @@ void DebugScene::Update() {
 		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
 		ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);
 		ImGui::DragFloat3("Pos", &emitter_.translate.x, 0.1f);
+		ImGui::DragFloat3("ScaleRangeMin", &emitter_.scaleRange.min.x, 0.1f);
+		ImGui::DragFloat3("ScaleRangeMax", &emitter_.scaleRange.max.x, 0.1f);
 		ImGui::DragFloat3("PosRangeMin", &emitter_.translateRange.min.x, 0.1f);
 		ImGui::DragFloat3("PosRangeMax", &emitter_.translateRange.max.x, 0.1f);
 		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f,1.0f);

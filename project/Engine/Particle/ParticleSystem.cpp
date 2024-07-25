@@ -68,11 +68,11 @@ void ParticleSystem::Update() {
 		emitterSphere_->velocityRange.max += accelerationField_.acceleration;
 	}
 	
-
 	ImGui::Begin("GameTime");
 	ImGui::Text("perFrame%f", perFrame_->time);
 	ImGui::Text("gameTime%f", Engine::gameTime);
 	ImGui::End();
+	
 }
 
 void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection) {
@@ -87,8 +87,6 @@ void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection)
 	perViewData_->billboardMatrix = billboardMatrix;
 }
 
-
-void ParticleSystem::StopParticles() { particle = false; }
 
 void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
@@ -141,6 +139,8 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
 #endif // DEBUG
 	
+	
+
 }
 
 void ParticleSystem::SetFiled(AccelerationField accelerationField) {

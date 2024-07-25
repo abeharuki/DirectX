@@ -15,7 +15,6 @@ void Tank::Initialize() {
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformHead_.Initialize();
-	//worldTransformHead_.rotate.y = 3.14f;
 	
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].Initialize();
@@ -28,7 +27,7 @@ void Tank::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 
-	hitCount_ = 3;
+	hitCount_ = 0;
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
@@ -50,6 +49,9 @@ void Tank::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
+	if (hitCount_ == 0) {
+		behaviorRequest_ = Behavior::kDead;
+	}
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -212,10 +214,7 @@ void Tank::AttackUpdata() {
 		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos_, 0.2f);
 	}
 	else if (fireTimer_ > 0) {
-		worldTransformBase_.translate = Math::Lerp(
-			worldTransformBase_.translate,
-			{ worldTransformBase_.translate.x, worldTransformBase_.translate.y,
-			 worldTransformBase_.translate.z - 4.0f },
+		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate,{ worldTransformBase_.translate.x, worldTransformBase_.translate.y,worldTransformBase_.translate.z - 4.0f },
 			0.2f);
 		fireTimer_ = 40;
 	}
@@ -228,6 +227,7 @@ void Tank::AttackUpdata() {
 		behaviorRequest_ = Behavior::kRoot;
 		followPlayer_ = true;
 		searchTarget_ = false;
+		attack_ = false;
 	}
 };
 

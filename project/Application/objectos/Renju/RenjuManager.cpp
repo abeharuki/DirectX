@@ -10,18 +10,18 @@ void RenjuManager::Initialize() {
 
 	renju_ = std::make_unique<Renju>();
 	renju_->Initialize();
-
-
-	emitter_.transform = {
-		{0.8f, 0.8f, 0.8f},
-		{0.0f, 0.0f, 0.0f},
-		{0.0f, 0.0f, 0.0f}
+	emitter_ = {
+		.translate{0,0,0},
+		.count{10},
+		.frequency{0.5f},
+		.frequencyTime{0.5f},
+		.scaleRange{.min{1,1,1},.max{1,1,1}},
+		.translateRange{.min{0,0,0},.max{0,0,0}},
+		.colorRange{.min{1,1,1},.max{1,1,1}},
+		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
 	};
-	emitter_.count = 10;
-	emitter_.frequencyTime = 0;
-
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
-
+	
 }
 
 void RenjuManager::Update() {
@@ -32,24 +32,26 @@ void RenjuManager::Update() {
 	preHitE_ = isHitE_;
 	isHitE_ = false;
 
-	for (RenjuParticle* particle : particles_) {
-
-		particle->Update();
+	particle_->SetEmitter(emitter_);
+	particle_->Update();
+	if (isParticle_) {
+		particle_->SetFrequencyTime(0.5f);
+		if (particle_->GetEmit()) {
+			isParticle_ = false;
+		}
 	}
+	else {
+		particle_->StopParticle();
+	}
+
 	renju_->Update();
 	renju_->followPlayer(playerPos_);
 	renju_->searchTarget(enemyPos_);
 };
 
 void RenjuManager::Draw(const ViewProjection& camera) {
-	//Model_->Draw(renju_->GetWorldTransformHead(), camera, false);
 	renju_->Draw(camera);
-	
-	
-
-	for (RenjuParticle* particle : particles_) {
-		particle->Draw(camera);
-	}
+	particle_->Draw(camera);
 };
 
 void RenjuManager::RenderDirect(const ViewProjection& camera) {
@@ -77,17 +79,8 @@ void RenjuManager::RenderDirect(const ViewProjection& camera) {
 }
 
 void RenjuManager::SetParticlePos(Vector3 pos) {
-	// デスフラグが立った弾を削除
-	particles_.remove_if([](RenjuParticle* particle) {
-
-		delete particle;
-		return true;
-
-		});
-	RenjuParticle* newParticle = new RenjuParticle();
-	newParticle->Initialize(particle_.get(), pos);
-
-	particles_.push_back(newParticle);
+	emitter_.translate = pos;
+	isParticle_ = true;
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

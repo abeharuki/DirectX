@@ -3,12 +3,12 @@
 void RenjuParticle::Initialize(ParticleSystem* particle, Vector3& position) {
 	particle_ = particle;
 	particle_->SetTranslate(position);
-	particle_->Update();
+	particle_->SetFrequencyTime(0.5f);
+
 }
 
 void RenjuParticle::Update() {
-
-	particle_->StopParticles();
+	particle_->Update();
 }
 
 

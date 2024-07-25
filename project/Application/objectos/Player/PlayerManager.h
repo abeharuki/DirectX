@@ -89,7 +89,7 @@ private:
 	
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;
-	Emitter emitter_{};
+	EmitterSphere emitter_{};
 	bool isParticle_ = false;
 
 	Transform HpTransform_;

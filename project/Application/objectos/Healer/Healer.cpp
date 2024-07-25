@@ -29,7 +29,6 @@ void Healer::Initialize() {
 	worldTransformCollision_.scale = { 0.27f, 0.27f, 1.0f };
 	worldTransformCollision_.translate.z = 1.5f;
 
-	//worldTransformBase_.rotate.y = 3.14f;
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -37,7 +36,7 @@ void Healer::Initialize() {
 	if (nockBack_) {
 		animation_->Update(0);
 	}
-	hitCount_ = 3;
+	hitCount_ = 0;//3
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
@@ -57,6 +56,10 @@ void Healer::Update() {
 
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
+
+	if (hitCount_ == 0) {
+		behaviorRequest_ = Behavior::kDead;
+	}
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -196,7 +199,7 @@ void Healer::AttackUpdata() {
 	uint32_t swingTime = anticipationTime + chargeTime + 5;
 
 	if (workAttack_.attackParameter_ < anticipationTime) {
-		worldTransformCane_.rotate.x += 0.04f;
+		worldTransformCane_.rotate.x -= 0.04f;
 	}
 
 	if (workAttack_.attackParameter_ >= anticipationTime &&
@@ -205,7 +208,7 @@ void Healer::AttackUpdata() {
 	}
 
 	if (workAttack_.attackParameter_ >= chargeTime && workAttack_.attackParameter_ < swingTime) {
-		worldTransformCane_.rotate.x -= 0.15f;
+		worldTransformCane_.rotate.x += 0.15f;
 		workAttack_.isAttack = true;
 	}
 

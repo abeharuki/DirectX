@@ -45,7 +45,7 @@ class TankManager {
 		std::unique_ptr<Tank> tank_;
 
 		std::unique_ptr<ParticleSystem> particle_;
-		Emitter emitter_{};
+		EmitterSphere emitter_;
 		bool isParticle_ = false;
 
 		bool isDead_ = false;

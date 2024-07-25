@@ -4,13 +4,16 @@ void TankManager::Initialize() {
 
 
 	
-	emitter_.transform = {
-		{0.8f, 0.8f, 0.8f},
-		{0.0f, 0.0f, 0.0f},
-		{0.0f, 0.0f, 0.0f}
+	emitter_ = {
+		.translate{0,0,0},
+		.count{10},
+		.frequency{0.5f},
+		.frequencyTime{0.5f},
+		.scaleRange{.min{1,1,1},.max{1,1,1}},
+		.translateRange{.min{0,0,0},.max{0,0,0}},
+		.colorRange{.min{1,1,1},.max{1,1,1}},
+		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
 	};
-	emitter_.count = 10;
-	emitter_.frequencyTime = 0;
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 	isParticle_ = false;
@@ -33,14 +36,20 @@ void TankManager::Update() {
 	// 敵の判定
 	preHitE_ = isHitE_;
 	isHitE_ = false;
-
+	
+	particle_->SetEmitter(emitter_);
+	particle_->Update();
 	if (isParticle_) {
-		particle_->Update();
-		isParticle_ = false;
+		particle_->SetFrequencyTime(0.5f);
+		if (particle_->GetEmit()) {
+			isParticle_ = false;
+		}
 	}
 	else {
-		particle_->StopParticles();
+		particle_->StopParticle();
 	}
+	
+	
 
 	tank_->Update();
 	tank_->followPlayer(playerPos_);
@@ -48,9 +57,7 @@ void TankManager::Update() {
 };
 
 void TankManager::Draw(const ViewProjection& camera) {
-	//Model_->Draw(tank_->GetWorldTransformHead(), camera, false);
 	tank_->Draw(camera);
-	
 	particle_->Draw(camera);
 };
 
@@ -96,10 +103,8 @@ void TankManager::OnCollision(const WorldTransform& worldTransform) {
 
 
 void TankManager::SetParticlePos(Vector3 pos) {
-	particle_->SetTranslate(pos);
+	emitter_.translate = pos;
 	isParticle_ = true;
-
-
 }
 
 

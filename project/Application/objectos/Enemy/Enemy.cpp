@@ -107,8 +107,6 @@ void Enemy::Draw(const ViewProjection& camera) {
 void Enemy::MoveInitialize() {
 	time_ = 60 * 2;
 	isAttack_ = false;
-	//worldTransformBody_.rotate.x = 1.57075f;
-
 };
 void Enemy::MoveUpdata() {
 
