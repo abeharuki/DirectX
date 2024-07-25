@@ -30,13 +30,13 @@ void DebugScene::Initialize() {
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 	// 地面
 	ground_ = std::make_unique<Ground>();
-	ground_->Initialize(Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
+	ground_->Initialize(Model::CreateModelFromObj("resources/JsonFile/wall.obj", "resources/JsonFile/wall.png"));
 
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 
 
-	modelGround_.reset(Model::CreateModelFromObj("resources/terrain/terrain.obj", "resources/terrain/grass.png"));
+	modelGround_.reset(Model::CreateModelFromObj("resources/Enemy/Alien.obj", "resources/Enemy/Atlas_Monsters.png"));
 
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
@@ -295,7 +295,7 @@ void DebugScene::Update() {
 
 void DebugScene::Draw() {
 	
-	//loader_->Draw(viewProjection_, true);
+	loader_->Draw(viewProjection_, true);
 	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	//modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	//debugPlayer_->Draw(viewProjection_);

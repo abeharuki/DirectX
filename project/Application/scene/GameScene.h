@@ -19,6 +19,7 @@
 #include <Renju/RenjuManager.h>
 #include "CollisionManager/CollisionManager.h"
 #include <Command/Command.h>
+#include <ModelLoader.h>
 
 /// <summary>
 /// ゲームシーン
@@ -57,10 +58,8 @@ private: // メンバ変数
 	std::unique_ptr<Skydome> skydome_;
 	// 天球3Dモデル
 	std::unique_ptr<Model> modelSkydome_;
-	// 地面
-	std::unique_ptr<Ground> ground_;
-	// 地面3Dモデル
-	std::unique_ptr<Model> modelGround_;
+	//ローダー
+	std::unique_ptr<ModelLoader> loader_;
 
 	//フェードイン・フェードアウト用スプライト
 	std::unique_ptr<Sprite> spriteBack_;

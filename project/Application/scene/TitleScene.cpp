@@ -2,6 +2,7 @@
 #include "Framework/SceneManager.h"
 
 
+
 void TitleScene::Initialize() {
 	
 	
@@ -30,12 +31,7 @@ void TitleScene::Initialize() {
 	skydome_->Initialize(modelSkydome_.get());
 
 	// 地面
-	ground_ = std::make_unique<Ground>();
-	// 3Dモデルの生成
-	modelGround_.reset(
-		Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
-	ground_->Initialize(
-		Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
+	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	// プレイヤー
 	playerManager_ = std::make_unique<PlayerManager>();
@@ -130,7 +126,7 @@ void TitleScene::Update() {
 	Fade();
 	cameraMove();
 	skydome_->Update();
-	ground_->Update();
+	loader_->Update();
 	worldTransform_.UpdateMatrix();
 	
 	//ライティングの設定
@@ -139,7 +135,7 @@ void TitleScene::Update() {
 	healerManager_->GetHealer()->SetLight(directionLight_);
 	renjuManager_->GetRenju()->SetLight(directionLight_);
 	tankManager_->GetTank()->SetLight(directionLight_);
-	ground_->SetLight(directionLight_);
+	loader_->SetLight(directionLight_);
 
 	if (Input::PushKey(DIK_C)) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
@@ -166,7 +162,7 @@ void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	
 	// 地面
-	ground_->Draw(viewProjection_, true);
+	loader_->Draw(viewProjection_, true);
 
 	// プレイヤー
 	playerManager_->Draw(viewProjection_);

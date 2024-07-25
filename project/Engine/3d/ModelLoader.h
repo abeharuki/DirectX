@@ -26,6 +26,8 @@ public:
 	//色とアルファ値
 	void SetColor(Vector4 color);
 
+	void SetLight(DirectionLight directionLight);
+
 	//光沢度
 	void SetShininess(float i);
 

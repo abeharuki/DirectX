@@ -112,6 +112,9 @@ ModelData ModelManager::LoadGltfFile(const std::string& directorPath,const std::
 			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
 			modelData.material.textureFilePath = directorPath + "/" + textureFilePath.C_Str();
 		}
+		aiColor4D diffuseColor;
+		aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor);
+		modelData.material.diffuseColor = { diffuseColor.r, diffuseColor.g, diffuseColor.b, diffuseColor.a };
 	}
 
 	modelData.rootNode = ReadNode(scene->mRootNode);
@@ -157,10 +160,15 @@ ModelData ModelManager::LoadObjFile(const std::string& filename) {
 
 	}
 
+	//マテリアル
 	for (uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
 		aiMaterial* material = scene->mMaterials[materialIndex];
 		if (material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 			aiString textureFilePath;
+			aiColor4D diffuseColor;
+			if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor)) {
+				modelData.material.diffuseColor = { diffuseColor.r, diffuseColor.g, diffuseColor.b, diffuseColor.a };
+			}
 			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
 			modelData.material.textureFilePath = textureFilePath.C_Str();
 		}

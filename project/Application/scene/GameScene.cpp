@@ -32,10 +32,8 @@ void GameScene::Initialize() {
 	skydome_->Initialize(modelSkydome_.get());
 
 	// 地面
-	ground_ = std::make_unique<Ground>();
-	// 3Dモデルの生成
-	modelGround_.reset(Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
-	ground_->Initialize(Model::CreateModelFromObj("resources/ground/ground.obj", "resources/ground/ground.png"));
+	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
+
 
 	alpha_ = 1.0f;
 	//フェードイン・フェードアウト用スプライト
@@ -140,7 +138,7 @@ void GameScene::Update() {
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
 	skydome_->Update();
-	ground_->Update();
+	loader_->Update();
 	//プレイヤーに追従
 	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
@@ -168,7 +166,8 @@ void GameScene::Update() {
 	healerManager_->GetHealer()->SetLight(directionLight_);
 	renjuManager_->GetRenju()->SetLight(directionLight_);
 	tankManager_->GetTank()->SetLight(directionLight_);
-	ground_->SetLight(directionLight_);
+
+	loader_->SetLight(directionLight_);
 }
 
 
@@ -179,7 +178,7 @@ void GameScene::Draw() {
 
 	
 	//地面
-	ground_->Draw(viewProjection_, false);
+	loader_->Draw(viewProjection_, true);
 	//プレイヤー
 	if (!playerManager_->GetPlayer()->IsDash()) {
 		playerManager_->Draw(viewProjection_);

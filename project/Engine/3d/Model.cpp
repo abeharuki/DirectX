@@ -11,6 +11,13 @@
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
 	modelData = ModelManager::LoadObjFile(filename);
 	LoadTexture(texturePath);
+	if (texturePath != "") {
+		
+	}
+	else {
+		//LoadTexture(modelData.material.textureFilePath);
+	}
+	
 	CreateVertexResource();
 	sPipeline();
 	
@@ -20,6 +27,10 @@ void Model::Initialize(const std::string& filename, const std::string& texturePa
 void Model::Initialize(const std::string& filename) {
 	textureManager_ = TextureManager::GetInstance();
 	modelData = ModelManager::LoadObjFile("resources/JsonFile/" + filename + ".obj");
+	if (modelData.material.textureFilePath != "") {
+		LoadTexture("resources/JsonFile/" + modelData.material.textureFilePath);
+	}
+	
 	CreateVertexResource();
 	sPipeline();
 

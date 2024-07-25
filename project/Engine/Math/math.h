@@ -150,6 +150,7 @@ struct MeshData
 struct MaterialData {
 
 	std::string textureFilePath;
+	Color diffuseColor;
 };
 
 struct VertexWeightData

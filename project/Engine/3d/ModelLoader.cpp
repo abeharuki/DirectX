@@ -21,7 +21,7 @@ void ModelLoader::Update() {
 			camera_.UpdateMatrix();
 		}
 	}
-	
+
 }
 
 void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
@@ -44,7 +44,7 @@ void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
 
 			i++;
 		}
-		
+
 	}
 
 }
@@ -115,7 +115,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 
 	//レベルデータ格納用インスタンスを作成
 	levelData = new Scene();
-	
+
 	//"objects"のすべてのオブジェクトを走査
 	for (nlohmann::json& object : deserialized["objects"]) {
 		//要素追加
@@ -135,7 +135,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 	for (auto& objectData : levelData->objects) {
 		//ファイル名から登録済みモデルを検索
 		decltype(models)::iterator it = models.find(objectData.filename);
-		if (it == models.end() && objectData.filename !="Camera") {
+		if (it == models.end() && objectData.filename != "Camera") {
 			//blenderでlightを消さないとここでエラーが出る又はファイルネームを設定してないと
 			Model* model = Model::CreateFromObj(objectData.filename);
 			models[objectData.filename] = model;
@@ -178,7 +178,15 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 				}
 
 			}
-
+			Transform uv = {
+		            {30.0f,30.0f,30.0f},
+		            {0.0f,0.0f,0.0f},
+		            {0.0f,0.0f,0.0f},
+			};
+			if (objectData.filename == "ground") {
+				models[objectData.filename]->SetUV(uv);
+			}
+			
 		}
 	}
 
@@ -202,10 +210,10 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 			camera_.Initialize();
 			camera_.translation_ = objectData.transform.translate;
 			camera_.rotation_ = objectData.transform.rotate;
-			
+
 		}
-		
-		
+
+
 	}
 
 }
@@ -220,6 +228,17 @@ void ModelLoader::SetColor(Vector4 color) {
 		if (it != models.end()) { model = it->second; }
 
 		model->SetColor(color);
+
+	}
+}
+void ModelLoader::SetLight(DirectionLight directionLight){
+	for (auto& objectData : levelData->objects) {
+		//ファイル名から登録済みモデルを検索
+		Model* model = nullptr;
+		decltype(models)::iterator it = models.find(objectData.filename);
+		if (it != models.end()) { model = it->second; }
+
+		model->DirectionalLightDraw(directionLight);
 
 	}
 };
@@ -248,8 +267,8 @@ void ModelLoader::Environment(float environment, bool flag) {
 		decltype(models)::iterator it = models.find(objectData.filename);
 		if (it != models.end()) { model = it->second; }
 
-		model->Environment(environment,flag);
-		
+		model->Environment(environment, flag);
+
 	}
 }
 
@@ -260,6 +279,6 @@ void ModelLoader::SetTexture(const std::string& filename) {
 		decltype(models)::iterator it = models.find(objectData.filename);
 		if (it != models.end()) { model = it->second; }
 		model->SetTexture(filename);
-		
+
 	}
 }
