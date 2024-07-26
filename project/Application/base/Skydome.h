@@ -24,4 +24,5 @@ public:
 private:
 	WorldTransform worldTransform_;
 	Model* model_;
+	Transform uv{};
 };

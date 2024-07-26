@@ -137,7 +137,7 @@ ModelData ModelManager::LoadObjFile(const std::string& filename) {
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals());
-		assert(mesh->HasTextureCoords(0));
+		assert(mesh->HasTextureCoords(0));//uv展開してるか
 		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 			aiFace& face = mesh->mFaces[faceIndex];
 			//aiProcess_Triangulate(face);
