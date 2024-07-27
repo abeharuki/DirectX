@@ -9,9 +9,18 @@
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>
 
-/// <summary>
-/// ゲームシーン
-/// </summary>
+enum AnimationNumber {
+	dashAttack,
+	groundAttack,
+	jumpAttack,
+	nomal,
+	nomalAttack,
+	run,
+	runUp,
+	swing,
+};
+
+
 class Enemy : public Collider {
 
 public: // メンバ関数
@@ -86,6 +95,7 @@ private: // メンバ変数
 	WorldTransform worldTransformRock_;
 
 	std::unique_ptr<Animations>animation_;
+	int animationNumber_;
 
 	Vector3 playerPos_ = {};
 	Vector3 healerPos_ = {};

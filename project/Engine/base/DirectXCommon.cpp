@@ -11,7 +11,7 @@
 
 using namespace Microsoft::WRL;
 using namespace Microsoft::WRL;
-const uint32_t DirectXCommon::kMaxSRVCount = 512;
+const uint32_t DirectXCommon::kMaxSRVCount = 1024;
 
 ID3D12DescriptorHeap* CreateDescriptorHeap(
 	ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,

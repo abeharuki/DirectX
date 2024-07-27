@@ -343,7 +343,7 @@
                 "rotation": [
                     0.0,
                     0.0,
-                    -40.43873596191406
+                    -40.4387092590332
                 ],
                 "scaling": [
                     25.0,
@@ -405,6 +405,358 @@
                     -50.0,
                     210.0,
                     41.0
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "pillar"
+        },
+        {
+            "type": "MESH",
+            "name": "Environment_Cliff1_mesh.006",
+            "transform": {
+                "translation": [
+                    181.89036560058594,
+                    132.73760986328125,
+                    36.59368896484375
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "cliff0"
+        },
+        {
+            "type": "MESH",
+            "name": "Column_Round1_Cylinder.002",
+            "transform": {
+                "translation": [
+                    176.9131622314453,
+                    127.2493667602539,
+                    56.504451751708984
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "pillar"
+        },
+        {
+            "type": "MESH",
+            "name": "Environment_Cliff2_mesh.004",
+            "transform": {
+                "translation": [
+                    -122.13706970214844,
+                    109.37785339355469,
+                    -20.46263885498047
+                ],
+                "rotation": [
+                    -179.99998474121094,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "cliff1"
+        },
+        {
+            "type": "MESH",
+            "name": "UI_Rocks_Cube.294",
+            "transform": {
+                "translation": [
+                    142.016845703125,
+                    272.82171630859375,
+                    65.92524719238281
+                ],
+                "rotation": [
+                    -43.31097412109375,
+                    0.0,
+                    0.0
+                ],
+                "scaling": [
+                    30.0,
+                    30.0,
+                    30.0
+                ]
+            },
+            "file_name": "rock0"
+        },
+        {
+            "type": "MESH",
+            "name": "UI_Rocks_Cube.001",
+            "transform": {
+                "translation": [
+                    138.49981689453125,
+                    -225.69293212890625,
+                    20.671646118164062
+                ],
+                "rotation": [
+                    -179.99998474121094,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    30.0,
+                    30.0,
+                    30.0
+                ]
+            },
+            "file_name": "rock0"
+        },
+        {
+            "type": "MESH",
+            "name": "UI_Rocks_Cube.002",
+            "transform": {
+                "translation": [
+                    -188.00115966796875,
+                    272.82171630859375,
+                    18.74527359008789
+                ],
+                "rotation": [
+                    90.00000762939453,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    30.0,
+                    30.0,
+                    30.0
+                ]
+            },
+            "file_name": "rock0"
+        },
+        {
+            "type": "MESH",
+            "name": "UI_Rocks_Cube.003",
+            "transform": {
+                "translation": [
+                    -140.9005889892578,
+                    -107.98989868164062,
+                    18.74527359008789
+                ],
+                "rotation": [
+                    90.0,
+                    135.20069885253906,
+                    3.146417839161586e-06
+                ],
+                "scaling": [
+                    30.0,
+                    30.0,
+                    30.0
+                ]
+            },
+            "file_name": "rock0"
+        },
+        {
+            "type": "MESH",
+            "name": "Environment_Cliff4_mesh.002",
+            "transform": {
+                "translation": [
+                    -243.31605529785156,
+                    -168.67022705078125,
+                    -15.602846145629883
+                ],
+                "rotation": [
+                    -179.99998474121094,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    20.0,
+                    20.0,
+                    20.0
+                ]
+            },
+            "file_name": "cliff3"
+        },
+        {
+            "type": "MESH",
+            "name": "Environment_Cliff1_mesh.001",
+            "transform": {
+                "translation": [
+                    128.3419189453125,
+                    -109.25830078125,
+                    0.761479377746582
+                ],
+                "rotation": [
+                    -179.99998474121094,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "cliff0"
+        },
+        {
+            "type": "MESH",
+            "name": "UI_Rocks_Cube.004",
+            "transform": {
+                "translation": [
+                    290.33843994140625,
+                    51.25798797607422,
+                    98.20325469970703
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    30.0,
+                    30.0,
+                    30.0
+                ]
+            },
+            "file_name": "rock0"
+        },
+        {
+            "type": "MESH",
+            "name": "Column_Round1_Cylinder.003",
+            "transform": {
+                "translation": [
+                    90.0,
+                    250.0,
+                    65.0
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "pillar"
+        },
+        {
+            "type": "MESH",
+            "name": "Column_Round1_Cylinder.004",
+            "transform": {
+                "translation": [
+                    -90.0,
+                    250.0,
+                    65.0
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "pillar"
+        },
+        {
+            "type": "MESH",
+            "name": "Column_Round1_Cylinder.005",
+            "transform": {
+                "translation": [
+                    -70.0,
+                    310.0,
+                    90.0
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "pillar"
+        },
+        {
+            "type": "MESH",
+            "name": "Column_Round1_Cylinder.006",
+            "transform": {
+                "translation": [
+                    70.0,
+                    310.0,
+                    90.0
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "pillar"
+        },
+        {
+            "type": "MESH",
+            "name": "Environment_Cliff1_mesh.002",
+            "transform": {
+                "translation": [
+                    -178.94102478027344,
+                    -57.04093933105469,
+                    17.081880569458008
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    10.0,
+                    10.0,
+                    10.0
+                ]
+            },
+            "file_name": "cliff0"
+        },
+        {
+            "type": "MESH",
+            "name": "Column_Round1_Cylinder.007",
+            "transform": {
+                "translation": [
+                    -170.96302795410156,
+                    -54.29660415649414,
+                    37.19056701660156
                 ],
                 "rotation": [
                     0.0,
