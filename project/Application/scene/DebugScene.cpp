@@ -47,16 +47,19 @@ void DebugScene::Initialize() {
 	debugPlayer_->Initialize();
 
 
+	
 	emitter_ = {
-		.translate{0,0,0},
-		.count{10},
-		.frequency{0.5f},
+		.translate = {0,3,0},
+		.count{50},
+		.frequency{0.075f},
 		.frequencyTime{0.5f},
-		.scaleRange{.min{1,1,1},.max{1,1,1}},
-		.translateRange{.min{0,0,0},.max{0,0,0}},
-		.colorRange{.min{1,1,1},.max{1,1,1}},
-		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
+		.scaleRange{.min{2.2f,1.0f,11.0f},.max{2.2f,3.5f,1.0f}},
+		.translateRange{.min{-3.2f,-1.2f,0.0f},.max{3.2f,1.2f,0.0f}},
+		.colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
+		.lifeTimeRange{.min{0.1f},.max{1.0f}},
+		.velocityRange{.min{0.0f,0.1f,0.0f},.max{0.0f,0.4f,0.3f}},
 	};
+
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 
 	//追従カメラ
@@ -170,6 +173,8 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("PosRangeMax", &emitter_.translateRange.max.x, 0.1f);
 		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f,1.0f);
 		ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f,1.0f);
+		ImGui::SliderFloat("lifeTimeMin", &emitter_.lifeTimeRange.min, 0.0f, 1.0f);
+		ImGui::SliderFloat("lifeTimeMax", &emitter_.lifeTimeRange.max, 0.0f, 1.0f);
 		ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
 		ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
 		ImGui::TreePop();

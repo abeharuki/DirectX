@@ -161,8 +161,7 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	
-	// 地面
-	loader_->Draw(viewProjection_, true);
+	
 
 	// プレイヤー
 	playerManager_->Draw(viewProjection_);
@@ -177,12 +176,14 @@ void TitleScene::Draw() {
 
 	spriteTitle_->Draw();
 	spritePushA_->Draw();
-	
+	// 天球
+	skydome_->Draw(viewProjection_, false);
+	// 地面
+	loader_->Draw(viewProjection_, true);
 }
 
 void TitleScene::RenderDirect() {
-	// 天球
-	skydome_->Draw(viewProjection_, false);
+	
 	spriteBack_->Draw();
 }
 

@@ -5,6 +5,7 @@
 #include "LineBox.h"
 #include <CollisionManager/Collider.h>
 #include "CollisionManager/ColliderManager.h"
+#include <ParticleSystem.h>
 
 class ModelLoader {
 public:
@@ -55,9 +56,11 @@ private:
 	std::map<std::string, Animation*> animationModels;
 	std::vector<WorldTransform*> worldTransforms;
 	ViewProjection camera_;
-	//std::map<std::string, LineBox*>lineboxs_;
+	
 
 	std::vector<ColliderManager*> colliderManager_;
+	std::vector<ParticleSystem*> particle_;
+	EmitterSphere emitter_;
 };
 
 

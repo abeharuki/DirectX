@@ -6,6 +6,12 @@ struct Range
     float32_t3 max;
 };
 
+struct Range1d
+{
+    float32_t min;
+    float32_t max;
+};
+
 struct EmitterSphere
 {
     float32_t3 translate; //位置
@@ -13,10 +19,11 @@ struct EmitterSphere
     uint32_t count; //射出数
     float32_t frequency; //射出間隔
     float32_t frequencyTime; //射出間隔調整時間
-    uint32_t emit; //射出許可]
+    uint32_t emit; //射出許可
     Range scaleRange;
     Range translateRange;
     Range colorRange;
+    Range1d lifeTimeRange;
     Range velocityRange; 
 };
 
@@ -81,7 +88,7 @@ void main(uint32_t3 DTid : SV_DispatchThreadID ){
                 gParticle[particleIndex].color.rgb = generator.Generate3d(float3(gEmitter.colorRange.min), float3(gEmitter.colorRange.max));
                 gParticle[particleIndex].color.a = 1.0f;
             
-                gParticle[particleIndex].lifeTime = generator.Generate1d(1, 1); //1から1の間のランダム値
+                gParticle[particleIndex].lifeTime = generator.Generate1d(float(gEmitter.lifeTimeRange.min), float(gEmitter.lifeTimeRange.max)); //1から1の間のランダム値
                 gParticle[particleIndex].velocity = generator.Generate3d(float3(gEmitter.velocityRange.min), float3(gEmitter.velocityRange.max)); //速度ベクトルをランダムに設定
                 gParticle[particleIndex].currentTime = 0.0f; // 初期化時点での経過時間は0
             }else{

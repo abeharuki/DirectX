@@ -21,7 +21,9 @@ void ModelLoader::Update() {
 			camera_.UpdateMatrix();
 		}
 	}
-
+	for (int i = 0; i < particle_.size(); ++i) {
+		particle_[i]->Update();
+	}
 }
 
 void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
@@ -47,6 +49,10 @@ void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
 
 	}
 
+	for (int i = 0; i < particle_.size(); ++i) {
+		particle_[i]->Draw(viewProjection);
+	}
+
 }
 
 
@@ -69,6 +75,7 @@ void ModelLoader::Delete() {
 	}
 	animationModels.clear();
 	colliderManager_.clear();
+	particle_.clear();
 }
 
 ModelLoader* ModelLoader::Create(const std::string& filename) {
@@ -205,6 +212,27 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 
 			//配列に登録
 			worldTransforms.push_back(newObject);
+			if (objectData.filename == "pillar") {
+				ParticleSystem* particle = new ParticleSystem;
+				particle->Initialize("resources/particle/circle.png");
+				  emitter_ = {
+						.translate = {objectData.transform.translate.x,objectData.transform.translate.y+4,objectData.transform.translate.z},
+		                .count{50},
+		                .frequency{0.075f},
+		                .frequencyTime{0.5f},
+		                .scaleRange{.min{2.2f,1.0f,11.0f},.max{2.2f,3.5f,1.0f}},
+		                .translateRange{.min{-3.2f,-1.2f,0.0f},.max{3.2f,1.2f,0.0f}},
+		                .colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
+		                .lifeTimeRange{.min{0.1f},.max{1.0f}},
+		                .velocityRange{.min{0.0f,0.1f,0.0f},.max{0.0f,0.4f,0.3f}},
+				  };
+				particle->SetEmitter(emitter_);
+
+				particle_.push_back(particle);
+
+
+			}
+
 		}
 		else {
 			camera_.Initialize();

@@ -28,6 +28,13 @@ struct Range
 	float padding2;
 };
 
+struct Range1d
+{
+	float min;
+	float max;
+	float padding[2];
+};
+
 struct EmitterSphere {
 	Vector3 translate;//位置
 	float radius;//射出半径
@@ -38,6 +45,7 @@ struct EmitterSphere {
 	Range scaleRange;
 	Range translateRange;
 	Range colorRange;
+	Range1d lifeTimeRange;
 	Range velocityRange;
 };
 
@@ -99,6 +107,7 @@ public:
 		emitterSphere_->scaleRange = emite.scaleRange;
 		emitterSphere_->translateRange = emite.translateRange;
 		emitterSphere_->colorRange = emite.colorRange;
+		emitterSphere_->lifeTimeRange = emite.lifeTimeRange;
 		emitterSphere_->velocityRange = emite.velocityRange;
 	}
 	//座標

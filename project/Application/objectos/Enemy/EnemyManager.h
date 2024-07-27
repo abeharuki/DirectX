@@ -29,7 +29,7 @@ public:
 	void OnRenjuCollision();
 
 private:
-	std::unique_ptr<Model> Model_;
+	//std::unique_ptr<Model> rockModel_;
 	std::unique_ptr<Sphere> rockModel_;
 	std::unique_ptr<Model> bulletModel_;
 	std::unique_ptr<Enemy> enemy_;

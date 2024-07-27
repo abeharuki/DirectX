@@ -177,8 +177,7 @@ void GameScene::Draw() {
 	//Model::LightDraw(color_, direction_, intensity_);
 
 	
-	//地面
-	loader_->Draw(viewProjection_, true);
+	
 	//プレイヤー
 	if (!playerManager_->GetPlayer()->IsDash()) {
 		playerManager_->Draw(viewProjection_);
@@ -191,11 +190,13 @@ void GameScene::Draw() {
 	healerManager_->Draw(viewProjection_);
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
-
-	
-
 	//コマンド
 	command_->Draw(viewProjection_);
+	// 天球
+	skydome_->Draw(viewProjection_, false);
+	//地面
+	loader_->Draw(viewProjection_, true);
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -224,8 +225,7 @@ void GameScene::RenderDirect() {
 		playerManager_->Draw(viewProjection_);
 	}
 
-	// 天球
-	skydome_->Draw(viewProjection_, false);
+	
 
 	spriteBack_->Draw();
 
