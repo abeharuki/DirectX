@@ -14,6 +14,8 @@
 #include "CollisionManager/CollisionManager.h"
 #include <ParticleSystem.h>
 
+
+
 class DebugScene: public IScene {
 public:
 	void Initialize() override;
@@ -44,8 +46,9 @@ private:
 	WorldTransform worldTransformSphere_;
 	WorldTransform worldTransformGround_;
 	WorldTransform worldTransformLineBox_;
-	std::unique_ptr<Model> modelBunny_;
 	std::unique_ptr<Animations>animation_;
+	int AnimationNum_ = 0;
+
 	std::unique_ptr<Model> modelGround_;
 
 	std::unique_ptr<ParticleSystem> particle_;

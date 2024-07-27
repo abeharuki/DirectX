@@ -67,12 +67,12 @@ void ParticleSystem::Update() {
 		emitterSphere_->velocityRange.min -= accelerationField_.acceleration;
 		emitterSphere_->velocityRange.max += accelerationField_.acceleration;
 	}
-	
+	/*
 	ImGui::Begin("GameTime");
 	ImGui::Text("perFrame%f", perFrame_->time);
 	ImGui::Text("gameTime%f", Engine::gameTime);
 	ImGui::End();
-	
+	*/
 }
 
 void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection) {

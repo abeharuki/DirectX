@@ -6,15 +6,14 @@
 void Enemy::Initialize() {
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "enemy.png", "enemy.gltf"));
-
-
+	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf"));
+	animationNumber_ = nomal;
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.z = 10.0f;
 	worldTransformBase_.rotate.y = 1.57075f*2;
 	worldTransformBody_.Initialize();
-	worldTransformBody_.scale = { 2.0f,2.0f,2.0f };
+	worldTransformBody_.scale = { 1.0f,1.0f,1.0f };
 	worldTransformRock_.Initialize();
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	worldTransformRock_.translate.z = -15000.0f;
@@ -29,9 +28,8 @@ void Enemy::Initialize() {
 
 
 
-	AABB aabbSize{ .min{-1.0f,-3.0f,-0.8f},.max{1.0f,3.0f,0.8f} };
+	AABB aabbSize{ .min{-0.5f,-0.5f,-0.5f},.max{0.5f,0.5f,0.5f} };
 	SetAABB(aabbSize);
-	SetCenter({ 0.0f,3.0f,0.0f });
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
@@ -78,7 +76,7 @@ void Enemy::Update() {
 	}
 
 	*/
-
+	animation_->Update(animationNumber_);
 	Relationship();
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.TransferMatrix();
@@ -93,6 +91,7 @@ void Enemy::Update() {
 
 	ImGui::Begin("Enemy");
 	animation_->AnimationDebug();
+	ImGui::SliderFloat3("pos", &worldTransformBody_.translate.x, -2.0f, 2.0f);
 	ImGui::SliderFloat3("rotato", &worldTransformBody_.rotate.x, -2.0f, 2.0f);
 	ImGui::Text("time%d", time_);
 	ImGui::End();

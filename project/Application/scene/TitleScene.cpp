@@ -79,7 +79,7 @@ void TitleScene::Initialize() {
 
 	PostEffect::GetInstance()->isGrayscale(false);
 	PostEffect::GetInstance()->isOutLine(true);
-	PostEffect::GetInstance()->isBloom(true);
+	//PostEffect::GetInstance()->isBloom(true);
 	
 }
 

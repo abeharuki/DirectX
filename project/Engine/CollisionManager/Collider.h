@@ -50,6 +50,7 @@ public:
 		lineBox_.reset(LineBox::Create(aabb_));
 	};
 
+	//WorldTrnsformのScaleが全て1じゃないとおかしくなる
 	void RenderCollisionBounds(WorldTransform& world, const ViewProjection& camera) {
 #ifdef _DEBUG
 		if (priType == Primitive::kAABB) {

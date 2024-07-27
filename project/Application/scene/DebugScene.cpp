@@ -3,6 +3,8 @@
 #include <PostEffects/PostEffect.h>
 #include <numbers>
 
+
+
 void DebugScene::Initialize() {
 	//衝突マネージャーの作成
 	collisionManager_ = std::make_unique<CollisionManager>();
@@ -14,7 +16,7 @@ void DebugScene::Initialize() {
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
-	worldTransformAnimation_.translate = { 2.0f,3.0f,-10.0f };
+	worldTransformAnimation_.scale = {150.0f,150.0f,150.0f};
 	worldTransformSphere_.Initialize();
 	worldTransformSphere_.translate.y = 1.6f;
 	worldTransformSphere_.rotate.y = -1.55f;
@@ -41,7 +43,7 @@ void DebugScene::Initialize() {
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/human", "white.png", "walk.gltf"));
+	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf"));
 
 	debugPlayer_ = std::make_unique<DebugPlayer>();
 	debugPlayer_->Initialize();
@@ -86,11 +88,11 @@ void DebugScene::Initialize() {
 }
 
 void DebugScene::Update() {
-	worldTransformAnimation_.rotate.y += 0.01f;
+	//worldTransformAnimation_.rotate.y += 0.01f;
 	animation_->DirectionalLightDraw(directionLight_);
 	sphere_->DirectionalLightDraw(directionLight_);
 	modelGround_->DirectionalLightDraw(directionLight_);
-	animation_->Update(0);
+	animation_->Update(AnimationNum_);
 	//animation_->Environment(env_, true);
 
 	emitter_.count = particleCount_;
@@ -214,7 +216,7 @@ void DebugScene::Update() {
 
 	//アニメーション
 	if (ImGui::TreeNode("Animation")) {
-
+		ImGui::SliderInt("AnimationPos", &AnimationNum_, 0,7);
 		ImGui::DragFloat3("AnimationPos", &worldTransformAnimation_.translate.x, 0.1f);
 		ImGui::DragFloat3("AnimationRotate", &worldTransformAnimation_.rotate.x, 0.01f);
 		ImGui::DragFloat3("AnimationSize", &worldTransformAnimation_.scale.x, 0.1f);
@@ -301,7 +303,7 @@ void DebugScene::Update() {
 void DebugScene::Draw() {
 	
 	loader_->Draw(viewProjection_, true);
-	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	//modelGround_->Draw(worldTransformGround_, viewProjection_, true);
 	//debugPlayer_->Draw(viewProjection_);
 

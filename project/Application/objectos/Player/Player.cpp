@@ -47,9 +47,6 @@ void Player::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionMaskPlayer);
-
-	//linebox_ = std::make_unique<LineBox>();
-	//linebox_.reset(LineBox::Create(AABB({ - worldTransformCollision_.scale.x, -worldTransformCollision_.scale.y, -worldTransformCollision_.scale.z }, {worldTransformCollision_.scale.x,worldTransformCollision_.scale.y,worldTransformCollision_.scale.z})));
 }
 
 void Player::Update() {
@@ -156,7 +153,7 @@ void Player::Update() {
 void Player::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera,true);
 	RenderCollisionBounds(worldTransformHead_, camera);
-	//linebox_->Draw(worldTransformHammer_, camera, true);
+	
 }
 
 // 移動
