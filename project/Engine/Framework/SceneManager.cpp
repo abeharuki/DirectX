@@ -13,6 +13,15 @@ SceneManager* SceneManager::GetInstance() {
 	return instance_;
 }
 
+void SceneManager::Destroy()
+{
+	if (instance_)
+	{
+		delete instance_;
+		instance_ = nullptr;
+	}
+}
+
 void SceneManager::Update() {
 	
 	

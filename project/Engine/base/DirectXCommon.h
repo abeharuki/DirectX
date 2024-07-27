@@ -174,7 +174,7 @@ private: // メンバ変数
 	std::chrono::steady_clock::time_point reference_;
 
 	std::array<std::unique_ptr<DescriptorHeap>, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> descriptorHeaps_{};
-	std::array<const uint32_t, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> kNumDescriptors_ = { 256, 256, 256, 256, };
+	std::array<const uint32_t, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> kNumDescriptors_ = { 1024, 1024,1024, 1024, };
 private: // メンバ関数
 	DirectXCommon() = default;
 	~DirectXCommon() = default;

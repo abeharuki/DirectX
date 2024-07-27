@@ -37,6 +37,7 @@ void Framework::Draw() {
 void Framework::Finalize() {
 	Engine::Finalize();
 	postEffect_->Destroy();
+	SceneManager::Destroy();
 	delete sceneFactory_;
 }
 

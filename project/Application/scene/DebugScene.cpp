@@ -37,9 +37,10 @@ void DebugScene::Initialize() {
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 
-
-	modelGround_.reset(Model::CreateModelFromObj("resources/Enemy/Alien.obj", "resources/Enemy/Atlas_Monsters.png"));
-
+	for (int i = 0; i < 100; ++i) {
+		//modelGround_[i].reset(Model::CreateModelFromObj("resources/Enemy/Alien.obj", "resources/Enemy/Atlas_Monsters.png"));
+	}
+	
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
@@ -91,7 +92,7 @@ void DebugScene::Update() {
 	//worldTransformAnimation_.rotate.y += 0.01f;
 	animation_->DirectionalLightDraw(directionLight_);
 	sphere_->DirectionalLightDraw(directionLight_);
-	modelGround_->DirectionalLightDraw(directionLight_);
+	//modelGround_->DirectionalLightDraw(directionLight_);
 	animation_->Update(AnimationNum_);
 	//animation_->Environment(env_, true);
 
@@ -133,10 +134,10 @@ void DebugScene::Update() {
 	//sphere_->isDissolve(animeDissolve_.isEnble);
 	sphere_->SetThreshold(animeDissolve_.threshold);
 	//modelGround_->isDissolve(animeDissolve_.isEnble);
-	modelGround_->SetThreshold(animeDissolve_.threshold);
+	//modelGround_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
 	sphere_->SetEdgeColor(dissolve_.edgeColor);
-	modelGround_->SetEdgeColor(dissolve_.edgeColor);
+	//modelGround_->SetEdgeColor(dissolve_.edgeColor);
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);

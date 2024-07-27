@@ -5,7 +5,7 @@
 class SceneManager {
 public:
 	static SceneManager* GetInstance();
-
+	static void Destroy();
 
 	~SceneManager();
 

@@ -49,7 +49,7 @@ private:
 	std::unique_ptr<Animations>animation_;
 	int AnimationNum_ = 0;
 
-	std::unique_ptr<Model> modelGround_;
+	std::unique_ptr<Model> modelGround_[100];
 
 	std::unique_ptr<ParticleSystem> particle_;
 	EmitterSphere emitter_;
