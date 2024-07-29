@@ -28,7 +28,7 @@ void Enemy::Initialize() {
 
 
 
-	AABB aabbSize{ .min{-0.5f,-0.5f,-0.5f},.max{0.5f,0.5f,0.5f} };
+	AABB aabbSize{ .min{-1.5f,-1.5f,-1.5f},.max{1.5f,1.5f,1.5f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);

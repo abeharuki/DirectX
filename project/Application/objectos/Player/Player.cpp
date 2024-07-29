@@ -50,7 +50,7 @@ void Player::Initialize() {
 }
 
 void Player::Update() {
-	CheckCollision(false);
+	
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
@@ -601,9 +601,10 @@ void Player::OnCollision(const WorldTransform& worldTransform) {
 
 
 void Player::OnCollision(Collider* collider) {
-	CheckCollision(true);
+	
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+		CheckCollision(true);
 		if (isEnemyAttack_) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };

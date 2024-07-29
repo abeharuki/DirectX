@@ -10,7 +10,6 @@ void TitleScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransform_.scale = { 10.0f,10.0f,10.0f };
 	worldTransform_.translate.z = -5;
-	//worldTransform_.rotate = {0.7f,0.0f,3.14f};
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 	
@@ -63,13 +62,12 @@ void TitleScene::Initialize() {
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Black.png"));
-	spriteTitle_.reset(Sprite::Create("resources/Title/title.png"));
-	spriteTitle_->SetSize({ 2000.0f, 800.0f });
-	spriteTitle_->SetPosition({ -300,0.0f });
+	spriteTitle_.reset(Sprite::Create("resources/Title/DRAPONQUEST.png"));
+	spriteTitle_->SetPosition({ 0.0f,-250.0f });
 	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));
+	spritePushA_->SetPosition(Vector2{ 50.0f,0.0f });
 	//spriteRule_.reset(Sprite::Create("resources/Title/rule.png"));
 	rule_ = false;
-	pos_.x = 1280.0f;
 	
 	spriteBack_->SetSize({ 1280.0f,720.0f });
 	isFadeIn_ = true;
@@ -84,9 +82,6 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Update() {
-
-	
-	
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
 	if (Input::GetInstance()->GetPadConnect()) {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
@@ -155,6 +150,7 @@ void TitleScene::Update() {
 	ImGui::DragFloat3("DirectionLight", &directionLight_.direction.x, 1.0f);
 	ImGui::DragFloat("Light", &directionLight_.intensity, 1.0f);
 	ImGui::DragFloat("outline", &a_, 0.1f);
+	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 }
 

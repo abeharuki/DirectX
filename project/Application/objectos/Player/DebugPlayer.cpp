@@ -76,7 +76,7 @@ void DebugPlayer::Update() {
 
 	}*/
 
-	CheckCollision(false);
+	
 
 	velocity_ = { 0.0f,0.0f,0.0f };
 	// 上下移動

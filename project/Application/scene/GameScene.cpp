@@ -176,7 +176,10 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	//Model::LightDraw(color_, direction_, intensity_);
 
-	
+	// 天球
+	skydome_->Draw(viewProjection_, false);
+	//地面
+	loader_->Draw(viewProjection_, true);
 	
 	//プレイヤー
 	if (!playerManager_->GetPlayer()->IsDash()) {
@@ -192,10 +195,7 @@ void GameScene::Draw() {
 	renjuManager_->Draw(viewProjection_);
 	//コマンド
 	command_->Draw(viewProjection_);
-	// 天球
-	skydome_->Draw(viewProjection_, false);
-	//地面
-	loader_->Draw(viewProjection_, true);
+	
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

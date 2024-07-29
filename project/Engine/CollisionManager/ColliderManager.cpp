@@ -8,11 +8,6 @@ void ColliderManager::Draw(const ViewProjection& camera) {
 }
 
 void ColliderManager::OnCollision(Collider* collider){
-
-	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {
-		CheckCollision(true);
-	}
-
 }
 
 const Vector3 ColliderManager::GetWorldPosition() const {
