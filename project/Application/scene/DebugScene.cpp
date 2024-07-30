@@ -22,7 +22,7 @@ void DebugScene::Initialize() {
 	worldTransformGround_.Initialize();
 	worldTransformGround_.rotate.y = 1.58f;
 	worldTransformLineBox_.Initialize();
-	
+	model_.reset(Model::CreateModelFromObj("resources/JsonFile/pillar.obj","resources/white.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
@@ -264,7 +264,8 @@ void DebugScene::Update() {
 void DebugScene::Draw() {
 	
 	loader_->Draw(viewProjection_, true);
-	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	model_->Draw(worldTransformAnimation_, viewProjection_, true);
 	particle_->Draw(viewProjection_);
 }
 

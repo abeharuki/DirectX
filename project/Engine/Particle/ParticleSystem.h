@@ -125,6 +125,8 @@ public:
 	void SetTexture(const std::string& filename);
 	//モデル
 	void SetModel(const std::string& filename, std::string& path);
+
+	void DebugParameter();
 private:
 
 	void InitilaizeCS();
@@ -178,4 +180,8 @@ private:
 
 	WorldTransform worldTransform_;
 	std::unique_ptr<LineBox> linebox_;
+
+	//デバック用
+	EmitterSphere emitter_;
+	int particleCount_;
 };

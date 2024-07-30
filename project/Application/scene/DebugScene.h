@@ -35,6 +35,8 @@ private:
 		true,
 	};
 
+	std::unique_ptr<Model> model_;
+
 	//衝突マネージャー
 	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
 

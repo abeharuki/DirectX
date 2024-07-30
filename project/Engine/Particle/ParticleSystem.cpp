@@ -274,3 +274,23 @@ void ParticleSystem::sPipeline() {
 	updateParticleCSPipelineState_ = GraphicsPipeline::GetInstance()->CreateUpdateParticleCSGraphicsPipeline();
 
 };
+
+void ParticleSystem::DebugParameter() {
+	emitter_.count = particleCount_;
+	SetEmitter(emitter_);
+	ImGui::Begin("DebugParticle");
+	ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
+	ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);
+	ImGui::DragFloat3("Pos", &emitter_.translate.x, 0.1f);
+	ImGui::DragFloat3("ScaleRangeMin", &emitter_.scaleRange.min.x, 0.1f);
+	ImGui::DragFloat3("ScaleRangeMax", &emitter_.scaleRange.max.x, 0.1f);
+	ImGui::DragFloat3("PosRangeMin", &emitter_.translateRange.min.x, 0.1f);
+	ImGui::DragFloat3("PosRangeMax", &emitter_.translateRange.max.x, 0.1f);
+	ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f, 1.0f);
+	ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f, 1.0f);
+	ImGui::SliderFloat("lifeTimeMin", &emitter_.lifeTimeRange.min, 0.0f, 1.0f);
+	ImGui::SliderFloat("lifeTimeMax", &emitter_.lifeTimeRange.max, 0.0f, 1.0f);
+	ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
+	ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
+	ImGui::End();
+}
