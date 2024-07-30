@@ -19,7 +19,6 @@ void Player::Initialize() {
 	worldTransformHammer_.Initialize();
 	worldTransformHammer_.rotate.y = 3.14f;
 	worldTransformHead_.Initialize();
-	//worldTransformHead_.rotate.y = 3.14f;
 	worldTransformCollision_.Initialize();
 	worldTransformCollision_.scale = { 0.1f, 1.0f, 0.1f };
 	worldTransformCollision_.translate.y = 2.0f;
@@ -378,10 +377,10 @@ void Player::knockInitialize() {
 	animation_->SetAnimationTimer(0, 8.0f);
 	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
-	hitCount_--;
+	//hitCount_--;
 };
 void Player::knockUpdata() {
-	worldTransformBase_.translate += velocity_;
+	worldTransformBase_.translate -= velocity_;
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
 		PostEffect::GetInstance()->isVignetting(false);

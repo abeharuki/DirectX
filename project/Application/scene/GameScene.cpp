@@ -9,12 +9,6 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {}
-/*
-GameScene* GameScene::GetInstance() {
-	static GameScene instance;
-	return &instance;
-}
-*/
 
 void GameScene::Initialize() {
 
@@ -33,7 +27,6 @@ void GameScene::Initialize() {
 
 	// 地面
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
-
 
 	alpha_ = 1.0f;
 	//フェードイン・フェードアウト用スプライト
@@ -148,7 +141,7 @@ void GameScene::Update() {
 	renjuManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
 	tankManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
 	//プレイヤーと味方座標の取得
-	if (!enemyManager_->IsAttack()) {
+	if (!enemyManager_->GetEnemy()->IsBehaberAttack()) {
 		enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
 		enemyManager_->SetHealerPos(healerManager_->GetHealer()->GetWorldPosition());
 		enemyManager_->SetRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());

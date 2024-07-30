@@ -16,40 +16,17 @@ void DebugScene::Initialize() {
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
-	worldTransformAnimation_.scale = {150.0f,150.0f,150.0f};
 	worldTransformSphere_.Initialize();
 	worldTransformSphere_.translate.y = 1.6f;
 	worldTransformSphere_.rotate.y = -1.55f;
 	worldTransformGround_.Initialize();
 	worldTransformGround_.rotate.y = 1.58f;
 	worldTransformLineBox_.Initialize();
-	linebox_ = std::make_unique<LineBox>();
-	AABB aabb = { {-1,-1,-1},{1,1,1} };
-	linebox_.reset(LineBox::Create(aabb));
-
-	//skybox
-	skybox_ = std::make_unique<Skybox>();
-	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
-	// 地面
-	ground_ = std::make_unique<Ground>();
-	ground_->Initialize(Model::CreateModelFromObj("resources/JsonFile/wall.obj", "resources/JsonFile/wall.png"));
-
-	sphere_ = std::make_unique<Sphere>();
-	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
-
-	for (int i = 0; i < 100; ++i) {
-		//modelGround_[i].reset(Model::CreateModelFromObj("resources/Enemy/Alien.obj", "resources/Enemy/Atlas_Monsters.png"));
-	}
 	
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf"));
-
-	debugPlayer_ = std::make_unique<DebugPlayer>();
-	debugPlayer_->Initialize();
-
-
+	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
 	
 	emitter_ = {
 		.translate = {0,3,0},
@@ -70,10 +47,6 @@ void DebugScene::Initialize() {
 	followCamera_->Initialize();
 	// 自キャラのワールドトランスフォームを追従カメラにセット
 	followCamera_->SetTarget(&worldTransform_);
-
-	// 自キャラの生成と初期化処理
-	debugPlayer_->SetViewProjection(&followCamera_->GetViewProjection());
-
 	PostEffect::GetInstance()->isGrayscale(false);
 
 	vignetting_.intensity = 16.0f;
@@ -89,12 +62,9 @@ void DebugScene::Initialize() {
 }
 
 void DebugScene::Update() {
-	//worldTransformAnimation_.rotate.y += 0.01f;
 	animation_->DirectionalLightDraw(directionLight_);
-	sphere_->DirectionalLightDraw(directionLight_);
-	//modelGround_->DirectionalLightDraw(directionLight_);
 	animation_->Update(AnimationNum_);
-	//animation_->Environment(env_, true);
+	animation_->SetFlameTimer(animaflame_);
 
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
@@ -103,14 +73,12 @@ void DebugScene::Update() {
 	}
 
 	loader_->Update();
-	debugPlayer_->Update();
-	//CameraMove();
+	
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
 	//viewProjection_ = loader_->GetCamera();
-	debugPlayer_->SetViewProjection(&viewProjection_);
 
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
@@ -118,7 +86,7 @@ void DebugScene::Update() {
 	worldTransformSphere_.UpdateMatrix();
 	worldTransformLineBox_.UpdateMatrix();
 
-	//loader_->GetModel("box")->Environment(env_, true);
+	
 	grayscale_.isEnable = postEffects[0];
 	vignetting_.isEnable = postEffects[1];
 	smoothing_.isEnable = postEffects[2];
@@ -129,15 +97,10 @@ void DebugScene::Update() {
 	animeDissolve_.isEnble = isAnimeDissolve_;
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
-	//animation_->isDissolve(animeDissolve_.isEnble);
+	
 	animation_->SetThreshold(animeDissolve_.threshold);
-	//sphere_->isDissolve(animeDissolve_.isEnble);
-	sphere_->SetThreshold(animeDissolve_.threshold);
-	//modelGround_->isDissolve(animeDissolve_.isEnble);
-	//modelGround_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
-	sphere_->SetEdgeColor(dissolve_.edgeColor);
-	//modelGround_->SetEdgeColor(dissolve_.edgeColor);
+	
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
@@ -191,7 +154,6 @@ void DebugScene::Update() {
 		ImGui::TreePop();
 		
 	}
-
 	if (ImGui::TreeNode("LineBox")) {
 
 		ImGui::DragFloat3("Pos", &worldTransformLineBox_.translate.x, 0.1f);
@@ -200,7 +162,6 @@ void DebugScene::Update() {
 
 		ImGui::TreePop();
 	}
-
 	//ローダーオブジェクト
 	if (ImGui::TreeNode("LoaderObj")) {
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
@@ -214,10 +175,10 @@ void DebugScene::Update() {
 
 		ImGui::TreePop();
 	}
-
 	//アニメーション
 	if (ImGui::TreeNode("Animation")) {
-		ImGui::SliderInt("AnimationPos", &AnimationNum_, 0,7);
+		ImGui::SliderInt("AnimationNum", &AnimationNum_, 0,7);
+		ImGui::SliderFloat("AnimationFlame", &animaflame_, 0, 60);
 		ImGui::DragFloat3("AnimationPos", &worldTransformAnimation_.translate.x, 0.1f);
 		ImGui::DragFloat3("AnimationRotate", &worldTransformAnimation_.rotate.x, 0.01f);
 		ImGui::DragFloat3("AnimationSize", &worldTransformAnimation_.scale.x, 0.1f);
@@ -225,7 +186,6 @@ void DebugScene::Update() {
 		ImGui::SliderFloat("Thresholed", &animeDissolve_.threshold, 0.01f, 1.0f);
 		ImGui::TreePop();
 	}
-
 	//Posteffect
 	if (ImGui::TreeNode("PostEffect")) {
 		// Grayscale
@@ -305,12 +265,6 @@ void DebugScene::Draw() {
 	
 	loader_->Draw(viewProjection_, true);
 	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
-	//modelGround_->Draw(worldTransformGround_, viewProjection_, true);
-	//debugPlayer_->Draw(viewProjection_);
-
-	//sphere_->Draw(worldTransformSphere_, viewProjection_, true);
-	//ground_->Draw(viewProjection_, false);
-	//skybox_->Draw(worldTransform_, viewProjection_);
 	particle_->Draw(viewProjection_);
 }
 
@@ -434,7 +388,6 @@ void DebugScene::CameraMove() {
 void DebugScene::CheckAllCollision() {
 	//コリジョン関係
 	collisionManager_->ClearColliderList();
-	collisionManager_->SetColliderList(debugPlayer_.get());
 	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
 		collisionManager_->SetColliderList(loader_->GetCollider(i));
 	}

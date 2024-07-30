@@ -13,6 +13,7 @@
 #include "3d/LineBox.h"
 #include "CollisionManager/CollisionManager.h"
 #include <ParticleSystem.h>
+#include <Enemy/EnemyManager.h>
 
 
 
@@ -48,19 +49,13 @@ private:
 	WorldTransform worldTransformLineBox_;
 	std::unique_ptr<Animations>animation_;
 	int AnimationNum_ = 0;
+	float animaflame_ = 0.0f;
 
-	std::unique_ptr<Model> modelGround_[100];
-
+	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;
 	EmitterSphere emitter_;
 	int particleCount_;
 	bool particleFlag_;
-
-	// 球
-	std::unique_ptr<Sphere> sphere_;
-
-	//線の箱
-	std::unique_ptr<LineBox> linebox_;
 
 	// 速度
 	Vector3 velocity_ = {};
@@ -69,12 +64,7 @@ private:
 
 	//ローダー
 	std::unique_ptr<ModelLoader> loader_;
-	// 地面
-	std::unique_ptr<Ground> ground_;
-	std::unique_ptr<Skybox> skybox_;
-
-	//プレイヤー
-	std::unique_ptr<DebugPlayer> debugPlayer_;
+	
 
 	//アニメーションdissolve
 	DissolveStyle animeDissolve_;
@@ -95,4 +85,7 @@ private:
 	bool postEffects[9];
 
 	float env_;
+
+	
+
 };

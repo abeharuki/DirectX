@@ -44,20 +44,21 @@ public: // メンバ関数
 	// 移動
 	void MoveInitialize();
 	void MoveUpdata();
-
-	// 攻撃
+	//攻撃
 	void AttackInitialize();
 	void AttackUpdata();
-
+	//死亡
 	void DeadInitilize();
 	void DeadUpdata();
 
-
-
+	/*-----------------------攻撃レパートリー----------------------*/
+	//通常攻撃
+	void NomalAttackInitialize();
+	void NomalAttackUpdata();
+	//ダッシュ
 	void DashAttackInitialize();
 	void DashAttackUpdata();
-
-
+	//投擲
 	void ThrowingAttackInitialize();
 	void ThrowingAttackUpdata();
 
@@ -78,15 +79,25 @@ public: // メンバ関数
 	// パーツ親子関係
 	void Relationship();
 
-
+	bool IsBehaberAttack() {
+		return  behaviorAttack_;
+	}
 	bool isAttack() { return isAttack_; };
-
 	bool isClear() { return clear_; };
-
 	void isDead(bool dead) {
 		if (dead) {
 			behavior_ = Behavior::kDead;
 		};
+	}
+
+	//範囲の条件文
+	bool isWithinRange(float value, float range ,float sub) {
+		if (value >= range-sub && value <= range+sub) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 private: // メンバ変数
@@ -102,7 +113,8 @@ private: // メンバ変数
 	Vector3 renjuPos_ = {};
 	Vector3 tankPos_ = {};
 
-	bool isAttack_;
+	bool isAttack_ = false;
+	bool behaviorAttack_ = false;
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
@@ -119,6 +131,7 @@ private: // メンバ変数
 
 
 	enum class BehaviorAttack {
+		kNomal,//通常攻撃
 		kDash, // ダッシュ攻撃
 		kThrowing,//投擲攻撃
 	};

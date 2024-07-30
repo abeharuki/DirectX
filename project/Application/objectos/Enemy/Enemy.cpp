@@ -6,7 +6,7 @@
 void Enemy::Initialize() {
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf"));
+	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
 	animationNumber_ = nomal;
 	// 初期化
 	worldTransformBase_.Initialize();
@@ -26,20 +26,17 @@ void Enemy::Initialize() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
 
-
-
 	AABB aabbSize{ .min{-1.5f,-1.5f,-1.5f},.max{1.5f,1.5f,1.5f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
-	//worldTransformBody_.rotate.x = 0.0f;
-
+	
 }
 
 void Enemy::Update() {
 
-	/*
+	
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -75,7 +72,7 @@ void Enemy::Update() {
 		break;
 	}
 
-	*/
+	
 	animation_->Update(animationNumber_);
 	Relationship();
 	worldTransformBase_.UpdateMatrix();
@@ -106,29 +103,30 @@ void Enemy::Draw(const ViewProjection& camera) {
 void Enemy::MoveInitialize() {
 	time_ = 60 * 2;
 	isAttack_ = false;
+	behaviorAttack_ = false;
+	animationNumber_ = nomal;
+	animation_->SetLoop(true);
+	animation_->SetAnimationTimer(0.0f, 0.0f);
 };
 void Enemy::MoveUpdata() {
-
-
 	if (--time_ <= 0) {
 		behaviorRequest_ = Behavior::kAttack;
 	}
-
 };
 
 void Enemy::AttackInitialize() {
 
-	int num = RandomGenerator::GetRandomInt(1, 2);
+	int num = RandomGenerator::GetRandomInt(1, 1);
 	if (num == 1) {
-		attackRequest_ = BehaviorAttack::kDash;
+		attackRequest_ = BehaviorAttack::kNomal;
 	}
 	else if (num == 2) {
-		attackRequest_ = BehaviorAttack::kThrowing;
+		attackRequest_ = BehaviorAttack::kDash;
 	}
 	else if (num == 3) {
-
+		attackRequest_ = BehaviorAttack::kThrowing;
 	}
-
+	behaviorAttack_ = true;
 }
 void Enemy::AttackUpdata() {
 
@@ -137,8 +135,10 @@ void Enemy::AttackUpdata() {
 		attack_ = attackRequest_.value();
 		// 各振る舞いごとの初期化
 		switch (attack_) {
+		case BehaviorAttack::kNomal:
+			NomalAttackInitialize();
+			break;
 		case BehaviorAttack::kDash:
-		default:
 			DashAttackInitialize();
 			break;
 		case BehaviorAttack::kThrowing:
@@ -151,9 +151,10 @@ void Enemy::AttackUpdata() {
 	}
 
 	switch (attack_) {
+	case BehaviorAttack::kNomal:
+		NomalAttackUpdata();
+		break;
 	case BehaviorAttack::kDash:
-	default:
-		// 通常行動
 		DashAttackUpdata();
 		break;
 	case BehaviorAttack::kThrowing:
@@ -164,122 +165,147 @@ void Enemy::AttackUpdata() {
 
 
 
-//ダッシュ攻撃
-void Enemy::DashAttackInitialize() {
-	//worldTransformBody_.rotate.x = 1.57075f;
-	num_ = RandomGenerator::GetRandomInt(1, 1);;
-	time_ = 60 * 2;
+void Enemy::NomalAttackInitialize(){
+	num_ = RandomGenerator::GetRandomInt(1, 1);//4
+	animationNumber_ = run;
+	behaviorAttack_ = false;
+	time_ = 60*2;
 }
-void Enemy::DashAttackUpdata() {
-	time_--;
-	if (time_ > 60) {
-		worldTransformBase_.rotate.y += 0.5f;
-	}
-	else {
-		isAttack_ = true;
-	}
-	
 
-	// 追従対象からロックオン対象へのベクトル
-	if (isAttack_) {
-		// 回転
-		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_ , 0.2f);
-
+void Enemy::NomalAttackUpdata(){
+	velocity_ = { 0.0f,0.0f,1.0f };
+	if (!behaviorAttack_) {
+		velocity_ = Math::Normalize(velocity_);
+		velocity_ = Math::Multiply(2.0f, velocity_);
+		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
+		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+		velocity_ = Math::Multiply(0.35f, velocity_);
+		Vector3 targetPos = {};
 		if (num_ == 1) {
 			sub = playerPos_ - GetWorldPosition();
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-
-
-
-			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, playerPos_, 0.2f);
+			targetPos = playerPos_;
 		}
 		if (num_ == 2) {
 			sub = healerPos_ - GetWorldPosition();
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-
-			// プレイヤーの座標までの距離
-			float length = Math::Length(Math::Subract(tankPos_, worldTransformBase_.translate));
-
-			worldTransformBase_.translate =
-				Math::Lerp(worldTransformBase_.translate, healerPos_, 0.2f);
+			targetPos = playerPos_;
 		}
 		if (num_ == 3) {
 			sub = renjuPos_ - GetWorldPosition();
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-			// プレイヤーの座標までの距離
-			float length = Math::Length(Math::Subract(tankPos_, worldTransformBase_.translate));
-
-			worldTransformBase_.translate =
-				Math::Lerp(worldTransformBase_.translate, renjuPos_, 0.2f);
+			targetPos = playerPos_;
 		}
 		if (num_ == 4) {
 			sub = tankPos_ - GetWorldPosition();
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+			targetPos = playerPos_;
+		}
+		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity_);
+		if (isWithinRange(worldTransformBase_.translate.x, targetPos.x,2) && isWithinRange(worldTransformBase_.translate.z, targetPos.z , 2)) {
+			behaviorAttack_ = true;
+			
+		}
 
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
 
-			worldTransformBase_.translate =
-				Math::Lerp(worldTransformBase_.translate, tankPos_, 0.2f);
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+					? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				: -std::numbers::pi_v<float> / 2.0f;
 		}
 	}
+	else {
+		animationNumber_ = nomalAttack;
+		animation_->SetLoop(false);
+		--time_;
+		if (time_ <= 60) {
+			isAttack_ = true;
+		}
+		if(time_ <= 0) {
+			behaviorRequest_ = Behavior::kRoot;
+		}
 
-	if (time_ <= 30) {
+	}
+	
+	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+	
+
+	
+	
+}
+
+//ダッシュ攻撃//近いやつに攻撃するようにする
+void Enemy::DashAttackInitialize() {
+	num_ = RandomGenerator::GetRandomInt(1, 1);
+	time_ = 40;
+	animationNumber_ = runUp;
+	animation_->SetLoop(false);
+	animation_->SetFlameTimer(40.0f);
+	
+}
+void Enemy::DashAttackUpdata() {
+	--time_;
+	if (time_ < 20) {
+		if (!isAttack_) {
+			
+			animation_->SetLoop(true);
+			animationNumber_ = dashAttack;
+			isAttack_ = true;
+			velocity_ = Math::Normalize(velocity_);
+			velocity_ = Math::Multiply(2.0f, velocity_);
+			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
+			velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+		}
+	}
+	else {
+		if (num_ == 1) {
+			sub = playerPos_ - GetWorldPosition();
+		}
+		if (num_ == 2) {
+			sub = healerPos_ - GetWorldPosition();
+		}
+		if (num_ == 3) {
+			sub = renjuPos_ - GetWorldPosition();
+		}
+		if (num_ == 4) {
+			sub = tankPos_ - GetWorldPosition();
+		}
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+					? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				: -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		
+		velocity_ = {0.0f,0.0f,7.0f };
+	}
+	
+	// 目標の方向に回転
+	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+
+	// 追従対象からロックオン対象へのベクトル
+	if (isAttack_) {
+		
+		worldTransformBase_.translate = worldTransformBase_.translate + velocity_;
+	}
+
+	if (time_ <= 0) {
 		worldTransformRock_.translate.z = 5;
 		behaviorRequest_ = Behavior::kRoot;
 	}
-
-
-
 
 	worldTransformBase_.translate.y = 0.0f;
 
@@ -295,15 +321,12 @@ void Enemy::ThrowingAttackInitialize() {
 	worldTransformBody_.rotate.x = 0.0f;
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 	animation_->SetpreAnimationTimer(0);
-	
+	animationNumber_ = swing;
+	animation_->SetLoop(false);
 }
 
 void Enemy::ThrowingAttackUpdata() {
-	animation_->SetLoop(false);
-	animation_->Update(0);
 	int num = RandomGenerator::GetRandomInt(1, 1);
-	
-
 	if (!isAttack_) {
 		
 
@@ -399,23 +422,9 @@ void Enemy::ThrowingAttackUpdata() {
 		else {
 			--shakeTimer_;
 			worldTransformRock_.scale = { 2.0f, 2.0f, 2.0f };
-			if (shakeTimer_ >= 0) {
-				if (worldTransformBody_.rotate.x < 2.0f) {
-					worldTransformBody_.rotate.x += 0.01f;
-				}
-
-			}
-			else {
-
-				if (worldTransformBase_.rotate.x <= 1.2f) {
-					isAttack_ = true;
-					worldTransformRock_.rotate = { 0.0f, 0.0f, 0.0f };
-					
-				}
-				else {
-					worldTransformBody_.rotate.x -= 0.08f;
-				}
-
+			if (shakeTimer_ <= 0) {
+				isAttack_ = true;
+				worldTransformRock_.rotate = { 0.0f, 0.0f, 0.0f };
 
 			}
 		}
@@ -447,16 +456,11 @@ void Enemy::ThrowingAttackUpdata() {
 		}
 	}
 
-	if (worldTransformRock_.translate.y <= 0.6f && isAttack_) {
+	if (worldTransformRock_.translate.y <= 0.5f && isAttack_) {
 
-		if (worldTransformBody_.rotate.x >= 0.0f) {
-			worldTransformBody_.rotate.x -= 0.05f;
-		}
-		else {
-			worldTransformBody_.rotate.x = 0.0f;
-			worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
-			behaviorRequest_ = Behavior::kRoot;
-		}
+		worldTransformBody_.rotate.x = 0.0f;
+		worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
+		behaviorRequest_ = Behavior::kRoot;
 
 
 	}
@@ -492,12 +496,7 @@ void Enemy::Relationship() {
 		Math::MakeAffineMatrix(
 			worldTransformBody_.scale, worldTransformBody_.rotate, worldTransformBody_.translate),
 		worldTransformBase_.matWorld_);
-	/*
-	worldTransformRock_.matWorld_ = Math::Multiply(
-		Math::MakeAffineMatrix(
-			worldTransformRock_.scale, worldTransformRock_.rotate, worldTransformRock_.translate),
-		worldTransformBody_.matWorld_);
-		*/
+	
 }
 
 
@@ -512,3 +511,4 @@ const Vector3 Enemy::GetWorldPosition() const {
 }
 
 Enemy::~Enemy() {}
+

@@ -131,6 +131,7 @@ public:
 
 	//アニメーションタイマーの設定
 	void SetAnimationTimer(float startTime, float flameTime);
+	void SetFlameTimer(float time) {flameTimer_ = time; }
 	void SetpreAnimationTimer(float time) { animationTime = time; }
 
 	void SetBlend(const uint32_t animationNumber,float num);
