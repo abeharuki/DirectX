@@ -26,7 +26,7 @@ void Enemy::Initialize() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
 
-	AABB aabbSize{ .min{-.0f,-4.0f,-1.5f},.max{3.0f,4.0f,1.5f} };
+	AABB aabbSize{ .min{-3.0f,-4.0f,-2.0f},.max{3.0f,4.0f,2.0f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
@@ -187,15 +187,15 @@ void Enemy::NomalAttackUpdata(){
 		}
 		if (num_ == 2) {
 			sub = healerPos_ - GetWorldPosition();
-			targetPos = playerPos_;
+			targetPos = healerPos_;
 		}
 		if (num_ == 3) {
 			sub = renjuPos_ - GetWorldPosition();
-			targetPos = playerPos_;
+			targetPos = renjuPos_;
 		}
 		if (num_ == 4) {
 			sub = tankPos_ - GetWorldPosition();
-			targetPos = playerPos_;
+			targetPos = tankPos_;
 		}
 		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity_);
 		if (isWithinRange(worldTransformBase_.translate.x, targetPos.x,2) && isWithinRange(worldTransformBase_.translate.z, targetPos.z , 2)) {
