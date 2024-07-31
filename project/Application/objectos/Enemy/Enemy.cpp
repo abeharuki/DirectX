@@ -26,7 +26,7 @@ void Enemy::Initialize() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
 
-	AABB aabbSize{ .min{-3.0f,-4.0f,-1.5f},.max{3.0f,4.0f,1.5f} };
+	AABB aabbSize{ .min{-.0f,-4.0f,-1.5f},.max{3.0f,4.0f,1.5f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
@@ -36,7 +36,7 @@ void Enemy::Initialize() {
 
 void Enemy::Update() {
 
-	/*
+	
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -71,7 +71,7 @@ void Enemy::Update() {
 		DeadUpdata();
 		break;
 	}
-	*/
+	
 	
 	animation_->Update(animationNumber_);
 	Relationship();
@@ -116,7 +116,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 
-	int num = RandomGenerator::GetRandomInt(1, 1);
+	int num = RandomGenerator::GetRandomInt(1, 3);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -166,7 +166,7 @@ void Enemy::AttackUpdata() {
 
 
 void Enemy::NomalAttackInitialize(){
-	num_ = RandomGenerator::GetRandomInt(1, 1);//4
+	num_ = RandomGenerator::GetRandomInt(1, 4);//4
 	animationNumber_ = run;
 	behaviorAttack_ = false;
 	time_ = 60*2;
@@ -225,7 +225,7 @@ void Enemy::NomalAttackUpdata(){
 		if (time_ <= 60 && time_ > 20) {
 			isAttack_ = true;
 		}
-		if (time_ <= 20) {
+		if (time_ <= 30) {
 			isAttack_ = false;
 		}
 		if(time_ <= 0) {
@@ -243,7 +243,7 @@ void Enemy::NomalAttackUpdata(){
 
 //ダッシュ攻撃//近いやつに攻撃するようにする
 void Enemy::DashAttackInitialize() {
-	num_ = RandomGenerator::GetRandomInt(1, 1);
+	num_ = RandomGenerator::GetRandomInt(1, 4);
 	time_ = 40;
 	animationNumber_ = runUp;
 	animation_->SetLoop(false);
@@ -329,7 +329,7 @@ void Enemy::ThrowingAttackInitialize() {
 }
 
 void Enemy::ThrowingAttackUpdata() {
-	int num = RandomGenerator::GetRandomInt(1, 1);
+	int num = RandomGenerator::GetRandomInt(1, 4);
 	if (!isAttack_) {
 		
 
@@ -487,9 +487,8 @@ void Enemy::DeadUpdata() {
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
 	threshold_ += 0.004f;
 	animation_->SetThreshold(threshold_);
-	if (threshold_ >= 1.0f&& worldTransformBase_.rotate.z < -1.0f) {
+	if (worldTransformBase_.rotate.z < -1.0f) {
 		clear_ = true;
-
 	}
 
 };

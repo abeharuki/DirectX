@@ -235,6 +235,7 @@ void Tank::DeadInitialize() {
 	//復活時間
 	revivalCount_ = 0;
 	isDead_ = true;
+	attack_ = false;
 }
 void Tank::DeadUpdate() {
 	if (isHitPlayer_ != preHitPlayer_) {

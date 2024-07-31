@@ -235,6 +235,7 @@ void Healer::DeadInitialize() {
 	//復活時間
 	revivalCount_ = 0;
 	isDead_ = true;
+	workAttack_.isAttack = false;
 }
 void Healer::DeadUpdate(){
 	if (isHitPlayer_ != preHitPlayer_) {

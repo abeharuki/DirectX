@@ -377,7 +377,7 @@ void Player::knockInitialize() {
 	animation_->SetAnimationTimer(0, 8.0f);
 	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
-	//hitCount_--;
+	hitCount_--;
 };
 void Player::knockUpdata() {
 	worldTransformBase_.translate -= velocity_;
