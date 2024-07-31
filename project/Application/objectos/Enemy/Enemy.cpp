@@ -26,7 +26,7 @@ void Enemy::Initialize() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
 
-	AABB aabbSize{ .min{-2.0f,-1.5f,-1.5f},.max{2.0f,1.5f,1.5f} };
+	AABB aabbSize{ .min{-3.0f,-4.0f,-1.5f},.max{3.0f,4.0f,1.5f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
@@ -36,7 +36,7 @@ void Enemy::Initialize() {
 
 void Enemy::Update() {
 
-	
+	/*
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -71,7 +71,7 @@ void Enemy::Update() {
 		DeadUpdata();
 		break;
 	}
-
+	*/
 	
 	animation_->Update(animationNumber_);
 	Relationship();

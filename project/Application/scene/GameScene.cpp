@@ -260,6 +260,9 @@ void GameScene::CheckAllCollision() {
 	collisionManager_->SetColliderList(healerManager_->GetHealer());
 	collisionManager_->SetColliderList(renjuManager_->GetRenju());
 	collisionManager_->SetColliderList(tankManager_->GetTank());
+	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
+		collisionManager_->SetColliderList(loader_->GetCollider(i));
+	}
 	collisionManager_->CheckAllCollisions();
 
 	//敵の攻撃フラグの受け取り

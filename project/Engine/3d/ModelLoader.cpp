@@ -9,12 +9,6 @@ void ModelLoader::Update() {
 	int i = 0;
 	for (WorldTransform* object : worldTransforms) {
 		object->UpdateMatrix();
-		if (i < colliderManager_.size()) {
-			colliderManager_[i]->SetWorldTransform(*worldTransforms[i]);
-			colliderManager_[i]->Chack(false);
-			++i;
-		}
-
 	}
 	for (auto& objectData : levelData->objects) {
 		if (objectData.filename == "Camera") {
@@ -28,22 +22,25 @@ void ModelLoader::Update() {
 
 void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
 	int i = 0;
+	int j = 0;
 	for (auto& objectData : levelData->objects) {
+		
 		if (objectData.filename != "Camera") {
 			//ファイル名から登録済みモデルを検索
 			Model* model = nullptr;
 			decltype(models)::iterator it = models.find(objectData.filename);
 			if (it != models.end()) { model = it->second; }
-
+			//モデルの描画
 			if (model && i < worldTransforms.size()) {
 				model->Draw(*worldTransforms[i], viewProjection, flag);
-				if (i < colliderManager_.size()) {
-					colliderManager_[i]->Draw(viewProjection);
-				}
-
+				
 			}
 
-
+			if (objectData.filename == "doorwall"/*|| objectData.filename == "wall"*/) {
+				colliderManager_[j]->SetWorldTransform(*worldTransforms[i]);
+				colliderManager_[j]->Draw(viewProjection);
+				++j;
+			}
 			i++;
 		}
 
@@ -140,51 +137,14 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 
 	//モデルの読み込み
 	for (auto& objectData : levelData->objects) {
+		int z = 0;
 		//ファイル名から登録済みモデルを検索
 		decltype(models)::iterator it = models.find(objectData.filename);
 		if (it == models.end() && objectData.filename != "Camera") {
 			//blenderでlightを消さないとここでエラーが出る又はファイルネームを設定してないと
 			Model* model = Model::CreateFromObj(objectData.filename);
 			models[objectData.filename] = model;
-
-			if (objectData.collider.typeName != "") {
-				if (objectData.collider.typeName == "BOX") {
-					AABB aabb = { {-objectData.collider.size.x / 2.0f,-objectData.collider.size.y / 2.0f,-objectData.collider.size.z / 2.0f},{objectData.collider.size.x / 2.0f,objectData.collider.size.y / 2.0f,objectData.collider.size.z / 2.0f} };
-					ColliderManager* colliderManager = new ColliderManager();
-					//BOXの当たり判定があるオブジェクトがあるならここに書く
-					if (objectData.filename == "ICO") {
-						colliderManager->SetAABB(aabb);
-						colliderManager->SetCollisionAttribute(kCollisionAttributeLoderICO);
-						colliderManager->SetCollisionMask(kCollisionMaskICO);
-
-					}
-
-					if (objectData.filename == "BOX") {
-						colliderManager->SetAABB(aabb);
-						colliderManager->SetCollisionAttribute(kCollisionAttributeEnemy);
-						colliderManager->SetCollisionMask(kCollisionMaskEnemy);
-
-					}
-					colliderManager->SetCollisionPrimitive(kCollisionPrimitiveAABB);
-
-					colliderManager_.push_back(colliderManager);
-				}
-
-				if (objectData.collider.typeName == "SPHERE") {
-					ColliderManager* colliderManager = new ColliderManager();
-					//SPHEREの当たり判定があるオブジェクトがあるならここに書く
-					if (objectData.filename == "BOX") {
-						colliderManager->SetRadius(objectData.collider.radius);
-						colliderManager->SetCollisionAttribute(kCollisionAttributeLoderICO);
-						colliderManager->SetCollisionMask(kCollisionMaskICO);
-
-					}
-					colliderManager->SetCollisionPrimitive(kCollisionPrimitiveSphere);
-					colliderManager_.push_back(colliderManager);
-
-				}
-
-			}
+			
 			Transform uv = {
 		            {30.0f,30.0f,30.0f},
 		            {0.0f,0.0f,0.0f},
@@ -195,6 +155,44 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 			}
 			
 		}
+
+		//blenderで登録したコライダーの名
+		if (objectData.collider.typeName != "") {
+			if (objectData.collider.typeName == "BOX") {
+				AABB aabb = { {-objectData.collider.size.x / 2.0f,-objectData.collider.size.y / 2.0f ,-objectData.collider.size.z / 2.0f },{objectData.collider.size.x / 2.0f,objectData.collider.size.y / 2.0f,objectData.collider.size.z / 2.0f} };
+
+
+				//BOXの当たり判定があるオブジェクトがあるならここに書く
+				//obbの当たり判定ができてないから全ての壁の当たり判定はまだ取れてない
+				if (objectData.filename == "doorwall") {
+					ColliderManager* colliderManager = new ColliderManager();
+					colliderManager->SetAABB(aabb);
+					colliderManager->SetCollisionMask(kCollisionMaskWall);
+					colliderManager->SetCollisionAttribute(kCollisionAttributeLoderWall);
+
+					colliderManager->SetCollisionPrimitive(kCollisionPrimitiveAABB);
+
+					colliderManager_.push_back(colliderManager);
+				}
+
+			}
+
+			if (objectData.collider.typeName == "SPHERE") {
+				ColliderManager* colliderManager = new ColliderManager();
+				//SPHEREの当たり判定があるオブジェクトがあるならここに書く
+				if (objectData.filename == "") {
+					colliderManager->SetRadius(objectData.collider.radius);
+					colliderManager->SetCollisionAttribute(kCollisionAttributeLoderWall);
+					colliderManager->SetCollisionMask(kCollisionMaskWall);
+
+				}
+				colliderManager->SetCollisionPrimitive(kCollisionPrimitiveSphere);
+				colliderManager_.push_back(colliderManager);
+
+			}
+
+		}
+
 	}
 
 	//レベルデータからオブジェクトの生成,配置

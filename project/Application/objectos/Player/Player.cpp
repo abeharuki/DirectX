@@ -24,7 +24,7 @@ void Player::Initialize() {
 	worldTransformCollision_.translate.y = 2.0f;
 	a = 0.0f;
 	isOver_ = false;
-	hitCount_ = 2;//6;
+	hitCount_ = 6;//6;
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
@@ -603,7 +603,6 @@ void Player::OnCollision(Collider* collider) {
 	
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		CheckCollision(true);
 		if (isEnemyAttack_) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
@@ -618,7 +617,8 @@ void Player::OnCollision(Collider* collider) {
 			}
 
 		}
-
+	}
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy || collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
 		AABB aabbA = {
 		.min{worldTransformBase_.translate.x + GetAABB().min.x,worldTransformBase_.translate.y + GetAABB().min.y,worldTransformBase_.translate.z + GetAABB().min.z},
 		.max{worldTransformBase_.translate.x + GetAABB().max.x,worldTransformBase_.translate.y + GetAABB().max.y,worldTransformBase_.translate.z + GetAABB().max.z},
@@ -649,7 +649,7 @@ void Player::OnCollision(Collider* collider) {
 			{
 				behaviorRequest_ = Behavior::kRoot;
 			}
-			
+
 		}
 		else if (overlapAxis.z < overlapAxis.x && overlapAxis.z < overlapAxis.y)
 		{
@@ -660,8 +660,8 @@ void Player::OnCollision(Collider* collider) {
 
 		worldTransformBase_.translate += overlapAxis * directionAxis;
 		worldTransformBase_.UpdateMatrix();
-
 	}
+
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeTank) {
 		if (tankDead_) {

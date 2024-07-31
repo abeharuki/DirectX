@@ -303,13 +303,9 @@ void DebugPlayer::AttackUpdata(){
 
 void DebugPlayer::OnCollision(Collider* collider){
 	
-	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		CheckCollision(true);
-	}
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {}
 
-	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderICO) {
-		CheckCollision(true);
-	}
+	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {}
 	
 }
 

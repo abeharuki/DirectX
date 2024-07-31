@@ -1,7 +1,7 @@
 # Blender 3.5.0 MTL File: 'None'
 # www.blender.org
 
-newmtl Stone
+newmtl Stone.002
 Ns 224.999985
 Ka 1.000000 1.000000 1.000000
 Kd 0.244364 0.246189 0.215451
@@ -11,7 +11,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl Stone_Light
+newmtl Stone_Light.002
 Ns 224.999985
 Ka 1.000000 1.000000 1.000000
 Kd 0.454057 0.457527 0.399114
@@ -21,7 +21,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl Wood
+newmtl Wood.002
 Ns 224.999985
 Ka 1.000000 1.000000 1.000000
 Kd 0.246187 0.144359 0.053798
