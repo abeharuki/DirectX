@@ -12,13 +12,13 @@ void RenjuManager::Initialize() {
 	renju_->Initialize();
 	emitter_ = {
 		.translate{0,0,0},
-		.count{10},
+		.count{5},
 		.frequency{0.5f},
 		.frequencyTime{0.5f},
 		.scaleRange{.min{1,1,1},.max{1,1,1}},
 		.translateRange{.min{0,0,0},.max{0,0,0}},
 		.colorRange{.min{1,1,1},.max{1,1,1}},
-		.lifeTimeRange{.min{1},.max{1}},
+		.lifeTimeRange{.min{0.5f},.max{0.5f}},
 		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
 	};
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));

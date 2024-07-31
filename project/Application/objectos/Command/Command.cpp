@@ -311,21 +311,22 @@ void Command::TaskAnimation(){
 void Command::MoveArrow() {
 	
 	
+
 	//矢印の移動
-	if (Input::PushKey(DIK_1)) {
+	if (Input::PushKey(DIK_1) || Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_DPAD_UP)) {
 		if (arrowPos_.y > 469.0f) {
 			arrowPos_.y = arrowPos_.y - arrowMoveSpeed_;
 		}
 	
 	}
-	else if (Input::PushKey(DIK_2)) {
+	else if (Input::PushKey(DIK_2)|| Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_DPAD_DOWN)) {
 		if (arrowPos_.y < 593.0f) {
 			arrowPos_.y = arrowPos_.y + arrowMoveSpeed_;
 		}
 	}
 
 	//決定
-	if (Input::PushKey(DIK_3)) {
+	if (Input::PushKey(DIK_3)|| Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B)) {
 		if (int(arrowPos_.y) == 468) {
 			attackType_[kNormalAttack] = true;
 			taskAnimation_ = true;
@@ -356,20 +357,20 @@ void Command::MoveArrow() {
 
 void Command::OperationMoveArrow(){
 	//矢印の移動
-	if (Input::PushKey(DIK_1)) {
+	if (Input::PushKey(DIK_1)|| Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_DPAD_UP)) {
 		if (arrowPos_.y > 510.0f) {
 			arrowPos_.y = arrowPos_.y - arrowMoveSpeed_;
 		}
 
 	}
-	else if (Input::PushKey(DIK_2)) {
+	else if (Input::PushKey(DIK_2)|| Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_DPAD_DOWN)) {
 		if (arrowPos_.y < 572.0f) {
 			arrowPos_.y = arrowPos_.y + arrowMoveSpeed_;
 		}
 	}
 
 	//決定
-	if (Input::PushKey(DIK_3)) {
+	if (Input::PushKey(DIK_3)|| Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B)) {
 		//こうげきの命令
 		if (int(arrowPos_.y) == 510) {
 			follow_ = false;
@@ -393,7 +394,7 @@ void Command::OperationMoveArrow(){
 
 void Command::MagicMoveArrow(){
 	//決定
-	if (Input::PushKey(DIK_3)) {
+	if (Input::PushKey(DIK_3) || Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B)) {
 		
 		if (int(arrowPos_.y) == 510) {
 			behaviorRequest_ = TaskType::kInitial;
@@ -404,7 +405,7 @@ void Command::MagicMoveArrow(){
 
 void Command::SkillMoveArrow(){
 	//決定
-	if (Input::PushKey(DIK_3)) {
+	if (Input::PushKey(DIK_3) || Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B)) {
 
 		if (int(arrowPos_.y) == 510) {
 			behaviorRequest_ = TaskType::kInitial;
@@ -415,7 +416,7 @@ void Command::SkillMoveArrow(){
 
 void Command::ToolMoveArrow(){
 	//決定
-	if (Input::PushKey(DIK_3)) {
+	if (Input::PushKey(DIK_3) || Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B)) {
 
 		if (int(arrowPos_.y) == 510) {
 			behaviorRequest_ = TaskType::kInitial;

@@ -26,7 +26,7 @@ void Enemy::Initialize() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
 
-	AABB aabbSize{ .min{-1.5f,-1.5f,-1.5f},.max{1.5f,1.5f,1.5f} };
+	AABB aabbSize{ .min{-2.0f,-1.5f,-1.5f},.max{2.0f,1.5f,1.5f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
@@ -222,8 +222,11 @@ void Enemy::NomalAttackUpdata(){
 		animationNumber_ = nomalAttack;
 		animation_->SetLoop(false);
 		--time_;
-		if (time_ <= 60) {
+		if (time_ <= 60 && time_ > 20) {
 			isAttack_ = true;
+		}
+		if (time_ <= 20) {
+			isAttack_ = false;
 		}
 		if(time_ <= 0) {
 			behaviorRequest_ = Behavior::kRoot;

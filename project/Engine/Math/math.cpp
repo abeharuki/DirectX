@@ -677,6 +677,7 @@ Vector3 operator-(const Vector3& v1, float s) { return { v1.x - s, v1.y - s, v1.
 Vector3 operator*(float s, const Vector3& v2) { return Math::Multiply(s, v2); }
 Vector3 operator*(const Vector3& v, float s) { return s * v; }
 Vector3 operator/(const Vector3& v, float s) { return Math::Multiply(1.0f / s, v); }
+Vector3 operator*(const Vector3& v1, const Vector3 v2) { return {v1.x*v2.x,v1.y * v2.y ,v1.z * v2.z }; }
 Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Add(m1, m2); }
 Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Subract(m1, m2); }
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Multiply(m1, m2); }
