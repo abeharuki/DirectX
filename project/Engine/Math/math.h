@@ -352,6 +352,12 @@ public:
 		const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
 		const Vector3 size2);
 
+	// AABB を OBB に変換する関数
+	static OBB ConvertAABBToOBB(AABB& aabb);
+
+	// OBB を AABB に変換する関数
+	static AABB ConvertOBBToAABB(OBB& obb);
+
 	static Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 };
 

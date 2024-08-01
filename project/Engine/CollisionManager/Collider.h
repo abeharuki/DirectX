@@ -25,11 +25,11 @@ public:
 
 	const AABB& GetAABB() const { return aabb_; };
 
-	void SetAABB(AABB& aabb) { aabb_ = aabb; SetBounds(); priType = Primitive::kAABB;};
+	void SetAABB(AABB& aabb) { aabb_ = aabb; priType = Primitive::kAABB; SetBounds();};
 
 	const OBB& GetOBB() const { return obb_; };
 
-	void SetOBB(OBB& obb) { obb_ = obb; priType = Primitive::kOBB;};
+	void SetOBB(OBB& obb) { obb_ = obb; priType = Primitive::kOBB; SetBounds();};
 
 	const uint32_t GetCollisionAttribute() const { return collisionAttribute_; };
 
@@ -47,15 +47,20 @@ public:
 
 	void SetBounds() {
 		lineBox_ = std::make_unique<LineBox>();
-		lineBox_.reset(LineBox::Create(aabb_));
+		if (priType == Primitive::kAABB) {
+			lineBox_.reset(LineBox::Create(aabb_));
+		}
+		else if (priType == Primitive::kOBB) {
+			lineBox_.reset(LineBox::Create(Math::ConvertOBBToAABB(obb_)));
+		}
+		
 	};
 
 	//WorldTrnsformのScaleが全て1じゃないとおかしくなる
 	void RenderCollisionBounds(WorldTransform& world, const ViewProjection& camera) {
 #ifdef _DEBUG
-		if (priType == Primitive::kAABB) {
-			lineBox_->Draw(world, camera, false);
-		}
+		lineBox_->Draw(world, camera, false);
+		
 		
 #endif // DEBUG
 
@@ -63,17 +68,13 @@ public:
 	};
 
 	void CheckCollision(bool flag) { 
-		if (priType == Primitive::kAABB) {
-			if (flag == 1) {
-				lineBox_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
-			}
-			else {
-				lineBox_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
-			}
+		
+		if (flag == 1) {
+			lineBox_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
 		}
-		
-
-		
+		else {
+			lineBox_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+		}
 	}
 
 private:

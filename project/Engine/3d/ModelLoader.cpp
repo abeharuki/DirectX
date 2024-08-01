@@ -36,7 +36,7 @@ void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
 				
 			}
 
-			if (objectData.filename == "doorwall"/*|| objectData.filename == "wall"*/) {
+			if (objectData.filename == "doorwall"|| objectData.filename == "wall") {
 				colliderManager_[j]->SetWorldTransform(*worldTransforms[i]);
 				colliderManager_[j]->Draw(viewProjection);
 				++j;
@@ -160,20 +160,33 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 		if (objectData.collider.typeName != "") {
 			if (objectData.collider.typeName == "BOX") {
 				AABB aabb = { {-objectData.collider.size.x / 2.0f,-objectData.collider.size.y / 2.0f ,-objectData.collider.size.z / 2.0f },{objectData.collider.size.x / 2.0f,objectData.collider.size.y / 2.0f,objectData.collider.size.z / 2.0f} };
+				OBB obb = Math::ConvertAABBToOBB(aabb);
+				ColliderManager* colliderManager = new ColliderManager();
 
+				if (objectData.filename == "wall") {
+
+					colliderManager->SetOBB(obb);
+					colliderManager->SetCollisionMask(kCollisionMaskWall);
+					colliderManager->SetCollisionAttribute(kCollisionAttributeLoderWall);
+					colliderManager->SetCollisionPrimitive(kCollisionPrimitiveOBB);
+
+
+				}
 
 				//BOXの当たり判定があるオブジェクトがあるならここに書く
 				//obbの当たり判定ができてないから全ての壁の当たり判定はまだ取れてない
 				if (objectData.filename == "doorwall") {
-					ColliderManager* colliderManager = new ColliderManager();
+				
 					colliderManager->SetAABB(aabb);
 					colliderManager->SetCollisionMask(kCollisionMaskWall);
 					colliderManager->SetCollisionAttribute(kCollisionAttributeLoderWall);
 
 					colliderManager->SetCollisionPrimitive(kCollisionPrimitiveAABB);
 
-					colliderManager_.push_back(colliderManager);
+					
 				}
+
+				colliderManager_.push_back(colliderManager);
 
 			}
 

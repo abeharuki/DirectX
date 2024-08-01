@@ -148,12 +148,22 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 		((colliderA->GetCollisionPrimitive() & kCollisionPrimitiveAABB) != 0 && (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0))
 	{
 		//コライダーAがAABBの場合
-		if (colliderA->GetCollisionAttribute() & kCollisionPrimitiveAABB)
+		if (colliderA->GetCollisionPrimitive() & kCollisionPrimitiveAABB)
 		{
 			//コライダーAのAABBを取得
 			AABB aabb = { .min{colliderA->GetWorldPosition() + colliderA->GetAABB().min},.max{colliderA->GetWorldPosition() + colliderA->GetAABB().max}, };
+		
 			//コライダーBのOBBを取得
-			OBB obb = colliderB->GetOBB();
+			OBB obb = {
+				.center{colliderB->GetWorldPosition()},
+				.orientations{
+				 {Vector3{colliderB->GetWorldTransform().matWorld_.m[0][0],colliderB->GetWorldTransform().matWorld_.m[0][1],colliderB->GetWorldTransform().matWorld_.m[0][2]}},
+				 {Vector3{colliderB->GetWorldTransform().matWorld_.m[1][0],colliderB->GetWorldTransform().matWorld_.m[1][1],colliderB->GetWorldTransform().matWorld_.m[1][2]}},
+				 {Vector3{colliderB->GetWorldTransform().matWorld_.m[2][0],colliderB->GetWorldTransform().matWorld_.m[2][1],colliderB->GetWorldTransform().matWorld_.m[2][2]}}
+
+				},
+				.size{colliderB->GetOBB().size}
+			};
 
 			//衝突判定
 			if (CheckCollisionAABBOBB(aabb, obb))
@@ -167,13 +177,21 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 			}
 		}
 		//ColliderBがAABBの場合
-		else if (colliderB->GetCollisionAttribute() & kCollisionPrimitiveAABB)
-		{
+		else if (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveAABB) {
 			//コライダーBのAABBを取得
 			AABB aabb = { .min{colliderB->GetWorldPosition() + colliderB->GetAABB().min},.max{colliderB->GetWorldPosition() + colliderB->GetAABB().max}, };
-			//コライダーBのOBBを取得
-			OBB obb = colliderA->GetOBB();
-
+			//コライダーAのOBBを取得
+			
+			//コライダーAのOBBを取得
+			OBB obb = {
+				.center{colliderA->GetWorldPosition()},
+				.orientations{
+				 {Vector3{colliderA->GetWorldTransform().matWorld_.m[0][0],colliderA->GetWorldTransform().matWorld_.m[0][1],colliderA->GetWorldTransform().matWorld_.m[0][2]}},
+				 {Vector3{colliderA->GetWorldTransform().matWorld_.m[1][0],colliderA->GetWorldTransform().matWorld_.m[1][1],colliderA->GetWorldTransform().matWorld_.m[1][2]}},
+				 {Vector3{colliderA->GetWorldTransform().matWorld_.m[2][0],colliderA->GetWorldTransform().matWorld_.m[2][1],colliderA->GetWorldTransform().matWorld_.m[2][2]}},
+				},
+				.size{colliderA->GetOBB().size}
+			};
 			//衝突判定
 			if (CheckCollisionAABBOBB(aabb, obb))
 			{
@@ -181,6 +199,8 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 				colliderA->OnCollision(colliderB);
 				//コライダーBの衝突時コールバックを呼び出す
 				colliderB->OnCollision(colliderA);
+				colliderA->CheckCollision(true);
+				colliderB->CheckCollision(true);
 			}
 		}
 	}

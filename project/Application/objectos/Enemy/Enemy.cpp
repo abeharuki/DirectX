@@ -35,8 +35,8 @@ void Enemy::Initialize() {
 }
 
 void Enemy::Update() {
-
 	
+	/*
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -71,7 +71,7 @@ void Enemy::Update() {
 		DeadUpdata();
 		break;
 	}
-	
+	*/
 	
 	animation_->Update(animationNumber_);
 	Relationship();

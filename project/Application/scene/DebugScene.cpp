@@ -9,6 +9,33 @@ void DebugScene::Initialize() {
 	//衝突マネージャーの作成
 	collisionManager_ = std::make_unique<CollisionManager>();
 
+	colliderManager_[0] = std::make_unique<ColliderManager>();
+	colliderManager_[1] = std::make_unique<ColliderManager>();
+	colliderManager_[2] = std::make_unique<ColliderManager>();
+	AABB aabb = { {-22.5,-10,-2.5 },{22.5,10,2.5} };
+	AABB aabb2 = { {-1,-1,-1 },{1,1,1} };
+	OBB obb = Math::ConvertAABBToOBB(aabb);
+
+	colliderManager_[0]->SetOBB(obb);
+	colliderManager_[0]->SetCollisionMask(kCollisionMaskWall);
+	colliderManager_[0]->SetCollisionAttribute(kCollisionAttributeLoderWall);
+	colliderManager_[0]->SetCollisionPrimitive(kCollisionPrimitiveOBB);
+
+	
+
+	colliderManager_[1] = std::make_unique<ColliderManager>();
+	colliderManager_[1]->SetAABB(aabb2);
+	colliderManager_[1]->SetCollisionMask(kCollisionMaskPlayer);
+	colliderManager_[1]->SetCollisionAttribute(kCollisionAttributePlayer);
+	colliderManager_[1]->SetCollisionPrimitive(kCollisionPrimitiveAABB);
+
+
+	colliderManager_[2] = std::make_unique<ColliderManager>();
+	colliderManager_[2]->SetAABB(aabb);
+	colliderManager_[2]->SetCollisionMask(kCollisionMaskWall);
+	colliderManager_[2]->SetCollisionAttribute(kCollisionAttributeLoderWall);
+	colliderManager_[2]->SetCollisionPrimitive(kCollisionPrimitiveAABB);
+
 	viewProjection_.Initialize();
 	viewProjection_.rotation_.x = 0.28f;
 	viewProjection_.translation_ = { 0.0f, 3.0f, -9.0f };
@@ -16,11 +43,9 @@ void DebugScene::Initialize() {
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
-	worldTransformSphere_.Initialize();
-	worldTransformSphere_.translate.y = 1.6f;
-	worldTransformSphere_.rotate.y = -1.55f;
-	worldTransformGround_.Initialize();
-	worldTransformGround_.rotate.y = 1.58f;
+	worldTransformCollider1_.Initialize();
+	worldTransformCollider2_.Initialize();
+	worldTransformCollider3_.Initialize();
 	worldTransformLineBox_.Initialize();
 	model_.reset(Model::CreateModelFromObj("resources/JsonFile/pillar.obj","resources/white.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -82,10 +107,13 @@ void DebugScene::Update() {
 
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
-	worldTransformGround_.UpdateMatrix();
-	worldTransformSphere_.UpdateMatrix();
+	worldTransformCollider1_.UpdateMatrix();
+	worldTransformCollider2_.UpdateMatrix();
+	worldTransformCollider3_.UpdateMatrix();
 	worldTransformLineBox_.UpdateMatrix();
-
+	colliderManager_[0]->SetWorldTransform(worldTransformCollider1_);
+	colliderManager_[1]->SetWorldTransform(worldTransformCollider2_);
+	colliderManager_[2]->SetWorldTransform(worldTransformCollider3_);
 	
 	grayscale_.isEnable = postEffects[0];
 	vignetting_.isEnable = postEffects[1];
@@ -167,14 +195,31 @@ void DebugScene::Update() {
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
-	if (ImGui::TreeNode("Sphere")) {
+	if (ImGui::TreeNode("ColldierOBBWall")) {
 
-		ImGui::DragFloat3("Pos", &worldTransformSphere_.translate.x, 0.1f);
-		ImGui::DragFloat3("Rotate", &worldTransformSphere_.rotate.x, 0.01f);
-		ImGui::DragFloat3("Size", &worldTransformSphere_.scale.x, 0.1f);
+		ImGui::DragFloat3("Pos", &worldTransformCollider1_.translate.x, 0.1f);
+		ImGui::DragFloat3("Rotate", &worldTransformCollider1_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Size", &worldTransformCollider1_.scale.x, 0.1f);
 
 		ImGui::TreePop();
 	}
+	if (ImGui::TreeNode("ColldierAABBWall")) {
+
+		ImGui::DragFloat3("Pos", &worldTransformCollider3_.translate.x, 0.1f);
+		ImGui::DragFloat3("Rotate", &worldTransformCollider3_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Size", &worldTransformCollider3_.scale.x, 0.1f);
+
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("ColldierAABBPlayer")) {
+
+		ImGui::DragFloat3("Pos", &worldTransformCollider2_.translate.x, 0.1f);
+		ImGui::DragFloat3("Rotate", &worldTransformCollider2_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Size", &worldTransformCollider2_.scale.x, 0.1f);
+
+		ImGui::TreePop();
+	}
+
 	//アニメーション
 	if (ImGui::TreeNode("Animation")) {
 		ImGui::SliderInt("AnimationNum", &AnimationNum_, 0,7);
@@ -265,8 +310,11 @@ void DebugScene::Draw() {
 	
 	loader_->Draw(viewProjection_, true);
 	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
-	model_->Draw(worldTransformAnimation_, viewProjection_, true);
-	particle_->Draw(viewProjection_);
+	colliderManager_[0]->Draw(viewProjection_);
+	colliderManager_[1]->Draw(viewProjection_);
+	//colliderManager_[2]->Draw(viewProjection_);
+	//model_->Draw(worldTransformAnimation_, viewProjection_, true);
+	//particle_->Draw(viewProjection_);
 }
 
 void DebugScene::RenderDirect() {
@@ -389,6 +437,9 @@ void DebugScene::CameraMove() {
 void DebugScene::CheckAllCollision() {
 	//コリジョン関係
 	collisionManager_->ClearColliderList();
+	collisionManager_->SetColliderList(colliderManager_[0].get());
+	collisionManager_->SetColliderList(colliderManager_[1].get());
+	//collisionManager_->SetColliderList(colliderManager_[2].get());
 	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
 		collisionManager_->SetColliderList(loader_->GetCollider(i));
 	}

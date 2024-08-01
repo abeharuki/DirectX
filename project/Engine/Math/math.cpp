@@ -636,6 +636,62 @@ bool Math::IsAABBCollision(
 	return collision;
 }
 
+// AABB を OBB に変換する関数
+OBB Math::ConvertAABBToOBB(AABB& aabb) {
+	OBB obb;
+
+	// AABBの中心を計算
+	obb.center = (aabb.min + aabb.max) / 2.0f;
+
+	// AABBの軸方向を設定（軸は固定された方向を持つ）
+	obb.orientations[0] = { 1.0f, 0.0f, 0.0f }; // x軸
+	obb.orientations[1] = { 0.0f, 1.0f, 0.0f }; // y軸
+	obb.orientations[2] = { 0.0f, 0.0f, 1.0f }; // z軸
+
+	// AABBのサイズを計算（半分のサイズ）
+	obb.size = (aabb.max - aabb.min) / 2.0f;
+
+	return obb;
+}
+// OBB を AABB に変換する関数
+AABB Math::ConvertOBBToAABB(OBB& obb) {
+	// OBBの頂点を計算
+	Vector3 vertices[8];
+	Vector3 halfSizeX = obb.orientations[0] * obb.size.x;
+	Vector3 halfSizeY = obb.orientations[1] * obb.size.y;
+	Vector3 halfSizeZ = obb.orientations[2] * obb.size.z;
+
+	vertices[0] = obb.center - halfSizeX - halfSizeY - halfSizeZ;
+	vertices[1] = obb.center + halfSizeX - halfSizeY - halfSizeZ;
+	vertices[2] = obb.center - halfSizeX + halfSizeY - halfSizeZ;
+	vertices[3] = obb.center + halfSizeX + halfSizeY - halfSizeZ;
+	vertices[4] = obb.center - halfSizeX - halfSizeY + halfSizeZ;
+	vertices[5] = obb.center + halfSizeX - halfSizeY + halfSizeZ;
+	vertices[6] = obb.center - halfSizeX + halfSizeY + halfSizeZ;
+	vertices[7] = obb.center + halfSizeX + halfSizeY + halfSizeZ;
+
+	// 頂点の最小値と最大値を求める
+	Vector3 minVertex = vertices[0];
+	Vector3 maxVertex = vertices[0];
+
+	for (int i = 1; i < 8; ++i) {
+		minVertex.x = std::min(minVertex.x, vertices[i].x);
+		minVertex.y = std::min(minVertex.y, vertices[i].y);
+		minVertex.z = std::min(minVertex.z, vertices[i].z);
+
+		maxVertex.x = std::max(maxVertex.x, vertices[i].x);
+		maxVertex.y = std::max(maxVertex.y, vertices[i].y);
+		maxVertex.z = std::max(maxVertex.z, vertices[i].z);
+	}
+
+	// AABBを作成
+	AABB aabb;
+	aabb.min = minVertex;
+	aabb.max = maxVertex;
+
+	return aabb;
+}
+
 Quaternion Math::Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 {
 
