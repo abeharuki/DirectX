@@ -5,6 +5,7 @@
 #include "Quaternion.h"
 #include <map>
 
+
 struct Vector2 final {
 	float x;
 	float y;
@@ -347,6 +348,8 @@ public:
 	// 最短角補間
 	static float LerpShortAngle(float a, float b, float t);
 
+	static Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
 	// 四角形の当たり判定
 	static bool IsAABBCollision(
 		const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
@@ -357,6 +360,13 @@ public:
 
 	// OBB を AABB に変換する関数
 	static AABB ConvertOBBToAABB(OBB& obb);
+
+	//AABB同士の押し出し判定
+	static Vector3 PushOutAABB(const Vector3& subjectTranslate, const AABB& subjecAABB,const Vector3& translate,const AABB& aabb);
+
+	//AABBとOBBの当たり判定
+	static Vector3 PushOutAABBOBB(const Vector3& subjectTranslate, const AABB& subjectAABB, const Vector3& obbTranslate, const OBB& obb);
+
 
 	static Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 };

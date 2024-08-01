@@ -31,7 +31,7 @@ void Tank::Initialize() {
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
-	SetCenter({ 0.0f,0.5f,0.0f });
+	
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeTank);
 	SetCollisionMask(kCollisionMaskTank);

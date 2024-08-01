@@ -155,7 +155,7 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 		
 			//コライダーBのOBBを取得
 			OBB obb = {
-				.center{colliderB->GetWorldPosition()},
+				.center{colliderB->GetOBB().center.x + colliderB->GetWorldPosition().x,colliderB->GetOBB().center.y + colliderB->GetWorldPosition().y,colliderB->GetOBB().center.z + colliderB->GetWorldPosition().z},
 				.orientations{
 				 {Vector3{colliderB->GetWorldTransform().matWorld_.m[0][0],colliderB->GetWorldTransform().matWorld_.m[0][1],colliderB->GetWorldTransform().matWorld_.m[0][2]}},
 				 {Vector3{colliderB->GetWorldTransform().matWorld_.m[1][0],colliderB->GetWorldTransform().matWorld_.m[1][1],colliderB->GetWorldTransform().matWorld_.m[1][2]}},
@@ -184,7 +184,8 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 			
 			//コライダーAのOBBを取得
 			OBB obb = {
-				.center{colliderA->GetWorldPosition()},
+				.center{colliderA->GetOBB().center.x + colliderA->GetWorldPosition().x,colliderA->GetOBB().center.y + colliderA->GetWorldPosition().y,colliderA->GetOBB().center.z + colliderA->GetWorldPosition().z},
+
 				.orientations{
 				 {Vector3{colliderA->GetWorldTransform().matWorld_.m[0][0],colliderA->GetWorldTransform().matWorld_.m[0][1],colliderA->GetWorldTransform().matWorld_.m[0][2]}},
 				 {Vector3{colliderA->GetWorldTransform().matWorld_.m[1][0],colliderA->GetWorldTransform().matWorld_.m[1][1],colliderA->GetWorldTransform().matWorld_.m[1][2]}},

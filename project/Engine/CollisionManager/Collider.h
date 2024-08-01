@@ -43,8 +43,6 @@ public:
 
 	void SetCollisionPrimitive(uint32_t collisionPrimitive) { collisionPrimitive_ = collisionPrimitive; };
 
-	void SetCenter(Vector3 center) { lineBox_->SetCenter(center); }
-
 	void SetBounds() {
 		lineBox_ = std::make_unique<LineBox>();
 		if (priType == Primitive::kAABB) {
@@ -60,7 +58,6 @@ public:
 	void RenderCollisionBounds(WorldTransform& world, const ViewProjection& camera) {
 #ifdef _DEBUG
 		lineBox_->Draw(world, camera, false);
-		
 		
 #endif // DEBUG
 

@@ -612,6 +612,15 @@ float Math::LerpShortAngle(float a, float b, float t) {
 	return a + Lerp * t;
 }
 
+Vector3 Math::Cross(const Vector3& v1, const Vector3& v2)
+{
+	Vector3 result{};
+	result.x = (v1.y * v2.z) - (v1.z * v2.y);
+	result.y = (v1.z * v2.x) - (v1.x * v2.z);
+	result.z = (v1.x * v2.y) - (v1.y * v2.x);
+	return result;
+}
+
 // 四角形の当たり判定
 bool Math::IsAABBCollision(
     const Vector3& translate1, const Vector3 size1, const Vector3& translate2,
@@ -691,6 +700,128 @@ AABB Math::ConvertOBBToAABB(OBB& obb) {
 
 	return aabb;
 }
+
+Vector3 Math::PushOutAABB(const Vector3& subjectTranslate, const AABB& subjectAABB, const Vector3& translate, const AABB& aabb)
+{
+	AABB aabbA = {
+	.min{translate.x + aabb.min.x,translate.y + aabb.min.y,translate.z + aabb.min.z},
+	.max{translate.x + aabb.max.x,translate.y + aabb.max.y,translate.z + aabb.max.z},
+	};
+	AABB aabbB = {
+		.min{subjectTranslate.x + subjectAABB.min.x,subjectTranslate.y + subjectAABB.min.y,subjectTranslate.z + subjectAABB.min.z},
+		.max{subjectTranslate.x + subjectAABB.max.x,subjectTranslate.y + subjectAABB.max.y,subjectTranslate.z + subjectAABB.max.z},
+	};
+
+	Vector3 overlapAxis = {
+		std::min<float>(aabbA.max.x,aabbB.max.x) - std::max<float>(aabbA.min.x,aabbB.min.x),
+		std::min<float>(aabbA.max.y,aabbB.max.y) - std::max<float>(aabbA.min.y,aabbB.min.y),
+		std::min<float>(aabbA.max.z,aabbB.max.z) - std::max<float>(aabbA.min.z,aabbB.min.z),
+	};
+
+	Vector3 directionAxis{};
+	if (overlapAxis.x < overlapAxis.y && overlapAxis.x < overlapAxis.z) {
+		//X軸方向で最小の重なりが発生している場合
+		directionAxis.x = (translate.x < subjectTranslate.x) ? -1.0f : 1.0f;
+		directionAxis.y = 0.0f;
+	}
+	else if (overlapAxis.y < overlapAxis.x && overlapAxis.y < overlapAxis.z) {
+		//Y軸方向で最小の重なりが発生している場合
+		directionAxis.y = (translate.y < subjectTranslate.y) ? -1.0f : 1.0f;
+		directionAxis.x = 0.0f;
+		
+
+	}
+	else if (overlapAxis.z < overlapAxis.x && overlapAxis.z < overlapAxis.y)
+	{
+		directionAxis.z = (translate.z < subjectTranslate.z) ? -1.0f : 1.0f;
+		directionAxis.x = 0.0f;
+		directionAxis.y = 0.0f;
+	}
+
+	return overlapAxis * directionAxis;;
+}
+
+Vector3 Math::PushOutAABBOBB(const Vector3& subjectTranslate, const AABB& aabb, const Vector3& obbTranslate, const OBB& obb)
+{
+	// AABBの中心と半サイズを計算
+	Vector3 aabbCenter = subjectTranslate + (aabb.min + aabb.max) * 0.5f;
+	float aabbHalfSize[3] = {
+	0.5f * (aabb.max.x - aabb.min.x),
+	0.5f * (aabb.max.y - aabb.min.y),
+	0.5f * (aabb.max.z - aabb.min.z),
+	};
+
+	float obbHalfSize[3] = {
+		obb.size.x,
+		obb.size.y,
+		obb.size.z
+	};
+
+	float t[3] = {
+		obb.center.x - aabbCenter.x,
+		obb.center.y - aabbCenter.y,
+		obb.center.z - aabbCenter.z,
+	};
+
+	// AABBの各軸
+	Vector3 aabbAxes[3] = {
+		{1.0f, 0.0f, 0.0f},
+		{0.0f, 1.0f, 0.0f},
+		{0.0f, 0.0f, 1.0f}
+	};
+
+	// OBBの各軸
+	Vector3 obbAxes[3] = {
+		obb.orientations[0],
+		obb.orientations[1],
+		obb.orientations[2]
+	};
+	
+	
+	// 回転行列とその絶対値行列
+	float R[3][3], AbsR[3][3];
+	const float EPSILON = 1.175494e-37f;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			R[i][j] = Math::Dot(aabbAxes[i], obbAxes[j]);
+			AbsR[i][j] = fabsf(R[i][j]) + EPSILON;
+		}
+	}
+
+	// AABBとOBBの各軸に沿った重なりを計算
+	float ra, rb;
+	float minOverlap = FLT_MAX;
+	Vector3 overlapAxis;
+	Vector3 directionAxis;
+
+	// AABBの各軸に沿った重なりを計算
+	for (int i = 0; i < 3; i++) {
+		ra = aabbHalfSize[i];
+		rb = obbHalfSize[0] * AbsR[i][0] + obbHalfSize[1] * AbsR[i][1] + obbHalfSize[2] * AbsR[i][2];
+		float overlap = fabsf(t[i]) - ra - rb;
+		if (overlap < minOverlap) {
+			minOverlap = overlap;
+			overlapAxis = aabbAxes[i];
+			directionAxis = (t[i] < 0) ? -aabbAxes[i] : aabbAxes[i];
+		}
+	}
+
+	// OBBの各軸に沿った重なりを計算
+	for (int i = 0; i < 3; i++) {
+		ra = aabbHalfSize[0] * AbsR[0][i] + aabbHalfSize[1] * AbsR[1][i] + aabbHalfSize[2] * AbsR[2][i];
+		rb = obbHalfSize[i];
+		float overlap = fabsf(Math::Dot(Vector3{ t[0],t[1],t[2] }, obbAxes[i])) - ra - rb;
+		if (overlap < minOverlap) {
+			minOverlap = overlap;
+			overlapAxis = obbAxes[i];
+			directionAxis = (Math::Dot(Vector3{ t[0],t[1],t[2] }, obbAxes[i]) < 0) ? -obbAxes[i] : obbAxes[i];
+		}
+	}
+
+	// 最小重なり軸に沿ってAABBを押し出す
+	return directionAxis * minOverlap;
+}
+
 
 Quaternion Math::Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 {
