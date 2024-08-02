@@ -28,7 +28,7 @@ void Player::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
-	
+
 	attackType_.resize(AttackType::kAttackMax);
 	for (int i = 0; i < AttackType::kAttackMax; ++i) {
 		attackType_[i] = false;
@@ -38,7 +38,7 @@ void Player::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 
-	
+
 
 	AABB aabbSize{ .min{-0.5f,-0.4f,-0.4f},.max{0.5f,0.4f,0.4f} };
 	SetAABB(aabbSize);
@@ -48,11 +48,11 @@ void Player::Initialize() {
 }
 
 void Player::Update() {
-	
+
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
-	
+
 	hit_ = false;
 
 	preNoAttack_ = noAttack_;
@@ -124,11 +124,11 @@ void Player::Update() {
 		isOver_ = true;
 	}
 
-	
+
 
 	// 回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-	
+
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
@@ -136,7 +136,7 @@ void Player::Update() {
 		animation_->SetLoop(false);
 		animation_->Update(0);
 	}
-	
+
 	animation_->SetThreshold(threshold_);
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
@@ -149,9 +149,9 @@ void Player::Update() {
 }
 
 void Player::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformHead_, camera,true);
+	animation_->Draw(worldTransformHead_, camera, true);
 	RenderCollisionBounds(worldTransformHead_, camera);
-	
+
 }
 
 // 移動
@@ -227,19 +227,19 @@ void Player::MoveUpdata() {
 		}
 
 
-		if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)&& preNoAttack_) {
+		if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B) && preNoAttack_) {
 			//復活時間
 			revivalCount_++;
 
-			
+
 		}
 		else {
 			revivalCount_--;
-			
+
 			if (revivalCount_ <= 0) {
 				revivalCount_ = 0;
 			}
-			
+
 		}
 
 
@@ -315,7 +315,7 @@ void Player::MoveUpdata() {
 			behaviorRequest_ = Behavior::kDash;
 		}
 
-		
+
 	}
 };
 
@@ -389,14 +389,14 @@ void Player::knockUpdata() {
 		else {
 			behaviorRequest_ = Behavior::kDead;
 		}
-		
+
 		nockBack_ = false;
 		animation_->SetAnimationTimer(0, 8.0f);
 		animation_->SetpreAnimationTimer(0);
 	}
-	
-	
-	
+
+
+
 };
 
 // 攻撃
@@ -564,15 +564,15 @@ void Player::AttackUpdata() {
 
 void Player::DeadInitilize() {
 	threshold_ = 0.0f;
-	
+
 };
-void Player::DeadUpdata() { 
-	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f});
+void Player::DeadUpdata() {
+	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
 	threshold_ += 0.004f;
 	animation_->SetThreshold(threshold_);
 	if (threshold_ >= 0.7f) {
 		isOver_ = true;
-		
+
 	}
 };
 
@@ -586,7 +586,7 @@ void Player::OnCollision(const WorldTransform& worldTransform) {
 		velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 		behaviorRequest_ = Behavior::knock;
 	}
-	
+
 
 	//isHit_ = true;
 	if (isHit_ != preHit_) {
@@ -599,7 +599,7 @@ void Player::OnCollision(const WorldTransform& worldTransform) {
 
 
 void Player::OnCollision(Collider* collider) {
-	
+
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (isEnemyAttack_) {
@@ -616,29 +616,23 @@ void Player::OnCollision(Collider* collider) {
 			}
 
 		}
+		worldTransformBase_.translate += Math::PushOutAABB(collider->GetWorldPosition(), collider->GetAABB(), worldTransformBase_.translate, GetAABB());
+
 	}
-	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy || collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
-		if (collider->GetCollisionPrimitive() & kCollisionPrimitiveAABB) {
-			worldTransformBase_.translate += Math::PushOutAABB(collider->GetWorldPosition(), collider->GetAABB(), worldTransformBase_.translate, GetAABB());
+	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
 
-		}
-		if (collider->GetCollisionPrimitive() & kCollisionPrimitiveOBB) {
-			OBB obb = {
-				.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
-
-				.orientations{
-				 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
-				 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
-				 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
-				},
-				.size{collider->GetOBB().size}
-			};
-			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate,GetAABB(), collider->GetWorldTransform().translate,obb);
-
-		}
-		worldTransformBase_.UpdateMatrix();
+			.orientations{
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+			},
+			.size{collider->GetOBB().size}
+		};
+		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
 	}
-
+	worldTransformBase_.UpdateMatrix();
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeTank) {
 		if (tankDead_) {
@@ -646,7 +640,7 @@ void Player::OnCollision(Collider* collider) {
 		}
 		else {
 			revivalCount_ = 0;
-			
+
 		}
 	}
 

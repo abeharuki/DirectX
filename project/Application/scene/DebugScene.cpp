@@ -46,12 +46,16 @@ void DebugScene::Initialize() {
 	worldTransformCollider1_.Initialize();
 	worldTransformCollider2_.Initialize();
 	worldTransformCollider3_.Initialize();
-	worldTransformLineBox_.Initialize();
+	worldTransformModel_.Initialize();
+	worldTransformModel_.translate = { 0.0f,2.0f,0.0f };
+
+	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
+
 	model_.reset(Model::CreateModelFromObj("resources/JsonFile/pillar.obj","resources/white.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
+	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf"));
 	
 	emitter_ = {
 		.translate = {0,3,0},
@@ -103,14 +107,13 @@ void DebugScene::Update() {
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
-	//viewProjection_ = loader_->GetCamera();
-
+	
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
 	worldTransformCollider1_.UpdateMatrix();
 	worldTransformCollider2_.UpdateMatrix();
 	worldTransformCollider3_.UpdateMatrix();
-	worldTransformLineBox_.UpdateMatrix();
+	worldTransformModel_.UpdateMatrix();
 	colliderManager_[0]->SetWorldTransform(worldTransformCollider1_);
 	colliderManager_[1]->SetWorldTransform(worldTransformCollider2_);
 	colliderManager_[2]->SetWorldTransform(worldTransformCollider3_);
@@ -125,10 +128,10 @@ void DebugScene::Update() {
 	animeDissolve_.isEnble = isAnimeDissolve_;
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
-	
+	model_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
-	
+	animation_->SetEnvironment(env_,true);
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
@@ -182,11 +185,11 @@ void DebugScene::Update() {
 		ImGui::TreePop();
 		
 	}
-	if (ImGui::TreeNode("LineBox")) {
+	if (ImGui::TreeNode("Model")) {
 
-		ImGui::DragFloat3("Pos", &worldTransformLineBox_.translate.x, 0.1f);
-		ImGui::DragFloat3("Rotate", &worldTransformLineBox_.rotate.x, 0.01f);
-		ImGui::DragFloat3("Size", &worldTransformLineBox_.scale.x, 0.1f);
+		ImGui::DragFloat3("Pos", &worldTransformModel_.translate.x, 0.1f);
+		ImGui::DragFloat3("Rotate", &worldTransformModel_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Size", &worldTransformModel_.scale.x, 0.1f);
 
 		ImGui::TreePop();
 	}
@@ -308,13 +311,12 @@ void DebugScene::Update() {
 
 void DebugScene::Draw() {
 	
+	
+	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	model_->Draw(worldTransformModel_, viewProjection_, true);
+	skybox_->Draw(worldTransformSkybox_,viewProjection_);
 	loader_->Draw(viewProjection_, true);
-	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
-	colliderManager_[0]->Draw(viewProjection_);
-	colliderManager_[1]->Draw(viewProjection_);
-	//colliderManager_[2]->Draw(viewProjection_);
-	//model_->Draw(worldTransformAnimation_, viewProjection_, true);
-	//particle_->Draw(viewProjection_);
+	particle_->Draw(viewProjection_);
 }
 
 void DebugScene::RenderDirect() {

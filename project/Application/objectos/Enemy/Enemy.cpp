@@ -11,7 +11,7 @@ void Enemy::Initialize() {
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.z = 10.0f;
-	worldTransformBase_.rotate.y = 1.57075f*2;
+	worldTransformBase_.rotate.y = 1.57075f * 2;
 	worldTransformBody_.Initialize();
 	worldTransformBody_.scale = { 1.0f,1.0f,1.0f };
 	worldTransformRock_.Initialize();
@@ -20,7 +20,7 @@ void Enemy::Initialize() {
 	clear_ = false;
 	time_ = 120;
 
-	
+
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformBody_.TransferMatrix();
@@ -31,11 +31,11 @@ void Enemy::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
-	
+
 }
 
 void Enemy::Update() {
-	
+
 	/*
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -72,16 +72,16 @@ void Enemy::Update() {
 		break;
 	}
 	*/
-	
+
 	animation_->Update(animationNumber_);
 	Relationship();
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
-	
-	
 
-	
+
+
+
 	ImGui::Begin("EnemyRock");
 	ImGui::SliderFloat3("pos", &worldTransformRock_.translate.x, -150.0f, 150.0f);
 	ImGui::End();
@@ -165,14 +165,14 @@ void Enemy::AttackUpdata() {
 
 
 
-void Enemy::NomalAttackInitialize(){
+void Enemy::NomalAttackInitialize() {
 	num_ = RandomGenerator::GetRandomInt(1, 4);//4
 	animationNumber_ = run;
 	behaviorAttack_ = false;
-	time_ = 60*2;
+	time_ = 60 * 2;
 }
 
-void Enemy::NomalAttackUpdata(){
+void Enemy::NomalAttackUpdata() {
 	velocity_ = { 0.0f,0.0f,1.0f };
 	if (!behaviorAttack_) {
 		velocity_ = Math::Normalize(velocity_);
@@ -198,9 +198,9 @@ void Enemy::NomalAttackUpdata(){
 			targetPos = tankPos_;
 		}
 		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity_);
-		if (isWithinRange(worldTransformBase_.translate.x, targetPos.x,2) && isWithinRange(worldTransformBase_.translate.z, targetPos.z , 2)) {
+		if (isWithinRange(worldTransformBase_.translate.x, targetPos.x, 2) && isWithinRange(worldTransformBase_.translate.z, targetPos.z, 2)) {
 			behaviorAttack_ = true;
-			
+
 		}
 
 		// y軸周りの回転
@@ -228,17 +228,17 @@ void Enemy::NomalAttackUpdata(){
 		if (time_ <= 30) {
 			isAttack_ = false;
 		}
-		if(time_ <= 0) {
+		if (time_ <= 0) {
 			behaviorRequest_ = Behavior::kRoot;
 		}
 
 	}
-	
-	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-	
 
-	
-	
+	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+
+
+
+
 }
 
 //ダッシュ攻撃//近いやつに攻撃するようにする
@@ -248,13 +248,13 @@ void Enemy::DashAttackInitialize() {
 	animationNumber_ = runUp;
 	animation_->SetLoop(false);
 	animation_->SetFlameTimer(40.0f);
-	
+
 }
 void Enemy::DashAttackUpdata() {
 	--time_;
 	if (time_ < 20) {
 		if (!isAttack_) {
-			
+
 			animation_->SetLoop(true);
 			animationNumber_ = dashAttack;
 			isAttack_ = true;
@@ -292,16 +292,16 @@ void Enemy::DashAttackUpdata() {
 				: -std::numbers::pi_v<float> / 2.0f;
 		}
 
-		
-		velocity_ = {0.0f,0.0f,7.0f };
+
+		velocity_ = { 0.0f,0.0f,7.0f };
 	}
-	
+
 	// 目標の方向に回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
 	// 追従対象からロックオン対象へのベクトル
 	if (isAttack_) {
-		
+
 		worldTransformBase_.translate = worldTransformBase_.translate + velocity_;
 	}
 
@@ -331,7 +331,7 @@ void Enemy::ThrowingAttackInitialize() {
 void Enemy::ThrowingAttackUpdata() {
 	int num = RandomGenerator::GetRandomInt(1, 4);
 	if (!isAttack_) {
-		
+
 
 		if (num == 1) {
 			sub = playerPos_ - GetWorldPosition();
@@ -434,7 +434,7 @@ void Enemy::ThrowingAttackUpdata() {
 	}
 
 	if (isAttack_) {
-		
+
 		// 回転
 		worldTransformBase_.rotate.y =
 			Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -445,7 +445,7 @@ void Enemy::ThrowingAttackUpdata() {
 		}
 		else if (num == 2) {
 			sub = healerPos_ - worldTransformRock_.GetWorldPos();
-			worldTransformRock_.translate =	Math::Lerp(worldTransformRock_.translate, healerPos_, 0.1f);
+			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, healerPos_, 0.1f);
 		}
 		else if (num == 3) {
 			sub = renjuPos_ - worldTransformRock_.GetWorldPos();
@@ -474,6 +474,22 @@ void Enemy::ThrowingAttackUpdata() {
 
 void Enemy::OnCollision(Collider* collider) {
 
+	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
+
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
+			.orientations{
+				 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+				 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+				 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+		    },
+			.size{collider->GetOBB().size}
+		};
+		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
+
+	}
+	worldTransformBase_.UpdateMatrix();
+
 }
 
 
@@ -483,7 +499,7 @@ void Enemy::DeadInitilize() {
 }
 void Enemy::DeadUpdata() {
 	worldTransformBase_.rotate.z -= 0.01f;
-	
+
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
 	threshold_ += 0.004f;
 	animation_->SetThreshold(threshold_);
@@ -498,7 +514,7 @@ void Enemy::Relationship() {
 		Math::MakeAffineMatrix(
 			worldTransformBody_.scale, worldTransformBody_.rotate, worldTransformBody_.translate),
 		worldTransformBase_.matWorld_);
-	
+
 }
 
 

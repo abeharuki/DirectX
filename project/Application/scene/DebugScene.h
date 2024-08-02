@@ -35,22 +35,25 @@ private:
 		true,
 	};
 
-	std::unique_ptr<Model> model_;
-
-	//衝突マネージャー
-	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
-	std::unique_ptr<ColliderManager> colliderManager_[3] = {};
-
-	//追従カメラ
-	std::unique_ptr<FollowCamera> followCamera_;
-	ViewProjection viewProjection_;
 	WorldTransform worldTransform_;
 	WorldTransform worldTransformSkybox_;
 	WorldTransform worldTransformAnimation_;
 	WorldTransform worldTransformCollider1_;
 	WorldTransform worldTransformCollider2_;
 	WorldTransform worldTransformCollider3_;
-	WorldTransform worldTransformLineBox_;
+	WorldTransform worldTransformModel_;
+
+	//ローダー
+	std::unique_ptr<ModelLoader> loader_;
+	ViewProjection viewProjection_;
+
+	std::unique_ptr<Skybox> skybox_;
+	std::unique_ptr<Model> model_;
+	//衝突マネージャー
+	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
+	std::unique_ptr<ColliderManager> colliderManager_[3] = {};
+	//追従カメラ
+	std::unique_ptr<FollowCamera> followCamera_;
 	std::unique_ptr<Animations>animation_;
 	int AnimationNum_ = 0;
 	float animaflame_ = 0.0f;
@@ -66,8 +69,7 @@ private:
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 
-	//ローダー
-	std::unique_ptr<ModelLoader> loader_;
+	
 	
 
 	//アニメーションdissolve

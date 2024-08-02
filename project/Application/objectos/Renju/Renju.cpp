@@ -449,53 +449,26 @@ void Renju::OnCollision(Collider* collider) {
 
 		}
 
+		worldTransformBase_.translate += Math::PushOutAABB(collider->GetWorldPosition(), collider->GetAABB(), worldTransformBase_.translate, GetAABB());
+
 	}
 
-	/*
-	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy || collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
-		AABB aabbA = {
-		.min{worldTransformBase_.translate.x + GetAABB().min.x,worldTransformBase_.translate.y + GetAABB().min.y,worldTransformBase_.translate.z + GetAABB().min.z},
-		.max{worldTransformBase_.translate.x + GetAABB().max.x,worldTransformBase_.translate.y + GetAABB().max.y,worldTransformBase_.translate.z + GetAABB().max.z},
+	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
+
+			.orientations{
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+			},
+			.size{collider->GetOBB().size}
 		};
-		AABB aabbB = {
-			.min{collider->GetWorldTransform().translate.x + collider->GetAABB().min.x,collider->GetWorldTransform().translate.y + collider->GetAABB().min.y,collider->GetWorldTransform().translate.z + collider->GetAABB().min.z},
-			.max{collider->GetWorldTransform().translate.x + collider->GetAABB().max.x,collider->GetWorldTransform().translate.y + collider->GetAABB().max.y,collider->GetWorldTransform().translate.z + collider->GetAABB().max.z},
-		};
-
-		Vector3 overlapAxis = {
-			std::min<float>(aabbA.max.x,aabbB.max.x) - std::max<float>(aabbA.min.x,aabbB.min.x),
-			std::min<float>(aabbA.max.y,aabbB.max.y) - std::max<float>(aabbA.min.y,aabbB.min.y),
-			std::min<float>(aabbA.max.z,aabbB.max.z) - std::max<float>(aabbA.min.z,aabbB.min.z),
-		};
-
-		Vector3 directionAxis{};
-		if (overlapAxis.x < overlapAxis.y && overlapAxis.x < overlapAxis.z) {
-			//X軸方向で最小の重なりが発生している場合
-			directionAxis.x = (worldTransformBase_.translate.x < collider->GetWorldTransform().translate.x) ? -1.0f : 1.0f;
-			directionAxis.y = 0.0f;
-		}
-		else if (overlapAxis.y < overlapAxis.x && overlapAxis.y < overlapAxis.z) {
-			//Y軸方向で最小の重なりが発生している場合
-			directionAxis.y = (worldTransformBase_.translate.y < collider->GetWorldTransform().translate.y) ? -1.0f : 1.0f;
-			directionAxis.x = 0.0f;
-			velocity_.y = 0.0f;
-			if (behaviorRequest_ != Behavior::kAttack && behavior_ != Behavior::kAttack)
-			{
-				behaviorRequest_ = Behavior::kRoot;
-			}
-
-		}
-		else if (overlapAxis.z < overlapAxis.x && overlapAxis.z < overlapAxis.y)
-		{
-			directionAxis.z = (worldTransformBase_.translate.z < collider->GetWorldTransform().translate.z) ? -1.0f : 1.0f;
-			directionAxis.x = 0.0f;
-			directionAxis.y = 0.0f;
-		}
-
-		worldTransformBase_.translate += overlapAxis * directionAxis;
-		worldTransformBase_.UpdateMatrix();
+		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
 	}
-	*/
+	worldTransformBase_.UpdateMatrix();
+
+
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer ||
 		collider->GetCollisionAttribute() == kCollisionAttributeHealer ||
 		collider->GetCollisionAttribute() == kCollisionAttributeTank) {

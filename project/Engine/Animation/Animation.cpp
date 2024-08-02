@@ -417,7 +417,7 @@ void Animations::CreateResource() {
 	lightData->directionLight_.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	lightData->directionLight_.direction = { 0.0f, -1.0f, 0.0f };
 	lightData->directionLight_.intensity = 1.0f;
-	//lightData->environment_.isEnble_ = false;
+	lightData->environment_.isEnble_ = false;
 	lightData->dissolve_.threshold = 0.0f;
 	lightData->dissolve_.edgeColor = { 1.0f,0.4f,0.3f };
 	lightData->dissolve_.isEnble = true;

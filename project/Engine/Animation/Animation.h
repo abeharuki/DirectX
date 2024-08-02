@@ -104,7 +104,7 @@ public:
 	//スポットライト
 	void SpotLightDraw(SpotLight spotLight);
 	//映り込み度
-	void Environment(float environment, bool flag) {
+	void SetEnvironment(float environment, bool flag) {
 		if (Skybox::textureNum != 0) {
 			lightData->environment_.isEnble_ = flag;
 		}
