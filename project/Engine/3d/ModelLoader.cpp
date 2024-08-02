@@ -163,7 +163,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 				OBB obb = Math::ConvertAABBToOBB(aabb);
 				ColliderManager* colliderManager = new ColliderManager();
 
-				if (objectData.filename == "wall") {
+				if (objectData.filename == "wall"|| objectData.filename == "doorwall") {
 
 					colliderManager->SetOBB(obb);
 					colliderManager->SetCollisionMask(kCollisionMaskWall);
@@ -174,17 +174,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 				}
 
 				//BOXの当たり判定があるオブジェクトがあるならここに書く
-				//obbの当たり判定ができてないから全ての壁の当たり判定はまだ取れてない
-				if (objectData.filename == "doorwall") {
 				
-					colliderManager->SetAABB(aabb);
-					colliderManager->SetCollisionMask(kCollisionMaskWall);
-					colliderManager->SetCollisionAttribute(kCollisionAttributeLoderWall);
-
-					colliderManager->SetCollisionPrimitive(kCollisionPrimitiveAABB);
-
-					
-				}
 
 				colliderManager_.push_back(colliderManager);
 

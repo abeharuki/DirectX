@@ -363,10 +363,10 @@ public:
 
 	//AABB同士の押し出し判定
 	static Vector3 PushOutAABB(const Vector3& subjectTranslate, const AABB& subjecAABB,const Vector3& translate,const AABB& aabb);
-
-	//AABBとOBBの当たり判定
-	static Vector3 PushOutAABBOBB(const Vector3& subjectTranslate, const AABB& subjectAABB, const Vector3& obbTranslate, const OBB& obb);
-
+	//OBBに重なったAABBの押し出し判定
+	static Vector3 PushOutAABBOBB(const Vector3& aabbTranslate, const AABB& aabb, const Vector3& obbTranslate, const OBB& obb);
+	//AABBに重なったOBBの押し出し判定(出来てるかわからない)
+	static Vector3 PushOutOBBAABB(const Vector3& aabbTranslate, const AABB& aabb, const Vector3& obbTranslate, const OBB& obb);
 
 	static Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 };

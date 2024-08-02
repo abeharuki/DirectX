@@ -723,16 +723,18 @@ Vector3 Math::PushOutAABB(const Vector3& subjectTranslate, const AABB& subjectAA
 		//X軸方向で最小の重なりが発生している場合
 		directionAxis.x = (translate.x < subjectTranslate.x) ? -1.0f : 1.0f;
 		directionAxis.y = 0.0f;
+		directionAxis.z = 0.0f;
 	}
 	else if (overlapAxis.y < overlapAxis.x && overlapAxis.y < overlapAxis.z) {
 		//Y軸方向で最小の重なりが発生している場合
 		directionAxis.y = (translate.y < subjectTranslate.y) ? -1.0f : 1.0f;
 		directionAxis.x = 0.0f;
-		
+		directionAxis.z = 0.0f;
 
 	}
 	else if (overlapAxis.z < overlapAxis.x && overlapAxis.z < overlapAxis.y)
 	{
+		//Z軸方向での最小の重なりが発生している場合
 		directionAxis.z = (translate.z < subjectTranslate.z) ? -1.0f : 1.0f;
 		directionAxis.x = 0.0f;
 		directionAxis.y = 0.0f;
@@ -741,10 +743,11 @@ Vector3 Math::PushOutAABB(const Vector3& subjectTranslate, const AABB& subjectAA
 	return overlapAxis * directionAxis;;
 }
 
-Vector3 Math::PushOutAABBOBB(const Vector3& subjectTranslate, const AABB& aabb, const Vector3& obbTranslate, const OBB& obb)
+//AABBの押し戻し
+Vector3 Math::PushOutAABBOBB(const Vector3& aabbTranslate, const AABB& aabb, const Vector3& obbTranslate, const OBB& obb)
 {
 	// AABBの中心と半サイズを計算
-	Vector3 aabbCenter = subjectTranslate + (aabb.min + aabb.max) * 0.5f;
+	Vector3 aabbCenter = aabbTranslate + (aabb.min + aabb.max) * 0.5f;
 	float aabbHalfSize[3] = {
 	0.5f * (aabb.max.x - aabb.min.x),
 	0.5f * (aabb.max.y - aabb.min.y),
@@ -765,22 +768,22 @@ Vector3 Math::PushOutAABBOBB(const Vector3& subjectTranslate, const AABB& aabb, 
 
 	// AABBの各軸
 	Vector3 aabbAxes[3] = {
-		{1.0f, 0.0f, 0.0f},
-		{0.0f, 1.0f, 0.0f},
-		{0.0f, 0.0f, 1.0f}
+		{1.0f, 0.0f, 0.0f},//x
+		{0.0f, 1.0f, 0.0f},//y
+		{0.0f, 0.0f, 1.0f}//z
 	};
 
 	// OBBの各軸
 	Vector3 obbAxes[3] = {
-		obb.orientations[0],
-		obb.orientations[1],
-		obb.orientations[2]
+		obb.orientations[0],//ｘ
+		obb.orientations[1],//y
+		obb.orientations[2]//z
 	};
 	
 	
 	// 回転行列とその絶対値行列
 	float R[3][3], AbsR[3][3];
-	const float EPSILON = 1.175494e-37f;
+	const float EPSILON = 1e-6f;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			R[i][j] = Math::Dot(aabbAxes[i], obbAxes[j]);
@@ -788,38 +791,101 @@ Vector3 Math::PushOutAABBOBB(const Vector3& subjectTranslate, const AABB& aabb, 
 		}
 	}
 
-	// AABBとOBBの各軸に沿った重なりを計算
-	float ra, rb;
+	// 最小重なりを求める
 	float minOverlap = FLT_MAX;
-	Vector3 overlapAxis;
-	Vector3 directionAxis;
-
-	// AABBの各軸に沿った重なりを計算
-	for (int i = 0; i < 3; i++) {
-		ra = aabbHalfSize[i];
-		rb = obbHalfSize[0] * AbsR[i][0] + obbHalfSize[1] * AbsR[i][1] + obbHalfSize[2] * AbsR[i][2];
-		float overlap = fabsf(t[i]) - ra - rb;
-		if (overlap < minOverlap) {
-			minOverlap = overlap;
-			overlapAxis = aabbAxes[i];
-			directionAxis = (t[i] < 0) ? -aabbAxes[i] : aabbAxes[i];
-		}
-	}
+	Vector3 separationAxis;
+	
+	
 
 	// OBBの各軸に沿った重なりを計算
 	for (int i = 0; i < 3; i++) {
-		ra = aabbHalfSize[0] * AbsR[0][i] + aabbHalfSize[1] * AbsR[1][i] + aabbHalfSize[2] * AbsR[2][i];
-		rb = obbHalfSize[i];
-		float overlap = fabsf(Math::Dot(Vector3{ t[0],t[1],t[2] }, obbAxes[i])) - ra - rb;
+		float ra = aabbHalfSize[0] * AbsR[0][i] + aabbHalfSize[1] * AbsR[1][i] + aabbHalfSize[2] * AbsR[2][i];
+		float rb = obbHalfSize[i];
+		float overlap = ra + rb - fabsf(Math::Dot(Vector3{ t[0], t[1], t[2] }, obbAxes[i]));
 		if (overlap < minOverlap) {
 			minOverlap = overlap;
-			overlapAxis = obbAxes[i];
-			directionAxis = (Math::Dot(Vector3{ t[0],t[1],t[2] }, obbAxes[i]) < 0) ? -obbAxes[i] : obbAxes[i];
+			separationAxis = obbAxes[i];
+		
+		}
+	}
+
+	//押し出す方向を決める
+	float direction = Math::Dot(Vector3{ t[0], t[1], t[2] }, separationAxis);
+	if (direction > 0) {
+		minOverlap *= -1;
+	}
+	
+	// 最小重なり軸に沿ってAABBを押し出す
+	return separationAxis * minOverlap;
+}
+
+Vector3 Math::PushOutOBBAABB(const Vector3& aabbTranslate, const AABB& aabb, const Vector3& obbTranslate, const OBB& obb)
+{
+	// AABBの中心と半サイズを計算
+	Vector3 aabbCenter = aabbTranslate + (aabb.min + aabb.max) * 0.5f;
+	float aabbHalfSize[3] = {
+	0.5f * (aabb.max.x - aabb.min.x),
+	0.5f * (aabb.max.y - aabb.min.y),
+	0.5f * (aabb.max.z - aabb.min.z),
+	};
+
+	float obbHalfSize[3] = {
+		obb.size.x,
+		obb.size.y,
+		obb.size.z
+	};
+
+	float t[3] = {
+		obb.center.x - aabbCenter.x,
+		obb.center.y - aabbCenter.y,
+		obb.center.z - aabbCenter.z,
+	};
+
+	// AABBの各軸
+	Vector3 aabbAxes[3] = {
+		{1.0f, 0.0f, 0.0f},//x
+		{0.0f, 1.0f, 0.0f},//y
+		{0.0f, 0.0f, 1.0f}//z
+	};
+
+	// OBBの各軸
+	Vector3 obbAxes[3] = {
+		obb.orientations[0],//ｘ
+		obb.orientations[1],//y
+		obb.orientations[2]//z
+	};
+
+
+	// 回転行列とその絶対値行列
+	float R[3][3], AbsR[3][3];
+	const float EPSILON = 1e-6f;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			R[i][j] = Math::Dot(aabbAxes[i], obbAxes[j]);
+			AbsR[i][j] = fabsf(R[i][j]) + EPSILON;
+		}
+	}
+
+	// 最小重なりを求める
+	float minOverlap = FLT_MAX;
+	Vector3 separationAxis;
+
+	// AABBの各軸に沿った重なりを計算
+	for (int i = 0; i < 3; i++) {
+		float ra = aabbHalfSize[i];
+		float rb = obbHalfSize[0] * AbsR[i][0] + obbHalfSize[1] * AbsR[i][1] + obbHalfSize[2] * AbsR[i][2];
+		float overlap = ra + rb - fabsf(t[i]);
+		if (overlap < minOverlap) {
+			minOverlap = overlap;
+			separationAxis = aabbAxes[i];
+			if (t[i] > 0) {
+				minOverlap *= -1;
+			}
 		}
 	}
 
 	// 最小重なり軸に沿ってAABBを押し出す
-	return directionAxis * minOverlap;
+	return separationAxis * minOverlap;
 }
 
 
