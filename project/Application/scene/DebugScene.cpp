@@ -47,15 +47,15 @@ void DebugScene::Initialize() {
 	worldTransformCollider2_.Initialize();
 	worldTransformCollider3_.Initialize();
 	worldTransformModel_.Initialize();
-	worldTransformModel_.translate = { 0.0f,2.0f,0.0f };
+	worldTransformModel_.translate = { 0.0f,0.0f,0.0f };
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateModelFromObj("resources/JsonFile/pillar.obj","resources/white.png"));
+	model_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj","resources/white.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf"));
+	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
 	
 	emitter_ = {
 		.translate = {0,3,0},
@@ -88,13 +88,15 @@ void DebugScene::Initialize() {
 	bloom_.stepWidth = 0.001f;
 	bloom_.sigma = 0.005f;
 	directionLight_.direction.z = 2;
+	AnimationNum_ = 4;
+
 }
 
 void DebugScene::Update() {
 	animation_->DirectionalLightDraw(directionLight_);
 	animation_->Update(AnimationNum_);
 	animation_->SetFlameTimer(animaflame_);
-
+	model_->SetColor({ 1.0f,1.0f,1.0f,a_});
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {
@@ -107,7 +109,10 @@ void DebugScene::Update() {
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
-	
+	worldTransformModel_.scale += Vector3(1.0f, 0.0f, 1.0f);
+	if (worldTransformModel_.scale.x > 100) {
+		worldTransformModel_.scale = { 1.0f,1.0f,1.0f };
+	}
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
 	worldTransformCollider1_.UpdateMatrix();
@@ -190,7 +195,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("Pos", &worldTransformModel_.translate.x, 0.1f);
 		ImGui::DragFloat3("Rotate", &worldTransformModel_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Size", &worldTransformModel_.scale.x, 0.1f);
-
+		ImGui::SliderFloat("Color", &a_, -1.0f, 1.0f);
 		ImGui::TreePop();
 	}
 	//ローダーオブジェクト
@@ -232,6 +237,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("AnimationSize", &worldTransformAnimation_.scale.x, 0.1f);
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::SliderFloat("Thresholed", &animeDissolve_.threshold, 0.01f, 1.0f);
+		ImGui::Text("AnimationTimer%f", animation_->GetAnimationTimer());
 		ImGui::TreePop();
 	}
 	//Posteffect

@@ -61,6 +61,9 @@ public: // メンバ関数
 	//投擲
 	void ThrowingAttackInitialize();
 	void ThrowingAttackUpdata();
+	//たたきつけ
+	void GroundAttackInitialize();
+	void GroundAttackUpdata();
 
 	void OnCollision(Collider* collider) override;
 
@@ -69,7 +72,11 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }
 	WorldTransform& GetWorldTransformRock() { return worldTransformRock_; }
 
-	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
+	void SetLight(DirectionLight directionLight) { 
+		animation_->DirectionalLightDraw(directionLight);
+		impactModel_->DirectionalLightDraw(directionLight);
+	
+	}
 
 
 	void SetPlayerPos(Vector3 pos) { playerPos_ = pos; };
@@ -104,9 +111,11 @@ private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformRock_;
-
+	WorldTransform worldTransformImpact_;
 	std::unique_ptr<Animations>animation_;
 	int animationNumber_;
+
+	std::unique_ptr<Model> impactModel_;
 
 	Vector3 playerPos_ = {};
 	Vector3 healerPos_ = {};
@@ -115,6 +124,7 @@ private: // メンバ変数
 
 	bool isAttack_ = false;
 	bool behaviorAttack_ = false;
+
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
@@ -134,6 +144,7 @@ private: // メンバ変数
 		kNomal,//通常攻撃
 		kDash, // ダッシュ攻撃
 		kThrowing,//投擲攻撃
+		kGround,//地面を殴る攻撃
 	};
 
 	BehaviorAttack attack_ = BehaviorAttack::kDash;

@@ -7,6 +7,7 @@ void Enemy::Initialize() {
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
+	impactModel_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj", "resources/white.png"));
 	animationNumber_ = nomal;
 	// 初期化
 	worldTransformBase_.Initialize();
@@ -17,6 +18,7 @@ void Enemy::Initialize() {
 	worldTransformRock_.Initialize();
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	worldTransformRock_.translate.z = -15000.0f;
+	worldTransformImpact_.Initialize();
 	clear_ = false;
 	time_ = 120;
 
@@ -36,7 +38,7 @@ void Enemy::Initialize() {
 
 void Enemy::Update() {
 
-	/*
+	
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -71,14 +73,14 @@ void Enemy::Update() {
 		DeadUpdata();
 		break;
 	}
-	*/
+	
 
 	animation_->Update(animationNumber_);
 	Relationship();
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
-
+	worldTransformImpact_.UpdateMatrix();
 
 
 
@@ -91,11 +93,16 @@ void Enemy::Update() {
 	ImGui::SliderFloat3("pos", &worldTransformBody_.translate.x, -2.0f, 2.0f);
 	ImGui::SliderFloat3("rotato", &worldTransformBody_.rotate.x, -2.0f, 2.0f);
 	ImGui::Text("time%d", time_);
+	ImGui::Text("Attack%d", isAttack_);
 	ImGui::End();
 }
 
 void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
+	if (animationNumber_ == groundAttack && isAttack_ == true) {
+		impactModel_->Draw(worldTransformImpact_, camera, true);
+	}
+	
 	RenderCollisionBounds(worldTransformBody_, camera);
 }
 
@@ -116,7 +123,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 
-	int num = RandomGenerator::GetRandomInt(1, 3);
+	int num = RandomGenerator::GetRandomInt(4, 4);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -125,6 +132,9 @@ void Enemy::AttackInitialize() {
 	}
 	else if (num == 3) {
 		attackRequest_ = BehaviorAttack::kThrowing;
+	}
+	else if (num == 4) {
+		attackRequest_ = BehaviorAttack::kGround;
 	}
 	behaviorAttack_ = true;
 }
@@ -144,6 +154,9 @@ void Enemy::AttackUpdata() {
 		case BehaviorAttack::kThrowing:
 			ThrowingAttackInitialize();
 			break;
+		case BehaviorAttack::kGround:
+			GroundAttackInitialize();
+			break;
 		}
 
 		// 振る舞いリセット
@@ -159,6 +172,9 @@ void Enemy::AttackUpdata() {
 		break;
 	case BehaviorAttack::kThrowing:
 		ThrowingAttackUpdata();
+		break;
+	case BehaviorAttack::kGround:
+		GroundAttackUpdata();
 		break;
 	}
 }
@@ -327,7 +343,6 @@ void Enemy::ThrowingAttackInitialize() {
 	animationNumber_ = swing;
 	animation_->SetLoop(false);
 }
-
 void Enemy::ThrowingAttackUpdata() {
 	int num = RandomGenerator::GetRandomInt(1, 4);
 	if (!isAttack_) {
@@ -470,7 +485,24 @@ void Enemy::ThrowingAttackUpdata() {
 
 }
 
-
+void Enemy::GroundAttackInitialize() {
+	worldTransformImpact_.translate = worldTransformBase_.translate;
+	isAttack_ = false;
+	animationNumber_ = groundAttack;
+	animation_->SetLoop(false);
+	animation_->SetpreAnimationTimer(0.0f);
+};
+void Enemy::GroundAttackUpdata() {
+	if(animation_->GetAnimationTimer() >= 1.6f){
+		isAttack_ = true;
+		worldTransformImpact_.scale += Vector3(2.0f, 0.0f, 2.0f);
+		if (worldTransformImpact_.scale.x > 100) {
+			worldTransformImpact_.scale = { 1.0f,1.0f,1.0f };
+			behaviorRequest_ = Behavior::kRoot;
+		}
+	}
+	
+};
 
 void Enemy::OnCollision(Collider* collider) {
 

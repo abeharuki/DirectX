@@ -11,8 +11,6 @@ void EnemyManager::Initialize() {
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize();
 
-
-
 	HpTransform_.scale = { 800.0f, 40.0f, 1.0f };
 	HpTransform_.translate = { 270.0f, 20.0f, 1.0f };
 

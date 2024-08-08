@@ -133,6 +133,7 @@ public:
 	void SetAnimationTimer(float startTime, float flameTime);
 	void SetFlameTimer(float time) {flameTimer_ = time; }
 	void SetpreAnimationTimer(float time) { animationTime = time; }
+	float GetAnimationTimer() { return  animationTime; }
 
 	void SetBlend(const uint32_t animationNumber,float num);
 
