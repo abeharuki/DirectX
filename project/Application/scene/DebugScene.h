@@ -50,9 +50,13 @@ private:
 	std::unique_ptr<Skybox> skybox_;
 	std::unique_ptr<Model> model_;
 	float a_;
+	bool impactScale_;
+
 	//衝突マネージャー
 	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
 	std::unique_ptr<ColliderManager> colliderManager_[3] = {};
+	Vector3 impactVelocity_;
+	Vector3 impactPos_;
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
 	std::unique_ptr<Animations>animation_;

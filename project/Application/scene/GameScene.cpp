@@ -257,6 +257,12 @@ void GameScene::CheckAllCollision() {
 	collisionManager_->ClearColliderList();
 	collisionManager_->SetColliderList(playerManager_->GetPlayer());
 	collisionManager_->SetColliderList(enemyManager_->GetEnemy());
+	if (enemyManager_->GetEnemy()->isAttack()) {
+		for (int i = 0; i < 15; ++i) {
+			collisionManager_->SetColliderList(enemyManager_->GetEnemy()->GetCollider(i));
+		}
+	}
+	
 	collisionManager_->SetColliderList(healerManager_->GetHealer());
 	collisionManager_->SetColliderList(renjuManager_->GetRenju());
 	collisionManager_->SetColliderList(tankManager_->GetTank());

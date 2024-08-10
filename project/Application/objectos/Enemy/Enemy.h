@@ -8,6 +8,7 @@
 #include "Utilities/RandomGenerator.h"
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>
+#include <CollisionManager/ColliderManager.h>
 
 enum AnimationNumber {
 	dashAttack,
@@ -64,9 +65,12 @@ public: // メンバ関数
 	//たたきつけ
 	void GroundAttackInitialize();
 	void GroundAttackUpdata();
+	void InitializeImpact();
+	void UpdataImpact();
+
+	Collider* GetCollider(int i) { return colliderManager_[i].get(); }
 
 	void OnCollision(Collider* collider) override;
-
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }
@@ -112,6 +116,8 @@ private: // メンバ変数
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformRock_;
 	WorldTransform worldTransformImpact_;
+	WorldTransform worldTransformColliderImpact_[15];
+	std::unique_ptr<ColliderManager> colliderManager_[15] = {};
 	std::unique_ptr<Animations>animation_;
 	int animationNumber_;
 

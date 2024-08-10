@@ -108,39 +108,39 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 		//コライダーBのワールド座標を取得
 		Vector3 posB = colliderB->GetWorldPosition();
 
-		//コライダーAがSphereの場合
-		if (colliderA->GetCollisionPrimitive() & kCollisionPrimitiveSphere)
-		{
-			//コライダーAのSphereを作成
-			sphere sphere = { .center{posA},.radius{colliderA->GetRadius()} };
-			//コライダーBのAABBを取得
-			AABB aabb = { .min{posB + colliderB->GetAABB().min},.max{posB + colliderB->GetAABB().max} };
-			//衝突判定
-			if (CheckCollisionSphereAABB(sphere, aabb))
-			{
-				//コライダーAの衝突時コールバックを呼び出す
-				colliderA->OnCollision(colliderB);
-				//コライダーBの衝突時コールバックを呼び出す
-				colliderB->OnCollision(colliderA);
-				colliderA->CheckCollision(true);
-				colliderB->CheckCollision(true);
-			}
-		}
-		else if (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveSphere)
-		{
-			//コライダーAのSphereを作成
-			sphere sphere = { .center{posB},.radius{colliderB->GetRadius()} };
-			//コライダーBのAABBを取得
-			AABB aabb = { .min{posA + colliderA->GetAABB().min},.max{posA + colliderA->GetAABB().max} };
-			//衝突判定
-			if (CheckCollisionSphereAABB(sphere, aabb))
-			{
-				//コライダーAの衝突時コールバックを呼び出す
-				colliderA->OnCollision(colliderB);
-				//コライダーBの衝突時コールバックを呼び出す
-				colliderB->OnCollision(colliderA);
-			}
-		}
+//コライダーAがSphereの場合
+if (colliderA->GetCollisionPrimitive() & kCollisionPrimitiveSphere)
+{
+	//コライダーAのSphereを作成
+	sphere sphere = { .center{posA},.radius{colliderA->GetRadius()} };
+	//コライダーBのAABBを取得
+	AABB aabb = { .min{posB + colliderB->GetAABB().min},.max{posB + colliderB->GetAABB().max} };
+	//衝突判定
+	if (CheckCollisionSphereAABB(sphere, aabb))
+	{
+		//コライダーAの衝突時コールバックを呼び出す
+		colliderA->OnCollision(colliderB);
+		//コライダーBの衝突時コールバックを呼び出す
+		colliderB->OnCollision(colliderA);
+		colliderA->CheckCollision(true);
+		colliderB->CheckCollision(true);
+	}
+}
+else if (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveSphere)
+{
+	//コライダーAのSphereを作成
+	sphere sphere = { .center{posB},.radius{colliderB->GetRadius()} };
+	//コライダーBのAABBを取得
+	AABB aabb = { .min{posA + colliderA->GetAABB().min},.max{posA + colliderA->GetAABB().max} };
+	//衝突判定
+	if (CheckCollisionSphereAABB(sphere, aabb))
+	{
+		//コライダーAの衝突時コールバックを呼び出す
+		colliderA->OnCollision(colliderB);
+		//コライダーBの衝突時コールバックを呼び出す
+		colliderB->OnCollision(colliderA);
+	}
+}
 	}
 
 	//OBBとAABBの判定
@@ -152,7 +152,7 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 		{
 			//コライダーAのAABBを取得
 			AABB aabb = { .min{colliderA->GetWorldPosition() + colliderA->GetAABB().min},.max{colliderA->GetWorldPosition() + colliderA->GetAABB().max}, };
-		
+
 			//コライダーBのOBBを取得
 			OBB obb = {
 				.center{colliderB->GetOBB().center.x + colliderB->GetWorldPosition().x,colliderB->GetOBB().center.y + colliderB->GetWorldPosition().y,colliderB->GetOBB().center.z + colliderB->GetWorldPosition().z},
@@ -165,6 +165,8 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 				.size{colliderB->GetOBB().size}
 			};
 
+			
+			
 			//衝突判定
 			if (CheckCollisionAABBOBB(aabb, obb))
 			{
@@ -181,7 +183,7 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 			//コライダーBのAABBを取得
 			AABB aabb = { .min{colliderB->GetWorldPosition() + colliderB->GetAABB().min},.max{colliderB->GetWorldPosition() + colliderB->GetAABB().max}, };
 			//コライダーAのOBBを取得
-			
+
 			//コライダーAのOBBを取得
 			OBB obb = {
 				.center{colliderA->GetOBB().center.x + colliderA->GetWorldPosition().x,colliderA->GetOBB().center.y + colliderA->GetWorldPosition().y,colliderA->GetOBB().center.z + colliderA->GetWorldPosition().z},
@@ -193,6 +195,11 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 				},
 				.size{colliderA->GetOBB().size}
 			};
+
+			
+			
+			
+
 			//衝突判定
 			if (CheckCollisionAABBOBB(aabb, obb))
 			{

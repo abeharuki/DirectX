@@ -31,6 +31,11 @@ public:
 
 	void SetOBB(OBB& obb) { obb_ = obb; priType = Primitive::kOBB; SetBounds();};
 
+	void SizeUpdata(Vector3 size){
+		obb_.size = size;
+		lineBox_->Update(Math::ConvertOBBToAABB(obb_));
+	}
+
 	const uint32_t GetCollisionAttribute() const { return collisionAttribute_; };
 
 	void SetCollisionAttribute(uint32_t collisionAttribute) { collisionAttribute_ = collisionAttribute; };

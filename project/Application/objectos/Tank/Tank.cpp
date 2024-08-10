@@ -146,15 +146,15 @@ void Tank::JumpUpdata() {};
 
 // ノックバック
 void Tank::knockInitialize() { 
-	nockTime_ = 30;
+	nockTime_ = 10;
 	animation_->SetAnimationTimer(0, 8.0f);
 	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
 };
 void Tank::knockUpdata() {
 
-	worldTransformBase_.translate += velocity_;
-	worldTransformBase_.translate.y = 0;
+	//worldTransformBase_.translate += velocity_;
+	//worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
 		nockBack_ = false;
 		if (hitCount_ <= 0) {
@@ -413,8 +413,18 @@ void Tank::OnCollision(Collider* collider) {
 
 		}
 
-		worldTransformBase_.translate += Math::PushOutAABB(collider->GetWorldPosition(), collider->GetAABB(), worldTransformBase_.translate, GetAABB());
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
 
+			.orientations{
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+			},
+			.size{collider->GetOBB().size}
+		};
+
+		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {

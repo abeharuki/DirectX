@@ -19,6 +19,18 @@ void Enemy::Initialize() {
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	worldTransformRock_.translate.z = -15000.0f;
 	worldTransformImpact_.Initialize();
+	for (int i = 0; i < 15; ++i) {
+		worldTransformColliderImpact_[i].Initialize();
+		AABB aabb = { {-7.0f,-0.2f,-1 },{7.0f,0.2f,1} };
+		OBB obb = Math::ConvertAABBToOBB(aabb);
+		colliderManager_[i] = std::make_unique<ColliderManager>();
+		colliderManager_[i]->SetOBB(obb);
+		colliderManager_[i]->SetCollisionMask(kCollisionMaskEnemy);
+		colliderManager_[i]->SetCollisionAttribute(kCollisionAttributeEnemy);
+		colliderManager_[i]->SetCollisionPrimitive(kCollisionPrimitiveOBB);
+	}
+
+	InitializeImpact();
 	clear_ = false;
 	time_ = 120;
 
@@ -27,10 +39,17 @@ void Enemy::Initialize() {
 	Relationship();
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
+	worldTransformImpact_.UpdateMatrix();
+	for (int i = 0; i < 15; ++i) {
+		worldTransformColliderImpact_[i].UpdateMatrix();
+		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
+	}
 
 	AABB aabbSize{ .min{-3.0f,-4.0f,-2.0f},.max{3.0f,4.0f,2.0f} };
-	SetAABB(aabbSize);
-	SetCollisionPrimitive(kCollisionPrimitiveAABB);
+	OBB obb = Math::ConvertAABBToOBB(aabbSize);
+	obb.center = { 0.0f,4.0f,0.0f };
+	SetOBB(obb);
+	SetCollisionPrimitive(kCollisionPrimitiveOBB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
 
@@ -39,40 +58,40 @@ void Enemy::Initialize() {
 void Enemy::Update() {
 
 	
-	if (behaviorRequest_) {
-		// 振る舞い変更
-		behavior_ = behaviorRequest_.value();
-		// 各振る舞いごとの初期化
-		switch (behavior_) {
-		case Behavior::kRoot:
-		default:
-			MoveInitialize();
-			break;
-		case Behavior::kAttack:
-			AttackInitialize();
-			break;
-		case Behavior::kDead:
-			DeadInitilize();
-			break;
-		}
+	//if (behaviorRequest_) {
+	//	// 振る舞い変更
+	//	behavior_ = behaviorRequest_.value();
+	//	// 各振る舞いごとの初期化
+	//	switch (behavior_) {
+	//	case Behavior::kRoot:
+	//	default:
+	//		MoveInitialize();
+	//		break;
+	//	case Behavior::kAttack:
+	//		AttackInitialize();
+	//		break;
+	//	case Behavior::kDead:
+	//		DeadInitilize();
+	//		break;
+	//	}
 
-		// 振る舞いリセット
-		behaviorRequest_ = std::nullopt;
-	}
+	//	// 振る舞いリセット
+	//	behaviorRequest_ = std::nullopt;
+	//}
 
-	switch (behavior_) {
-	case Behavior::kRoot:
-	default:
-		// 通常行動
-		MoveUpdata();
-		break;
-	case Behavior::kAttack:
-		AttackUpdata();
-		break;
-	case Behavior::kDead:
-		DeadUpdata();
-		break;
-	}
+	//switch (behavior_) {
+	//case Behavior::kRoot:
+	//default:
+	//	// 通常行動
+	//	MoveUpdata();
+	//	break;
+	//case Behavior::kAttack:
+	//	AttackUpdata();
+	//	break;
+	//case Behavior::kDead:
+	//	DeadUpdata();
+	//	break;
+	//}
 	
 
 	animation_->Update(animationNumber_);
@@ -81,7 +100,11 @@ void Enemy::Update() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
 	worldTransformImpact_.UpdateMatrix();
-
+	for (int i = 0; i < 15; ++i) {
+		worldTransformColliderImpact_[i].UpdateMatrix();
+		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
+	}
+	
 
 
 	ImGui::Begin("EnemyRock");
@@ -101,8 +124,11 @@ void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
 	if (animationNumber_ == groundAttack && isAttack_ == true) {
 		impactModel_->Draw(worldTransformImpact_, camera, true);
+		
 	}
-	
+	for (int i = 0; i < 15; ++i) {
+		colliderManager_[i]->Draw(camera);
+	}
 	RenderCollisionBounds(worldTransformBody_, camera);
 }
 
@@ -485,24 +511,71 @@ void Enemy::ThrowingAttackUpdata() {
 
 }
 
+
+void Enemy::InitializeImpact() {
+	
+	
+	for (int i = 0; i < 15; ++i) {
+		if (i == 0) {
+			worldTransformColliderImpact_[i].rotate = { 0.0f,0.2f,0.0f };
+		}
+		else {
+			worldTransformColliderImpact_[i].rotate.y = worldTransformColliderImpact_[i - 1].rotate.y + 0.42f;
+		}
+		worldTransformColliderImpact_[i].translate = worldTransformImpact_.translate;
+		worldTransformColliderImpact_[i].scale.x = worldTransformImpact_.scale.x / 100.0f;
+		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / 100.0f;
+	}
+	
+	
+}
+void Enemy::UpdataImpact(){
+	worldTransformColliderImpact_[0].translate += {0.12f, 0.0f, 0.6f};
+	worldTransformColliderImpact_[1].translate += {0.35f, 0.0f, 0.5f};
+	worldTransformColliderImpact_[2].translate += {0.53f, 0.0f, 0.31f};
+	worldTransformColliderImpact_[3].translate += {0.625f, 0.0f, 0.06f};
+	worldTransformColliderImpact_[4].translate += {0.6f, 0.0f, -0.2f};
+	worldTransformColliderImpact_[5].translate += {0.46f, 0.0f, -0.41f};
+	worldTransformColliderImpact_[6].translate += {0.25f, 0.0f, -0.56f};
+	worldTransformColliderImpact_[7].translate += {-0.02f, 0.0f, -0.625f};
+	worldTransformColliderImpact_[8].translate += {-0.26f, 0.0f, -0.58f};
+	worldTransformColliderImpact_[9].translate += {-0.47f, 0.0f, -0.42f};
+	worldTransformColliderImpact_[10].translate += {-0.6f, 0.0f, -0.2f};
+	worldTransformColliderImpact_[11].translate += {-0.63f, 0.0f, 0.07f};
+	worldTransformColliderImpact_[12].translate += {-0.55f, 0.0f, 0.31f};
+	worldTransformColliderImpact_[13].translate += {-0.38f, 0.0f, 0.51f};
+	worldTransformColliderImpact_[14].translate += {-0.15f, 0.0f, 0.61f};
+	for (int i = 1; i < 15; ++i) {
+		worldTransformColliderImpact_[i].scale.x = worldTransformImpact_.scale.x / 100.0f;
+		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / 100.0f;
+	}
+
+	
+};
+
 void Enemy::GroundAttackInitialize() {
 	worldTransformImpact_.translate = worldTransformBase_.translate;
 	isAttack_ = false;
 	animationNumber_ = groundAttack;
 	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
+	InitializeImpact();
 };
 void Enemy::GroundAttackUpdata() {
 	if(animation_->GetAnimationTimer() >= 1.6f){
 		isAttack_ = true;
 		worldTransformImpact_.scale += Vector3(2.0f, 0.0f, 2.0f);
+		UpdataImpact();
 		if (worldTransformImpact_.scale.x > 100) {
 			worldTransformImpact_.scale = { 1.0f,1.0f,1.0f };
+			InitializeImpact();
 			behaviorRequest_ = Behavior::kRoot;
+			
 		}
 	}
 	
-};
+}
+
 
 void Enemy::OnCollision(Collider* collider) {
 
