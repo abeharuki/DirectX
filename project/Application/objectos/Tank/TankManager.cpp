@@ -26,7 +26,7 @@ void TankManager::Initialize() {
 	tank_ = std::make_unique<Tank>();
 	tank_->Initialize();
 
-
+	
 }
 
 void TankManager::Update() {

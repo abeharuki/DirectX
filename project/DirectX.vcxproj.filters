@@ -348,12 +348,6 @@
     <ClCompile Include="Engine\base\StructuredBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Application\BehaviorTree\ActionNode.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\BehaviorTree\BehaviorTree.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Application\BehaviorTree\CompositeNode.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -663,13 +657,22 @@
     <ClInclude Include="Application\BehaviorTree\SequenceNode.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\ActionNode.h">
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\ActionNode.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Application\BehaviorTree\ConditionNode.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Application\BehaviorTree\BehaviorTree.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\JumpActionNode.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\MoveActionNode.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\AttackActionNode.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

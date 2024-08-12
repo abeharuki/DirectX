@@ -13,4 +13,4 @@ protected:
     std::vector<BehaviorTreeNode*> children;
 };
 
-#endif // COMPOSITE_NODE_H
+

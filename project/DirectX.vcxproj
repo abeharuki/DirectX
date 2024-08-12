@@ -113,8 +113,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\base\camera\followCamera.cpp" />
     <ClCompile Include="Application\base\Ground.cpp" />
     <ClCompile Include="Application\base\Skydome.cpp" />
-    <ClCompile Include="Application\BehaviorTree\ActionNode.cpp" />
-    <ClCompile Include="Application\BehaviorTree\BehaviorTree.cpp" />
     <ClCompile Include="Application\BehaviorTree\CompositeNode.cpp" />
     <ClCompile Include="Application\BehaviorTree\ConditionNode.cpp" />
     <ClCompile Include="Application\BehaviorTree\SelectorNode.cpp" />
@@ -325,7 +323,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\base\camera\followCamera.h" />
     <ClInclude Include="Application\base\Ground.h" />
     <ClInclude Include="Application\base\Skydome.h" />
-    <ClInclude Include="Application\BehaviorTree\ActionNode.h" />
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\ActionNode.h" />
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\AttackActionNode.h" />
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\JumpActionNode.h" />
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\MoveActionNode.h" />
     <ClInclude Include="Application\BehaviorTree\BehaviorTree.h" />
     <ClInclude Include="Application\BehaviorTree\BehaviorTreeNode.h" />
     <ClInclude Include="Application\BehaviorTree\CompositeNode.h" />
