@@ -1,5 +1,6 @@
 #include "SequenceNode.h"
 
+
 NodeStatus SequenceNode::Update() {
     for (BehaviorTreeNode* child : children) {
         NodeStatus status = child->Update();

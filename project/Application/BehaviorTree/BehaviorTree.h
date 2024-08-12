@@ -1,15 +1,45 @@
 #pragma once
 #include "BehaviorTreeNode.h"
+#include "CompositeNode.h"
+#include "SelectorNode.h"
+#include "SequenceNode.h"
+#include "ActionNodes/ActionNode.h"
+#include "ActionNodes/JumpActionNode.h"
+#include "ActionNodes/MoveActionNode.h"
+#include "ActionNodes/AttackActionNode.h"
 
+template <typename CharacterType>
 class BehaviorTree {
 public:
-    BehaviorTree(BehaviorTreeNode* rootNode);
-    ~BehaviorTree();
-
-    // ビヘイビアツリーの更新を行う
+    BehaviorTree(CharacterType* character);
+    void Initialize();
     void Update();
 
 private:
-    BehaviorTreeNode* root;
+    CharacterType* character_;
+    SelectorNode* rootNode_;
 };
 
+template <typename CharacterType>
+BehaviorTree<CharacterType>::BehaviorTree(CharacterType* character) : character_(character), rootNode_(nullptr) {
+    Initialize();
+}
+
+template <typename CharacterType>
+void BehaviorTree<CharacterType>::Initialize() {
+    auto* moveActionNode = new MoveActionNode<CharacterType>(character_);
+    auto* jumpActionNode = new JumpActionNode<CharacterType>(character_);
+    auto* attackActionNode = new AttackActionNode<CharacterType>(character_);
+
+    rootNode_ = new SelectorNode();
+    rootNode_->AddChild(moveActionNode);
+    rootNode_->AddChild(jumpActionNode);
+    rootNode_->AddChild(attackActionNode);
+}
+
+template <typename CharacterType>
+void BehaviorTree<CharacterType>::Update() {
+    if (rootNode_) {
+        rootNode_->Update();
+    }
+}

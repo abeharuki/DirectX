@@ -1,5 +1,11 @@
 #pragma once
 
+enum class CharacterState {
+    Attacking,
+    Moveing,
+    Jumping,
+    Dead
+};
 
 enum class NodeStatus {
     SUCCESS,

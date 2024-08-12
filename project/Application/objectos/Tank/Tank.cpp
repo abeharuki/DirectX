@@ -2,11 +2,12 @@
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 
-Tank::~Tank() {};
 
-/// <summary>
-/// 初期化
-/// </summary>
+Tank::Tank() : behaviorTree_(nullptr) {}
+Tank::~Tank() {
+	delete behaviorTree_;
+}
+
 void Tank::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
@@ -35,6 +36,11 @@ void Tank::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeTank);
 	SetCollisionMask(kCollisionMaskTank);
+
+	// ビヘイビアツリーの初期化
+	behaviorTree_ = new BehaviorTree<Tank>(this);
+	behaviorTree_->Initialize();
+	
 };
 
 /// <summary>
@@ -49,53 +55,8 @@ void Tank::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
-	if (hitCount_ == 0) {
-		behaviorRequest_ = Behavior::kDead;
-	}
-
-	if (behaviorRequest_) {
-		// 振る舞い変更
-		behavior_ = behaviorRequest_.value();
-		// 各振る舞いごとの初期化
-		switch (behavior_) {
-		case Behavior::kRoot:
-		default:
-			MoveInitialize();
-			break;
-		case Behavior::kJump:
-			JumpInitialize();
-			break;
-		case Behavior::knock:
-			knockInitialize();
-			break;
-		case Behavior::kAttack:
-			AttackInitialize();
-		case Behavior::kDead:
-			DeadInitialize();
-			break;
-		}
-
-		// 振る舞いリセット
-		behaviorRequest_ = std::nullopt;
-	}
-
-	switch (behavior_) {
-	case Behavior::kRoot:
-	default:
-		// 通常行動
-		MoveUpdata();
-		break;
-	case Behavior::kJump:
-		JumpUpdata();
-		break;
-	case Behavior::knock:
-		knockUpdata();
-		break;
-	case Behavior::kAttack:
-		AttackUpdata();
-	case Behavior::kDead:
-		DeadUpdate();
-		break;
+	if (behaviorTree_) {
+		behaviorTree_->Update();
 	}
 
 	Relationship();
@@ -122,7 +83,7 @@ void Tank::Draw(const ViewProjection& camera) {
 
 // 移動
 void Tank::MoveInitialize() { searchTarget_ = false; };
-void Tank::MoveUpdata() {
+void Tank::MoveUpdate() {
 
 	// プレイヤーに集合
 	if (operation_ || !searchTarget_) {
@@ -136,13 +97,14 @@ void Tank::MoveUpdata() {
 
 
 	if (hitCount_ <= 0) {
-		behaviorRequest_ = Behavior::kDead;
+		state_ = CharacterState::Dead;
+		
 	}
 };
 
 // ジャンプ
 void Tank::JumpInitialize() {};
-void Tank::JumpUpdata() {};
+void Tank::JumpUpdate() {};
 
 // ノックバック
 void Tank::knockInitialize() { 
@@ -151,17 +113,17 @@ void Tank::knockInitialize() {
 	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
 };
-void Tank::knockUpdata() {
+void Tank::knockUpdate() {
 
 	//worldTransformBase_.translate += velocity_;
 	//worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
 		nockBack_ = false;
 		if (hitCount_ <= 0) {
-			behaviorRequest_ = Behavior::kDead;
+			state_ = CharacterState::Dead;
 		}
 		else {
-			behaviorRequest_ = Behavior::kRoot;
+			state_ = CharacterState::Moveing;
 		}
 		animation_->SetAnimationTimer(0, 9.0f);
 		animation_->SetpreAnimationTimer(0);
@@ -171,7 +133,7 @@ void Tank::knockUpdata() {
 
 // 攻撃
 void Tank::AttackInitialize() { searchTarget_ = false; };
-void Tank::AttackUpdata() {
+void Tank::AttackUpdate() {
 	--fireTimer_;
 
 	// 追従対象からロックオン対象へのベクトル
@@ -196,7 +158,7 @@ void Tank::AttackUpdata() {
 
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
-		behaviorRequest_ = Behavior::kRoot;
+		state_ = CharacterState::Moveing;
 		searchTarget_ = true;
 	}
 
@@ -224,7 +186,7 @@ void Tank::AttackUpdata() {
 
 	// プレイヤーに集合
 	if (operation_) {
-		behaviorRequest_ = Behavior::kRoot;
+		state_ = CharacterState::Moveing;
 		followPlayer_ = true;
 		searchTarget_ = false;
 		attack_ = false;
@@ -270,7 +232,7 @@ void Tank::DeadUpdate() {
 
 	if (revivalCount_ >= 60) {
 		hitCount_ = 1;
-		behaviorRequest_ = Behavior::kRoot;
+		state_ = CharacterState::Moveing;
 		isDead_ = false;
 	}
 
@@ -350,7 +312,7 @@ void Tank::searchTarget(Vector3 enemyPos) {
 		}
 		else {
 			searchTarget_ = false;
-			behaviorRequest_ = Behavior::kAttack;
+			state_ = CharacterState::Attacking;
 
 		}
 	}
@@ -383,7 +345,7 @@ void Tank::OnCollision(const WorldTransform& worldTransform) {
 	velocity_ = { 0.0f, 0.0f, -kSpeed };
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	if (hitCount_ > 0) {
-		behaviorRequest_ = Behavior::knock;
+		//behaviorRequest_ = Behavior::knock;
 	}
 	
 
@@ -402,7 +364,7 @@ void Tank::OnCollision(Collider* collider) {
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
 			if (hitCount_ > 0) {
-				behaviorRequest_ = Behavior::knock;
+				//behaviorRequest_ = Behavior::knock;
 			}
 			isHit_ = true;
 
