@@ -14,6 +14,12 @@ public:
         return NodeStatus::FAILURE;
     }
 
+    void Initialize() override {
+        // MoveActionNode の初期化処理を実装
+        if (this->character_->GetState() == CharacterState::Moveing) {
+            this->character_->MoveInitialize();
+        }
+    }
 
     void AddChild(BehaviorTreeNode* child) override {
         // MoveActionNode では子ノードを持たないので、このメソッドは空実装
