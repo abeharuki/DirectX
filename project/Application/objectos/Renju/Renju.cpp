@@ -3,7 +3,9 @@
 #include <CollisionManager/CollisionConfig.h>
 
 
-Renju::~Renju() {};
+Renju::~Renju() {
+	delete behaviorTree_;
+};
 
 /// <summary>
 /// 初期化
@@ -37,6 +39,10 @@ void Renju::Initialize() {
 	SetCollisionAttribute(kCollisionAttributeRenju);
 	SetCollisionMask(kCollisionMaskRenju);
 
+
+	// ビヘイビアツリーの初期化
+	behaviorTree_ = new BehaviorTree<Renju>(this);
+	behaviorTree_->Initialize();
 };
 
 /// <summary>
@@ -51,56 +57,12 @@ void Renju::Update() {
 	isHitPlayer_ = false;
 
 	if (hitCount_ == 0) {
-		behaviorRequest_ = Behavior::kDead;
+		state_ = CharacterState::Dead;
 	}
 
-	if (behaviorRequest_) {
-		// 振る舞い変更
-		behavior_ = behaviorRequest_.value();
-		// 各振る舞いごとの初期化
-		switch (behavior_) {
-		case Behavior::kRoot:
-		default:
-			MoveInitialize();
-			break;
-		case Behavior::kJump:
-			JumpInitialize();
-			break;
-		case Behavior::knock:
-			knockInitialize();
-			break;
-		case Behavior::kAttack:
-			AttackInitialize();
-			break;
-		case Behavior::kDead:
-			DeadInitialize();
-			break;
-		}
-
-		// 振る舞いリセット
-		behaviorRequest_ = std::nullopt;
+	if (behaviorTree_) {
+		behaviorTree_->Update();
 	}
-
-	switch (behavior_) {
-	case Behavior::kRoot:
-	default:
-		// 通常行動
-		MoveUpdata();
-		break;
-	case Behavior::kJump:
-		JumpUpdata();
-		break;
-	case Behavior::knock:
-		knockUpdata();
-		break;
-	case Behavior::kAttack:
-		AttackUpdata();
-		break;
-	case Behavior::kDead:
-		DeadUpdate();
-		break;
-	}
-
 	// デスフラグが立った弾を削除
 	bullets_.remove_if([](RenjuBullet* bullet) {
 		if (bullet->IsDead()) {
@@ -150,7 +112,7 @@ void Renju::MoveInitialize() {
 
 	});
 };
-void Renju::MoveUpdata() {
+void Renju::MoveUpdate() {
 	// プレイヤーに集合
 	if (operation_ || !searchTarget_) {
 		followPlayer_ = true;
@@ -163,7 +125,7 @@ void Renju::MoveUpdata() {
 
 // ジャンプ
 void Renju::JumpInitialize() {};
-void Renju::JumpUpdata() {};
+void Renju::JumpUpdate() {};
 
 // ノックバック
 void Renju::knockInitialize() { 
@@ -172,17 +134,17 @@ void Renju::knockInitialize() {
 	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
 };
-void Renju::knockUpdata() {
+void Renju::knockUpdate() {
 
 	//worldTransformBase_.translate += velocity_;
 	//worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
 		nockBack_ = false;
 		if (hitCount_ == 0) {
-			behaviorRequest_ = Behavior::kDead;
+			state_ = CharacterState::Dead;
 		}
 		else {
-			behaviorRequest_ = Behavior::kRoot;
+			state_ = CharacterState::Moveing;
 		}
 
 		animation_->SetAnimationTimer(0, 8.0f);
@@ -196,7 +158,7 @@ void Renju::AttackInitialize() {
 	searchTarget_ = false;
 	fireTimer_ = 20;
 };
-void Renju::AttackUpdata() {
+void Renju::AttackUpdate() {
 	--fireTimer_;
 
 	// 追従対象からロックオン対象へのベクトル
@@ -222,7 +184,7 @@ void Renju::AttackUpdata() {
 
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
-		behaviorRequest_ = Behavior::kRoot;
+		state_ = CharacterState::Moveing;
 		searchTarget_ = true;
 	}
 
@@ -266,7 +228,7 @@ void Renju::AttackUpdata() {
 
 	// プレイヤーに集合
 	if (operation_) {
-		behaviorRequest_ = Behavior::kRoot;
+		state_ = CharacterState::Moveing;
 		followPlayer_ = true;
 		searchTarget_ = false;
 	}
@@ -309,7 +271,7 @@ void Renju::DeadUpdate() {
 
 	if (revivalCount_ >= 60) {
 		hitCount_ = 1;
-		behaviorRequest_ = Behavior::kRoot;
+		state_ = CharacterState::Moveing;
 		isDead_ = false;
 	}
 
@@ -386,7 +348,7 @@ void Renju::searchTarget(Vector3 enemyPos) {
 			worldTransformBase_.translate.y = 0.0f;
 		}
 		else {
-			behaviorRequest_ = Behavior::kAttack;
+			state_ = CharacterState::Attacking;
 		}
 	}
 }
@@ -418,7 +380,7 @@ void Renju::OnCollision(const WorldTransform& worldTransform) {
 	velocity_ = { 0.0f, 0.0f, -kSpeed };
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	if (hitCount_ > 0) {
-		behaviorRequest_ = Behavior::knock;
+		//behaviorRequest_ = Behavior::knock;
 	}
 	isHit_ = true;
 
@@ -437,7 +399,7 @@ void Renju::OnCollision(Collider* collider) {
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
 			if (hitCount_ > 0) {
-				behaviorRequest_ = Behavior::knock;
+				//behaviorRequest_ = Behavior::knock;
 			}
 
 			isHit_ = true;

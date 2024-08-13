@@ -9,6 +9,7 @@ public:
     // ActionNode クラスでは特定のアクションを実行するため、Update メソッドは派生クラスで実装
     NodeStatus Update() override = 0;
 
+
 protected:
     CharacterType* character_;
 };

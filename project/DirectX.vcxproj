@@ -325,6 +325,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\base\Skydome.h" />
     <ClInclude Include="Application\BehaviorTree\ActionNodes\ActionNode.h" />
     <ClInclude Include="Application\BehaviorTree\ActionNodes\AttackActionNode.h" />
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\DeadActionNode.h" />
     <ClInclude Include="Application\BehaviorTree\ActionNodes\JumpActionNode.h" />
     <ClInclude Include="Application\BehaviorTree\ActionNodes\MoveActionNode.h" />
     <ClInclude Include="Application\BehaviorTree\BehaviorTree.h" />

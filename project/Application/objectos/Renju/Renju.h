@@ -8,6 +8,7 @@
 #include "RenjuBullet.h"
 #include <CollisionManager/Collider.h>
 #include <Animation/Animation.h>
+#include "../../BehaviorTree/BehaviorTree.h"
 
 /// <summary>
 /// ゲームシーン
@@ -15,19 +16,19 @@
 class Renju : public Collider {
 
 public: // メンバ関数
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
+	
+	void SetState(CharacterState newState) {
+		state_ = newState;
+	}
+
+	CharacterState GetState() const {
+		return state_;
+	}
+
 	~Renju();
-
-	/// <summary>
-	/// 初期化
-	/// </summary>
+	
 	void Initialize();
-
-	/// <summary>
-	/// 毎フレーム処理
-	/// </summary>
+	
 	void Update();
 
 
@@ -35,19 +36,19 @@ public: // メンバ関数
 
 	// 移動
 	void MoveInitialize();
-	void MoveUpdata();
+	void MoveUpdate();
 
 	// ジャンプ
 	void JumpInitialize();
-	void JumpUpdata();
+	void JumpUpdate();
 
 	// ノックバック
 	void knockInitialize();
-	void knockUpdata();
+	void knockUpdate();
 
 	// 攻撃
 	void AttackInitialize();
-	void AttackUpdata();
+	void AttackUpdate();
 
 	//死亡
 	void DeadInitialize();
@@ -118,18 +119,9 @@ private: // メンバ変数
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 
-	// 振る舞い
-	enum class Behavior {
-		kRoot, // 通常状態
-		kJump, // ジャンプ
-		knock,   // ノックバック
-		kAttack,//攻撃
-		kDead, // 死亡
-	};
-
-	Behavior behavior_ = Behavior::kRoot;
-	// 次の振る舞いリクエスト
-	std::optional<Behavior> behaviorRequest_ = std::nullopt;
+	//ビヘイビアツリー
+	BehaviorTree<Renju>* behaviorTree_;
+	CharacterState state_;
 
 	// 速度
 	Vector3 velocity_ = {};

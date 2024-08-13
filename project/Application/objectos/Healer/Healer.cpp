@@ -2,7 +2,9 @@
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 
-Healer::~Healer() {};
+Healer::~Healer() {
+	delete behaviorTree_;
+};
 
 /// <summary>
 /// 初期化
@@ -43,6 +45,10 @@ void Healer::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeHealer);
 	SetCollisionMask(kCollisionMaskHealer);
+
+	// ビヘイビアツリーの初期化
+	behaviorTree_ = new BehaviorTree<Healer>(this);
+	behaviorTree_->Initialize();
 };
 
 /// <summary>
@@ -56,55 +62,8 @@ void Healer::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
-	if (hitCount_ == 0) {
-		behaviorRequest_ = Behavior::kDead;
-	}
-
-	if (behaviorRequest_) {
-		// 振る舞い変更
-		behavior_ = behaviorRequest_.value();
-		// 各振る舞いごとの初期化
-		switch (behavior_) {
-		case Behavior::kRoot:
-		default:
-			MoveInitialize();
-			break;
-		case Behavior::kJump:
-			JumpInitialize();
-			break;
-		case Behavior::knock:
-			knockInitialize();
-			break;
-		case Behavior::kAttack:
-			AttackInitialize();
-			break;
-		case Behavior::kDead:
-			DeadInitialize();
-			break;
-		}
-
-		// 振る舞いリセット
-		behaviorRequest_ = std::nullopt;
-	}
-
-	switch (behavior_) {
-	case Behavior::kRoot:
-	default:
-		// 通常行動
-		MoveUpdata();
-		break;
-	case Behavior::kJump:
-		JumpUpdata();
-		break;
-	case Behavior::knock:
-		knockUpdata();
-		break;
-	case Behavior::kAttack:
-		AttackUpdata();
-		break;
-	case Behavior::kDead:
-		DeadUpdate();
-		break;
+	if (behaviorTree_) {
+		behaviorTree_->Update();
 	}
 
 	Relationship();
@@ -134,7 +93,7 @@ void Healer::Draw(const ViewProjection& camera) {
 
 // 移動
 void Healer::MoveInitialize() { searchTarget_ = false; };
-void Healer::MoveUpdata() {
+void Healer::MoveUpdate() {
 	// プレイヤーに集合
 	if (operation_ || !searchTarget_) {
 		followPlayer_ = true;
@@ -148,7 +107,7 @@ void Healer::MoveUpdata() {
 
 // ジャンプ
 void Healer::JumpInitialize() {};
-void Healer::JumpUpdata() {};
+void Healer::JumpUpdate() {};
 
 // ノックバック
 void Healer::knockInitialize() { 
@@ -157,7 +116,7 @@ void Healer::knockInitialize() {
 	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
 };
-void Healer::knockUpdata() {
+void Healer::knockUpdate() {
 
 	//worldTransformBase_.translate += velocity_;
 	//worldTransformBase_.translate.y = 0;
@@ -166,10 +125,10 @@ void Healer::knockUpdata() {
 		animation_->SetAnimationTimer(0, 8.0f);
 		animation_->SetpreAnimationTimer(0);
 		if (hitCount_ == 0) {
-			behaviorRequest_ = Behavior::kDead;
+			state_ = CharacterState::Dead;
 		}
 		else {
-			behaviorRequest_ = Behavior::kRoot;
+			state_ = CharacterState::Moveing;
 		}
 		
 	}
@@ -181,13 +140,13 @@ void Healer::AttackInitialize() {
 	worldTransformCane_.rotate = { -1.56f,0.0f,0.0f };
 	searchTarget_ = false;
 };
-void Healer::AttackUpdata() {
+void Healer::AttackUpdate() {
 	// プレイヤーの座標までの距離
 	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
 
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
-		behaviorRequest_ = Behavior::kRoot;
+		state_ = CharacterState::Moveing;
 		searchTarget_ = true;
 	}
 
@@ -223,7 +182,7 @@ void Healer::AttackUpdata() {
 
 	// プレイヤーに集合
 	if (operation_) {
-		behaviorRequest_ = Behavior::kRoot;
+		state_ = CharacterState::Moveing;
 		workAttack_.isAttack = false;
 		followPlayer_ = true;
 		searchTarget_ = false;
@@ -268,7 +227,7 @@ void Healer::DeadUpdate(){
 
 	if (revivalCount_ >= 60) {
 		hitCount_ = 1;
-		behaviorRequest_ = Behavior::kRoot;
+		state_ = CharacterState::Moveing;
 		isDead_ = false;
 	}
 
@@ -349,7 +308,7 @@ void Healer::searchTarget(Vector3 enemyPos) {
 		}
 		else {
 
-			behaviorRequest_ = Behavior::kAttack;
+			state_ = CharacterState::Attacking;
 		}
 	}
 }
@@ -396,7 +355,7 @@ void Healer::OnCollision(const WorldTransform& worldTransform) {
 	velocity_ = { 0.0f, 0.0f, -kSpeed };
 	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	if (hitCount_ > 0) {
-		behaviorRequest_ = Behavior::knock;
+		//behaviorRequest_ = Behavior::knock;
 	}
 	isHit_ = true;
 
@@ -416,7 +375,7 @@ void Healer::OnCollision(Collider* collider) {
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
 			if (hitCount_ > 0) {
-				behaviorRequest_ = Behavior::knock;
+				//behaviorRequest_ = Behavior::knock;
 			}
 			isHit_ = true;
 

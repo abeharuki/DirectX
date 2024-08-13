@@ -2,18 +2,17 @@
 #include "ActionNode.h"
 
 template<typename CharacterType>
-class MoveActionNode : public ActionNode<CharacterType> {
+class DeadActionNode : public ActionNode<CharacterType> {
 public:
-    MoveActionNode(CharacterType* character) : ActionNode<CharacterType>(character) {}
+    DeadActionNode(CharacterType* character) : ActionNode<CharacterType>(character) {}
 
     NodeStatus Update() override {
-        if (this->character_->GetState() == CharacterState::Moveing) {
-            this->character_->MoveUpdate();
+        if (this->character_->GetState() == CharacterState::Dead) {
+            this->character_->DeadUpdate();
             return NodeStatus::SUCCESS;
         }
         return NodeStatus::FAILURE;
     }
-
 
     void AddChild(BehaviorTreeNode* child) override {
         // MoveActionNode では子ノードを持たないので、このメソッドは空実装

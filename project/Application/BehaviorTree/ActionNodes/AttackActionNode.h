@@ -12,7 +12,6 @@ public:
         }
         return NodeStatus::FAILURE;  // 状態が合わない場合は失敗
     }
-
     void AddChild(BehaviorTreeNode* child) override {
         // MoveActionNode では子ノードを持たないので、このメソッドは空実装
     }
