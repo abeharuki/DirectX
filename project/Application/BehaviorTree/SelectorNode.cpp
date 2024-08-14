@@ -1,5 +1,12 @@
 #include "SelectorNode.h"
 
+void SelectorNode::Initialize(){
+    for (BehaviorTreeNode* child : children) {
+        child->Initialize();
+       
+    }
+}
+
 NodeStatus SelectorNode::Update() {
     for (BehaviorTreeNode* child : children) {
         NodeStatus status = child->Update();

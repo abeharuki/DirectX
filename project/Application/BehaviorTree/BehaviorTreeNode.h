@@ -17,10 +17,13 @@ class BehaviorTreeNode {
 public:
     virtual ~BehaviorTreeNode() = default;
 
-    // ノードの更新を実行する純粋仮想関数
+    //ノードの初期化
+    virtual void Initialize() = 0;
+
+    // ノードの更新
     virtual NodeStatus Update() = 0;
 
-    // 子ノードを追加するメソッド
+    // 子ノードを追加
     virtual void AddChild(BehaviorTreeNode* child) = 0;
 };
 

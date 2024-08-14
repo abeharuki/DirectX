@@ -49,6 +49,15 @@ void Renju::Initialize() {
 /// 毎フレーム処理
 /// </summary>
 void Renju::Update() {
+	// 状態が変わった場合にノードの初期化を行う
+	if (state_ != previousState_) {
+		// 状態に応じた初期化処理を呼び出す
+		if (behaviorTree_) {
+			behaviorTree_->NodeInitialize();
+		}
+		previousState_ = state_;  // 現在の状態を記録しておく
+	}
+
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;

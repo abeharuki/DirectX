@@ -122,7 +122,7 @@ private: // メンバ変数
 	//ビヘイビアツリー
 	BehaviorTree<Healer>* behaviorTree_;
 	CharacterState state_;
-
+	CharacterState previousState_;
 
 	// 攻撃用ワーク
 	struct WorkAttack {

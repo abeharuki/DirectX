@@ -13,12 +13,19 @@ template <typename CharacterType>
 class BehaviorTree {
 public:
     BehaviorTree(CharacterType* character);
-    void Initialize();
+    void Initialize();//BehaviorTreeの初期化
+    void NodeInitialize();//各ノードの初期化
     void Update();
+
+    // ノードを取得する
+    std::vector<BehaviorTreeNode*> GetNodes() const;
+    //ルートノードの取得する
+    SelectorNode* GetRootNode() const;
 
 private:
     CharacterType* character_;
     SelectorNode* rootNode_;
+    std::vector<BehaviorTreeNode*> nodes_;  // ノードのコレクション
 };
 
 template <typename CharacterType>
@@ -38,6 +45,22 @@ void BehaviorTree<CharacterType>::Initialize() {
     rootNode_->AddChild(jumpActionNode);
     rootNode_->AddChild(attackActionNode);
     rootNode_->AddChild(deadActionNode);
+
+    // ノードコレクションにノードを追加
+    nodes_.push_back(moveActionNode);
+    nodes_.push_back(jumpActionNode);
+    nodes_.push_back(attackActionNode);
+    nodes_.push_back(deadActionNode);
+    nodes_.push_back(rootNode_);
+
+  
+}
+
+template <typename CharacterType>
+void BehaviorTree<CharacterType>::NodeInitialize() {
+    if (rootNode_) {
+        rootNode_->Initialize();
+    }
 }
 
 template <typename CharacterType>
@@ -45,4 +68,16 @@ void BehaviorTree<CharacterType>::Update() {
     if (rootNode_) {
         rootNode_->Update();
     }
+}
+
+//ノードを取得
+template <typename CharacterType>
+std::vector<BehaviorTreeNode*> BehaviorTree<CharacterType>::GetNodes() const {
+    return nodes_;
+}
+
+//ルートノードの取得
+template <typename CharacterType>
+SelectorNode* BehaviorTree<CharacterType>::GetRootNode() const {
+    return rootNode_;
 }

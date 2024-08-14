@@ -122,6 +122,7 @@ private: // メンバ変数
 	//ビヘイビアツリー
 	BehaviorTree<Renju>* behaviorTree_;
 	CharacterState state_;
+	CharacterState previousState_;
 
 	// 速度
 	Vector3 velocity_ = {};

@@ -47,6 +47,16 @@ void Tank::Initialize() {
 /// 毎フレーム処理
 /// </summary>
 void Tank::Update() {
+
+	// 状態が変わった場合にノードの初期化を行う
+	if (state_ != previousState_) {
+		// 状態に応じた初期化処理を呼び出す
+		if (behaviorTree_) {
+			behaviorTree_->NodeInitialize();
+		}
+		previousState_ = state_;  // 現在の状態を記録しておく
+	}
+
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
@@ -88,11 +98,13 @@ void Tank::MoveUpdate() {
 	// プレイヤーに集合
 	if (operation_ || !searchTarget_) {
 		followPlayer_ = true;
+		searchTarget_ = false;
 	}
 
 	// 敵を探す
 	if (!operation_) {
 		searchTarget_ = true;
+		followPlayer_ = false;
 	}
 
 
@@ -305,7 +317,7 @@ void Tank::searchTarget(Vector3 enemyPos) {
 		float length = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
 
 		// 距離条件チェック
-		if (minDistance_ - 8 <= length) {
+		if (minDistance_ <= length) {
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
 			worldTransformBase_.translate.y = 0.0f;
