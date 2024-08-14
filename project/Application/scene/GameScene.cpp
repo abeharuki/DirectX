@@ -101,16 +101,16 @@ void GameScene::Update() {
 	renjuManager_->GetRenju()->SetOperation(command_->GetOperatin());
 	tankManager_->GetTank()->SetOperation(command_->GetOperatin());
 
-	/*healerManager_->GetHealer()->SetEnemy(enemyManager_->GetEnemy());
-	renjuManager_->GetRenju()->SetEnemy(enemyManager_->GetEnemy());*/
+	healerManager_->GetHealer()->SetEnemy(enemyManager_->GetEnemy());
+	renjuManager_->GetRenju()->SetEnemy(enemyManager_->GetEnemy());
 	tankManager_->GetTank()->SetEnemy(enemyManager_->GetEnemy());
 
 
-	/*if (!enemyManager_->IsClear()) {
+	if (!enemyManager_->IsClear()) {
 		healerManager_->Update();
 		renjuManager_->Update();
 		tankManager_->Update();
-	}*/
+	}
 
 	if (!playerManager_->IsOver()) {
 		enemyManager_->Update();
