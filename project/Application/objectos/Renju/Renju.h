@@ -9,6 +9,7 @@
 #include <CollisionManager/Collider.h>
 #include <Animation/Animation.h>
 #include "../../BehaviorTree/BehaviorTree.h"
+#include "Enemy/Enemy.h"
 
 /// <summary>
 /// ゲームシーン
@@ -16,7 +17,7 @@
 class Renju : public Collider {
 
 public: // メンバ関数
-	
+	~Renju();
 	void SetState(CharacterState newState) {
 		state_ = newState;
 	}
@@ -24,8 +25,6 @@ public: // メンバ関数
 	CharacterState GetState() const {
 		return state_;
 	}
-
-	~Renju();
 	
 	void Initialize();
 	
@@ -96,8 +95,9 @@ public: // メンバ関数
 		viewProjection_ = viewProjection;
 	}
 
-	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
-
+	//敵の情報の受け取り
+	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
+	
 	bool IsDead() { return isDead_; }
 
 	void Dissolve() {
@@ -158,8 +158,8 @@ private: // メンバ変数
 	bool isDead_ = false;
 	float threshold_ = 0;
 
-	//敵の攻撃フラグ
-	bool isEnemyAttack_;
+	//敵情報
+	Enemy* enemy_;
 
 	//作戦
 	bool operation_;

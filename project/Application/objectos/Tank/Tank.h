@@ -8,7 +8,7 @@
 #include <CollisionManager/Collider.h>
 #include <Animation/Animation.h>
 #include "../../BehaviorTree/BehaviorTree.h"
-
+#include "Enemy/Enemy.h"
 
 /// <summary>
 /// ゲームシーン
@@ -16,7 +16,6 @@
 class Tank : public Collider {
 
 public: // メンバ関数
-	Tank();
 	~Tank();
 
 	void SetState(CharacterState newState) {
@@ -52,6 +51,8 @@ public: // メンバ関数
 	void DeadInitialize();
 	void DeadUpdate();
 
+	
+
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
 	// 敵を探す
@@ -60,7 +61,6 @@ public: // メンバ関数
 	void Relationship();
 
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
-
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
@@ -91,7 +91,8 @@ public: // メンバ関数
 
 	bool GetAttack() { return attack_; }
 
-	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
+	//敵の情報の受け取り
+	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 
 	bool IsDead() { return isDead_; }
 
@@ -154,9 +155,8 @@ private: // メンバ変数
 	bool isDead_ = false;
 	float threshold_;
 
-	//敵の攻撃フラグ
-	bool isEnemyAttack_;
-
+	//敵情報
+	Enemy* enemy_;
 
 	//作戦
 	bool operation_;

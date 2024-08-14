@@ -21,6 +21,19 @@ enum AnimationNumber {
 	swing,
 };
 
+// 振る舞い
+enum class Behavior {
+	kRoot, // 通常状態
+	kAttack, // 攻撃
+	kDead, // 死亡
+};
+
+enum class BehaviorAttack {
+	kNomal,//通常攻撃
+	kDash, // ダッシュ攻撃
+	kThrowing,//投擲攻撃
+	kGround,//地面を殴る攻撃
+};
 
 class Enemy : public Collider {
 
@@ -67,6 +80,8 @@ public: // メンバ関数
 	void GroundAttackUpdata();
 	void InitializeImpact();
 	void UpdataImpact();
+
+	BehaviorAttack GetBehaviorAttack() { return attack_; }
 
 	Collider* GetCollider(int i) { return colliderManager_[i].get(); }
 
@@ -134,26 +149,15 @@ private: // メンバ変数
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
-	// 振る舞い
-	enum class Behavior {
-		kRoot, // 通常状態
-		kAttack, // 攻撃
-		kDead, // 死亡
-	};
+	
 
 	Behavior behavior_ = Behavior::kRoot;
 	// 次の振る舞いリクエスト
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
+	
 
-	enum class BehaviorAttack {
-		kNomal,//通常攻撃
-		kDash, // ダッシュ攻撃
-		kThrowing,//投擲攻撃
-		kGround,//地面を殴る攻撃
-	};
-
-	BehaviorAttack attack_ = BehaviorAttack::kDash;
+	BehaviorAttack attack_ = BehaviorAttack::kNomal;
 	// 次の振る舞いリクエスト
 	std::optional<BehaviorAttack> attackRequest_ = std::nullopt;
 

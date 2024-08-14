@@ -101,12 +101,16 @@ void GameScene::Update() {
 	renjuManager_->GetRenju()->SetOperation(command_->GetOperatin());
 	tankManager_->GetTank()->SetOperation(command_->GetOperatin());
 
+	/*healerManager_->GetHealer()->SetEnemy(enemyManager_->GetEnemy());
+	renjuManager_->GetRenju()->SetEnemy(enemyManager_->GetEnemy());*/
+	tankManager_->GetTank()->SetEnemy(enemyManager_->GetEnemy());
 
-	if (!enemyManager_->IsClear()) {
+
+	/*if (!enemyManager_->IsClear()) {
 		healerManager_->Update();
 		renjuManager_->Update();
 		tankManager_->Update();
-	}
+	}*/
 
 	if (!playerManager_->IsOver()) {
 		enemyManager_->Update();
@@ -273,9 +277,6 @@ void GameScene::CheckAllCollision() {
 
 	//敵の攻撃フラグの受け取り
 	playerManager_->GetPlayer()->SetEnemyAttack(enemyManager_->IsAttack());
-	healerManager_->GetHealer()->SetEnemyAttack(enemyManager_->IsAttack());
-	renjuManager_->GetRenju()->SetEnemyAttack(enemyManager_->IsAttack());
-	tankManager_->GetTank()->SetEnemyAttack(enemyManager_->IsAttack());
 
 	//死亡フラグの受け取り
 	playerManager_->GetPlayer()->SetTankDead(tankManager_->GetTank()->IsDead());

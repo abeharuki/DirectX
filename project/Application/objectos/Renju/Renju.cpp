@@ -5,6 +5,7 @@
 
 Renju::~Renju() {
 	delete behaviorTree_;
+	
 };
 
 /// <summary>
@@ -130,11 +131,35 @@ void Renju::MoveUpdate() {
 	if (!operation_) {
 		searchTarget_ = true;
 	}
+
+	//地面をたたきつける攻撃が来たらジャンプする
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+		state_ = CharacterState::Jumping;
+	}
 };
 
 // ジャンプ
-void Renju::JumpInitialize() {};
-void Renju::JumpUpdate() {};
+void Renju::JumpInitialize() {
+	worldTransformBase_.translate.y = 0.0f;
+	// ジャンプ初速
+	const float kJumpFirstSpeed = 0.6f;
+	velocity_.y = kJumpFirstSpeed;
+};
+void Renju::JumpUpdate() {
+	// 移動
+	worldTransformBase_.translate += velocity_;
+	// 重力加速度
+	const float kGravity = 0.05f;
+	// 加速ベクトル
+	Vector3 accelerationVector = { 0, -kGravity, 0 };
+	// 加速
+	velocity_ += accelerationVector;
+
+	if (worldTransformBase_.translate.y <= 0.0f) {
+		// ジャンプ終了
+		state_ = CharacterState::Moveing;
+	}
+};
 
 // ノックバック
 void Renju::knockInitialize() { 
@@ -403,7 +428,7 @@ void Renju::OnCollision(const WorldTransform& worldTransform) {
 void Renju::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (isEnemyAttack_) {
+		if (enemy_->isAttack()) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);

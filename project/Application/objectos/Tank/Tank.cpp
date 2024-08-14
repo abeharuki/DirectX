@@ -2,10 +2,9 @@
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 
-
-Tank::Tank() : behaviorTree_(nullptr) {}
 Tank::~Tank() {
 	delete behaviorTree_;
+	
 }
 
 void Tank::Initialize() {
@@ -61,16 +60,21 @@ void Tank::Update() {
 	preHit_ = isHit_;
 	isHit_ = false;
 
-	
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
+
+	if (hitCount_ <= 0) {
+		state_ = CharacterState::Dead;
+
+	}
 
 	if (behaviorTree_) {
 		behaviorTree_->Update();
 	}
 
-	Relationship();
+	
 
+	Relationship();
 	// 回転
 	worldTransformBase_.rotate.y =
 		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -92,7 +96,11 @@ void Tank::Draw(const ViewProjection& camera) {
 }
 
 // 移動
-void Tank::MoveInitialize() { searchTarget_ = false; };
+void Tank::MoveInitialize() { 
+	worldTransformBase_.translate.y = 0.0f;
+	velocity_ = { 0.0f,0.0f,0.0f };
+	searchTarget_ = false; 
+};
 void Tank::MoveUpdate() {
 
 	// プレイヤーに集合
@@ -107,16 +115,35 @@ void Tank::MoveUpdate() {
 		followPlayer_ = false;
 	}
 
-
-	if (hitCount_ <= 0) {
-		state_ = CharacterState::Dead;
-		
+	//地面をたたきつける攻撃が来たらジャンプする
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+		state_ = CharacterState::Jumping;
 	}
+	
 };
 
 // ジャンプ
-void Tank::JumpInitialize() {};
-void Tank::JumpUpdate() {};
+void Tank::JumpInitialize() {
+	worldTransformBase_.translate.y = 0.0f;
+	// ジャンプ初速
+	const float kJumpFirstSpeed = 0.6f;
+	velocity_.y = kJumpFirstSpeed;
+};
+void Tank::JumpUpdate() {
+	// 移動
+	worldTransformBase_.translate += velocity_;
+	// 重力加速度
+	const float kGravity = 0.05f;
+	// 加速ベクトル
+	Vector3 accelerationVector = { 0, -kGravity, 0 };
+	// 加速
+	velocity_ += accelerationVector;
+
+	if (worldTransformBase_.translate.y <= 0.0f) {
+		// ジャンプ終了
+		state_ = CharacterState::Moveing;
+	}
+};
 
 // ノックバック
 void Tank::knockInitialize() { 
@@ -371,7 +398,7 @@ void Tank::OnCollision(const WorldTransform& worldTransform) {
 void Tank::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (isEnemyAttack_) {
+		if (enemy_->isAttack()) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);

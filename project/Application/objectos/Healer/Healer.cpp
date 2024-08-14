@@ -4,6 +4,7 @@
 
 Healer::~Healer() {
 	delete behaviorTree_;
+
 };
 
 /// <summary>
@@ -71,6 +72,11 @@ void Healer::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
+	//体力がなくなあったら強制的に死亡に状態遷移
+	if (hitCount_ == 0) {
+		state_ = CharacterState::Dead;
+	}
+
 	if (behaviorTree_) {
 		behaviorTree_->Update();
 	}
@@ -112,11 +118,35 @@ void Healer::MoveUpdate() {
 	if (!operation_) {
 		searchTarget_ = true;
 	}
+
+	//地面をたたきつける攻撃が来たらジャンプする
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+		state_ = CharacterState::Jumping;
+	}
 };
 
 // ジャンプ
-void Healer::JumpInitialize() {};
-void Healer::JumpUpdate() {};
+void Healer::JumpInitialize() {
+	worldTransformBase_.translate.y = 0.0f;
+	// ジャンプ初速
+	const float kJumpFirstSpeed = 0.6f;
+	velocity_.y = kJumpFirstSpeed;
+};
+void Healer::JumpUpdate() {
+	// 移動
+	worldTransformBase_.translate += velocity_;
+	// 重力加速度
+	const float kGravity = 0.05f;
+	// 加速ベクトル
+	Vector3 accelerationVector = { 0, -kGravity, 0 };
+	// 加速
+	velocity_ += accelerationVector;
+
+	if (worldTransformBase_.translate.y <= 0.0f) {
+		// ジャンプ終了
+		state_ = CharacterState::Moveing;
+	}
+};
 
 // ノックバック
 void Healer::knockInitialize() { 
@@ -310,7 +340,7 @@ void Healer::searchTarget(Vector3 enemyPos) {
 		float length = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
 
 		// 距離条件チェック
-		if (minDistance_ - 8 <= length) {
+		if (minDistance_ <= length) {
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
 			worldTransformBase_.translate.y = 0.0f;
@@ -379,7 +409,7 @@ void Healer::OnCollision(const WorldTransform& worldTransform) {
 void Healer::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (isEnemyAttack_) {
+		if (enemy_->isAttack()) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);

@@ -326,9 +326,9 @@ void DebugScene::Update() {
 void DebugScene::Draw() {
 	
 	
-	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
-	colliderManager_[0]->Draw(viewProjection_);
-	colliderManager_[1]->Draw(viewProjection_);
+	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	//colliderManager_[0]->Draw(viewProjection_);
+	//colliderManager_[1]->Draw(viewProjection_);
 	model_->Draw(worldTransformModel_, viewProjection_, true);
 	skybox_->Draw(worldTransformSkybox_,viewProjection_);
 	loader_->Draw(viewProjection_, true);
