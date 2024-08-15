@@ -123,7 +123,7 @@ private: // メンバ変数
 	Vector3 allyVelocity;
 
 	// プレイヤー座標
-	float minDistance_ = 10.0f;
+	float minDistance_ = 5.0f;
 	bool followPlayer_ = false;
 	
 
@@ -138,6 +138,8 @@ private: // メンバ変数
 	Vector3 enemyPos_;
 
 	bool attack_ = false;
+	//攻撃ができるようになるまでの
+	int coolTime = 60;
 
 	//体力
 	int hitCount_ = 3;

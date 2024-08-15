@@ -140,6 +140,8 @@ private: // メンバ変数
 	std::list<RenjuBullet*> bullets_;
 	// 攻撃時間
 	int fireTimer_ = 20;
+	//攻撃ができるようになるまでの
+	int coolTime = 60;
 
 	Vector3 enemyPos_;
 	uint32_t nockTime_;

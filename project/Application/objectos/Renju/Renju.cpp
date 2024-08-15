@@ -73,14 +73,22 @@ void Renju::Update() {
 	if (behaviorTree_) {
 		behaviorTree_->Update();
 	}
+	
 	// デスフラグが立った弾を削除
 	bullets_.remove_if([](RenjuBullet* bullet) {
 		if (bullet->IsDead()) {
+
 			delete bullet;
 			return true;
 		}
 		return false;
-		});
+	});
+
+	for (RenjuBullet* bullet : bullets_) {
+
+		bullet->Update();
+	}
+
 
 	Relationship();
 
@@ -115,21 +123,27 @@ void Renju::Draw(const ViewProjection& view) {
 
 // 移動
 void Renju::MoveInitialize() {
-	bullets_.remove_if([](RenjuBullet* bullet) {
+	/*bullets_.remove_if([](RenjuBullet* bullet) {
 
 		delete bullet;
 		return true;
 
-	});
+	});*/
+	worldTransformBase_.translate.y = 0.0f;
+	velocity_ = { 0.0f,0.0f,0.0f };
+	searchTarget_ = false;
 };
 void Renju::MoveUpdate() {
+	--coolTime;
 	// プレイヤーに集合
 	if (operation_ || !searchTarget_) {
 		followPlayer_ = true;
+		searchTarget_ = false;
 	}
 	// 敵を探す
 	if (!operation_) {
 		searchTarget_ = true;
+		followPlayer_ = false;
 	}
 
 	//地面をたたきつける攻撃が来たらジャンプする
@@ -158,6 +172,7 @@ void Renju::JumpUpdate() {
 	if (worldTransformBase_.translate.y <= 0.0f) {
 		// ジャンプ終了
 		state_ = CharacterState::Moveing;
+		velocity_.y = 0.0f;
 	}
 };
 
@@ -213,7 +228,7 @@ void Renju::AttackUpdate() {
 	}
 
 
-	// プレイヤーの座標までの距離
+	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
 
 	// 距離条件チェック
@@ -240,22 +255,13 @@ void Renju::AttackUpdate() {
 		bullets_.push_back(newBullet);
 
 		fireTimer_ = 20;
+
+		coolTime = 60;
+		state_ = CharacterState::Moveing;
 	}
 
-	// デスフラグが立った弾を削除
-	bullets_.remove_if([](RenjuBullet* bullet) {
-		if (bullet->IsDead()) {
-
-			delete bullet;
-			return true;
-		}
-		return false;
-		});
-
-	for (RenjuBullet* bullet : bullets_) {
-
-		bullet->Update();
-	}
+	
+	
 
 
 
@@ -343,7 +349,9 @@ void Renju::followPlayer(Vector3 playerPos) {
 		if (minDistance_ <= length) {
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, playerPos, 0.02f);
-			worldTransformBase_.translate.y = 0.0f;
+			if (velocity_.y == 0.0f) {
+				worldTransformBase_.translate.y = 0.0f;
+			}
 		}
 		else {
 			followPlayer_ = false;
@@ -379,10 +387,15 @@ void Renju::searchTarget(Vector3 enemyPos) {
 		if (minDistance_ * 2 <= length) {
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
-			worldTransformBase_.translate.y = 0.0f;
+			if (velocity_.y == 0.0f) {
+				worldTransformBase_.translate.y = 0.0f;
+			}
 		}
 		else {
-			state_ = CharacterState::Attacking;
+			//searchTarget_ = false;
+			if (coolTime <= 0) {
+				state_ = CharacterState::Attacking;
+			}
 		}
 	}
 }
@@ -411,8 +424,8 @@ void Renju::OnAllyCollision(const WorldTransform& worldTransform) {
 };
 void Renju::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
-	velocity_ = { 0.0f, 0.0f, -kSpeed };
-	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
+	//velocity_ = { 0.0f, 0.0f, -kSpeed };
+	//velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	if (hitCount_ > 0) {
 		//behaviorRequest_ = Behavior::knock;
 	}
@@ -430,8 +443,8 @@ void Renju::OnCollision(Collider* collider) {
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (enemy_->isAttack()) {
 			const float kSpeed = 3.0f;
-			velocity_ = { 0.0f, 0.0f, -kSpeed };
-			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
+			//velocity_ = { 0.0f, 0.0f, -kSpeed };
+			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
 			if (hitCount_ > 0) {
 				//behaviorRequest_ = Behavior::knock;
 			}

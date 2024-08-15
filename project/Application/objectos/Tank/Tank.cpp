@@ -62,7 +62,7 @@ void Tank::Update() {
 
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
-
+	hitCount_ = 3;
 	if (hitCount_ <= 0) {
 		state_ = CharacterState::Dead;
 
@@ -100,8 +100,10 @@ void Tank::MoveInitialize() {
 	worldTransformBase_.translate.y = 0.0f;
 	velocity_ = { 0.0f,0.0f,0.0f };
 	searchTarget_ = false; 
+	attack_ = false;
 };
 void Tank::MoveUpdate() {
+	--coolTime;
 
 	// プレイヤーに集合
 	if (operation_ || !searchTarget_) {
@@ -142,6 +144,7 @@ void Tank::JumpUpdate() {
 	if (worldTransformBase_.translate.y <= 0.0f) {
 		// ジャンプ終了
 		state_ = CharacterState::Moveing;
+		velocity_.y = 0.0f;
 	}
 };
 
@@ -218,10 +221,12 @@ void Tank::AttackUpdate() {
 		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate,{ worldTransformBase_.translate.x, worldTransformBase_.translate.y,worldTransformBase_.translate.z - 4.0f },
 			0.2f);
 		fireTimer_ = 40;
+		coolTime = 60;
+		state_ = CharacterState::Moveing;
 	}
 
 
-
+	
 
 	// プレイヤーに集合
 	if (operation_) {
@@ -310,7 +315,9 @@ void Tank::followPlayer(Vector3 playerPos) {
 		if (minDistance_ <= length) {
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, playerPos, 0.02f);
-			worldTransformBase_.translate.y = 0.0f;
+			if (velocity_.y == 0.0f) {
+				worldTransformBase_.translate.y = 0.0f;
+			}
 		}
 		else {
 			followPlayer_ = false;
@@ -340,18 +347,23 @@ void Tank::searchTarget(Vector3 enemyPos) {
 				: -std::numbers::pi_v<float> / 2.0f;
 		}
 
-		// プレイヤーの座標までの距離
+		// 敵の座標までの距離
 		float length = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
 
 		// 距離条件チェック
 		if (minDistance_ <= length) {
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
-			worldTransformBase_.translate.y = 0.0f;
+			if (velocity_.y == 0.0f) {
+				worldTransformBase_.translate.y = 0.0f;
+			}
+			
 		}
 		else {
-			searchTarget_ = false;
-			state_ = CharacterState::Attacking;
+			if (coolTime <= 0) {
+				state_ = CharacterState::Attacking;
+			}
+		
 
 		}
 	}
@@ -381,8 +393,8 @@ void Tank::OnAllyCollision(const WorldTransform& worldTransform) {
 };
 void Tank::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
-	velocity_ = { 0.0f, 0.0f, -kSpeed };
-	velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
+	//velocity_ = { 0.0f, 0.0f, -kSpeed };
+	//velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	if (hitCount_ > 0) {
 		//behaviorRequest_ = Behavior::knock;
 	}
@@ -400,8 +412,8 @@ void Tank::OnCollision(Collider* collider) {
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (enemy_->isAttack()) {
 			const float kSpeed = 3.0f;
-			velocity_ = { 0.0f, 0.0f, -kSpeed };
-			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
+			//velocity_ = { 0.0f, 0.0f, -kSpeed };
+			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
 			if (hitCount_ > 0) {
 				//behaviorRequest_ = Behavior::knock;
 			}

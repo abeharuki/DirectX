@@ -139,7 +139,8 @@ private: // メンバ変数
 
 	// 攻撃の時間
 	const uint32_t behaviorAttackTime = 15;
-
+	//攻撃ができるようになるまでの
+	int coolTime = 60;
 
 	// 速度
 	Vector3 velocity_ = {};
@@ -147,7 +148,7 @@ private: // メンバ変数
 	Vector3 allyVelocity;
 
 	//プレイヤー座標
-	float minDistance_ = 10.0f;
+	float minDistance_ = 2.5f;
 	bool followPlayer_;
 	
 

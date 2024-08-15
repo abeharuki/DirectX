@@ -127,7 +127,7 @@ void Enemy::Draw(const ViewProjection& camera) {
 		
 	}
 	for (int i = 0; i < 15; ++i) {
-		colliderManager_[i]->Draw(camera);
+		//colliderManager_[i]->Draw(camera);
 	}
 	RenderCollisionBounds(worldTransformBody_, camera);
 }
@@ -545,7 +545,7 @@ void Enemy::UpdataImpact(){
 	worldTransformColliderImpact_[12].translate += {-0.55f, 0.0f, 0.31f};
 	worldTransformColliderImpact_[13].translate += {-0.38f, 0.0f, 0.51f};
 	worldTransformColliderImpact_[14].translate += {-0.15f, 0.0f, 0.61f};
-	for (int i = 1; i < 15; ++i) {
+	for (int i = 0; i < 15; ++i) {
 		worldTransformColliderImpact_[i].scale.x = worldTransformImpact_.scale.x / 100.0f;
 		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / 100.0f;
 	}

@@ -101,10 +101,26 @@ void GameScene::Update() {
 	renjuManager_->GetRenju()->SetOperation(command_->GetOperatin());
 	tankManager_->GetTank()->SetOperation(command_->GetOperatin());
 
+	//敵の情報取得
 	healerManager_->GetHealer()->SetEnemy(enemyManager_->GetEnemy());
 	renjuManager_->GetRenju()->SetEnemy(enemyManager_->GetEnemy());
 	tankManager_->GetTank()->SetEnemy(enemyManager_->GetEnemy());
 
+	//プレイヤーに追従
+	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	//敵の座標の取得
+	healerManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
+	renjuManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
+	tankManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
+	//プレイヤーと味方座標の取得
+	if (!enemyManager_->GetEnemy()->IsBehaberAttack()) {
+		enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
+		enemyManager_->SetHealerPos(healerManager_->GetHealer()->GetWorldPosition());
+		enemyManager_->SetRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
+		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
+	}
 
 	if (!enemyManager_->IsClear()) {
 		healerManager_->Update();
@@ -136,21 +152,7 @@ void GameScene::Update() {
 	viewProjection_.TransferMatrix();
 	skydome_->Update();
 	loader_->Update();
-	//プレイヤーに追従
-	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
-	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
-	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
-	//敵の座標の取得
-	healerManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
-	renjuManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
-	tankManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
-	//プレイヤーと味方座標の取得
-	if (!enemyManager_->GetEnemy()->IsBehaberAttack()) {
-		enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
-		enemyManager_->SetHealerPos(healerManager_->GetHealer()->GetWorldPosition());
-		enemyManager_->SetRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
-		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
-	}
+	
 
 	healerManager_->SetViewProjection(viewProjection_);
 	renjuManager_->SetViewProjection(viewProjection_);
