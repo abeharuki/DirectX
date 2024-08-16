@@ -8,6 +8,8 @@ void Enemy::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
 	impactModel_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj", "resources/white.png"));
+	areaModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/red_.png"));
+	areaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	animationNumber_ = nomal;
 	// 初期化
 	worldTransformBase_.Initialize();
@@ -18,6 +20,10 @@ void Enemy::Initialize() {
 	worldTransformRock_.Initialize();
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	worldTransformRock_.translate.z = -15000.0f;
+	worldTransformArea_.Initialize();
+	worldTransformArea_.scale = { 4.0f,20.0f,1.0f };
+	worldTransformArea_.rotate = { -1.57f,0.0f,0.0f };
+	worldTransformArea_.translate.y = 0.1f;
 	worldTransformImpact_.Initialize();
 	for (int i = 0; i < 15; ++i) {
 		worldTransformColliderImpact_[i].Initialize();
@@ -100,6 +106,7 @@ void Enemy::Update() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
 	worldTransformImpact_.UpdateMatrix();
+	worldTransformArea_.UpdateMatrix();
 	for (int i = 0; i < 15; ++i) {
 		worldTransformColliderImpact_[i].UpdateMatrix();
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
@@ -115,6 +122,7 @@ void Enemy::Update() {
 	animation_->AnimationDebug();
 	ImGui::SliderFloat3("pos", &worldTransformBody_.translate.x, -2.0f, 2.0f);
 	ImGui::SliderFloat3("rotato", &worldTransformBody_.rotate.x, -2.0f, 2.0f);
+	ImGui::DragFloat3("Area", &worldTransformArea_.translate.x, 0.1f);
 	ImGui::Text("time%d", time_);
 	ImGui::Text("Attack%d", isAttack_);
 	ImGui::Text("ImpactSize%f", worldTransformImpact_.scale.z);
@@ -127,6 +135,11 @@ void Enemy::Draw(const ViewProjection& camera) {
 		impactModel_->Draw(worldTransformImpact_, camera, true);
 		
 	}
+	
+	if (areaDraw_ && time_ < 60) {
+		areaModel_->Draw(worldTransformArea_, camera, true);
+	}
+
 	for (int i = 0; i < 15; ++i) {
 		//colliderManager_[i]->Draw(camera);
 	}
@@ -150,7 +163,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 
-	int num = RandomGenerator::GetRandomInt(4, 4);
+	int num = RandomGenerator::GetRandomInt(2, 2);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -214,7 +227,6 @@ void Enemy::NomalAttackInitialize() {
 	behaviorAttack_ = false;
 	time_ = 60 * 2;
 }
-
 void Enemy::NomalAttackUpdata() {
 	velocity_ = { 0.0f,0.0f,1.0f };
 	if (!behaviorAttack_) {
@@ -287,14 +299,22 @@ void Enemy::NomalAttackUpdata() {
 //ダッシュ攻撃//近いやつに攻撃するようにする
 void Enemy::DashAttackInitialize() {
 	num_ = RandomGenerator::GetRandomInt(1, 4);
-	time_ = 40;
-	animationNumber_ = runUp;
+	time_ = 100;
+	
 	animation_->SetLoop(false);
 	animation_->SetFlameTimer(40.0f);
-
+	
+	areaDraw_ = true;
+	
+	
 }
 void Enemy::DashAttackUpdata() {
 	--time_;
+	areaPos_ = { 0.0f,0.0f,0.0f };
+	if (time_ < 40 && time_ > 20) {
+		animationNumber_ = runUp;
+	}
+
 	if (time_ < 20) {
 		if (!isAttack_) {
 
@@ -337,20 +357,37 @@ void Enemy::DashAttackUpdata() {
 
 
 		velocity_ = { 0.0f,0.0f,7.0f };
+
+		
 	}
 
 	// 目標の方向に回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-
+	worldTransformArea_.rotate.y = worldTransformBase_.rotate.y;
+	
+	if (!isAttack_) {
+		if (time_ > 40) {
+			areaPos_.z = 1.0f;
+			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformArea_.rotate.y);
+			areaPos_ = Math::Normalize(areaPos_);
+			areaPos_ = Math::Multiply(22, areaPos_);
+			areaPos_ = Math::TransformNormal(areaPos_, rotateMatrix);
+			worldTransformArea_.translate = { worldTransformBase_.translate.x + areaPos_.x,0.1f,worldTransformBase_.translate.z + areaPos_.z };
+		}
+	
+	}
+	
 	// 追従対象からロックオン対象へのベクトル
 	if (isAttack_) {
 
 		worldTransformBase_.translate = worldTransformBase_.translate + velocity_;
+		
 	}
 
 	if (time_ <= 0) {
 		worldTransformRock_.translate.z = 5;
 		behaviorRequest_ = Behavior::kRoot;
+		areaDraw_ = false;
 	}
 
 	worldTransformBase_.translate.y = 0.0f;

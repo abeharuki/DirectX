@@ -50,11 +50,12 @@ void DebugScene::Initialize() {
 	worldTransformCollider2_.Initialize();
 	worldTransformCollider3_.Initialize();
 	worldTransformModel_.Initialize();
-	
+	worldTransformModel_.scale = { 6.0f,18.0f,0.0f };
+	worldTransformModel_.rotate = { -1.57f,0.0f,0.0f };
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj","resources/white.png"));
+	model_.reset(Model::CreateModelFromObj("resources/particle/plane.obj","resources/Enemy/red_.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
@@ -99,7 +100,8 @@ void DebugScene::Update() {
 	animation_->DirectionalLightDraw(directionLight_);
 	animation_->Update(AnimationNum_);
 	animation_->SetFlameTimer(animaflame_);
-	model_->SetColor({ 1.0f,1.0f,1.0f,a_});
+	model_->DirectionalLightDraw(directionLight_);
+	//model_->SetColor({ 1.0f,1.0f,1.0f,a_});
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {

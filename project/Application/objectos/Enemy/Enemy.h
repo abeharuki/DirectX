@@ -125,12 +125,16 @@ private: // メンバ変数
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformRock_;
 	WorldTransform worldTransformImpact_;
+	WorldTransform worldTransformArea_;
 	WorldTransform worldTransformColliderImpact_[15];
 	std::unique_ptr<ColliderManager> colliderManager_[15] = {};
 	std::unique_ptr<Animations>animation_;
 	int animationNumber_;
 
 	std::unique_ptr<Model> impactModel_;
+	std::unique_ptr<Model> areaModel_;
+	Vector3 areaPos_;
+	bool areaDraw_;
 
 	Vector3 playerPos_ = {};
 	Vector3 healerPos_ = {};
