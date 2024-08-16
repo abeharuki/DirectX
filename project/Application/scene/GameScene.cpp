@@ -89,6 +89,7 @@ void GameScene::Update() {
 	//当たり判定
 	CheckAllCollision();
 
+	playerManager_->GetPlayer()->SetEnemyLength(enemyManager_->GetWorldTransform().translate);
 	playerManager_->Update();
 	
 	//コマンドの更新

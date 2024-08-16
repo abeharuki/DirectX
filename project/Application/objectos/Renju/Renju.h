@@ -165,4 +165,7 @@ private: // メンバ変数
 
 	//作戦
 	bool operation_;
+
+	int jumpCount_;
+	float enemylength_;
 };

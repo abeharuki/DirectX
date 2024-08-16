@@ -27,7 +27,7 @@ void DebugScene::Initialize() {
 	colliderManager_[1]->SetAABB(aabb2);
 	colliderManager_[1]->SetCollisionMask(kCollisionMaskPlayer);
 	colliderManager_[1]->SetCollisionAttribute(kCollisionAttributePlayer);
-	colliderManager_[1]->SetCollisionPrimitive(kCollisionPrimitiveAABB);
+	colliderManager_[1]->SetCollisionPrimitive(kCollisionPrimitiveOBB);
 
 
 	colliderManager_[2] = std::make_unique<ColliderManager>();
@@ -112,17 +112,7 @@ void DebugScene::Update() {
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
-	if (impactScale_) {
-		worldTransformModel_.scale += Vector3(2.0f, 0.0f, 2.0f);
-		worldTransformCollider1_.translate += impactVelocity_;
-	}
 	
-	if (worldTransformModel_.scale.x > 100) {
-		worldTransformModel_.scale = { 1.0f,1.0f,1.0f };
-		worldTransformCollider1_.translate = impactPos_;
-	}
-	worldTransformCollider1_.scale.x = worldTransformModel_.scale.x/100.0f;
-	worldTransformCollider1_.scale.z = worldTransformModel_.scale.z/100.0f;
 	
 	
 	worldTransformSkybox_.UpdateMatrix();
@@ -327,8 +317,8 @@ void DebugScene::Draw() {
 	
 	
 	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
-	//colliderManager_[0]->Draw(viewProjection_);
-	//colliderManager_[1]->Draw(viewProjection_);
+	colliderManager_[0]->Draw(viewProjection_);
+	colliderManager_[1]->Draw(viewProjection_);
 	model_->Draw(worldTransformModel_, viewProjection_, true);
 	skybox_->Draw(worldTransformSkybox_,viewProjection_);
 	loader_->Draw(viewProjection_, true);

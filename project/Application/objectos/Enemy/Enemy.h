@@ -116,15 +116,9 @@ public: // メンバ関数
 		};
 	}
 
-	//範囲の条件文
-	bool isWithinRange(float value, float range ,float sub) {
-		if (value >= range-sub && value <= range+sub) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+	float GetImpactSize() { return worldTransformImpact_.scale.z; }
+
+	
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;

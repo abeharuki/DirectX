@@ -107,12 +107,14 @@ public: // メンバ関数
 	int HitCount() { return hitCount_; }
 	
 
-	void SetViewProjection(const ViewProjection* viewProjection) {
-		viewProjection_ = viewProjection;
-	}
+	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
 
 	//敵攻撃フラグ
 	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
+	void SetEnemyLength(Vector3 pos){
+		// 敵の座標までの距離
+		length_ = Math::Length(Math::Subract(pos, worldTransformBase_.translate));
+	}
 
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
 
@@ -224,4 +226,6 @@ private: // メンバ変数
 	//コマンドこうげきを受け取るよう
 	//攻撃フラグ
 	std::vector<bool> attackType_;
+
+	float length_ = 0.0f;
 };

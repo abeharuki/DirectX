@@ -218,18 +218,38 @@ else if (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveSphere)
 		((colliderA->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0 && (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0))
 	{
 		//コライダーAのAABBを取得
-		OBB obbA = colliderA->GetOBB();
-		//コライダーBのOBBを取得
-		OBB obbB = colliderB->GetOBB();
+		OBB obbA = {
+				.center{colliderA->GetOBB().center.x + colliderA->GetWorldPosition().x,colliderA->GetOBB().center.y + colliderA->GetWorldPosition().y,colliderA->GetOBB().center.z + colliderA->GetWorldPosition().z},
 
-		/*/衝突判定
-		if (CheckCollisionOBB(aabb, obb))
+				.orientations{
+				 {Vector3{colliderA->GetWorldTransform().matWorld_.m[0][0],colliderA->GetWorldTransform().matWorld_.m[0][1],colliderA->GetWorldTransform().matWorld_.m[0][2]}},
+				 {Vector3{colliderA->GetWorldTransform().matWorld_.m[1][0],colliderA->GetWorldTransform().matWorld_.m[1][1],colliderA->GetWorldTransform().matWorld_.m[1][2]}},
+				 {Vector3{colliderA->GetWorldTransform().matWorld_.m[2][0],colliderA->GetWorldTransform().matWorld_.m[2][1],colliderA->GetWorldTransform().matWorld_.m[2][2]}},
+				},
+				.size{colliderA->GetOBB().size}
+		};
+		//コライダーBのOBBを取得
+		OBB obbB = {
+				.center{colliderB->GetOBB().center.x + colliderB->GetWorldPosition().x,colliderB->GetOBB().center.y + colliderB->GetWorldPosition().y,colliderB->GetOBB().center.z + colliderB->GetWorldPosition().z},
+				.orientations{
+				 {Vector3{colliderB->GetWorldTransform().matWorld_.m[0][0],colliderB->GetWorldTransform().matWorld_.m[0][1],colliderB->GetWorldTransform().matWorld_.m[0][2]}},
+				 {Vector3{colliderB->GetWorldTransform().matWorld_.m[1][0],colliderB->GetWorldTransform().matWorld_.m[1][1],colliderB->GetWorldTransform().matWorld_.m[1][2]}},
+				 {Vector3{colliderB->GetWorldTransform().matWorld_.m[2][0],colliderB->GetWorldTransform().matWorld_.m[2][1],colliderB->GetWorldTransform().matWorld_.m[2][2]}}
+
+				},
+				.size{colliderB->GetOBB().size}
+		};
+
+		//衝突判定
+		if (CheckCollisionOBB(obbA, obbB))
 		{
 			//コライダーAの衝突時コールバックを呼び出す
 			colliderA->OnCollision(colliderB);
 			//コライダーBの衝突時コールバックを呼び出す
 			colliderB->OnCollision(colliderA);
-		}*/
+			colliderA->CheckCollision(true);
+			colliderB->CheckCollision(true);
+		}
 	
 	}
 
@@ -385,3 +405,176 @@ bool CollisionManager::CheckCollisionAABBOBB(const AABB& aabb, const OBB& obb)
 
 	return true;
 }
+
+bool CollisionManager::CheckCollisionOBB(const OBB& obbA, const OBB& obbB)
+{
+	Vector3 NAe1 = obbA.orientations[0];
+	Vector3 Ae1 = NAe1 * obbA.size.x;
+	Vector3 NAe2 = obbA.orientations[1];
+	Vector3 Ae2 = NAe2 * obbA.size.y;
+	Vector3 NAe3 = obbA.orientations[2];
+	Vector3 Ae3 = NAe3 * obbA.size.z;
+
+	Vector3 NBe1 = obbB.orientations[0];
+	Vector3 Be1 = NBe1 * obbB.size.x;
+	Vector3 NBe2 = obbB.orientations[1];
+	Vector3 Be2 = NBe2 * obbB.size.y;
+	Vector3 NBe3 = obbB.orientations[2];
+	Vector3 Be3 = NBe3 * obbB.size.z;
+
+	Vector3 Interval = obbA.center - obbB.center;
+
+	auto LenSegOnSeparateAxis = [](const Vector3* Sep, const Vector3* e1, const Vector3* e2, const Vector3* e3) -> float {
+		float r1 = fabs(Math::Dot(*Sep, *e1));
+		float r2 = fabs(Math::Dot(*Sep, *e2));
+		float r3 = e3 ? (fabs(Math::Dot(*Sep, *e3))) : 0;
+		return r1 + r2 + r3;
+		};
+
+	//分理軸 Ae1
+	float rA = Math::Length(Ae1);
+	float rB = LenSegOnSeparateAxis(&NAe1, &Be1, &Be2, &Be3);
+	float L = fabs(Math::Dot(Interval, NAe1));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : Ae2
+	rA = Math::Length(Ae2);
+	rB = LenSegOnSeparateAxis(&NAe2, &Be1, &Be2, &Be3);
+	L = fabs(Math::Dot(Interval, NAe2));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : Ae3
+	rA = Math::Length(Ae3);
+	rB = LenSegOnSeparateAxis(&NAe3, &Be1, &Be2, &Be3);
+	L = fabs(Math::Dot(Interval, NAe3));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : Be1
+	rA = LenSegOnSeparateAxis(&NBe1, &Ae1, &Ae2, &Ae3);
+	rB = Math::Length(Be1);
+	L = fabs(Math::Dot(Interval, NBe1));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : Be2
+	rA = LenSegOnSeparateAxis(&NBe2, &Ae1, &Ae2, &Ae3);
+	rB = Math::Length(Be2);
+	L = fabs(Math::Dot(Interval, NBe2));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : Be3
+	rA = LenSegOnSeparateAxis(&NBe3, &Ae1, &Ae2, &Ae3);
+	rB = Math::Length(Be3);
+	L = fabs(Math::Dot(Interval, NBe3));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : C11
+	Vector3 Cross = Math::Cross(NAe1, NBe1);
+	rA = LenSegOnSeparateAxis(&Cross, &Ae2, &Ae3, 0);
+	rB = LenSegOnSeparateAxis(&Cross, &Be2, &Be3, 0);
+	L = fabs(Math::Dot(Interval, Cross));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : C12
+	Cross = Math::Cross(NAe1, NBe2);
+	rA = LenSegOnSeparateAxis(&Cross, &Ae2, &Ae3, 0);
+	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be3, 0);
+	L = fabs(Math::Dot(Interval, Cross));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : C13
+	Cross = Math::Cross(NAe1, NBe3);
+	rA = LenSegOnSeparateAxis(&Cross, &Ae2, &Ae3, 0);
+	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be2, 0);
+	L = fabs(Math::Dot(Interval, Cross));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : C21
+	Cross = Math::Cross(NAe2, NBe1);
+	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae3, 0);
+	rB = LenSegOnSeparateAxis(&Cross, &Be2, &Be3, 0);
+	L = fabs(Math::Dot(Interval, Cross));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : C22
+	Cross = Math::Cross(NAe2, NBe2);
+	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae3, 0);
+	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be3, 0);
+	L = fabs(Math::Dot(Interval, Cross));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : C23
+	Cross = Math::Cross(NAe2, NBe3);
+	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae3, 0);
+	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be2, 0);
+	L = fabs(Math::Dot(Interval, Cross));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : C31
+	Cross = Math::Cross(NAe3, NBe1);
+	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae2, 0);
+	rB = LenSegOnSeparateAxis(&Cross, &Be2, &Be3, 0);
+	L = fabs(Math::Dot(Interval, Cross));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : C32
+	Cross = Math::Cross(NAe3, NBe2);
+	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae2, 0);
+	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be3, 0);
+	L = fabs(Math::Dot(Interval, Cross));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	// 分離軸 : C33
+	Cross = Math::Cross(NAe3, NBe3);
+	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae2, 0);
+	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be2, 0);
+	L = fabs(Math::Dot(Interval, Cross));
+	if (L > rA + rB)
+	{
+		return false;
+	}
+
+	return true;
+}
+

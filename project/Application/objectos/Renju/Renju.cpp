@@ -146,14 +146,40 @@ void Renju::MoveUpdate() {
 		followPlayer_ = false;
 	}
 
+	//敵の攻撃が終わったらまたジャンプできるように設定
+	if (!enemy_->isAttack()) {
+		jumpCount_ = 1;
+	}
+
 	//地面をたたきつける攻撃が来たらジャンプする
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
-		state_ = CharacterState::Jumping;
+		//ジャンプは敵の攻撃一回に対して一回まで
+		if (jumpCount_ == 1 && enemylength_ <= 35) {
+			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
+
+			if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
+				state_ = CharacterState::Jumping;
+			}
+
+			if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+
+			if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+
+			if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+		}
+
 	}
 };
 
 // ジャンプ
 void Renju::JumpInitialize() {
+	--jumpCount_;
 	worldTransformBase_.translate.y = 0.0f;
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
@@ -361,6 +387,9 @@ void Renju::followPlayer(Vector3 playerPos) {
 
 void Renju::searchTarget(Vector3 enemyPos) {
 	enemyPos_ = enemyPos;
+	// の座標までの距離
+	enemylength_ = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
+
 	if (!followPlayer_ && searchTarget_) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemyPos - GetWorldPosition();
@@ -380,11 +409,9 @@ void Renju::searchTarget(Vector3 enemyPos) {
 				: -std::numbers::pi_v<float> / 2.0f;
 		}
 
-		// プレイヤーの座標までの距離
-		float length = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
-
-		// 距離条件チェック
-		if (minDistance_ * 2 <= length) {
+		
+		// 敵の距離条件チェック
+		if (minDistance_ * 2 <= enemylength_) {
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
 			if (velocity_.y == 0.0f) {

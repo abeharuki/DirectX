@@ -159,7 +159,10 @@ private: // メンバ変数
 
 	//敵情報
 	Enemy* enemy_;
+	float enemylength_;
 
 	//作戦
 	bool operation_;
+
+	int jumpCount_;
 };

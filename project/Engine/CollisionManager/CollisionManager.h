@@ -23,6 +23,8 @@ private:
 
 	bool CheckCollisionAABBOBB(const AABB& aabb, const OBB& obb);
 
+	bool CheckCollisionOBB(const OBB& obbA, const OBB& obbB);
+
 private:
 	std::list<Collider*> colliders_{};
 };

@@ -272,6 +272,17 @@ struct PerFrame{
 class Math {
 public:
 
+	//範囲の条件文
+	//valueがrangeからプラスマイナスsubの範囲か
+	static bool isWithinRange(float value, float range, float sub) {
+		if (value >= range - sub && value <= range + sub) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	static float Dot(const Vector3& v1, const Vector3& v2);
 
 	// 正規化

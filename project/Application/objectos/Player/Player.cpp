@@ -141,6 +141,7 @@ void Player::Update() {
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("pos", &worldTransformHead_.translate.x, -10.0f, 10.0f);
+	ImGui::Text("EnemyLength%f", length_);
 	ImGui::Text("%d", noAttack_);
 	ImGui::Text("%d", hitCount_);
 	ImGui::SliderFloat("Thres", &threshold_, 0.0f, 1.0f);
@@ -584,13 +585,13 @@ void Player::OnCollision(const WorldTransform& worldTransform) {
 	if (!nockBack_) {
 		velocity_ = { 0.0f, 0.0f, kSpeed };
 		velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
-		behaviorRequest_ = Behavior::knock;
+		//behaviorRequest_ = Behavior::knock;
 	}
 
 
-	//isHit_ = true;
+	isHit_ = true;
 	if (isHit_ != preHit_) {
-		hit_ = true;
+		//hit_ = true;
 
 	}
 
@@ -606,12 +607,12 @@ void Player::OnCollision(Collider* collider) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			behaviorRequest_ = Behavior::knock;
+			//behaviorRequest_ = Behavior::knock;
 
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hit_ = true;
+				//hit_ = true;
 
 			}
 

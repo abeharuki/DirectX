@@ -117,9 +117,34 @@ void Tank::MoveUpdate() {
 		followPlayer_ = false;
 	}
 
+	//敵の攻撃が終わったらまたジャンプできるように設定
+	if (!enemy_->isAttack()) {
+		jumpCount_ = 1;
+	}
+
 	//地面をたたきつける攻撃が来たらジャンプする
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
-		state_ = CharacterState::Jumping;
+		//ジャンプは敵の攻撃一回に対して一回まで
+		if (jumpCount_ == 1 && enemylength_ <= 35) {
+			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
+
+			if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
+				state_ = CharacterState::Jumping;
+			}
+			
+			if (Math::isWithinRange(enemylength_,10,5)&& Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+
+			if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+
+			if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+		}
+		
 	}
 	
 };
@@ -127,6 +152,7 @@ void Tank::MoveUpdate() {
 // ジャンプ
 void Tank::JumpInitialize() {
 	worldTransformBase_.translate.y = 0.0f;
+	--jumpCount_;
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
@@ -328,6 +354,8 @@ void Tank::followPlayer(Vector3 playerPos) {
 // 敵を探す
 void Tank::searchTarget(Vector3 enemyPos) {
 	enemyPos_ = enemyPos;
+	// 敵の座標までの距離
+	enemylength_ = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
 	if (!followPlayer_ && searchTarget_) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemyPos - GetWorldPosition();
@@ -347,11 +375,8 @@ void Tank::searchTarget(Vector3 enemyPos) {
 				: -std::numbers::pi_v<float> / 2.0f;
 		}
 
-		// 敵の座標までの距離
-		float length = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
-
 		// 距離条件チェック
-		if (minDistance_ <= length) {
+		if (minDistance_ <= enemylength_) {
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
 			if (velocity_.y == 0.0f) {

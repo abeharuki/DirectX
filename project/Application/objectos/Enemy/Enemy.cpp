@@ -117,6 +117,7 @@ void Enemy::Update() {
 	ImGui::SliderFloat3("rotato", &worldTransformBody_.rotate.x, -2.0f, 2.0f);
 	ImGui::Text("time%d", time_);
 	ImGui::Text("Attack%d", isAttack_);
+	ImGui::Text("ImpactSize%f", worldTransformImpact_.scale.z);
 	ImGui::End();
 }
 
@@ -240,7 +241,7 @@ void Enemy::NomalAttackUpdata() {
 			targetPos = tankPos_;
 		}
 		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity_);
-		if (isWithinRange(worldTransformBase_.translate.x, targetPos.x, 2) && isWithinRange(worldTransformBase_.translate.z, targetPos.z, 2)) {
+		if (Math::isWithinRange(worldTransformBase_.translate.x, targetPos.x, 2) && Math::isWithinRange(worldTransformBase_.translate.z, targetPos.z, 2)) {
 			behaviorAttack_ = true;
 
 		}
