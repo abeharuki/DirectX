@@ -53,7 +53,7 @@ void Enemy::Initialize() {
 
 	AABB aabbSize{ .min{-3.0f,-4.0f,-2.0f},.max{3.0f,4.0f,2.0f} };
 	OBB obb = Math::ConvertAABBToOBB(aabbSize);
-	obb.center = { 0.0f,4.0f,0.0f };
+	obb.center = { 0.0f,0.0f,0.0f };
 	SetOBB(obb);
 	SetCollisionPrimitive(kCollisionPrimitiveOBB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
@@ -121,7 +121,8 @@ void Enemy::Update() {
 	ImGui::Begin("Enemy");
 	animation_->AnimationDebug();
 	ImGui::SliderFloat3("pos", &worldTransformBody_.translate.x, -2.0f, 2.0f);
-	ImGui::SliderFloat3("rotato", &worldTransformBody_.rotate.x, -2.0f, 2.0f);
+	ImGui::DragFloat3("rotato", &worldTransformBody_.rotate.x, 1.0f);
+	ImGui::DragFloat3("rotatoBase", &worldTransformBase_.rotate.x, 0.1f);
 	ImGui::DragFloat3("Area", &worldTransformArea_.translate.x, 0.1f);
 	ImGui::Text("time%d", time_);
 	ImGui::Text("Attack%d", isAttack_);
@@ -135,11 +136,11 @@ void Enemy::Draw(const ViewProjection& camera) {
 		impactModel_->Draw(worldTransformImpact_, camera, true);
 		
 	}
-	
-	if (areaDraw_ && time_ < 60) {
+
+	if (areaDraw_) {
 		areaModel_->Draw(worldTransformArea_, camera, true);
 	}
-
+	
 	for (int i = 0; i < 15; ++i) {
 		//colliderManager_[i]->Draw(camera);
 	}
@@ -157,13 +158,30 @@ void Enemy::MoveInitialize() {
 };
 void Enemy::MoveUpdata() {
 	if (--time_ <= 0) {
+		//behaviorRequest_ = Behavior::kAttack;
+	}
+
+	if (Input::PressKey(DIK_4)) {
 		behaviorRequest_ = Behavior::kAttack;
+		attackRequest_ = BehaviorAttack::kNomal;
+	}
+	if (Input::PressKey(DIK_5)) {
+		behaviorRequest_ = Behavior::kAttack;
+		attackRequest_ = BehaviorAttack::kDash;
+	}
+	if (Input::PressKey(DIK_6)) {
+		behaviorRequest_ = Behavior::kAttack;
+		attackRequest_ = BehaviorAttack::kThrowing;
+	}
+	if (Input::PressKey(DIK_7)) {
+		behaviorRequest_ = Behavior::kAttack;
+		attackRequest_ = BehaviorAttack::kGround;
 	}
 };
 
 void Enemy::AttackInitialize() {
 
-	int num = RandomGenerator::GetRandomInt(2, 2);
+	/*int num = RandomGenerator::GetRandomInt(2, 2);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -175,10 +193,12 @@ void Enemy::AttackInitialize() {
 	}
 	else if (num == 4) {
 		attackRequest_ = BehaviorAttack::kGround;
-	}
+	}*/
 	behaviorAttack_ = true;
 }
 void Enemy::AttackUpdata() {
+
+	
 
 	if (attackRequest_) {
 		// 振る舞い変更
@@ -298,18 +318,22 @@ void Enemy::NomalAttackUpdata() {
 
 //ダッシュ攻撃//近いやつに攻撃するようにする
 void Enemy::DashAttackInitialize() {
-	num_ = RandomGenerator::GetRandomInt(1, 4);
+	num_ = RandomGenerator::GetRandomInt(4, 4);
 	time_ = 100;
 	
 	animation_->SetLoop(false);
 	animation_->SetFlameTimer(40.0f);
 	
-	areaDraw_ = true;
+	
 	
 	
 }
 void Enemy::DashAttackUpdata() {
 	--time_;
+	if (!isAttack_ &&time_ < 60) {
+		areaDraw_ = true;
+	}
+
 	areaPos_ = { 0.0f,0.0f,0.0f };
 	if (time_ < 40 && time_ > 20) {
 		animationNumber_ = runUp;

@@ -88,6 +88,15 @@ void Tank::Update() {
 		animation_->SetLoop(false);
 		animation_->Update(0);
 	}
+
+
+	ImGui::Begin("Tank");
+	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
+	ImGui::SliderFloat3("enemypos", &enemy_->GetWorldTransformArea().translate.x, -10.0f, 10.0f);
+	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
+	ImGui::Text("%d", isArea_);
+	
+	ImGui::End();
 };
 
 void Tank::Draw(const ViewProjection& camera) {
@@ -106,7 +115,7 @@ void Tank::MoveUpdate() {
 	--coolTime;
 
 	// プレイヤーに集合
-	if (operation_ || !searchTarget_) {
+	if (operation_) {
 		followPlayer_ = true;
 		searchTarget_ = false;
 	}
@@ -117,6 +126,18 @@ void Tank::MoveUpdate() {
 		followPlayer_ = false;
 	}
 
+	
+	if (isArea_ && searchTarget_ && enemy_->IsAreaDraw()) {
+		
+		const float kCharacterSpeed = 0.3f;
+		velocity_ = Math::Normalize(velocity_);
+		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
+		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
+		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+		worldTransformBase_.translate += velocity_;
+	}
+	IsVisibleToEnemy();
+	
 	//敵の攻撃が終わったらまたジャンプできるように設定
 	if (!enemy_->isAttack()) {
 		jumpCount_ = 1;
@@ -146,7 +167,7 @@ void Tank::MoveUpdate() {
 		}
 		
 	}
-	
+	worldTransformBase_.translate.y = 0;
 };
 
 // ジャンプ
@@ -239,7 +260,7 @@ void Tank::AttackUpdate() {
 			 worldTransformBase_.translate.z - 2.0f },
 			0.05f);
 	}
-	else if (fireTimer_ > 5) {
+	else if (fireTimer_ >5) {
 		attack_ = true;
 		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos_, 0.2f);
 	}
@@ -315,6 +336,7 @@ void Tank::DeadUpdate() {
 
 // プレイヤーに追従
 void Tank::followPlayer(Vector3 playerPos) {
+	playerPos_ = playerPos;
 	if (followPlayer_) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = playerPos - GetWorldPosition();
@@ -377,19 +399,81 @@ void Tank::searchTarget(Vector3 enemyPos) {
 
 		// 距離条件チェック
 		if (minDistance_ <= enemylength_) {
-			worldTransformBase_.translate =
-				Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
+			if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash||!enemy_->IsBehaberAttack()) {
+				worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
+			}
+			
+			
 			if (velocity_.y == 0.0f) {
 				worldTransformBase_.translate.y = 0.0f;
 			}
 			
 		}
 		else {
-			if (coolTime <= 0) {
+			if (coolTime <= 0 && !isArea_ && enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
 				state_ = CharacterState::Attacking;
 			}
 		
 
+		}
+	}
+}
+
+//敵の視野内かどうか
+void Tank::IsVisibleToEnemy(){
+	isArea_ = false;
+	float rectWidth = 6.0f; // 横幅の設定 (敵の中心から±3)
+	Vector3 toEnemy = enemyPos_- worldTransformBase_.translate;
+	// 敵の視線方向を取得 (Z軸方向が前方)
+	Vector3 enemyForward = {
+		enemy_->GetWorldTransform().matWorld_.m[2][0],
+		enemy_->GetWorldTransform().matWorld_.m[2][1],
+		enemy_->GetWorldTransform().matWorld_.m[2][2]
+	};
+	enemyForward *= -1;
+
+	Vector3 enemyRight = Math::Cross({ 0.0f, 1.0f, 0.0f }, enemyForward);
+	enemyRight = Math::Normalize(enemyRight);
+
+	//敵との距離
+	float distance = Math::Length(toEnemy);	
+
+
+	//距離条件のチェック
+	if (enemyMinDistance_ <= distance && distance <= enemyMaxDistance_) {
+		toEnemy = Math::Normalize(toEnemy); // toEnemyベクトルを正規化
+		enemyForward = Math::Normalize(enemyForward); // enemyForwardベクトルを正規化
+
+		float dot = Math::Dot(toEnemy, enemyForward);
+		float angle = std::acos(dot);
+
+		//角度条件チェック
+		if (std::abs(angle) <= angleRange_) {
+			if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+				RunAway();
+				isArea_ = true;
+			}
+			
+		}
+	}
+	
+}
+
+void Tank::RunAway(){
+	if (enemyPos_.z > worldTransformBase_.translate.z) {
+		if (enemyPos_.x > worldTransformBase_.translate.x) {
+			velocity_ = { -1.0f,0.0f,-0.8f };
+		}
+		else {
+			velocity_ = { 1.0f,0.0f,-0.8f };
+		}
+	}
+	else {
+		if (enemyPos_.x < worldTransformBase_.translate.x) {
+			velocity_ = { -1.0f,0.0f,-0.8f };
+		}
+		else {
+			velocity_ = { 1.0f,0.0f,-0.8f };
 		}
 	}
 }

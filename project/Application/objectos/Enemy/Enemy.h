@@ -90,6 +90,7 @@ public: // メンバ関数
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }
 	WorldTransform& GetWorldTransformRock() { return worldTransformRock_; }
+	WorldTransform& GetWorldTransformArea() { return worldTransformArea_; }
 
 	void SetLight(DirectionLight directionLight) { 
 		animation_->DirectionalLightDraw(directionLight);
@@ -110,6 +111,7 @@ public: // メンバ関数
 	}
 	bool isAttack() { return isAttack_; };
 	bool isClear() { return clear_; };
+	bool IsAreaDraw() { return areaDraw_; }
 	void isDead(bool dead) {
 		if (dead) {
 			behavior_ = Behavior::kDead;

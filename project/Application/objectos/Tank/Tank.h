@@ -58,6 +58,12 @@ public: // メンバ関数
 	// 敵を探す
 	void searchTarget(Vector3 enemyPos);
 
+	//敵の視野内にいるかどうか
+	void IsVisibleToEnemy();
+	//逃げる方向
+	void RunAway();
+
+
 	void Relationship();
 
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
@@ -136,6 +142,7 @@ private: // メンバ変数
 	uint32_t nockTime_;
 	bool nockBack_;
 	Vector3 enemyPos_;
+	Vector3 playerPos_;
 
 	bool attack_ = false;
 	//攻撃ができるようになるまでの
@@ -165,4 +172,16 @@ private: // メンバ変数
 	bool operation_;
 
 	int jumpCount_;
+
+	float kDegreeToRandian = 3.141592f / 180.0f;
+
+	//敵の視野内
+	//最小距離
+	float enemyMinDistance_ = 2.0f;
+	//最大距離
+	float enemyMaxDistance_ = 45.0f;
+	//角度範囲
+	float angleRange_ = 30.0f * kDegreeToRandian;
+	//敵の攻撃範囲ないかどうか
+	bool isArea_ = false;
 };

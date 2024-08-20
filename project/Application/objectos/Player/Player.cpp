@@ -141,6 +141,7 @@ void Player::Update() {
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("pos", &worldTransformHead_.translate.x, -10.0f, 10.0f);
+	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
 	ImGui::Text("EnemyLength%f", length_);
 	ImGui::Text("%d", noAttack_);
 	ImGui::Text("%d", hitCount_);

@@ -8,6 +8,7 @@ const uint32_t kCollisionAttributeHealer = 0b00100;
 const uint32_t kCollisionAttributeRenju = 0b01000;
 const uint32_t kCollisionAttributeTank = 0b10000;
 const uint32_t kCollisionAttributeLoderWall = 0b100000;
+const uint32_t kCollisionAttributeEnemyAttack = 0b100010;
 
 
 //CollisionMask
@@ -17,6 +18,7 @@ const uint32_t kCollisionMaskHealer = 0b1111011;
 const uint32_t kCollisionMaskRenju = 0b1110111;
 const uint32_t kCollisionMaskTank = 0b1101111;
 const uint32_t kCollisionMaskWall = 0b0011111;
+const uint32_t kCollisionMaskEnemyAttack = 0b0011101;
 
 
 //形状
