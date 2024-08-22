@@ -558,6 +558,40 @@ void Tank::OnCollision(const WorldTransform& worldTransform) {
 void Tank::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash || enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal) {
+			if (enemy_->isAttack()) {
+				const float kSpeed = 3.0f;
+				//velocity_ = { 0.0f, 0.0f, -kSpeed };
+				//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
+				if (hitCount_ > 0) {
+					//behaviorRequest_ = Behavior::knock;
+				}
+				isHit_ = true;
+
+				if (isHit_ != preHit_) {
+					--hitCount_;
+
+				}
+
+			}
+		}
+	
+
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
+
+			.orientations{
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+			},
+			.size{collider->GetOBB().size}
+		};
+
+		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
+	}
+
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
 		if (enemy_->isAttack()) {
 			const float kSpeed = 3.0f;
 			//velocity_ = { 0.0f, 0.0f, -kSpeed };
@@ -573,19 +607,6 @@ void Tank::OnCollision(Collider* collider) {
 			}
 
 		}
-
-		OBB obb = {
-			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
-
-			.orientations{
-			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
-			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
-			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
-			},
-			.size{collider->GetOBB().size}
-		};
-
-		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {

@@ -633,6 +633,25 @@ void Player::OnCollision(Collider* collider) {
 		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
 
 	}
+
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
+		if (isEnemyAttack_) {
+			const float kSpeed = 3.0f;
+			//velocity_ = { 0.0f, 0.0f, -kSpeed };
+			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
+			if (hitCount_ > 0) {
+				//behaviorRequest_ = Behavior::knock;
+			}
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				--hitCount_;
+
+			}
+
+		}
+	}
+
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
 		OBB obb = {
 			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},

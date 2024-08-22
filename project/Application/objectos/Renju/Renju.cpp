@@ -71,7 +71,7 @@ void Renju::Update() {
 	}
 
 	if (behaviorTree_) {
-		behaviorTree_->Update();
+		//behaviorTree_->Update();
 	}
 	
 	// デスフラグが立った弾を削除
@@ -537,22 +537,25 @@ void Renju::OnCollision(const WorldTransform& worldTransform) {
 void Renju::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (enemy_->isAttack()) {
-			const float kSpeed = 3.0f;
-			//velocity_ = { 0.0f, 0.0f, -kSpeed };
-			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			if (hitCount_ > 0) {
-				//behaviorRequest_ = Behavior::knock;
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash || enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal) {
+			if (enemy_->isAttack()) {
+				const float kSpeed = 3.0f;
+				//velocity_ = { 0.0f, 0.0f, -kSpeed };
+				//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
+				if (hitCount_ > 0) {
+					//behaviorRequest_ = Behavior::knock;
+				}
+
+				isHit_ = true;
+
+				if (isHit_ != preHit_) {
+					--hitCount_;
+
+				}
+
 			}
-
-			isHit_ = true;
-
-			if (isHit_ != preHit_) {
-				--hitCount_;
-
-			}
-
 		}
+	
 
 		OBB obb = {
 			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
@@ -566,6 +569,24 @@ void Renju::OnCollision(Collider* collider) {
 		};
 
 		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
+	}
+
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
+		if (enemy_->isAttack()) {
+			const float kSpeed = 3.0f;
+			//velocity_ = { 0.0f, 0.0f, -kSpeed };
+			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
+			if (hitCount_ > 0) {
+				//behaviorRequest_ = Behavior::knock;
+			}
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				--hitCount_;
+
+			}
+
+		}
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {

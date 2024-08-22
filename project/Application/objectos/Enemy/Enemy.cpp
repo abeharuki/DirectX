@@ -31,8 +31,8 @@ void Enemy::Initialize() {
 		OBB obb = Math::ConvertAABBToOBB(aabb);
 		colliderManager_[i] = std::make_unique<ColliderManager>();
 		colliderManager_[i]->SetOBB(obb);
-		colliderManager_[i]->SetCollisionMask(kCollisionMaskEnemy);
-		colliderManager_[i]->SetCollisionAttribute(kCollisionAttributeEnemy);
+		colliderManager_[i]->SetCollisionMask(kCollisionMaskEnemyAttack);
+		colliderManager_[i]->SetCollisionAttribute(kCollisionAttributeEnemyAttack);
 		colliderManager_[i]->SetCollisionPrimitive(kCollisionPrimitiveOBB);
 	}
 
