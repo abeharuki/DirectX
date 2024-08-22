@@ -71,7 +71,7 @@ void Renju::Update() {
 	}
 
 	if (behaviorTree_) {
-		//behaviorTree_->Update();
+		behaviorTree_->Update();
 	}
 	
 	// デスフラグが立った弾を削除
@@ -144,6 +144,7 @@ void Renju::MoveUpdate() {
 	if (!operation_) {
 		searchTarget_ = true;
 		followPlayer_ = false;
+		searchTarget(enemy_->GetWorldPosition());
 	}
 
 	if (isArea_ && searchTarget_ && enemy_->IsAreaDraw()) {
@@ -479,18 +480,18 @@ void Renju::IsVisibleToEnemy(){
 void Renju::RunAway(){
 	if (enemyPos_.z > worldTransformBase_.translate.z) {
 		if (enemyPos_.x > worldTransformBase_.translate.x) {
-			velocity_ = { -1.0f,0.0f,-0.8f };
+			velocity_ = { -1.0f,0.0f,-1.0f };
 		}
 		else {
-			velocity_ = { 1.0f,0.0f,-0.8f };
+			velocity_ = { 1.0f,0.0f,-1.0f };
 		}
 	}
 	else {
 		if (enemyPos_.x < worldTransformBase_.translate.x) {
-			velocity_ = { -1.0f,0.0f,-0.8f };
+			velocity_ = { -1.0f,0.0f,-1.0f };
 		}
 		else {
-			velocity_ = { 1.0f,0.0f,-0.8f };
+			velocity_ = { 1.0f,0.0f,-1.0f };
 		}
 	}
 }

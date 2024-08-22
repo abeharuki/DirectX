@@ -196,7 +196,7 @@ private: // メンバ変数
 	//最大距離
 	float enemyMaxDistance_ = 45.0f;
 	//角度範囲
-	float angleRange_ = 30.0f * kDegreeToRandian;
+	float angleRange_ = 35.0f * kDegreeToRandian;
 	//敵の攻撃範囲ないかどうか
 	bool isArea_ = false;
 };

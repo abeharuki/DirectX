@@ -16,9 +16,6 @@ public:
 
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
-	//敵の位置を検索
-	void SetEnemypPos(Vector3 enemyPos) { enemyPos_ = enemyPos; };
-
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return renju_->GetBullets(); }
 
@@ -49,7 +46,6 @@ private:
 
 	float threshold_ = 0.0f;
 	Vector3 playerPos_;
-	Vector3 enemyPos_;
 
 	// 味方の判定
 	bool preHit_;

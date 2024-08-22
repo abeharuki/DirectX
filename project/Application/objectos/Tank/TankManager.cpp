@@ -1,9 +1,6 @@
 #include "TankManager.h"
 
 void TankManager::Initialize() {
-
-
-	
 	emitter_ = {
 		.translate{0,0,0},
 		.count{5},
@@ -54,7 +51,7 @@ void TankManager::Update() {
 
 	tank_->Update();
 	tank_->followPlayer(playerPos_);
-	tank_->searchTarget(enemyPos_);
+	
 };
 
 void TankManager::Draw(const ViewProjection& camera) {

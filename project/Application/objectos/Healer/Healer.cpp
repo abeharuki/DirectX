@@ -78,7 +78,7 @@ void Healer::Update() {
 	}
 
 	if (behaviorTree_) {
-		//behaviorTree_->Update();
+		behaviorTree_->Update();
 	}
 
 	Relationship();
@@ -123,6 +123,7 @@ void Healer::MoveUpdate() {
 	if (!operation_) {
 		searchTarget_ = true;
 		followPlayer_ = false;
+		searchTarget(enemy_->GetWorldPosition());
 	}
 
 	if (isArea_ && searchTarget_ && enemy_->IsAreaDraw()) {
@@ -262,6 +263,32 @@ void Healer::AttackUpdate() {
 		state_ = CharacterState::Moveing;
 	}
 
+	if (!workAttack_.isAttack) {
+		//地面をたたきつける攻撃が来たらジャンプする
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+			//ジャンプは敵の攻撃一回に対して一回まで
+			if (jumpCount_ == 1 && enemylength_ <= 36) {
+				//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
+
+				if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
+					state_ = CharacterState::Jumping;
+				}
+
+				if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
+					state_ = CharacterState::Jumping;
+				}
+
+				if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
+					state_ = CharacterState::Jumping;
+				}
+
+				if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
+					state_ = CharacterState::Jumping;
+				}
+			}
+
+		}
+	}
 
 	// プレイヤーに集合
 	if (operation_) {
@@ -398,10 +425,19 @@ void Healer::searchTarget(Vector3 enemyPos) {
 			
 		}
 		else {
-			//searchTarget_ = false;
-			if (coolTime <= 0 && !isArea_ && enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
-				state_ = CharacterState::Attacking;
+			if (coolTime <= 0 && !isArea_) {
+				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
+					state_ = CharacterState::Attacking;
+				}
+				else {
+					if (!enemy_->IsBehaberAttack()) {
+						state_ = CharacterState::Attacking;
+					}
+
+				}
+
 			}
+
 		}
 	}
 }
@@ -447,18 +483,18 @@ void Healer::IsVisibleToEnemy(){
 void Healer::RunAway(){
 	if (enemyPos_.z > worldTransformBase_.translate.z) {
 		if (enemyPos_.x > worldTransformBase_.translate.x) {
-			velocity_ = { -1.0f,0.0f,-0.8f };
+			velocity_ = { -1.0f,0.0f,-1.5f };
 		}
 		else {
-			velocity_ = { 1.0f,0.0f,-0.8f };
+			velocity_ = { 1.0f,0.0f,-1.5f };
 		}
 	}
 	else {
 		if (enemyPos_.x < worldTransformBase_.translate.x) {
-			velocity_ = { -1.0f,0.0f,-0.8f };
+			velocity_ = { -1.0f,0.0f,-1.5f };
 		}
 		else {
-			velocity_ = { 1.0f,0.0f,-0.8f };
+			velocity_ = { 1.0f,0.0f,-1.5f };
 		}
 	}
 }

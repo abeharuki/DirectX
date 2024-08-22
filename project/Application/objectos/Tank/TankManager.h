@@ -16,9 +16,6 @@ class TankManager {
 
 		// プレイヤーに追従
 		void followPlayer(Vector3 playerPos);
-		// 敵の位置を検索
-		void SetEnemypPos(Vector3 enemyPos) { enemyPos_ = enemyPos; };
-
 		// 衝突を検出したら呼び出されるコールバック関数
 		void OnAllyCollision(const WorldTransform& worldTransform);
 		void OnCollision(const WorldTransform& worldTransform);
@@ -52,7 +49,6 @@ class TankManager {
 		float threshold_ = 0.0f;
 
 		Vector3 playerPos_;
-		Vector3 enemyPos_;
 
 		// 味方の判定
 		bool preHit_;

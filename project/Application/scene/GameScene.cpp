@@ -111,10 +111,6 @@ void GameScene::Update() {
 	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
-	//敵の座標の取得
-	healerManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
-	renjuManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
-	tankManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
 	//プレイヤーと味方座標の取得
 	if (!enemyManager_->GetEnemy()->IsBehaberAttack()) {
 		enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());

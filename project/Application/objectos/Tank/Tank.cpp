@@ -62,7 +62,7 @@ void Tank::Update() {
 
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
-	hitCount_ = 3;
+	//hitCount_ = 3;
 	if (hitCount_ <= 0) {
 		state_ = CharacterState::Dead;
 
@@ -94,7 +94,7 @@ void Tank::Update() {
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("enemypos", &enemy_->GetWorldTransformArea().translate.x, -10.0f, 10.0f);
 	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
-	ImGui::Text("%d", isArea_);
+	ImGui::Text("%d", fireTimer_);
 	
 	ImGui::End();
 };
@@ -124,6 +124,7 @@ void Tank::MoveUpdate() {
 	if (!operation_) {
 		searchTarget_ = true;
 		followPlayer_ = false;
+		searchTarget(enemy_->GetWorldPosition());
 	}
 
 	
@@ -221,7 +222,10 @@ void Tank::knockUpdate() {
 
 
 // 攻撃
-void Tank::AttackInitialize() { searchTarget_ = false; };
+void Tank::AttackInitialize() { 
+	searchTarget_ = false;
+	fireTimer_ = 40;
+};
 void Tank::AttackUpdate() {
 	--fireTimer_;
 
@@ -242,7 +246,7 @@ void Tank::AttackUpdate() {
 			(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
 	}
 
-	// プレイヤーの座標までの距離
+	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
 
 	// 距離条件チェック
@@ -253,27 +257,53 @@ void Tank::AttackUpdate() {
 
 
 	attack_ = false;
+	
 	if (fireTimer_ > 10) {
-		worldTransformBase_.translate = Math::Lerp(
-			worldTransformBase_.translate,
-			{ worldTransformBase_.translate.x, worldTransformBase_.translate.y,
-			 worldTransformBase_.translate.z - 2.0f },
-			0.05f);
+		velocity_ = { 0.0f,0.0f,-0.01f };
+		const float kCharacterSpeed = 0.1f;
+		velocity_ = Math::Normalize(velocity_);
+		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
+		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
+		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+		worldTransformBase_.translate += velocity_;
 	}
-	else if (fireTimer_ >5) {
+	else if (fireTimer_ <= 5 && fireTimer_ > 0) {
 		attack_ = true;
 		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos_, 0.2f);
 	}
-	else if (fireTimer_ > 0) {
-		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate,{ worldTransformBase_.translate.x, worldTransformBase_.translate.y,worldTransformBase_.translate.z - 4.0f },
-			0.2f);
+	else if (fireTimer_ <= 0) {
 		fireTimer_ = 40;
 		coolTime = 60;
 		state_ = CharacterState::Moveing;
 	}
 
 
-	
+	if (!attack_) {
+		//地面をたたきつける攻撃が来たらジャンプする
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+			//ジャンプは敵の攻撃一回に対して一回まで
+			if (jumpCount_ == 1 && enemylength_ <= 36) {
+				//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
+
+				if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
+					state_ = CharacterState::Jumping;
+				}
+
+				if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
+					state_ = CharacterState::Jumping;
+				}
+
+				if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
+					state_ = CharacterState::Jumping;
+				}
+
+				if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
+					state_ = CharacterState::Jumping;
+				}
+			}
+
+		}
+	}
 
 	// プレイヤーに集合
 	if (operation_) {
@@ -410,8 +440,17 @@ void Tank::searchTarget(Vector3 enemyPos) {
 			
 		}
 		else {
-			if (coolTime <= 0 && !isArea_ && enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
-				state_ = CharacterState::Attacking;
+			if (coolTime <= 0 && !isArea_) {
+				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
+					state_ = CharacterState::Attacking;
+				}
+				else {
+					if (!enemy_->IsBehaberAttack()) {
+						state_ = CharacterState::Attacking;
+					}
+					
+				}
+				
 			}
 		
 
@@ -462,18 +501,18 @@ void Tank::IsVisibleToEnemy(){
 void Tank::RunAway(){
 	if (enemyPos_.z > worldTransformBase_.translate.z) {
 		if (enemyPos_.x > worldTransformBase_.translate.x) {
-			velocity_ = { -1.0f,0.0f,-0.8f };
+			velocity_ = { -1.0f,0.0f,-1.2f };
 		}
 		else {
-			velocity_ = { 1.0f,0.0f,-0.8f };
+			velocity_ = { 1.0f,0.0f,-1.2f };
 		}
 	}
 	else {
 		if (enemyPos_.x < worldTransformBase_.translate.x) {
-			velocity_ = { -1.0f,0.0f,-0.8f };
+			velocity_ = { -1.0f,0.0f,-1.2f };
 		}
 		else {
-			velocity_ = { 1.0f,0.0f,-0.8f };
+			velocity_ = { 1.0f,0.0f,-1.2f };
 		}
 	}
 }

@@ -169,11 +169,6 @@ void TutorialScene::Update() {
 	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 
-	//敵の座標の取得
-	healerManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
-	renjuManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
-	tankManager_->SetEnemypPos(enemyManager_->GetEnemy()->GetWorldPosition());
-
 	cameraMove();
 	skydome_->Update();
 	ground_->Update();

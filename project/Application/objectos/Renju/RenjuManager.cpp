@@ -47,7 +47,6 @@ void RenjuManager::Update() {
 
 	renju_->Update();
 	renju_->followPlayer(playerPos_);
-	renju_->searchTarget(enemyPos_);
 };
 
 void RenjuManager::Draw(const ViewProjection& camera) {
