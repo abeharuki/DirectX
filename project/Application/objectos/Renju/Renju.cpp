@@ -28,7 +28,7 @@ void Renju::Initialize() {
 		worldTransformHp_[i].scale = { 0.5f,0.5f,0.5f };
 	}
 
-	hitCount_ = 3;
+	hitCount_ = 0;//3
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -123,12 +123,6 @@ void Renju::Draw(const ViewProjection& view) {
 
 // 移動
 void Renju::MoveInitialize() {
-	/*bullets_.remove_if([](RenjuBullet* bullet) {
-
-		delete bullet;
-		return true;
-
-	});*/
 	worldTransformBase_.translate.y = 0.0f;
 	velocity_ = { 0.0f,0.0f,0.0f };
 	searchTarget_ = false;

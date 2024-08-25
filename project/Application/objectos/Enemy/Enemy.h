@@ -103,6 +103,12 @@ public: // メンバ関数
 	void SetHealerPos(Vector3 pos) { healerPos_ = pos; };
 	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; };
 	void SetTankPos(Vector3 pos) { tankPos_ = pos; };
+	void SetIsDeadPlayer(bool flag) { isDeadPlayer_ = flag; }
+	void SetIsDeadHealer(bool flag) { isDeadHealer_ = flag; }
+	void SetIsDeadRenju(bool flag) { isDeadRenju_ = flag; }
+	void SetIsDeadTank(bool flag) { isDeadTank_ = flag; }
+
+
 	// パーツ親子関係
 	void Relationship();
 
@@ -138,10 +144,15 @@ private: // メンバ変数
 	Vector3 areaPos_;
 	bool areaDraw_;
 
+
 	Vector3 playerPos_ = {};
 	Vector3 healerPos_ = {};
 	Vector3 renjuPos_ = {};
 	Vector3 tankPos_ = {};
+	bool isDeadPlayer_ = false;
+	bool isDeadHealer_ = false;
+	bool isDeadRenju_ = false;
+	bool isDeadTank_ = false;
 
 	bool isAttack_ = false;
 	bool behaviorAttack_ = false;

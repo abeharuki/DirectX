@@ -111,6 +111,12 @@ void GameScene::Update() {
 	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	//生存しているかどうか
+	enemyManager_->GetEnemy()->SetIsDeadPlayer(playerManager_->GetPlayer()->GetIsDead());
+	enemyManager_->GetEnemy()->SetIsDeadHealer(healerManager_->GetHealer()->IsDead());
+	enemyManager_->GetEnemy()->SetIsDeadRenju(renjuManager_->GetRenju()->IsDead());
+	enemyManager_->GetEnemy()->SetIsDeadTank(tankManager_->GetTank()->IsDead());
+
 	//プレイヤーと味方座標の取得
 	if (!enemyManager_->GetEnemy()->IsBehaberAttack()) {
 		enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());

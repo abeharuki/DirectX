@@ -242,7 +242,22 @@ void Enemy::AttackUpdata() {
 
 
 void Enemy::NomalAttackInitialize() {
-	num_ = RandomGenerator::GetRandomInt(1, 4);//4
+	//対象が死んでいたらもう一回抽選
+	while (true) {
+		num_ = RandomGenerator::GetRandomInt(1, 4);
+		if (num_ == 1) {
+			break;
+		}
+		else if (!isDeadHealer_ && num_ == 2) {
+			break;
+		}
+		else if (!isDeadRenju_ && num_ == 3) {
+			break;
+		}
+		else if (!isDeadTank_ && num_ == 4) {
+			break;
+		}
+	}
 	animationNumber_ = run;
 	behaviorAttack_ = false;
 	time_ = 60 * 2;
@@ -318,15 +333,32 @@ void Enemy::NomalAttackUpdata() {
 
 //ダッシュ攻撃//近いやつに攻撃するようにする
 void Enemy::DashAttackInitialize() {
-	num_ = RandomGenerator::GetRandomInt(4, 4);
-	time_ = 100;
+	//対象が死んでいたらもう一回抽選
+	while (true) {
+		num_ = RandomGenerator::GetRandomInt(1, 4);
+		if (num_ == 1) {
+			break;
+		}else if (!isDeadHealer_ && num_ == 2) {
+			break;
+		}
+		else if (!isDeadRenju_ && num_ == 3) {
+			break;
+		}
+		else if (!isDeadTank_ && num_ == 4) {
+			break;
+		}
+	}
 	
+	time_ = 100;
 	animation_->SetLoop(false);
 	animation_->SetFlameTimer(40.0f);
-	
-	
-	
-	
+	if(isDeadHealer_ && num_ == 2){
+		num_ = RandomGenerator::GetRandomInt(1, 4);
+	}else if (isDeadRenju_ && num_ == 3) {
+		num_ = RandomGenerator::GetRandomInt(1, 4);
+	}else if(isDeadTank_ && num_ == 4) {
+		num_ = RandomGenerator::GetRandomInt(1, 4);
+	}
 }
 void Enemy::DashAttackUpdata() {
 	--time_;
@@ -430,13 +462,28 @@ void Enemy::ThrowingAttackInitialize() {
 	animation_->SetpreAnimationTimer(0);
 	animationNumber_ = swing;
 	animation_->SetLoop(false);
+	//対象が死んでいたらもう一回抽選
+	while (true) {
+		num_ = RandomGenerator::GetRandomInt(1, 4);
+		if (num_ == 1) {
+			break;
+		}
+		else if (!isDeadHealer_ && num_ == 2) {
+			break;
+		}
+		else if (!isDeadRenju_ && num_ == 3) {
+			break;
+		}
+		else if (!isDeadTank_ && num_ == 4) {
+			break;
+		}
+	}
 }
 void Enemy::ThrowingAttackUpdata() {
-	int num = RandomGenerator::GetRandomInt(1, 4);
 	if (!isAttack_) {
 
 
-		if (num == 1) {
+		if (num_ == 1) {
 			sub = playerPos_ - GetWorldPosition();
 			// y軸周りの回転
 			if (sub.z != 0.0) {
@@ -454,7 +501,7 @@ void Enemy::ThrowingAttackUpdata() {
 			}
 
 		}
-		else if (num == 2) {
+		else if (num_ == 2) {
 			sub = healerPos_ - GetWorldPosition();;
 			// y軸周りの回転
 			if (sub.z != 0.0) {
@@ -472,7 +519,7 @@ void Enemy::ThrowingAttackUpdata() {
 			}
 
 		}
-		else if (num == 3) {
+		else if (num_ == 3) {
 			sub = renjuPos_ - GetWorldPosition();
 			// y軸周りの回転
 			if (sub.z != 0.0) {
@@ -491,7 +538,7 @@ void Enemy::ThrowingAttackUpdata() {
 
 
 		}
-		else if (num == 4) {
+		else if (num_ == 4) {
 			sub = tankPos_ - GetWorldPosition();
 			// y軸周りの回転
 			if (sub.z != 0.0) {
@@ -542,20 +589,20 @@ void Enemy::ThrowingAttackUpdata() {
 		worldTransformBase_.rotate.y =
 			Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
-		if (num == 1) {
+		if (num_ == 1) {
 			sub = playerPos_ - worldTransformRock_.GetWorldPos();
 			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, playerPos_, 0.1f);
 		}
-		else if (num == 2) {
+		else if (num_ == 2) {
 			sub = healerPos_ - worldTransformRock_.GetWorldPos();
 			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, healerPos_, 0.1f);
 		}
-		else if (num == 3) {
+		else if (num_ == 3) {
 			sub = renjuPos_ - worldTransformRock_.GetWorldPos();
 			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, renjuPos_, 0.1f);
 
 		}
-		else if (num == 4) {
+		else if (num_ == 4) {
 			sub = tankPos_ - worldTransformRock_.GetWorldPos();
 			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, tankPos_, 0.1f);
 

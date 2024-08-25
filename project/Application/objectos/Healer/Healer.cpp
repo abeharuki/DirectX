@@ -39,7 +39,7 @@ void Healer::Initialize() {
 	if (nockBack_) {
 		animation_->Update(0);
 	}
-	hitCount_ = 3;//3
+	hitCount_ = 0;//3
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
