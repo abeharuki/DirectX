@@ -80,8 +80,6 @@ public: // メンバ関数
 	void DeadInitilize();
 	void DeadUpdata();
 
-	void Revival();
-
 	// パーツ親子関係
 	void Relationship();
 

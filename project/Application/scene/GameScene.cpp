@@ -77,7 +77,6 @@ void GameScene::Update() {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
 	}
 
-
 	if (enemyManager_->IsClear() && isFadeOut_) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
 	}
@@ -146,8 +145,6 @@ void GameScene::Update() {
 		tankManager_->Dissolve();
 	}
 
-	
-
 	// 追従カメラの更新
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -155,12 +152,10 @@ void GameScene::Update() {
 	viewProjection_.TransferMatrix();
 	skydome_->Update();
 	loader_->Update();
-	
 
 	healerManager_->SetViewProjection(viewProjection_);
 	renjuManager_->SetViewProjection(viewProjection_);
 	tankManager_->SetViewProjection(viewProjection_);
-	
 
 	//ライティングの設定
 	playerManager_->GetPlayer()->SetLight(directionLight_);
@@ -226,9 +221,7 @@ void GameScene::RenderDirect() {
 	if (playerManager_->GetPlayer()->IsDash()) {
 		playerManager_->Draw(viewProjection_);
 	}
-
 	
-
 	spriteBack_->Draw();
 
 }
@@ -288,7 +281,6 @@ void GameScene::CheckAllCollision() {
 	playerManager_->GetPlayer()->SetRenjuDead(renjuManager_->GetRenju()->IsDead());
 	playerManager_->GetPlayer()->SetHealerDead(healerManager_->GetHealer()->IsDead());
 
-
 	// 判定対象AとBの座標
 	Vector3 posA, posB;
 
@@ -306,15 +298,9 @@ void GameScene::CheckAllCollision() {
 			enemyManager_->OnCollision();
 			renjuManager_->SetParticlePos(posB);
 		}
-
 	}
-
-
-
 #pragma endregion
-
 #pragma region 敵キャラとタンクの当たり判定
-
 	// 敵キャラ座標
 	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x, enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
 	posB = tankManager_->GetTank()->GetWorldPosition();
@@ -324,11 +310,8 @@ void GameScene::CheckAllCollision() {
 			enemyManager_->OnCollision();
 			tankManager_->SetParticlePos(posB);
 		}
-
 	}
-
 #pragma endregion
-
 #pragma region 敵キャラとヒーラーの攻撃当たり判定
 	// 敵キャラ座標
 	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x,enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
@@ -339,29 +322,24 @@ void GameScene::CheckAllCollision() {
 			enemyManager_->OnCollision();
 			healerManager_->SetParticlePos(posB);
 		}
-
 	}
 #pragma endregion
-
 #pragma region 敵キャラと自キャラの攻撃当たり判定
 	// 敵キャラ座標
 	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x,enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
 	posB = playerManager_->katanaPos();
-
 
 	if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.5f }, posB, { 0.1f, 1.0f, 0.1f })) {
 		if (playerManager_->IsAttack()) {
 			enemyManager_->OnCollision();
 			playerManager_->SetParticlePos(posB);
 		}
-
 	}
 #pragma endregion
 
 	/*------------------
 	  敵の攻撃の当たり判定
 	-------------------*/
-
 
 #pragma region 自キャラと敵キャラ投擲攻撃の当たり判定
 	// 敵キャラ座標
@@ -410,7 +388,4 @@ void GameScene::CheckAllCollision() {
 		}
 	}
 #pragma endregion
-
-
-
 }

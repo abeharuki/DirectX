@@ -63,7 +63,7 @@ void Enemy::Initialize() {
 
 void Enemy::Update() {
 
-	
+
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -98,7 +98,7 @@ void Enemy::Update() {
 		DeadUpdata();
 		break;
 	}
-	
+
 
 	animation_->Update(animationNumber_);
 	Relationship();
@@ -111,7 +111,7 @@ void Enemy::Update() {
 		worldTransformColliderImpact_[i].UpdateMatrix();
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
 	}
-	
+
 
 
 	ImGui::Begin("EnemyRock");
@@ -134,13 +134,13 @@ void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
 	if (animationNumber_ == groundAttack && isAttack_ == true) {
 		impactModel_->Draw(worldTransformImpact_, camera, true);
-		
+
 	}
 
 	if (areaDraw_) {
 		areaModel_->Draw(worldTransformArea_, camera, true);
 	}
-	
+
 	for (int i = 0; i < 15; ++i) {
 		//colliderManager_[i]->Draw(camera);
 	}
@@ -198,7 +198,7 @@ void Enemy::AttackInitialize() {
 }
 void Enemy::AttackUpdata() {
 
-	
+
 
 	if (attackRequest_) {
 		// 振る舞い変更
@@ -238,7 +238,6 @@ void Enemy::AttackUpdata() {
 		break;
 	}
 }
-
 
 
 void Enemy::NomalAttackInitialize() {
@@ -338,7 +337,8 @@ void Enemy::DashAttackInitialize() {
 		num_ = RandomGenerator::GetRandomInt(1, 4);
 		if (num_ == 1) {
 			break;
-		}else if (!isDeadHealer_ && num_ == 2) {
+		}
+		else if (!isDeadHealer_ && num_ == 2) {
 			break;
 		}
 		else if (!isDeadRenju_ && num_ == 3) {
@@ -348,21 +348,23 @@ void Enemy::DashAttackInitialize() {
 			break;
 		}
 	}
-	
+
 	time_ = 100;
 	animation_->SetLoop(false);
 	animation_->SetFlameTimer(40.0f);
-	if(isDeadHealer_ && num_ == 2){
+	if (isDeadHealer_ && num_ == 2) {
 		num_ = RandomGenerator::GetRandomInt(1, 4);
-	}else if (isDeadRenju_ && num_ == 3) {
+	}
+	else if (isDeadRenju_ && num_ == 3) {
 		num_ = RandomGenerator::GetRandomInt(1, 4);
-	}else if(isDeadTank_ && num_ == 4) {
+	}
+	else if (isDeadTank_ && num_ == 4) {
 		num_ = RandomGenerator::GetRandomInt(1, 4);
 	}
 }
 void Enemy::DashAttackUpdata() {
 	--time_;
-	if (!isAttack_ &&time_ < 60) {
+	if (!isAttack_ && time_ < 60) {
 		areaDraw_ = true;
 	}
 
@@ -414,13 +416,13 @@ void Enemy::DashAttackUpdata() {
 
 		velocity_ = { 0.0f,0.0f,7.0f };
 
-		
+
 	}
 
 	// 目標の方向に回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 	worldTransformArea_.rotate.y = worldTransformBase_.rotate.y;
-	
+
 	if (!isAttack_) {
 		if (time_ > 40) {
 			areaPos_.z = 1.0f;
@@ -430,14 +432,14 @@ void Enemy::DashAttackUpdata() {
 			areaPos_ = Math::TransformNormal(areaPos_, rotateMatrix);
 			worldTransformArea_.translate = { worldTransformBase_.translate.x + areaPos_.x,0.1f,worldTransformBase_.translate.z + areaPos_.z };
 		}
-	
+
 	}
-	
+
 	// 追従対象からロックオン対象へのベクトル
 	if (isAttack_) {
 
 		worldTransformBase_.translate = worldTransformBase_.translate + velocity_;
-		
+
 	}
 
 	if (time_ <= 0) {
@@ -453,7 +455,7 @@ void Enemy::DashAttackUpdata() {
 //投擲攻撃
 void Enemy::ThrowingAttackInitialize() {
 	worldTransformRock_.translate = worldTransformBase_.translate;
-	worldTransformRock_.translate.y = 15.0f;
+	worldTransformRock_.translate.y = 18.0f;
 	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 	shakeTimer_ = 60.0f;
 	isAttack_ = false;
@@ -485,6 +487,7 @@ void Enemy::ThrowingAttackUpdata() {
 
 		if (num_ == 1) {
 			sub = playerPos_ - GetWorldPosition();
+			
 			// y軸周りの回転
 			if (sub.z != 0.0) {
 				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
@@ -540,6 +543,7 @@ void Enemy::ThrowingAttackUpdata() {
 		}
 		else if (num_ == 4) {
 			sub = tankPos_ - GetWorldPosition();
+			
 			// y軸周りの回転
 			if (sub.z != 0.0) {
 				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
@@ -561,7 +565,7 @@ void Enemy::ThrowingAttackUpdata() {
 		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
 
-		if (worldTransformRock_.scale.x < 2.0f) {
+		if (worldTransformRock_.scale.x < 3.0f) {
 
 			randX = RandomGenerator::GetRandomFloat(-0.1f, 0.1f);
 			randZ = RandomGenerator::GetRandomFloat(-0.1f, 0.1f);
@@ -574,7 +578,7 @@ void Enemy::ThrowingAttackUpdata() {
 		}
 		else {
 			--shakeTimer_;
-			worldTransformRock_.scale = { 2.0f, 2.0f, 2.0f };
+			worldTransformRock_.scale = { 3.0f, 3.0f, 3.0f };
 			if (shakeTimer_ <= 0) {
 				isAttack_ = true;
 				worldTransformRock_.rotate = { 0.0f, 0.0f, 0.0f };
@@ -586,44 +590,38 @@ void Enemy::ThrowingAttackUpdata() {
 	if (isAttack_) {
 
 		// 回転
-		worldTransformBase_.rotate.y =
-			Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
 		if (num_ == 1) {
 			sub = playerPos_ - worldTransformRock_.GetWorldPos();
-			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, playerPos_, 0.1f);
+			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, playerPos_, 0.2f);
 		}
 		else if (num_ == 2) {
 			sub = healerPos_ - worldTransformRock_.GetWorldPos();
-			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, healerPos_, 0.1f);
+			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, healerPos_, 0.2f);
 		}
 		else if (num_ == 3) {
 			sub = renjuPos_ - worldTransformRock_.GetWorldPos();
-			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, renjuPos_, 0.1f);
-
+			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, renjuPos_, 0.2f);
 		}
 		else if (num_ == 4) {
 			sub = tankPos_ - worldTransformRock_.GetWorldPos();
-			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, tankPos_, 0.1f);
-
+			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, tankPos_, 0.2f);
 		}
 	}
 
-	if (worldTransformRock_.translate.y <= 0.5f && isAttack_) {
-
+	if (worldTransformRock_.translate.y <= 0.6f && isAttack_) {
 		worldTransformBody_.rotate.x = 0.0f;
 		worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 		behaviorRequest_ = Behavior::kRoot;
-
-
 	}
 
 }
 
 
 void Enemy::InitializeImpact() {
-	
-	
+
+
 	for (int i = 0; i < 15; ++i) {
 		if (i == 0) {
 			worldTransformColliderImpact_[i].rotate = { 0.0f,0.2f,0.0f };
@@ -635,10 +633,10 @@ void Enemy::InitializeImpact() {
 		worldTransformColliderImpact_[i].scale.x = worldTransformImpact_.scale.x / 100.0f;
 		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / 100.0f;
 	}
-	
-	
+
+
 }
-void Enemy::UpdataImpact(){
+void Enemy::UpdataImpact() {
 	worldTransformColliderImpact_[0].translate += {0.12f, 0.0f, 0.6f};
 	worldTransformColliderImpact_[1].translate += {0.35f, 0.0f, 0.5f};
 	worldTransformColliderImpact_[2].translate += {0.53f, 0.0f, 0.31f};
@@ -659,7 +657,7 @@ void Enemy::UpdataImpact(){
 		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / 100.0f;
 	}
 
-	
+
 };
 
 void Enemy::GroundAttackInitialize() {
@@ -671,7 +669,7 @@ void Enemy::GroundAttackInitialize() {
 	InitializeImpact();
 };
 void Enemy::GroundAttackUpdata() {
-	if(animation_->GetAnimationTimer() >= 1.6f){
+	if (animation_->GetAnimationTimer() >= 1.6f) {
 		isAttack_ = true;
 		worldTransformImpact_.scale += Vector3(2.0f, 0.0f, 2.0f);
 		UpdataImpact();
@@ -679,12 +677,11 @@ void Enemy::GroundAttackUpdata() {
 			worldTransformImpact_.scale = { 1.0f,1.0f,1.0f };
 			InitializeImpact();
 			behaviorRequest_ = Behavior::kRoot;
-			
+
 		}
 	}
-	
-}
 
+}
 
 void Enemy::OnCollision(Collider* collider) {
 
@@ -696,7 +693,7 @@ void Enemy::OnCollision(Collider* collider) {
 				 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
 				 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
 				 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
-		    },
+			},
 			.size{collider->GetOBB().size}
 		};
 		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
@@ -705,8 +702,6 @@ void Enemy::OnCollision(Collider* collider) {
 	worldTransformBase_.UpdateMatrix();
 
 }
-
-
 
 void Enemy::DeadInitilize() {
 

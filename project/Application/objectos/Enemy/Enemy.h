@@ -144,7 +144,6 @@ private: // メンバ変数
 	Vector3 areaPos_;
 	bool areaDraw_;
 
-
 	Vector3 playerPos_ = {};
 	Vector3 healerPos_ = {};
 	Vector3 renjuPos_ = {};
@@ -157,21 +156,16 @@ private: // メンバ変数
 	bool isAttack_ = false;
 	bool behaviorAttack_ = false;
 
-
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 	
-
 	Behavior behavior_ = Behavior::kRoot;
 	// 次の振る舞いリクエスト
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
-	
-
 	BehaviorAttack attack_ = BehaviorAttack::kNomal;
 	// 次の振る舞いリクエスト
 	std::optional<BehaviorAttack> attackRequest_ = std::nullopt;
-
 
 	// 速度
 	Vector3 velocity_ = {};

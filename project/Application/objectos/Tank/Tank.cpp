@@ -62,7 +62,7 @@ void Tank::Update() {
 
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
-	//hitCount_ = 3;
+	hitCount_ = 3;
 	if (hitCount_ <= 0) {
 		state_ = CharacterState::Dead;
 
@@ -95,7 +95,6 @@ void Tank::Update() {
 	ImGui::SliderFloat3("enemypos", &enemy_->GetWorldTransformArea().translate.x, -10.0f, 10.0f);
 	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
 	ImGui::Text("%d", fireTimer_);
-	
 	ImGui::End();
 };
 
