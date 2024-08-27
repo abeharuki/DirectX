@@ -134,6 +134,7 @@ private: // メンバ変数
 	WorldTransform worldTransformRock_;
 	WorldTransform worldTransformImpact_;
 	WorldTransform worldTransformArea_;
+	WorldTransform worldTransformCircleArea_;
 	WorldTransform worldTransformColliderImpact_[15];
 	std::unique_ptr<ColliderManager> colliderManager_[15] = {};
 	std::unique_ptr<Animations>animation_;
@@ -141,6 +142,7 @@ private: // メンバ変数
 
 	std::unique_ptr<Model> impactModel_;
 	std::unique_ptr<Model> areaModel_;
+	std::unique_ptr<Model> circleAreaModel_;
 	Vector3 areaPos_;
 	bool areaDraw_;
 

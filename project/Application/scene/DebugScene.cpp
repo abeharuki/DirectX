@@ -55,7 +55,7 @@ void DebugScene::Initialize() {
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateModelFromObj("resources/particle/plane.obj","resources/Enemy/red_.png"));
+	model_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj","resources/Enemy/red_.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();

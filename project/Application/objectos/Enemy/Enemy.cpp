@@ -9,7 +9,9 @@ void Enemy::Initialize() {
 	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
 	impactModel_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj", "resources/white.png"));
 	areaModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/red_.png"));
+	circleAreaModel_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj", "resources/Enemy/red_.png"));
 	areaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
+	//circleAreaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	animationNumber_ = nomal;
 	// 初期化
 	worldTransformBase_.Initialize();
@@ -24,6 +26,8 @@ void Enemy::Initialize() {
 	worldTransformArea_.scale = { 4.0f,20.0f,1.0f };
 	worldTransformArea_.rotate = { -1.57f,0.0f,0.0f };
 	worldTransformArea_.translate.y = 0.1f;
+	worldTransformCircleArea_.Initialize();
+	worldTransformCircleArea_.scale = { 3.0f,3.0f,3.0f };
 	worldTransformImpact_.Initialize();
 	for (int i = 0; i < 15; ++i) {
 		worldTransformColliderImpact_[i].Initialize();
@@ -107,6 +111,7 @@ void Enemy::Update() {
 	worldTransformRock_.UpdateMatrix();
 	worldTransformImpact_.UpdateMatrix();
 	worldTransformArea_.UpdateMatrix();
+	worldTransformCircleArea_.UpdateMatrix();
 	for (int i = 0; i < 15; ++i) {
 		worldTransformColliderImpact_[i].UpdateMatrix();
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
@@ -138,9 +143,14 @@ void Enemy::Draw(const ViewProjection& camera) {
 	}
 
 	if (areaDraw_) {
-		areaModel_->Draw(worldTransformArea_, camera, true);
+		if (attack_ == BehaviorAttack::kDash) {
+			areaModel_->Draw(worldTransformArea_, camera, true);
+		}
+		if (attack_ == BehaviorAttack::kThrowing) {
+			
+		}
 	}
-
+	circleAreaModel_->Draw(worldTransformCircleArea_, camera, true);
 	for (int i = 0; i < 15; ++i) {
 		//colliderManager_[i]->Draw(camera);
 	}
@@ -487,7 +497,7 @@ void Enemy::ThrowingAttackUpdata() {
 
 		if (num_ == 1) {
 			sub = playerPos_ - GetWorldPosition();
-			
+			worldTransformCircleArea_.translate = { playerPos_.x,0.1f,playerPos_.z };
 			// y軸周りの回転
 			if (sub.z != 0.0) {
 				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
@@ -505,7 +515,8 @@ void Enemy::ThrowingAttackUpdata() {
 
 		}
 		else if (num_ == 2) {
-			sub = healerPos_ - GetWorldPosition();;
+			sub = healerPos_ - GetWorldPosition();
+			worldTransformCircleArea_.translate = { healerPos_ .x,0.1f, healerPos_.z };
 			// y軸周りの回転
 			if (sub.z != 0.0) {
 				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
@@ -524,6 +535,7 @@ void Enemy::ThrowingAttackUpdata() {
 		}
 		else if (num_ == 3) {
 			sub = renjuPos_ - GetWorldPosition();
+			worldTransformCircleArea_.translate = { renjuPos_.x,0.1f,renjuPos_.z };
 			// y軸周りの回転
 			if (sub.z != 0.0) {
 				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
@@ -543,7 +555,7 @@ void Enemy::ThrowingAttackUpdata() {
 		}
 		else if (num_ == 4) {
 			sub = tankPos_ - GetWorldPosition();
-			
+			worldTransformCircleArea_.translate = { tankPos_.x,0.1f,tankPos_.z };
 			// y軸周りの回転
 			if (sub.z != 0.0) {
 				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
@@ -579,6 +591,7 @@ void Enemy::ThrowingAttackUpdata() {
 		else {
 			--shakeTimer_;
 			worldTransformRock_.scale = { 3.0f, 3.0f, 3.0f };
+			areaDraw_ = true;
 			if (shakeTimer_ <= 0) {
 				isAttack_ = true;
 				worldTransformRock_.rotate = { 0.0f, 0.0f, 0.0f };
@@ -613,6 +626,7 @@ void Enemy::ThrowingAttackUpdata() {
 	if (worldTransformRock_.translate.y <= 0.6f && isAttack_) {
 		worldTransformBody_.rotate.x = 0.0f;
 		worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
+		areaDraw_ = false;
 		behaviorRequest_ = Behavior::kRoot;
 	}
 
