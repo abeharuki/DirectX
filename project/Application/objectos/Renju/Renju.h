@@ -94,7 +94,7 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
-	int GetHitCount() { return hitCount_; }
+	int GetHp() { return hp_; }
 
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
@@ -152,7 +152,7 @@ private: // メンバ変数
 	uint32_t nockTime_;
 	bool nockBack_;
 	//体力
-	int hitCount_ = 3;
+	float hp_ = 100.0f;
 	//復活時間
 	int revivalCount_ = 0;
 

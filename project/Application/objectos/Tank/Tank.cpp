@@ -27,7 +27,7 @@ void Tank::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 
-	hitCount_ = 3;
+	
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
@@ -62,8 +62,9 @@ void Tank::Update() {
 
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
-	hitCount_ = 3;
-	if (hitCount_ <= 0) {
+	
+	if (hp_ <= 0) {
+		hp_ = 0;
 		state_ = CharacterState::Dead;
 
 	}
@@ -95,6 +96,7 @@ void Tank::Update() {
 	ImGui::SliderFloat3("enemypos", &enemy_->GetWorldTransformArea().translate.x, -10.0f, 10.0f);
 	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
 	ImGui::Text("%d", fireTimer_);
+	ImGui::Text("%f", hp_);
 	ImGui::End();
 };
 
@@ -208,7 +210,7 @@ void Tank::knockUpdate() {
 	//worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
 		nockBack_ = false;
-		if (hitCount_ <= 0) {
+		if (hp_ <= 0) {
 			state_ = CharacterState::Dead;
 		}
 		else {
@@ -351,7 +353,7 @@ void Tank::DeadUpdate() {
 	}
 
 	if (revivalCount_ >= 60) {
-		hitCount_ = 1;
+		hp_ = 21;
 		state_ = CharacterState::Moveing;
 		isDead_ = false;
 	}
@@ -542,14 +544,14 @@ void Tank::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
 	//velocity_ = { 0.0f, 0.0f, -kSpeed };
 	//velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
-	if (hitCount_ > 0) {
+	if (hp_ > 0) {
 		//behaviorRequest_ = Behavior::knock;
 	}
 	
 
 	isHit_ = true;
 	if (isHit_ != preHit_) {
-		--hitCount_;
+		hp_ -= 10.0f;
 
 	}
 
@@ -562,13 +564,18 @@ void Tank::OnCollision(Collider* collider) {
 				const float kSpeed = 3.0f;
 				//velocity_ = { 0.0f, 0.0f, -kSpeed };
 				//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-				if (hitCount_ > 0) {
+				if (hp_ > 0) {
 					//behaviorRequest_ = Behavior::knock;
 				}
 				isHit_ = true;
 
 				if (isHit_ != preHit_) {
-					--hitCount_;
+					if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+						hp_ -= 10.0f;
+					}
+					else {
+						hp_ -= 5.0f;
+					}
 
 				}
 
@@ -595,14 +602,13 @@ void Tank::OnCollision(Collider* collider) {
 			const float kSpeed = 3.0f;
 			//velocity_ = { 0.0f, 0.0f, -kSpeed };
 			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			if (hitCount_ > 0) {
+			if (hp_ > 0) {
 				//behaviorRequest_ = Behavior::knock;
 			}
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				--hitCount_;
-
+				hp_ -= 20.0f;
 			}
 
 		}

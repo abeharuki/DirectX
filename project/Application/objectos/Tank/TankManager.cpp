@@ -15,15 +15,37 @@ void TankManager::Initialize() {
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 	isParticle_ = false;
-	for (int i = 0; i < 3; i++) {
-		nHpModel_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Player/life0.png"));
-		HpModel_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Player/life1.png"));
-	}
+	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
+	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
+	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
+	spriteMPG_.reset(Sprite::Create("resources/HPG.png"));
+	sprite2P_.reset(Sprite::Create("resources/2P.png"));
+	spriteH_.reset(Sprite::Create("resources/H.png"));
+	spriteM_.reset(Sprite::Create("resources/M.png"));
+	spriteName_.reset(Sprite::Create("resources/tank.png"));
 
 	tank_ = std::make_unique<Tank>();
 	tank_->Initialize();
 
+	spriteHP_->SetPosition(Vector2{ 1106.0f,475.0f });
+	spriteHPG_->SetPosition(Vector2{ 1106.0f,475.0f });
+	spriteMP_->SetPosition(Vector2{ 1106.0f,500.0f });
+	spriteMPG_->SetPosition(Vector2{ 1106.0f,500.0f });
+	sprite2P_->SetPosition(Vector2{ 995.0f,443.0f });
+	spriteH_->SetPosition(Vector2{ 1097.0f,453.0f });
+	spriteM_->SetPosition(Vector2{ 1097.0f,478.0f });
+	spriteName_->SetPosition(Vector2{ 995.0f,433.0f });
+
+	spriteHPG_->SetSize(Vector2{ 100.0f,10.0f });
+	spriteMPG_->SetSize(Vector2{ 100.0f,10.0f });
+	sprite2P_->SetSize(Vector2{ 93.0f,85.0f });
+	spriteH_->SetSize(Vector2{ 35.0f,35.0f });
+	spriteM_->SetSize(Vector2{ 35.0f,35.0f });
+	spriteName_->SetSize(Vector2{ 106.0f,50.0f });
 	
+	spriteHpSize_ = { 100.0f,10.0f };
+	spriteMpSize_ = { 100.0f,10.0f };
+
 }
 
 void TankManager::Update() {
@@ -47,40 +69,32 @@ void TankManager::Update() {
 		particle_->StopParticle();
 	}
 	
-	
-
 	tank_->Update();
 	tank_->followPlayer(playerPos_);
 	
+	spriteHpSize_.x = tank_->GetHp();
+
+	spriteHP_->SetSize(spriteHpSize_);
+	spriteMP_->SetSize(spriteMpSize_);
 };
 
 void TankManager::Draw(const ViewProjection& camera) {
 	tank_->Draw(camera);
 	particle_->Draw(camera);
+}
+void TankManager::DrawUI(){
+	spriteHPG_->Draw();
+	spriteHP_->Draw();
+	spriteMPG_->Draw();
+	spriteMP_->Draw();
+	sprite2P_->Draw();
+	spriteH_->Draw();
+	spriteM_->Draw();
+	spriteName_->Draw();
 };
 
 void TankManager::RenderDirect(const ViewProjection& camera) {
-	if (tank_->GetHitCount() >= 3) {
-		HpModel_[0]->Draw(tank_->GetWorldTransfromHp(0), camera, false);
-
-	}
-	else {
-		nHpModel_[0]->Draw(tank_->GetWorldTransfromHp(0), camera, false);
-	}
-	if (tank_->GetHitCount() >= 2) {
-		HpModel_[1]->Draw(tank_->GetWorldTransfromHp(1), camera, false);
-
-	}
-	else {
-		nHpModel_[1]->Draw(tank_->GetWorldTransfromHp(1), camera, false);
-	}
-	if (tank_->GetHitCount() >= 1) {
-		HpModel_[2]->Draw(tank_->GetWorldTransfromHp(2), camera, false);
-
-	}
-	else {
-		nHpModel_[2]->Draw(tank_->GetWorldTransfromHp(2), camera, false);
-	}
+	
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

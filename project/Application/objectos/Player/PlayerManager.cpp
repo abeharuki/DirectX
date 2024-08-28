@@ -6,20 +6,38 @@ void PlayerManager::Initialize() {
 	
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
-
-
-	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 	HammerModel_.reset(Model::CreateModelFromObj("resources/katana/katana.obj", "resources/katana/kata.png"));
 
 	spriteRevival_.reset(Sprite::Create("resources/enemy/HP.png"));
 	spriteRevivalG_.reset(Sprite::Create("resources/HPG.png"));
 
-	for (int i = 0; i < 6; i++) {
-		spriteHP_[i].reset(Sprite::Create("resources/Player/life1.png"));
-		spriteHPG_[i].reset(Sprite::Create("resources/Player/life0.png"));
-		spriteHP_[i]->SetAnchorPoint({ 0.5f,0.5f });
-		spriteHPG_[i]->SetAnchorPoint({ 0.5f,0.5f });
-	}
+	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
+	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
+	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
+	spriteMPG_.reset(Sprite::Create("resources/HPG.png"));
+	sprite1P_.reset(Sprite::Create("resources/1P.png"));
+	spriteH_.reset(Sprite::Create("resources/H.png"));
+	spriteM_.reset(Sprite::Create("resources/M.png"));
+	spriteName_.reset(Sprite::Create("resources/player.png"));
+
+	spriteHP_->SetPosition(Vector2{1106.0f,405.0f});
+	spriteHPG_->SetPosition(Vector2{ 1106.0f,405.0f });
+	spriteMP_->SetPosition(Vector2{ 1106.0f,430.0f });
+	spriteMPG_->SetPosition(Vector2{ 1106.0f,430.0f });
+	sprite1P_->SetPosition(Vector2{ 995.0f,373.0f });
+	spriteH_->SetPosition(Vector2{ 1097.0f,383.0f });
+	spriteM_->SetPosition(Vector2{ 1097.0f,408.0f });
+	spriteName_->SetPosition(Vector2{ 995.0f,363.0f});
+
+	spriteHPG_->SetSize(Vector2{ 100.0f,10.0f });
+	spriteMPG_->SetSize(Vector2{ 100.0f,10.0f });
+	sprite1P_->SetSize(Vector2{ 93.0f,85.0f });
+	spriteH_->SetSize(Vector2{ 35.0f,35.0f });
+	spriteM_->SetSize(Vector2{ 35.0f,35.0f });
+	spriteName_->SetSize(Vector2{ 106.0f,50.0f });
+
+	spriteHpSize_ = { 100.0f,10.0f };
+	spriteMpSize_ = { 100.0f,10.0f };
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
@@ -41,15 +59,14 @@ void PlayerManager::Initialize() {
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 
 	isParticle_ = false;
-	HpTransform_.scale = { 70.0f, 70.0f, 70.0f };
-	HpTransform_.translate = { 690.0f, 600.0f, 1.0f };
+	
 
 	revivalTransform_.scale = { 137.0f,22.0f,70.0f };
 	revivalTransform_.translate = { 571.0f,650.0f,1.0f };
 	spriteRevivalG_->SetSize(Vector2(120.0f, revivalTransform_.scale.y));
 	spriteRevivalG_->SetPosition(Vector2(revivalTransform_.translate.x, revivalTransform_.translate.y));
 	spriteRevival_->SetPosition(Vector2(revivalTransform_.translate.x, revivalTransform_.translate.y));
-	hitCount_ = 6;
+	
 }
 
 void PlayerManager::Update() {
@@ -63,26 +80,8 @@ void PlayerManager::Update() {
 
 	OnCollision();
 
-	for (int i = 0; i < 6; i++) {
-		spriteHP_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
-		spriteHPG_[i]->SetSize({ HpTransform_.scale.x, HpTransform_.scale.y });
-	}
-	for (int i = 0; i < 6; i++) {
-		spriteHP_[i]->SetPosition({ HpTransform_.translate.x - 20 * i, HpTransform_.translate.y });
-		spriteHPG_[i]->SetPosition({ HpTransform_.translate.x - 20 * i, HpTransform_.translate.y });
-	}
 
-	for (int i = 6; i > -1; i--) {
-		if (i < hitCount_) {
-			break;
-		}
-		spriteHP_[i]->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f });
-
-	}
-
-	if (hitCount_ <= 0) {
-		//isDead_ = true;
-	}
+	
 	if (Input::PushKey(DIK_P)) {
 		isDead_ = true;
 	}
@@ -103,7 +102,7 @@ void PlayerManager::Update() {
 
 	player_->Update();
 
-	hitCount_ = player_->HitCount();
+	spriteHpSize_.x = player_->GetHp();
 	
 
 	Revival();
@@ -112,34 +111,37 @@ void PlayerManager::Update() {
 	}
 	spriteRevival_->SetSize(Vector2(revivalTransform_.scale.x, revivalTransform_.scale.y));
 
+	
+	spriteHP_->SetSize(spriteHpSize_);
+	spriteMP_->SetSize(spriteMpSize_);
+
 	ImGui::Begin("Sprite");
-	ImGui::DragFloat3("size", &revivalTransform_.scale.x, 1.0f);
-	ImGui::DragFloat3("pos", &revivalTransform_.translate.x, 1.0f);
+	ImGui::DragFloat2("Hpsize", &spriteHpSize_.x, 1.0f);
+	ImGui::DragFloat2("Mpsize", &spriteMpSize_.x, 1.0f);
 	ImGui::End();
 
 };
 
 void PlayerManager::Draw(const ViewProjection& camera) {
-	//Model_->Draw(player_->GetWorldTransformHead(), camera, false);
-	player_->Draw(camera);
 	
+	player_->Draw(camera);
 	particle_->Draw(camera);
 	if (player_->IsAttack()) {
 		HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);
-
 	}
-
 };
 
 void PlayerManager::DrawUI() {
-	Transform uv;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f, 0.0f };
-	for (int i = 0; i < 6; i++) {
-		spriteHPG_[i]->Draw();
-		spriteHP_[i]->Draw();
-	}
+	
+	
+	spriteHPG_->Draw();
+	spriteHP_->Draw();
+	spriteMPG_->Draw();
+	spriteMP_->Draw();
+	sprite1P_->Draw();
+	spriteH_->Draw();
+	spriteM_->Draw();
+	spriteName_->Draw();
 
 	if (player_->GetIsDead()) {
 		spriteRevivalG_->Draw();
@@ -171,9 +173,7 @@ void PlayerManager::OnTCollision() {
 
 }
 void PlayerManager::OnCollision() {
-	if (player_->IsHit()) {
-		//--hitCount_;
-	}
+	
 };
 
 void PlayerManager::SetParticlePos(Vector3 pos) {

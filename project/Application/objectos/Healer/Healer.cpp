@@ -39,7 +39,7 @@ void Healer::Initialize() {
 	if (nockBack_) {
 		animation_->Update(0);
 	}
-	hitCount_ = 0;//3
+	
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
@@ -73,7 +73,8 @@ void Healer::Update() {
 	isHitPlayer_ = false;
 
 	//体力がなくなあったら強制的に死亡に状態遷移
-	if (hitCount_ == 0) {
+	if (hp_ <= 0) {
+		hp_ = 0;
 		state_ = CharacterState::Dead;
 	}
 
@@ -207,7 +208,7 @@ void Healer::knockUpdate() {
 		nockBack_ = false;
 		animation_->SetAnimationTimer(0, 8.0f);
 		animation_->SetpreAnimationTimer(0);
-		if (hitCount_ == 0) {
+		if (hp_ <= 0) {
 			state_ = CharacterState::Dead;
 		}
 		else {
@@ -336,7 +337,7 @@ void Healer::DeadUpdate(){
 	}
 
 	if (revivalCount_ >= 60) {
-		hitCount_ = 1;
+		hp_ = 21;
 		state_ = CharacterState::Moveing;
 		isDead_ = false;
 	}
@@ -540,13 +541,13 @@ void Healer::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
 	//velocity_ = { 0.0f, 0.0f, -kSpeed };
 	//velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
-	if (hitCount_ > 0) {
+	if (hp_ > 0) {
 		//behaviorRequest_ = Behavior::knock;
 	}
 	isHit_ = true;
 
 	if (isHit_ != preHit_) {
-		--hitCount_;
+		hp_ -= 10;
 
 	}
 
@@ -566,13 +567,18 @@ void Healer::OnCollision(Collider* collider) {
 				const float kSpeed = 3.0f;
 				//velocity_ = { 0.0f, 0.0f, -kSpeed };
 				//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-				if (hitCount_ > 0) {
+				if (hp_ > 0) {
 					//behaviorRequest_ = Behavior::knock;
 				}
 				isHit_ = true;
 
 				if (isHit_ != preHit_) {
-					--hitCount_;
+					if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+						hp_ -= 10.0f;
+					}
+					else {
+						hp_ -= 5.0f;
+					}
 
 				}
 
@@ -598,13 +604,13 @@ void Healer::OnCollision(Collider* collider) {
 			const float kSpeed = 3.0f;
 			//velocity_ = { 0.0f, 0.0f, -kSpeed };
 			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			if (hitCount_ > 0) {
+			if (hp_ > 0) {
 				//behaviorRequest_ = Behavior::knock;
 			}
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				--hitCount_;
+				hp_ -= 20;
 
 			}
 

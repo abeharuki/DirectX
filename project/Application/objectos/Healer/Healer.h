@@ -97,7 +97,7 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
 	bool IsAttack() { return workAttack_.isAttack; }
-	int GetHitCount() { return hitCount_; }
+	int GetHp() { return hp_; }
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
@@ -166,7 +166,7 @@ private: // メンバ変数
 	bool nockBack_;
 
 	//体力
-	int hitCount_ = 3;
+	float hp_ = 100.0f;
 	//復活時間
 	int revivalCount_ = 0;
 

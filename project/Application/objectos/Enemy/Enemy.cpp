@@ -147,10 +147,10 @@ void Enemy::Draw(const ViewProjection& camera) {
 			areaModel_->Draw(worldTransformArea_, camera, true);
 		}
 		if (attack_ == BehaviorAttack::kThrowing) {
-			
+			circleAreaModel_->Draw(worldTransformCircleArea_, camera, true);
 		}
 	}
-	circleAreaModel_->Draw(worldTransformCircleArea_, camera, true);
+	
 	for (int i = 0; i < 15; ++i) {
 		//colliderManager_[i]->Draw(camera);
 	}

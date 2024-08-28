@@ -28,7 +28,7 @@ void Renju::Initialize() {
 		worldTransformHp_[i].scale = { 0.5f,0.5f,0.5f };
 	}
 
-	hitCount_ = 0;//3
+	
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -66,7 +66,7 @@ void Renju::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
-	if (hitCount_ == 0) {
+	if (hp_ <= 0) {
 		state_ = CharacterState::Dead;
 	}
 
@@ -220,7 +220,7 @@ void Renju::knockUpdate() {
 	//worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
 		nockBack_ = false;
-		if (hitCount_ == 0) {
+		if (hp_ == 0) {
 			state_ = CharacterState::Dead;
 		}
 		else {
@@ -341,7 +341,7 @@ void Renju::DeadUpdate() {
 	}
 
 	if (revivalCount_ >= 60) {
-		hitCount_ = 1;
+		hp_ = 21;
 		state_ = CharacterState::Moveing;
 		isDead_ = false;
 	}
@@ -516,13 +516,13 @@ void Renju::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
 	//velocity_ = { 0.0f, 0.0f, -kSpeed };
 	//velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
-	if (hitCount_ > 0) {
+	if (hp_ > 0) {
 		//behaviorRequest_ = Behavior::knock;
 	}
 	isHit_ = true;
 
 	if (isHit_ != preHit_) {
-		--hitCount_;
+		hp_ -= 10;
 
 	}
 
@@ -536,14 +536,19 @@ void Renju::OnCollision(Collider* collider) {
 				const float kSpeed = 3.0f;
 				//velocity_ = { 0.0f, 0.0f, -kSpeed };
 				//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-				if (hitCount_ > 0) {
+				if (hp_ > 0) {
 					//behaviorRequest_ = Behavior::knock;
 				}
 
 				isHit_ = true;
 
 				if (isHit_ != preHit_) {
-					--hitCount_;
+					if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+						hp_ -= 10.0f;
+					}
+					else {
+						hp_ -= 5.0f;
+					}
 
 				}
 
@@ -570,13 +575,13 @@ void Renju::OnCollision(Collider* collider) {
 			const float kSpeed = 3.0f;
 			//velocity_ = { 0.0f, 0.0f, -kSpeed };
 			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			if (hitCount_ > 0) {
+			if (hp_ > 0) {
 				//behaviorRequest_ = Behavior::knock;
 			}
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				--hitCount_;
+				hp_ -= 20;
 
 			}
 

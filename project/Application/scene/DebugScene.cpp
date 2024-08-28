@@ -52,6 +52,8 @@ void DebugScene::Initialize() {
 	worldTransformModel_.Initialize();
 	worldTransformModel_.scale = { 6.0f,18.0f,0.0f };
 	worldTransformModel_.rotate = { -1.57f,0.0f,0.0f };
+	sprite_.reset(Sprite::Create("resources/H.png"));
+	
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
@@ -325,6 +327,8 @@ void DebugScene::Draw() {
 	skybox_->Draw(worldTransformSkybox_,viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
+
+	sprite_->Draw();
 }
 
 void DebugScene::RenderDirect() {

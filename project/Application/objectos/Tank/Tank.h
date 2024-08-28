@@ -93,7 +93,7 @@ public: // メンバ関数
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
-	int GetHitCount() { return hitCount_; }
+	float GetHp() { return hp_; }
 
 	bool GetAttack() { return attack_; }
 
@@ -149,7 +149,7 @@ private: // メンバ変数
 	int coolTime = 60;
 
 	//体力
-	int hitCount_ = 3;
+	float hp_ = 100.0f;
 	//復活時間
 	int revivalCount_;
 

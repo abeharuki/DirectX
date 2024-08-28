@@ -75,13 +75,20 @@ private:
 	WorldTransform worldTransformHammer_;
 	std::unique_ptr<Animations>animation_;
 
-	std::unique_ptr<Model> Model_;
+
 	std::unique_ptr<Model> HammerModel_;
 	std::unique_ptr<Player> player_;
 	std::unique_ptr<Model> bulletModel_;
 
-	std::unique_ptr<Sprite> spriteHP_[6];
-	std::unique_ptr<Sprite> spriteHPG_[6];
+	std::unique_ptr<Sprite> spriteHP_;
+	std::unique_ptr<Sprite> spriteHPG_;
+	std::unique_ptr<Sprite> spriteMP_;
+	std::unique_ptr<Sprite> spriteMPG_;
+	std::unique_ptr<Sprite> spriteH_;
+	std::unique_ptr<Sprite> spriteM_;
+	std::unique_ptr<Sprite> sprite1P_;
+	std::unique_ptr<Sprite> spriteName_;
+
 	std::unique_ptr<Sprite> spriteRevival_;
 	std::unique_ptr<Sprite> spriteRevivalG_;
 	
@@ -92,13 +99,11 @@ private:
 	EmitterSphere emitter_{};
 	bool isParticle_ = false;
 
-	Transform HpTransform_;
+	Vector2 spriteHpSize_;
+	Vector2 spriteMpSize_;
 
 	bool isDead_ = false;
 	int revivalCount_;
-
-
-	int hitCount_;
 
 	bool preHitH_;
 	bool isHitH_;

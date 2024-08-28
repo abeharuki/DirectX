@@ -24,7 +24,6 @@ void Player::Initialize() {
 	worldTransformCollision_.translate.y = 2.0f;
 	a = 0.0f;
 	isOver_ = false;
-	hitCount_ = 6;//6;
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
@@ -52,8 +51,6 @@ void Player::Update() {
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
-
-	hit_ = false;
 
 	preNoAttack_ = noAttack_;
 	noAttack_ = false;
@@ -124,7 +121,9 @@ void Player::Update() {
 		isOver_ = true;
 	}
 
-
+	if (hp_ <= 0) {
+		behaviorRequest_ = Behavior::kDead;
+	}
 
 	// 回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -144,7 +143,7 @@ void Player::Update() {
 	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
 	ImGui::Text("EnemyLength%f", length_);
 	ImGui::Text("%d", noAttack_);
-	ImGui::Text("%d", hitCount_);
+	ImGui::Text("%f", hp_);
 	ImGui::SliderFloat("Thres", &threshold_, 0.0f, 1.0f);
 	ImGui::Text("%d", root_);
 	ImGui::End();
@@ -369,7 +368,7 @@ void Player::DashUpdata() {
 
 // ノックバック
 void Player::knockInitialize() {
-	if (hitCount_ != 1) {
+	if (hp_ >= 1) {
 		PostEffect::GetInstance()->VignetteColor({ 0.1f, 0.0f, 0.0f });
 		PostEffect::GetInstance()->isVignetting(true);
 	}
@@ -378,14 +377,13 @@ void Player::knockInitialize() {
 	animation_->SetAnimationTimer(0, 8.0f);
 	animation_->SetpreAnimationTimer(0);
 	nockBack_ = true;
-	hitCount_--;
 };
 void Player::knockUpdata() {
 	worldTransformBase_.translate -= velocity_;
 	worldTransformBase_.translate.y = 0;
 	if (--nockTime_ <= 0) {
 		PostEffect::GetInstance()->isVignetting(false);
-		if (hitCount_ != 0) {
+		if (hp_ > 0) {
 			behaviorRequest_ = Behavior::kRoot;
 		}
 		else {
@@ -592,8 +590,7 @@ void Player::OnCollision(const WorldTransform& worldTransform) {
 
 	isHit_ = true;
 	if (isHit_ != preHit_) {
-		//hit_ = true;
-
+		hp_ -= 10;
 	}
 
 };
@@ -613,7 +610,7 @@ void Player::OnCollision(Collider* collider) {
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				//hit_ = true;
+				hp_ -= 10;
 
 			}
 
@@ -639,13 +636,13 @@ void Player::OnCollision(Collider* collider) {
 			const float kSpeed = 3.0f;
 			//velocity_ = { 0.0f, 0.0f, -kSpeed };
 			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			if (hitCount_ > 0) {
+			if (hp_ > 0) {
 				//behaviorRequest_ = Behavior::knock;
 			}
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				--hitCount_;
+				hp_ -= 20;
 
 			}
 

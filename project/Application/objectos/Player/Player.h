@@ -101,8 +101,7 @@ public: // メンバ関数
 	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }
 	bool IsOver() { return isOver_; }
-	bool IsHit() { return hit_; }
-	int HitCount() { return hitCount_; }
+	float GetHp() { return hp_; }
 	
 
 	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
@@ -206,8 +205,7 @@ private: // メンバ変数
 	float a;
 
 	//体力
-	bool hit_;
-	int hitCount_;
+	float hp_ = 100.0f;
 
 	bool preHit_;
 	bool isHit_;

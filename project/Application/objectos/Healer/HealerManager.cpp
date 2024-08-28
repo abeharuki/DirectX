@@ -5,16 +5,37 @@ void HealerManager::Initialize() {
 
 	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 
-	for (int i = 0; i < 3; i++) {
-		nHpModel_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Player/life0.png"));
-		HpModel_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Player/life1.png"));
-	}
+	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
+	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
+	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
+	spriteMPG_.reset(Sprite::Create("resources/HPG.png"));
+	sprite4P_.reset(Sprite::Create("resources/4P.png"));
+	spriteH_.reset(Sprite::Create("resources/H.png"));
+	spriteM_.reset(Sprite::Create("resources/M.png"));
+	spriteName_.reset(Sprite::Create("resources/healer.png"));
 	CaneModel_.reset(Model::CreateModelFromObj("resources/cane/cane.obj", "resources/cane/cane.png"));
 
 	healer_ = std::make_unique<Healer>();
 	healer_->Initialize();
 
-	
+	spriteHP_->SetPosition(Vector2{ 1106.0f,615.0f });
+	spriteHPG_->SetPosition(Vector2{ 1106.0f,615.0f });
+	spriteMP_->SetPosition(Vector2{ 1106.0f,640.0f });
+	spriteMPG_->SetPosition(Vector2{ 1106.0f,640.0f });
+	sprite4P_->SetPosition(Vector2{ 995.0f,583.0f });
+	spriteH_->SetPosition(Vector2{ 1097.0f,593.0f });
+	spriteM_->SetPosition(Vector2{ 1097.0f,618.0f });
+	spriteName_->SetPosition(Vector2{ 995.0f,573.0f });
+
+	spriteHPG_->SetSize(Vector2{ 100.0f,10.0f });
+	spriteMPG_->SetSize(Vector2{ 100.0f,10.0f });
+	sprite4P_->SetSize(Vector2{ 93.0f,85.0f });
+	spriteH_->SetSize(Vector2{ 35.0f,35.0f });
+	spriteM_->SetSize(Vector2{ 35.0f,35.0f });
+	spriteName_->SetSize(Vector2{ 106.0f,50.0f });
+	spriteHpSize_ = { 100.0f,10.0f };
+	spriteMpSize_ = { 100.0f,10.0f };
+
 	emitter_ = {
 		.translate{0,0,0},
 		.count{1},
@@ -54,6 +75,10 @@ void HealerManager::Update() {
 
 	healer_->Update();
 	healer_->followPlayer(playerPos_);
+
+	spriteHpSize_.x = healer_->GetHp();
+	spriteHP_->SetSize(spriteHpSize_);
+	spriteMP_->SetSize(spriteMpSize_);
 };
 
 void HealerManager::Draw(const ViewProjection& camera) {
@@ -64,27 +89,20 @@ void HealerManager::Draw(const ViewProjection& camera) {
 
 	}
 
+}
+void HealerManager::DrawUI(){
+	spriteHPG_->Draw();
+	spriteHP_->Draw();
+	spriteMPG_->Draw();
+	spriteMP_->Draw();
+	sprite4P_->Draw();
+	spriteH_->Draw();
+	spriteM_->Draw();
+	spriteName_->Draw();
 };
 
 void HealerManager::RenderDirect(const ViewProjection& camera) {
-	if (healer_->GetHitCount() >= 3) {
-		HpModel_[0]->Draw(healer_->GetWorldTransfromHp(0), camera, false);
-	}
-	else {
-		nHpModel_[0]->Draw(healer_->GetWorldTransfromHp(0), camera, false);
-	}
-	if (healer_->GetHitCount() >= 2) {
-		HpModel_[1]->Draw(healer_->GetWorldTransfromHp(1), camera, false);
-	}
-	else {
-		nHpModel_[1]->Draw(healer_->GetWorldTransfromHp(1), camera, false);
-	}
-	if (healer_->GetHitCount() >= 1) {
-		HpModel_[2]->Draw(healer_->GetWorldTransfromHp(2), camera, false);
-	}
-	else {
-		nHpModel_[2]->Draw(healer_->GetWorldTransfromHp(2), camera, false);
-	}
+	
 };
 
 void HealerManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }

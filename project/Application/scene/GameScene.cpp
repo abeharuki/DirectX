@@ -136,7 +136,7 @@ void GameScene::Update() {
 	}
 
 	//倒された時のディゾルブ
-	if (playerManager_->GetPlayer()->HitCount() == 0) {
+	if (playerManager_->GetPlayer()->GetHp() <= 0) {
 		healerManager_->GetHealer()->Dissolve();
 		renjuManager_->GetRenju()->Dissolve();
 		tankManager_->GetTank()->Dissolve();
@@ -204,6 +204,9 @@ void GameScene::Draw() {
 
 	enemyManager_->DrawUI();
 	playerManager_->DrawUI();
+	healerManager_->DrawUI();
+	renjuManager_->DrawUI();
+	tankManager_->DrawUI();
 
 	//コマンド
 	command_->DrawUI();
