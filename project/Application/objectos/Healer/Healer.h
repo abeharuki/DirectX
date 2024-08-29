@@ -97,7 +97,7 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
 	bool IsAttack() { return workAttack_.isAttack; }
-	int GetHp() { return hp_; }
+	float GetHp() { return hp_; }
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}

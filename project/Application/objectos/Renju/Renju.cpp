@@ -71,7 +71,7 @@ void Renju::Update() {
 	}
 
 	if (behaviorTree_) {
-		//behaviorTree_->Update();
+		behaviorTree_->Update();
 	}
 	
 	// デスフラグが立った弾を削除

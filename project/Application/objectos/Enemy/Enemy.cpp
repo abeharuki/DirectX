@@ -168,30 +168,30 @@ void Enemy::MoveInitialize() {
 };
 void Enemy::MoveUpdata() {
 	if (--time_ <= 0) {
-		//behaviorRequest_ = Behavior::kAttack;
+		behaviorRequest_ = Behavior::kAttack;
 	}
 
-	if (Input::PressKey(DIK_4)) {
-		behaviorRequest_ = Behavior::kAttack;
-		attackRequest_ = BehaviorAttack::kNomal;
-	}
-	if (Input::PressKey(DIK_5)) {
-		behaviorRequest_ = Behavior::kAttack;
-		attackRequest_ = BehaviorAttack::kDash;
-	}
-	if (Input::PressKey(DIK_6)) {
-		behaviorRequest_ = Behavior::kAttack;
-		attackRequest_ = BehaviorAttack::kThrowing;
-	}
-	if (Input::PressKey(DIK_7)) {
-		behaviorRequest_ = Behavior::kAttack;
-		attackRequest_ = BehaviorAttack::kGround;
-	}
+	//if (Input::PressKey(DIK_4)) {
+	//	behaviorRequest_ = Behavior::kAttack;
+	//	attackRequest_ = BehaviorAttack::kNomal;
+	//}
+	//if (Input::PressKey(DIK_5)) {
+	//	behaviorRequest_ = Behavior::kAttack;
+	//	attackRequest_ = BehaviorAttack::kDash;
+	//}
+	//if (Input::PressKey(DIK_6)) {
+	//	behaviorRequest_ = Behavior::kAttack;
+	//	attackRequest_ = BehaviorAttack::kThrowing;
+	//}
+	//if (Input::PressKey(DIK_7)) {
+	//	behaviorRequest_ = Behavior::kAttack;
+	//	attackRequest_ = BehaviorAttack::kGround;
+	//}
 };
 
 void Enemy::AttackInitialize() {
 
-	/*int num = RandomGenerator::GetRandomInt(2, 2);
+	int num = RandomGenerator::GetRandomInt(2, 2);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -203,7 +203,7 @@ void Enemy::AttackInitialize() {
 	}
 	else if (num == 4) {
 		attackRequest_ = BehaviorAttack::kGround;
-	}*/
+	}
 	behaviorAttack_ = true;
 }
 void Enemy::AttackUpdata() {

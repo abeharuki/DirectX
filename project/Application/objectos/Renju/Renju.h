@@ -94,7 +94,7 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
-	int GetHp() { return hp_; }
+	float GetHp() { return hp_; }
 
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;

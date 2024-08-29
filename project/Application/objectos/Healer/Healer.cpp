@@ -79,7 +79,7 @@ void Healer::Update() {
 	}
 
 	if (behaviorTree_) {
-		//behaviorTree_->Update();
+		behaviorTree_->Update();
 	}
 
 	Relationship();
