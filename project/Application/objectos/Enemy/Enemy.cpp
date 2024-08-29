@@ -191,7 +191,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 
-	int num = RandomGenerator::GetRandomInt(2, 2);
+	int num = RandomGenerator::GetRandomInt(1, 4);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
