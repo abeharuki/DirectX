@@ -8,6 +8,7 @@
 #include "ActionNodes/MoveActionNode.h"
 #include "ActionNodes/AttackActionNode.h"
 #include "ActionNodes/DeadActionNode.h"
+#include "ActionNodes/UniqueActionNode.h"
 
 template <typename CharacterType>
 class BehaviorTree {
@@ -39,21 +40,23 @@ void BehaviorTree<CharacterType>::Initialize() {
     auto* jumpActionNode = new JumpActionNode<CharacterType>(character_);
     auto* attackActionNode = new AttackActionNode<CharacterType>(character_);
     auto* deadActionNode = new DeadActionNode<CharacterType>(character_);
+    auto* uniqueActionNode = new UniqueActionNode<CharacterType>(character_);
 
     rootNode_ = new SelectorNode();
     rootNode_->AddChild(moveActionNode);
     rootNode_->AddChild(jumpActionNode);
     rootNode_->AddChild(attackActionNode);
     rootNode_->AddChild(deadActionNode);
+    rootNode_->AddChild(uniqueActionNode);
 
     // ノードコレクションにノードを追加
     nodes_.push_back(moveActionNode);
     nodes_.push_back(jumpActionNode);
     nodes_.push_back(attackActionNode);
     nodes_.push_back(deadActionNode);
+    nodes_.push_back(uniqueActionNode);
     nodes_.push_back(rootNode_);
 
-  
 }
 
 template <typename CharacterType>

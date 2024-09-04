@@ -4,6 +4,7 @@ enum class CharacterState {
     Attacking,
     Moveing,
     Jumping,
+    Unique,
     Dead
 };
 

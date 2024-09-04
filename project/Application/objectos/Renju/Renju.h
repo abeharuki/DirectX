@@ -49,6 +49,10 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdate();
 
+	//味方にバフをかけるか技を打つか
+	void UniqueIniitlaize();
+	void UniqueUpdate();
+
 	//死亡
 	void DeadInitialize();
 	void DeadUpdate();

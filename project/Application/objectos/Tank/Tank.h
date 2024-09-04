@@ -47,11 +47,13 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdate();
 
+	//ヘイト管理
+	void UniqueIniitlaize();
+	void UniqueUpdate();
+
 	//死亡
 	void DeadInitialize();
 	void DeadUpdate();
-
-	
 
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);

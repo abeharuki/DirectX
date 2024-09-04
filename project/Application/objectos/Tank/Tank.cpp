@@ -313,7 +313,16 @@ void Tank::AttackUpdate() {
 		searchTarget_ = false;
 		attack_ = false;
 	}
-};
+}
+
+
+void Tank::UniqueIniitlaize(){
+
+}
+void Tank::UniqueUpdate(){
+
+}
+
 
 void Tank::DeadInitialize() {
 	//復活時間

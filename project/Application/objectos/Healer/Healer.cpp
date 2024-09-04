@@ -166,6 +166,12 @@ void Healer::MoveUpdate() {
 		}
 
 	}
+
+	//味方の体力が60以下なら回復
+	if (false) {
+		state_ = CharacterState::Unique;
+	}
+
 };
 
 // ジャンプ
@@ -298,7 +304,14 @@ void Healer::AttackUpdate() {
 		followPlayer_ = true;
 		searchTarget_ = false;
 	}
-};
+}
+
+void Healer::UniqueIniitlaize(){
+
+}
+void Healer::UniqueUpdate(){
+
+}
 
 void Healer::DeadInitialize() {
 	//復活時間

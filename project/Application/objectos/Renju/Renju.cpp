@@ -303,7 +303,15 @@ void Renju::AttackUpdate() {
 		followPlayer_ = true;
 		searchTarget_ = false;
 	}
-};
+}
+void Renju::UniqueIniitlaize(){
+
+}
+
+void Renju::UniqueUpdate(){
+
+}
+
 
 void Renju::DeadInitialize() {
 	//復活時間

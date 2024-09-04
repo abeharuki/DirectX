@@ -48,6 +48,10 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdate();
 
+	//味方の回復
+	void UniqueIniitlaize();
+	void UniqueUpdate();
+
 	//死亡
 	void DeadInitialize();
 	void DeadUpdate();
