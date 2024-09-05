@@ -304,7 +304,7 @@ void Renju::AttackUpdate() {
 		searchTarget_ = false;
 	}
 }
-void Renju::UniqueIniitlaize(){
+void Renju::UniqueInitialize(){
 
 }
 

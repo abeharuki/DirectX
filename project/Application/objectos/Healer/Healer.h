@@ -49,7 +49,7 @@ public: // メンバ関数
 	void AttackUpdate();
 
 	//味方の回復
-	void UniqueIniitlaize();
+	void UniqueInitialize();
 	void UniqueUpdate();
 
 	//死亡

@@ -316,7 +316,7 @@ void Tank::AttackUpdate() {
 }
 
 
-void Tank::UniqueIniitlaize(){
+void Tank::UniqueInitialize(){
 
 }
 void Tank::UniqueUpdate(){

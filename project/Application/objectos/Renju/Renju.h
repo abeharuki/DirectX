@@ -50,7 +50,7 @@ public: // メンバ関数
 	void AttackUpdate();
 
 	//味方にバフをかけるか技を打つか
-	void UniqueIniitlaize();
+	void UniqueInitialize();
 	void UniqueUpdate();
 
 	//死亡

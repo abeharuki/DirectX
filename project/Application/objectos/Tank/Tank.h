@@ -48,7 +48,7 @@ public: // メンバ関数
 	void AttackUpdate();
 
 	//ヘイト管理
-	void UniqueIniitlaize();
+	void UniqueInitialize();
 	void UniqueUpdate();
 
 	//死亡

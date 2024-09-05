@@ -306,7 +306,7 @@ void Healer::AttackUpdate() {
 	}
 }
 
-void Healer::UniqueIniitlaize(){
+void Healer::UniqueInitialize(){
 
 }
 void Healer::UniqueUpdate(){
