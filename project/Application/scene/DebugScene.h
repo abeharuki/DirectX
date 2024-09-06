@@ -16,6 +16,7 @@
 #include <Enemy/EnemyManager.h>
 #include "CollisionManager/CollisionConfig.h"
 #include <Enemy/DebugEnemy.h>
+#include <Stage.h>
 
 
 class DebugScene: public IScene {
@@ -31,7 +32,7 @@ private:
 	// 光の数値
 	DirectionLight directionLight_{
 		{1.0f, 1.0f, 1.0f, 1.0f},
-		{0.0f, -2.0f, 0.0f},
+		{0.0f, -2.3f, -1.1f},
 		1.0f,
 		true,
 	};
@@ -48,6 +49,7 @@ private:
 	std::unique_ptr<ModelLoader> loader_;
 	ViewProjection viewProjection_;
 
+	std::unique_ptr<Stage> stage_;
 	std::unique_ptr<DebugPlayer> debugPlayer_;
 	std::unique_ptr<DebugEnemy> debugEnemy_;
 	std::unique_ptr<Skybox> skybox_;

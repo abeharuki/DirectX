@@ -69,6 +69,9 @@ void DebugScene::Initialize() {
 	debugEnemy_ = std::make_unique<DebugEnemy>();
 	debugEnemy_->Initialize();
 
+	stage_ = std::make_unique<Stage>();
+	stage_->Initialize();
+
 	emitter_ = {
 		.translate = {0,3,0},
 		.count{50},
@@ -99,7 +102,6 @@ void DebugScene::Initialize() {
 	dissolve_.edgeColor = { 1.0f,-1.0f,-1.0f };
 	bloom_.stepWidth = 0.001f;
 	bloom_.sigma = 0.005f;
-	directionLight_.direction.z = 2;
 	AnimationNum_ = 4;
 	a_ = 1.0f;
 }
@@ -109,7 +111,7 @@ void DebugScene::Update() {
 	animation_->Update(AnimationNum_);
 	animation_->SetFlameTimer(animaflame_);
 	model_->DirectionalLightDraw(directionLight_);
-	//model_->SetColor({ 1.0f,1.0f,1.0f,a_});
+	stage_->SetLight(directionLight_);
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {
@@ -117,6 +119,7 @@ void DebugScene::Update() {
 	}
 
 	loader_->Update();
+	stage_->Update();
 
 	debugPlayer_->Update();
 	debugEnemy_->SetDebugPlayer(debugPlayer_.get());
@@ -343,7 +346,7 @@ void DebugScene::Draw() {
 	debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
 
-	model_->Draw(worldTransformModel_, viewProjection_, true);
+	stage_->Draw(viewProjection_, true);
 }
 
 void DebugScene::RenderDirect() {
