@@ -11,8 +11,9 @@
 #include <Animation/Animation.h>
 #include "PostEffects/PostEffect.h"
 #include <Sphere.h>
+#include "Player/DebugPlayer.h"
 
-class DebugPlayer :public Collider{
+class DebugEnemy :public Collider {
 public:
 
 	// 攻撃用定数
@@ -42,7 +43,7 @@ public: // メンバ関数
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
-	~DebugPlayer();
+	~DebugEnemy();
 
 
 	/// <summary>
@@ -77,16 +78,18 @@ public: // メンバ関数
 	void OnCollision(Collider* collider) override;
 	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
-	const WorldTransform& GetWorldTransform() const override{ return worldTransformSphere_; }
-	void SetViewProjection(const ViewProjection* viewProjection) {
-		viewProjection_ = viewProjection;
-	}
+	const WorldTransform& GetWorldTransform() const override { return worldTransformSphere_; }
+	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
+	void SetDebugPlayer(DebugPlayer* debugPlayer) { debugPlayer_ = debugPlayer; }
+
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformSphere_;
 	const ViewProjection* viewProjection_;
 	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Sphere> sphere_;
+
+	DebugPlayer* debugPlayer_;
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
@@ -134,7 +137,11 @@ private: // メンバ変数
 	bool preNoAttack_;
 
 	// ジャンプの時間
-	uint32_t behaviorJumpTime = 20;
+	uint32_t behaviorJumpTime = 30;
+	//攻撃までの時間(クールタイム)
+	uint32_t behaviorAttackTime = 60;
+	//移動可能になるまでの時間
+	uint32_t behaviorMoveTime = 20;
 
 	// 速度
 	Vector3 velocity_ = {};

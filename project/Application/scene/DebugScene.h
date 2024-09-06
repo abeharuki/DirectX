@@ -15,6 +15,7 @@
 #include <ParticleSystem.h>
 #include <Enemy/EnemyManager.h>
 #include "CollisionManager/CollisionConfig.h"
+#include <Enemy/DebugEnemy.h>
 
 
 class DebugScene: public IScene {
@@ -47,6 +48,8 @@ private:
 	std::unique_ptr<ModelLoader> loader_;
 	ViewProjection viewProjection_;
 
+	std::unique_ptr<DebugPlayer> debugPlayer_;
+	std::unique_ptr<DebugEnemy> debugEnemy_;
 	std::unique_ptr<Skybox> skybox_;
 	std::unique_ptr<Model> model_;
 	std::unique_ptr<Sprite> sprite_;

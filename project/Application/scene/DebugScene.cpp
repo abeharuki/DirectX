@@ -50,19 +50,25 @@ void DebugScene::Initialize() {
 	worldTransformCollider2_.Initialize();
 	worldTransformCollider3_.Initialize();
 	worldTransformModel_.Initialize();
-	worldTransformModel_.scale = { 6.0f,18.0f,0.0f };
-	worldTransformModel_.rotate = { -1.57f,0.0f,0.0f };
+	worldTransformModel_.scale = { 15.0f,0.5f,0.0f };
+	worldTransformModel_.translate.y = 3.5f;
 	sprite_.reset(Sprite::Create("resources/H.png"));
 	
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj","resources/Enemy/red_.png"));
+	model_.reset(Model::CreateModelFromObj("resources/box.obj","resources/Enemy/red_.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
 	
+	debugPlayer_ = std::make_unique<DebugPlayer>();
+	debugPlayer_->Initialize();
+
+	debugEnemy_ = std::make_unique<DebugEnemy>();
+	debugEnemy_->Initialize();
+
 	emitter_ = {
 		.translate = {0,3,0},
 		.count{50},
@@ -111,6 +117,10 @@ void DebugScene::Update() {
 	}
 
 	loader_->Update();
+
+	debugPlayer_->Update();
+	debugEnemy_->SetDebugPlayer(debugPlayer_.get());
+	debugEnemy_->Update();
 	
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -323,12 +333,17 @@ void DebugScene::Draw() {
 	/*animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	colliderManager_[0]->Draw(viewProjection_);
 	colliderManager_[1]->Draw(viewProjection_);
-	model_->Draw(worldTransformModel_, viewProjection_, true);
+	
 	skybox_->Draw(worldTransformSkybox_,viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
 
 	sprite_->Draw();*/
+
+	debugPlayer_->Draw(viewProjection_);
+	debugEnemy_->Draw(viewProjection_);
+
+	model_->Draw(worldTransformModel_, viewProjection_, true);
 }
 
 void DebugScene::RenderDirect() {

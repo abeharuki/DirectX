@@ -1,17 +1,18 @@
-#include "DebugPlayer.h"
+#include "DebugEnemy.h"
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 
-void DebugPlayer::Initialize() {
+void DebugEnemy::Initialize() {
 
 	// 初期化
 	worldTransformBase_.Initialize();
-	worldTransformBase_.scale = { 0.5f,0.5f,0.5f };
+	worldTransformBase_.scale = { 1.0f,1.0f,1.0f };
 	worldTransformBase_.translate.x = 2.0f;
-	worldTransformBase_.translate.y = -1.5f;
+	worldTransformBase_.translate.y = 5.0f;
 	worldTransformSphere_.Initialize();
+	worldTransformSphere_.translate.y = 1.0f;
 	sphere_ = std::make_unique<Sphere>();
-	sphere_.reset(Sphere::CreateSphere("resources/white.png"));
+	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 	velocity_.x = 0.3f;
 
 	animation_ = std::make_unique<Animations>();
@@ -24,9 +25,10 @@ void DebugPlayer::Initialize() {
 	SetCollisionMask(kCollisionMaskPlayer);
 }
 
-void DebugPlayer::Update() {
-	
-	
+void DebugEnemy::Update() {
+
+	preNoAttack_ = noAttack_;
+	noAttack_ = false;
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -46,7 +48,7 @@ void DebugPlayer::Update() {
 		case Behavior::kAttack:
 			AttackInitialize();
 			break;
-		
+
 		}
 
 		// 振る舞いリセット
@@ -74,8 +76,12 @@ void DebugPlayer::Update() {
 
 	}
 
-	if (worldTransformBase_.translate.x <= -10.0f|| worldTransformBase_.translate.x >= 10.0f) {
-		velocity_.x = 0;
+	if (worldTransformBase_.translate.x <= -10) {
+		velocity_.x = 0.3f;
+	}
+
+	if (worldTransformBase_.translate.x >= 10) {
+		velocity_.x = -0.3f;
 	}
 
 	worldTransformBase_.UpdateMatrix();
@@ -85,73 +91,66 @@ void DebugPlayer::Update() {
 	ImGui::Text("posX%f", GetWorldPosition().x);
 	ImGui::Text("posY%f", GetWorldPosition().y);
 	ImGui::Text("posZ%f", GetWorldPosition().z);
-	ImGui::DragFloat("PosY", &worldTransformBase_.translate.y, 0.1f);
 	ImGui::End();
 }
 
-void DebugPlayer::Draw(const ViewProjection& camera) {
+void DebugEnemy::Draw(const ViewProjection& camera) {
 	//animation_->Draw(worldTransformBase_, camera, false);
 	sphere_->Draw(worldTransformBase_, camera, false);
 	//RenderCollisionBounds(worldTransformSphere_, camera);
 }
 
 // 移動
-void DebugPlayer::MoveInitialize() {
-	worldTransformBase_.translate.y = -1.5f;
+void DebugEnemy::MoveInitialize() {
+	behaviorJumpTime = 30;
+	behaviorAttackTime = 60;
+
 	velocity_.y = 0.0f;
+	worldTransformBase_.translate.y = 5.0f;
 };
-void DebugPlayer::MoveUpdata() {
-	
-	const float value = 0.7f;
-	bool isMove_ = false;
-	/*----------移動処理----------*/
-	float kCharacterSpeed = 0.3f;
-	// 移動量
-	velocity_ = { 0.0f, 0.0f, 0.0f };
+void DebugEnemy::MoveUpdata() {
+	float sub = debugPlayer_->GetWorldPosition().x - worldTransformBase_.translate.x;
+	if (sub < 0) {
+		sub *= -1;
+	}
 
-	
-	// 左右移動
-	if (Input::PressKey(DIK_A)) {
-		if (worldTransformBase_.translate.x >= -10.0f) {
-			velocity_.x = -1;
+	//playerの位置が敵から±2の位置にいるかどうか
+	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, worldTransformBase_.translate.x, 2)) {
+		if (debugPlayer_->GetWorldPosition().x < worldTransformBase_.translate.x) {
+			velocity_.x = -0.3f;
+		}
+		else {
+			velocity_.x = 0.3f;
+		}
+	}
+	else {
+		//プレイヤーの上にいる時,速度はゼロ
+		velocity_.x = 0.0f;
+		//クールタイムが終わったら攻撃
+		if (--behaviorAttackTime <= 0) {
+			behaviorRequest_ = Behavior::kAttack;
 		}
 		
-
-	}
-	else if (Input::PressKey(DIK_D)) {
-		if (worldTransformBase_.translate.x <= 10.0f) {
-			velocity_.x = 1;
-		}
-		
 	}
 
-	if (velocity_.x != 0) {
-		isMove_ = true;
-		velocity_ = Math::Normalize(velocity_);
-		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
-	}
+	worldTransformBase_.translate += velocity_;
 
-	if (isMove_) {
-		// 平行移動
-		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity_);
-	}
-
-	// ジャンプ
-	if (Input::PushKey(DIK_SPACE)) {
+	//playerと敵の距離が5離れたいたらジャンプして移動
+	if (sub >= 5) {
 		behaviorRequest_ = Behavior::kJump;
 	}
 };
 
 // ジャンプ
-void DebugPlayer::JumpInitialize() {
-
+void DebugEnemy::JumpInitialize() {
+	worldTransformBase_.translate.y = 5.0f;
 	// ジャンプ初速
-	const float kJumpFirstSpeed = 0.3f;
+	const float kJumpFirstSpeed = 0.5f;
 	velocity_.y = kJumpFirstSpeed;
-	
+
 };
-void DebugPlayer::JumpUpdata() {
-	
+void DebugEnemy::JumpUpdata() {
+
 	// 移動
 	worldTransformBase_.translate += velocity_;
 	// 重力加速度
@@ -160,20 +159,26 @@ void DebugPlayer::JumpUpdata() {
 	Vector3 accelerationVector = { 0, -kGravity, 0 };
 	// 加速
 	velocity_ += accelerationVector;
-	
-	if (worldTransformBase_.translate.y <= -1.5f) {
+	// 移動速度
+	const float kCharacterSpeed = 0.2f;
+
+
+	if (worldTransformBase_.translate.y <= 5.0f) {
+		velocity_.y = 0.0f;
+		worldTransformBase_.translate.y = 5.0f;
+
 		// ジャンプ終了
 		behaviorRequest_ = Behavior::kRoot;
 	}
 };
 
 // ダッシユ
-void DebugPlayer::DashInitialize() {
+void DebugEnemy::DashInitialize() {
 	workDash_.dashParameter_ = 0;
 	worldTransformBase_.rotate.y = destinationAngleY_;
 	dash_ = true;
 }
-void DebugPlayer::DashUpdata() {
+void DebugEnemy::DashUpdata() {
 	// dashTimer -= 4;
 
 	Vector3 velocity = { 0, 0, workDash_.dashSpeed };
@@ -189,20 +194,49 @@ void DebugPlayer::DashUpdata() {
 
 
 // 攻撃
-void DebugPlayer::AttackInitialize(){}
-void DebugPlayer::AttackUpdata(){
-	animation_->Update(3);
+void DebugEnemy::AttackInitialize() {
+	worldTransformBase_.translate.y = 5.0f;
+	// ジャンプ初速
+	const float kJumpFirstSpeed = 0.5f;
+	velocity_.y = kJumpFirstSpeed;
+	behaviorMoveTime = 20;
+}
+void DebugEnemy::AttackUpdata() {
+	// 移動
+	worldTransformBase_.translate += velocity_;
+	//最高地点まで行ったら勢いよく落ちる
+	if (velocity_.y <= 0.0f) {
+		velocity_.y = -1.0f;
+	}
+	else {
+		// 重力加速度
+		const float kGravity = 0.03f;
+		// 加速ベクトル
+		Vector3 accelerationVector = { 0, -kGravity, 0 };
+		// 加速
+		velocity_ += accelerationVector;
+	}
+
+	if (worldTransformBase_.translate.y <= 5.0f) {
+		velocity_.y = 0.0f;
+		worldTransformBase_.translate.y = 5.0f;
+		// 攻撃終了
+		if (--behaviorMoveTime <= 0) {
+			behaviorRequest_ = Behavior::kRoot;
+		}
+		
+	}
 }
 
-void DebugPlayer::OnCollision(Collider* collider){
-	
+void DebugEnemy::OnCollision(Collider* collider) {
+
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {}
-	
+
 }
 
-const Vector3 DebugPlayer::GetWorldPosition() const
+const Vector3 DebugEnemy::GetWorldPosition() const
 {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
@@ -213,7 +247,7 @@ const Vector3 DebugPlayer::GetWorldPosition() const
 	return worldPos;
 }
 
-Vector3 DebugPlayer::GetLocalPosition() {
+Vector3 DebugEnemy::GetLocalPosition() {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）
@@ -223,4 +257,4 @@ Vector3 DebugPlayer::GetLocalPosition() {
 	return worldPos;
 }
 
-DebugPlayer::~DebugPlayer(){}
+DebugEnemy::~DebugEnemy() {}
