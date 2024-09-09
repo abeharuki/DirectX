@@ -20,6 +20,7 @@ void Stage::Initialize(){
 		colliderManager_[i]->SetCollisionPrimitive(kCollisionPrimitiveAABB);
 		colliderManager_[i]->SetWorldTransform(worldTransform_[i]);
 		colliderManager_[i]->SetEnemyHit(false);
+		hitPlayer_[i] = false;
 	}
 
 }
@@ -34,12 +35,24 @@ void Stage::Update(){
 
 		if (!returnScale_[i]) {
 			//伸びる
-			if (worldTransform_[i].scale.y < 3.0f) {
+			if (worldTransform_[i].scale.y < 3.1f) {
 				worldTransform_[i].scale.y += 0.5f;
-				worldTransform_[i].translate.y -= 0.5f;
+				if (hitPlayer_[i]) {
+					worldTransform_[i].translate.y += 0.5f;
+				}
+				else {
+					worldTransform_[i].translate.y -= 0.5f;
+				}
+				
 			}
 			else {
-				worldTransform_[i].translate.y = 1.0f;
+				if (hitPlayer_[i]) {
+					worldTransform_[i].translate.y = 6.0f;
+				}
+				else {
+					worldTransform_[i].translate.y = 1.0f;
+				}
+				
 				worldTransform_[i].scale.y = 3.0f;
 				returnScale_[i] = true;
 				
@@ -49,9 +62,18 @@ void Stage::Update(){
 			//元に戻る
 			if (worldTransform_[i].scale.y > 0.5f) {
 				worldTransform_[i].scale.y -= 0.05f;
-				worldTransform_[i].translate.y += 0.05f;
+				if (hitPlayer_[i]) {
+					worldTransform_[i].translate.y -= 0.05f;
+				}
+				else {
+					worldTransform_[i].translate.y += 0.05f;
+				}
+				
 			}
 			else {
+				if (hitPlayer_[i]) {
+					hitPlayer_[i] = false;
+				}
 				worldTransform_[i].translate.y = 3.5f;
 				worldTransform_[i].scale.y = 0.5f;
 			}
@@ -60,8 +82,16 @@ void Stage::Update(){
 		worldTransform_[i].UpdateMatrix();
 		colliderManager_[i]->SetWorldTransform(worldTransform_[i]);
 
+		if (colliderManager_[i]->GetPlayerHit()) {
+			if (worldTransform_[i].scale.y == 0.5f) {
+				returnScale_[i] = false;
+				hitPlayer_[i] = true;
+			}
+			colliderManager_[i]->SetPlayerHit(false);
+		}
+
 		if (colliderManager_[i]->GetEnemyHit() ){
-			if (debugEnemy_->GetAttack()) {
+			if (debugEnemy_->GetAttack() && worldTransform_[i].scale.y == 0.5f) {
 				returnScale_[i] = false;
 			}
 			colliderManager_[i]->SetEnemyHit(false);

@@ -44,5 +44,6 @@ private:
 
 	std::unique_ptr<Model> model_[21];
 	bool returnScale_[21];
+	bool hitPlayer_[21];
 	bool moveScale_;
 };

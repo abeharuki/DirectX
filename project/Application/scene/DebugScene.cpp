@@ -424,7 +424,7 @@ void DebugScene::CameraMove() {
 void DebugScene::CheckAllCollision() {
 	//コリジョン関係
 	collisionManager_->ClearColliderList();
-	
+	collisionManager_->SetColliderList(debugPlayer_.get());
 	collisionManager_->SetColliderList(debugEnemy_.get());
 	for (int i = 0; i <21; ++i) {
 		collisionManager_->SetColliderList(stage_->GetCollider(i));

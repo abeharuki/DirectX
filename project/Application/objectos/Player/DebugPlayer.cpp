@@ -17,7 +17,7 @@ void DebugPlayer::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/human", "uvChecker.png", "Human.gltf"));
 	animation_->SetAnimationTimer(0.0f, 30.0f);
-	AABB aabbSize{ .min{-1.0f,-1.0f,-1.0f},.max{1.0f,1.0f,1.0f} };
+	AABB aabbSize{ .min{-0.0f,-0.25f,-0.0f},.max{0.01f,0.25f,0.0f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributePlayer);
@@ -92,7 +92,7 @@ void DebugPlayer::Update() {
 void DebugPlayer::Draw(const ViewProjection& camera) {
 	//animation_->Draw(worldTransformBase_, camera, false);
 	sphere_->Draw(worldTransformBase_, camera, false);
-	//RenderCollisionBounds(worldTransformSphere_, camera);
+	RenderCollisionBounds(worldTransformBase_, camera);
 }
 
 // 移動
@@ -146,7 +146,7 @@ void DebugPlayer::MoveUpdata() {
 void DebugPlayer::JumpInitialize() {
 
 	// ジャンプ初速
-	const float kJumpFirstSpeed = 0.3f;
+	const float kJumpFirstSpeed = 0.5f;
 	velocity_.y = kJumpFirstSpeed;
 	
 };
