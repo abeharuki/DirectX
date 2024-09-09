@@ -9,32 +9,13 @@ void DebugScene::Initialize() {
 	//衝突マネージャーの作成
 	collisionManager_ = std::make_unique<CollisionManager>();
 
-	colliderManager_[0] = std::make_unique<ColliderManager>();
-	colliderManager_[1] = std::make_unique<ColliderManager>();
-	colliderManager_[2] = std::make_unique<ColliderManager>();
+	
 	AABB aabb = { {-7.0f,-0.2f,-1 },{7.0f,0.2f,1} };
 	AABB aabb2 = { {-1,-1,-1 },{1,1,1} };
 	OBB obb = Math::ConvertAABBToOBB(aabb);
 
-	colliderManager_[0]->SetOBB(obb);
-	colliderManager_[0]->SetCollisionMask(kCollisionMaskEnemy);
-	colliderManager_[0]->SetCollisionAttribute(kCollisionAttributeEnemy);
-	colliderManager_[0]->SetCollisionPrimitive(kCollisionPrimitiveOBB);
-
-	
-
-	colliderManager_[1] = std::make_unique<ColliderManager>();
-	colliderManager_[1]->SetAABB(aabb2);
-	colliderManager_[1]->SetCollisionMask(kCollisionMaskPlayer);
-	colliderManager_[1]->SetCollisionAttribute(kCollisionAttributePlayer);
-	colliderManager_[1]->SetCollisionPrimitive(kCollisionPrimitiveOBB);
 
 
-	colliderManager_[2] = std::make_unique<ColliderManager>();
-	colliderManager_[2]->SetRadius(1.0f);
-	colliderManager_[2]->SetCollisionMask(kCollisionMaskEnemy);
-	colliderManager_[2]->SetCollisionAttribute(kCollisionAttributeEnemy);
-	colliderManager_[2]->SetCollisionPrimitive(kCollisionPrimitiveSphere);
 
 	viewProjection_.Initialize();
 	viewProjection_.rotation_.x = 0.28f;
@@ -43,12 +24,7 @@ void DebugScene::Initialize() {
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
-	worldTransformCollider1_.Initialize();
-	worldTransformCollider1_.rotate = { 0.0f,0.2f,0.0f };
-	worldTransformCollider1_.translate = { 0.0f,0.0f,0.3f };
 	
-	worldTransformCollider2_.Initialize();
-	worldTransformCollider3_.Initialize();
 	worldTransformModel_.Initialize();
 	worldTransformModel_.scale = { 15.0f,0.5f,0.0f };
 	worldTransformModel_.translate.y = 3.5f;
@@ -119,6 +95,7 @@ void DebugScene::Update() {
 	}
 
 	loader_->Update();
+	stage_->SetDebugEnemy(debugEnemy_.get());
 	stage_->Update();
 
 	debugPlayer_->Update();
@@ -134,13 +111,8 @@ void DebugScene::Update() {
 	
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
-	worldTransformCollider1_.UpdateMatrix();
-	worldTransformCollider2_.UpdateMatrix();
-	worldTransformCollider3_.UpdateMatrix();
 	worldTransformModel_.UpdateMatrix();
-	colliderManager_[0]->SetWorldTransform(worldTransformCollider1_);
-	colliderManager_[1]->SetWorldTransform(worldTransformCollider2_);
-	colliderManager_[2]->SetWorldTransform(worldTransformCollider3_);
+
 	
 
 
@@ -224,24 +196,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
-	if (ImGui::TreeNode("ColldierOBBEnemy")) {
-
-		ImGui::DragFloat3("Pos", &worldTransformCollider1_.translate.x, 0.1f);
-		ImGui::DragFloat3("Rotate", &worldTransformCollider1_.rotate.x, 0.01f);
-		ImGui::DragFloat3("Size", &worldTransformCollider1_.scale.x, 0.1f);
-		ImGui::DragFloat3("InitilizePos", &impactPos_.x, 0.1f);
-		ImGui::DragFloat3("Velocity", &impactVelocity_.x, 0.01f);
-		ImGui::TreePop();
-	}
 	
-	if (ImGui::TreeNode("ColldierAABBPlayer")) {
-
-		ImGui::DragFloat3("Pos", &worldTransformCollider2_.translate.x, 0.1f);
-		ImGui::DragFloat3("Rotate", &worldTransformCollider2_.rotate.x, 0.01f);
-		ImGui::DragFloat3("Size", &worldTransformCollider2_.scale.x, 0.1f);
-
-		ImGui::TreePop();
-	}
 
 	//アニメーション
 	if (ImGui::TreeNode("Animation")) {
@@ -469,9 +424,11 @@ void DebugScene::CameraMove() {
 void DebugScene::CheckAllCollision() {
 	//コリジョン関係
 	collisionManager_->ClearColliderList();
-	collisionManager_->SetColliderList(colliderManager_[0].get());
-	collisionManager_->SetColliderList(colliderManager_[1].get());
-	//collisionManager_->SetColliderList(colliderManager_[2].get());
+	
+	collisionManager_->SetColliderList(debugEnemy_.get());
+	for (int i = 0; i <21; ++i) {
+		collisionManager_->SetColliderList(stage_->GetCollider(i));
+	}
 	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
 		collisionManager_->SetColliderList(loader_->GetCollider(i));
 	}

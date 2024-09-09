@@ -40,9 +40,6 @@ private:
 	WorldTransform worldTransform_;
 	WorldTransform worldTransformSkybox_;
 	WorldTransform worldTransformAnimation_;
-	WorldTransform worldTransformCollider1_;
-	WorldTransform worldTransformCollider2_;
-	WorldTransform worldTransformCollider3_;
 	WorldTransform worldTransformModel_;
 
 	//ローダー
@@ -60,7 +57,6 @@ private:
 
 	//衝突マネージャー
 	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
-	std::unique_ptr<ColliderManager> colliderManager_[3] = {};
 	Vector3 impactVelocity_;
 	Vector3 impactPos_;
 	//追従カメラ

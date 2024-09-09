@@ -9,9 +9,12 @@ void ColliderManager::Draw(const ViewProjection& camera) {
 }
 
 void ColliderManager::OnCollision(Collider* collider){
-
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {
-		
+		playerHit_ = true;
+	}
+	
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+		enemyHit_ = true;
 	}
 }
 

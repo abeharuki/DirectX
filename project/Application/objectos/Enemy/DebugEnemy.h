@@ -14,30 +14,6 @@
 #include "Player/DebugPlayer.h"
 
 class DebugEnemy :public Collider {
-public:
-
-	// 攻撃用定数
-	struct ConstAttack {
-		// 振りかぶり時間
-		uint32_t anticipationTime;
-		// ため時間
-		uint32_t chargeTime;
-		// 攻撃振りの時間
-		uint32_t swingTime;
-		// 硬直時間
-		uint32_t recoveryTime;
-		// 振りかぶりの移動の速さ
-		float anticipationSpeed;
-		// ため移動速さ
-		float chargeSpeed;
-		// 攻撃振りの移動速さ
-		float swingSpeed;
-	};
-
-	// コンボ
-	static const int ComboNum = 3;
-	static const std::array<ConstAttack, ComboNum> kConstAttacks_;
-
 public: // メンバ関数
 
 	/// <summary>
@@ -78,15 +54,13 @@ public: // メンバ関数
 	void OnCollision(Collider* collider) override;
 	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
-	const WorldTransform& GetWorldTransform() const override { return worldTransformSphere_; }
+	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
 	void SetDebugPlayer(DebugPlayer* debugPlayer) { debugPlayer_ = debugPlayer; }
-
+	bool GetAttack() { return attack_; }
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
-	WorldTransform worldTransformSphere_;
 	const ViewProjection* viewProjection_;
-	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Sphere> sphere_;
 
 	DebugPlayer* debugPlayer_;
@@ -119,22 +93,8 @@ private: // メンバ変数
 	};
 	WorkDash workDash_;
 
-	// 攻撃用ワーク
-	struct WorkAttack {
-		uint32_t attackParameter_ = 0;
-		int32_t comboIndex = 0;
-		int32_t inComboPhase = 0;
-		bool comboNext = false;
-		bool isAttack = false;
-		bool isFinalAttack = false;
-	};
-
-	WorkAttack workAttack_;
-
-	bool dash_;
-	bool combo_;
-	bool noAttack_;
-	bool preNoAttack_;
+	bool attack_;
+	bool jump_;
 
 	// ジャンプの時間
 	uint32_t behaviorJumpTime = 30;

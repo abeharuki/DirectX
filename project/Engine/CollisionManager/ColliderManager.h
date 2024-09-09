@@ -28,9 +28,13 @@ public:
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransform_; }
 	void Chack(bool flag) { CheckCollision(flag); }
-	
+	bool GetPlayerHit() { return playerHit_; }
+	void SetPlayerHit(bool hit) { playerHit_ = hit; }
+	bool GetEnemyHit() { return enemyHit_; }
+	void SetEnemyHit(bool hit) { enemyHit_ = hit; }
 private:
 	WorldTransform worldTransform_;
 	Primitive priType;
-
+	bool playerHit_;
+	bool enemyHit_;
 };

@@ -71,6 +71,9 @@ public:
 
 	void CheckCollision(bool flag) { 
 		
+		if (priType != Primitive::kSphere) {
+			
+		}
 		if (flag == 1) {
 			lineBox_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
 		}

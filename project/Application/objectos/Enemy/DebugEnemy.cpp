@@ -9,26 +9,21 @@ void DebugEnemy::Initialize() {
 	worldTransformBase_.scale = { 1.0f,1.0f,1.0f };
 	worldTransformBase_.translate.x = 2.0f;
 	worldTransformBase_.translate.y = 5.0f;
-	worldTransformSphere_.Initialize();
-	worldTransformSphere_.translate.y = 1.0f;
+
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
 	velocity_.x = 0.3f;
-
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/human", "uvChecker.png", "Human.gltf"));
-	animation_->SetAnimationTimer(0.0f, 30.0f);
-	AABB aabbSize{ .min{-1.0f,-1.0f,-1.0f},.max{1.0f,1.0f,1.0f} };
-	SetAABB(aabbSize);
-	SetCollisionPrimitive(kCollisionPrimitiveAABB);
-	SetCollisionAttribute(kCollisionAttributePlayer);
-	SetCollisionMask(kCollisionMaskPlayer);
+	AABB aabbSize{ .min{-0.5f,-0.5f,-0.5f},.max{0.5f,0.5f,0.5f} };
+	OBB obb = Math::ConvertAABBToOBB(aabbSize);
+	obb.center = { 0.0f,0.0f,0.0f };
+	SetOBB(obb);
+	SetCollisionPrimitive(kCollisionPrimitiveOBB);
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	SetCollisionMask(kCollisionMaskEnemy);
 }
 
 void DebugEnemy::Update() {
 
-	preNoAttack_ = noAttack_;
-	noAttack_ = false;
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -85,28 +80,31 @@ void DebugEnemy::Update() {
 	}
 
 	worldTransformBase_.UpdateMatrix();
-	worldTransformSphere_.UpdateMatrix();
+	
 
 	ImGui::Begin("Setting");
 	ImGui::Text("posX%f", GetWorldPosition().x);
 	ImGui::Text("posY%f", GetWorldPosition().y);
 	ImGui::Text("posZ%f", GetWorldPosition().z);
+	ImGui::DragFloat3("Pos", &worldTransformBase_.translate.x, 0.1f);
+	ImGui::DragFloat3("velocity" ,&velocity_.x, 0.1f);
 	ImGui::End();
 }
 
 void DebugEnemy::Draw(const ViewProjection& camera) {
-	//animation_->Draw(worldTransformBase_, camera, false);
 	sphere_->Draw(worldTransformBase_, camera, false);
-	//RenderCollisionBounds(worldTransformSphere_, camera);
+	RenderCollisionBounds(worldTransformBase_, camera);
 }
 
 // 移動
 void DebugEnemy::MoveInitialize() {
-	behaviorJumpTime = 30;
-	behaviorAttackTime = 60;
+	behaviorJumpTime = 10;
+	behaviorAttackTime = 30;
 
-	velocity_.y = 0.0f;
+	//velocity_.y = 0.0f;
 	worldTransformBase_.translate.y = 5.0f;
+	velocity_ = { 0.0f,0.0f,0.0f };
+	jump_ = false;
 };
 void DebugEnemy::MoveUpdata() {
 	float sub = debugPlayer_->GetWorldPosition().x - worldTransformBase_.translate.x;
@@ -115,12 +113,18 @@ void DebugEnemy::MoveUpdata() {
 	}
 
 	//playerの位置が敵から±2の位置にいるかどうか
-	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, worldTransformBase_.translate.x, 2)) {
-		if (debugPlayer_->GetWorldPosition().x < worldTransformBase_.translate.x) {
-			velocity_.x = -0.3f;
-		}
-		else {
-			velocity_.x = 0.3f;
+	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, worldTransformBase_.translate.x, 1.0f)) {
+		
+
+		//playerと敵の距離が5離れたいたらジャンプして移動
+		if (--behaviorJumpTime <= 0) {
+			if (debugPlayer_->GetWorldPosition().x < worldTransformBase_.translate.x) {
+				velocity_.x = -0.3f;
+			}
+			else {
+				velocity_.x = 0.3f;
+			}
+			behaviorRequest_ = Behavior::kJump;
 		}
 	}
 	else {
@@ -135,10 +139,7 @@ void DebugEnemy::MoveUpdata() {
 
 	worldTransformBase_.translate += velocity_;
 
-	//playerと敵の距離が5離れたいたらジャンプして移動
-	if (sub >= 5) {
-		behaviorRequest_ = Behavior::kJump;
-	}
+	
 };
 
 // ジャンプ
@@ -147,7 +148,7 @@ void DebugEnemy::JumpInitialize() {
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.5f;
 	velocity_.y = kJumpFirstSpeed;
-
+	jump_ = true;
 };
 void DebugEnemy::JumpUpdata() {
 
@@ -162,6 +163,18 @@ void DebugEnemy::JumpUpdata() {
 	// 移動速度
 	const float kCharacterSpeed = 0.2f;
 
+	//ジャンプ中にプレイヤーが真下に来たら攻撃
+	if (Math::isWithinRange(debugPlayer_->GetWorldPosition().x, worldTransformBase_.translate.x, 1.0f)) {
+		if (worldTransformBase_.translate.y >= 8.5f) {
+			//プレイヤーの上にいる時,速度はゼロ
+			velocity_.x = 0.0f;
+			//クールタイムが終わったら攻撃
+			behaviorRequest_ = Behavior::kAttack;
+		}
+
+		
+	}
+	
 
 	if (worldTransformBase_.translate.y <= 5.0f) {
 		velocity_.y = 0.0f;
@@ -176,7 +189,7 @@ void DebugEnemy::JumpUpdata() {
 void DebugEnemy::DashInitialize() {
 	workDash_.dashParameter_ = 0;
 	worldTransformBase_.rotate.y = destinationAngleY_;
-	dash_ = true;
+	
 }
 void DebugEnemy::DashUpdata() {
 	// dashTimer -= 4;
@@ -192,48 +205,67 @@ void DebugEnemy::DashUpdata() {
 	}
 }
 
-
 // 攻撃
 void DebugEnemy::AttackInitialize() {
 	worldTransformBase_.translate.y = 5.0f;
 	// ジャンプ初速
-	const float kJumpFirstSpeed = 0.5f;
-	velocity_.y = kJumpFirstSpeed;
+	if (!jump_) {
+		const float kJumpFirstSpeed = 0.5f;
+		velocity_.y = kJumpFirstSpeed;
+	}
+	else {
+		
+	}
+	
+	
 	behaviorMoveTime = 20;
+
 }
 void DebugEnemy::AttackUpdata() {
 	// 移動
 	worldTransformBase_.translate += velocity_;
-	//最高地点まで行ったら勢いよく落ちる
-	if (velocity_.y <= 0.0f) {
-		velocity_.y = -1.0f;
+
+	if (!jump_) {
+		//最高地点まで行ったら勢いよく落ちる
+		if (velocity_.y <= 0.0f) {
+			attack_ = true;
+			velocity_.y = -1.0f;
+
+		}
+		else {
+			// 重力加速度
+			const float kGravity = 0.03f;
+			// 加速ベクトル
+			Vector3 accelerationVector = { 0, -kGravity, 0 };
+			// 加速
+			velocity_ += accelerationVector;
+		}
 	}
 	else {
-		// 重力加速度
-		const float kGravity = 0.03f;
-		// 加速ベクトル
-		Vector3 accelerationVector = { 0, -kGravity, 0 };
-		// 加速
-		velocity_ += accelerationVector;
+		attack_ = true;
+		velocity_.y += -0.1f;
 	}
+
 
 	if (worldTransformBase_.translate.y <= 5.0f) {
 		velocity_.y = 0.0f;
 		worldTransformBase_.translate.y = 5.0f;
+		
 		// 攻撃終了
 		if (--behaviorMoveTime <= 0) {
 			behaviorRequest_ = Behavior::kRoot;
+			attack_ = false;
 		}
 		
 	}
 }
 
 void DebugEnemy::OnCollision(Collider* collider) {
-
-	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {}
-
-	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {}
-
+	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
+		ImGui::Begin("DebugEnemy");
+		ImGui::Text("hit");
+		ImGui::End();
+	}
 }
 
 const Vector3 DebugEnemy::GetWorldPosition() const
@@ -251,9 +283,9 @@ Vector3 DebugEnemy::GetLocalPosition() {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransformSphere_.translate.x;
-	worldPos.y = worldTransformSphere_.translate.y;
-	worldPos.z = worldTransformSphere_.translate.z;
+	worldPos.x = worldTransformBase_.translate.x;
+	worldPos.y = worldTransformBase_.translate.y;
+	worldPos.z = worldTransformBase_.translate.z;
 	return worldPos;
 }
 
