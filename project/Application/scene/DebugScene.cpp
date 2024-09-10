@@ -297,7 +297,7 @@ void DebugScene::Draw() {
 	particle_->Draw(viewProjection_);
 	*/
 	
-
+	sprite_->Draw();
 	debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
 
@@ -426,9 +426,7 @@ void DebugScene::CheckAllCollision() {
 	collisionManager_->ClearColliderList();
 	collisionManager_->SetColliderList(debugPlayer_.get());
 	collisionManager_->SetColliderList(debugEnemy_.get());
-	for (int i = 0; i <21; ++i) {
-		collisionManager_->SetColliderList(stage_->GetCollider(i));
-	}
+	
 	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
 		collisionManager_->SetColliderList(loader_->GetCollider(i));
 	}

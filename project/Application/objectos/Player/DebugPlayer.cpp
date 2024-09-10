@@ -255,6 +255,8 @@ void PlayerStatus::Save() const
 	GlobalVariables *gVal = GlobalVariables::GetInstance();
 	gVal->AddItem(kGroupName_, groundMoveSpeed_.first, groundMoveSpeed_.second);
 	gVal->AddItem(kGroupName_, jumpStrength_.first, jumpStrength_.second);
+	gVal->AddItem(kGroupName_, gravity_.first, gravity_.second);
+	gVal->AddItem(kGroupName_, ceilingHeight_.first, ceilingHeight_.second);
 }
 
 void PlayerStatus::Load()
@@ -264,4 +266,6 @@ void PlayerStatus::Load()
 
 	gVal->GetValue(kGroupName_, groundMoveSpeed_.first, &groundMoveSpeed_.second);
 	gVal->GetValue(kGroupName_, jumpStrength_.first, &jumpStrength_.second);
+	gVal->GetValue(kGroupName_, gravity_.first, &gravity_.second);
+	gVal->GetValue(kGroupName_, ceilingHeight_.first, &ceilingHeight_.second);
 }
