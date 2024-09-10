@@ -921,6 +921,23 @@ Quaternion Math::Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 }
 
 
+Vector3 operator*(const Vector3 &v, const Matrix4x4 &mat)
+{
+	Vector3 result;
+
+	result.x = v.x * mat.m[0][0] + v.y * mat.m[1][0] + v.z * mat.m[2][0] +
+		1.0f * mat.m[3][0];
+	result.y = v.x * mat.m[0][1] + v.y * mat.m[1][1] + v.z * mat.m[2][1] +
+		1.0f * mat.m[3][1];
+	result.z = v.x * mat.m[0][2] + v.y * mat.m[1][2] + v.z * mat.m[2][2] +
+		1.0f * mat.m[3][2];
+	const float w = v.x * mat.m[0][3] + v.y * mat.m[1][3] + v.z * mat.m[2][3] +
+		1.0f * mat.m[3][3];
+	assert(w != 0.0f);
+	return result / w; // 演算子のオーバーライド
+
+}
+
 /*--------------------演算子オーバーロード---------------------------*/
 // 二項演算子
 Vector3 operator+(const Vector3& v1, const Vector3& v2) { return Math::Add(v1, v2); }

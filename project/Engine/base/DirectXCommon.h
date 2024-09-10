@@ -29,12 +29,12 @@ public: // メンバ関数
 	/// シングルトンインスタンスの取得
 	/// </summary>
 	/// <returns></returns>
-	static DirectXCommon* GetInstance();
+	static DirectXCommon *GetInstance();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(WinApp* winApp, int32_t backBufferWidth, int32_t backBufferHeight);
+	void Initialize(WinApp *winApp, int32_t backBufferWidth, int32_t backBufferHeight);
 
 	/// <summary>
 	/// 後始末
@@ -89,23 +89,23 @@ public: // メンバ関数
 	/// レンダーテクスチャの作成
 	/// </summary>
 	void CreateRenderTexture();
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format,const Vector4& clearColor);
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4 &clearColor);
 
 	DescriptorHandle AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type);
 
-	ID3D12DescriptorHeap* GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type) const { return descriptorHeaps_[type]->GetDescriptorHeap(); }
+	ID3D12DescriptorHeap *GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type) const { return descriptorHeaps_[type]->GetDescriptorHeap(); }
 
 	/// <summary>
 	/// デバイスの取得
 	/// </summary>
 	/// <returns>デバイス</returns>
-	ID3D12Device* GetDevice() const { return device_.Get(); }
+	ID3D12Device *GetDevice() const { return device_.Get(); }
 
 	/// <summary>
 	/// 描画コマンドリストの取得
 	/// </summary>
 	/// <returns>描画コマンドリスト</returns>
-	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
+	ID3D12GraphicsCommandList *GetCommandList() const { return commandList_.Get(); }
 
 	/// <summary>
 	/// バックバッファの幅取得
@@ -122,22 +122,24 @@ public: // メンバ関数
 	// バックバッファの数を取得
 	size_t GetBackBufferCount() const { return swapChainResources.size(); }
 
-	ID3D12DescriptorHeap* GetSRV() const { return  descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetDescriptorHeap(); }
+	ID3D12DescriptorHeap *GetSRV() const { return  descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetDescriptorHeap(); }
 
-	ID3D12DescriptorHeap* GetRTV() const { return descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetDescriptorHeap(); }
+	ID3D12DescriptorHeap *GetRTV() const { return descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetDescriptorHeap(); }
 
-	ID3D12DescriptorHeap* GetDSV() const { return descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap(); }
+	ID3D12DescriptorHeap *GetDSV() const { return descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap(); }
 
-	const DescriptorHandle& GetHandle() { return srvHandle_; }
-	const DescriptorHandle& GetDepthHandle() { return depthHandle_; }
+	const DescriptorHandle &GetHandle() { return srvHandle_; }
+	const DescriptorHandle &GetDepthHandle() { return depthHandle_; }
 
 	D3D12_GPU_DESCRIPTOR_HANDLE GetDSVHandle() { return dsvHandle_; }
+
+	const D3D12_VIEWPORT &GetViewPort() const { return viewport; }
 
 	static const uint32_t kMaxSRVCount;
 
 private: // メンバ変数
 	// ウィンドウズアプリケーション管理
-	WinApp* winApp_;
+	WinApp *winApp_;
 
 	// Direct3D関連
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
@@ -178,8 +180,8 @@ private: // メンバ変数
 private: // メンバ関数
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
-	DirectXCommon(const DirectXCommon&) = delete;
-	const DirectXCommon& operator=(const DirectXCommon&) = delete;
+	DirectXCommon(const DirectXCommon &) = delete;
+	const DirectXCommon &operator=(const DirectXCommon &) = delete;
 
 	/// <summary>
 	/// DXGIデバイス初期化
@@ -214,16 +216,16 @@ private: // メンバ関数
 	void InitializeFixFPS();
 	void UpdateFixFPS();
 
-	
 
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap *descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 		handleCPU.ptr += (descriptorSize * index);
 		return handleCPU;
 	}
 
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(
-		ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+		ID3D12DescriptorHeap *descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 		handleGPU.ptr += (descriptorSize * index);
 		return handleGPU;
@@ -231,6 +233,6 @@ private: // メンバ関数
 
 };
 
-ID3D12DescriptorHeap* CreateDescriptorHeap(
-	ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
+ID3D12DescriptorHeap *CreateDescriptorHeap(
+	ID3D12Device *device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors,
 	bool shaderVisible);

@@ -9,11 +9,10 @@ void DebugPlayer::Initialize() {
 	playerStatus_.Save();
 
 	// 初期化
-	worldTransformBase_.Initialize();
-	worldTransformBase_.scale = { 0.5f,0.5f,0.5f };
-	worldTransformBase_.translate.x = 2.0f;
-	worldTransformBase_.translate.y = -1.5f;
-	worldTransformSphere_.Initialize();
+	transform_.scale = { 0.5f,0.5f,0.5f };
+	transform_.translate.x = 2.0f;
+	transform_.translate.y = -1.5f;
+
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/white.png"));
 	velocity_.x = 0.3f;
@@ -28,6 +27,8 @@ void DebugPlayer::Initialize() {
 	SetCollisionMask(kCollisionMaskPlayer);
 
 	sprite_ = std::unique_ptr<Sprite>(Sprite::Create("resources/human/uvChecker.png"));
+
+	sprite_->SetAnchorPoint(Vector2{ 0.5f,0.5f });
 }
 
 void DebugPlayer::Update() {
@@ -85,34 +86,35 @@ void DebugPlayer::Update() {
 
 	}
 
-	if (worldTransformBase_.translate.x <= -10.0f || worldTransformBase_.translate.x >= 10.0f) {
+	if (transform_.translate.x <= -10.0f || transform_.translate.x >= 10.0f) {
 		velocity_.x = 0;
 	}
-
-	worldTransformBase_.UpdateMatrix();
-	worldTransformSphere_.UpdateMatrix();
 
 	ImGui::Begin("Setting");
 	ImGui::Text("posX%f", GetWorldPosition().x);
 	ImGui::Text("posY%f", GetWorldPosition().y);
 	ImGui::Text("posZ%f", GetWorldPosition().z);
-	ImGui::DragFloat("PosY", &worldTransformBase_.translate.y, 0.1f);
+	ImGui::DragFloat("PosY", &transform_.translate.y, 0.1f);
 	ImGui::End();
 
-	sprite_->UpdateVertexBuffer();
+	// トランスフォームから行列を計算する
+	CalcMatrix();
 }
 
-void DebugPlayer::Draw(const ViewProjection &camera) {
-	//animation_->Draw(worldTransformBase_, camera, false);
-	sphere_->Draw(worldTransformBase_, camera, false);
-	RenderCollisionBounds(worldTransformBase_, camera);
+void DebugPlayer::Draw([[maybe_unused]] const ViewProjection &camera) {
 
+	SetViewProjection(&camera);
+	// スプライトにデータを転送する
+	TransfarSprite();
+
+	sprite_->UpdateVertexBuffer();
+	// 画像の描画
 	sprite_->Draw();
 }
 
 // 移動
 void DebugPlayer::MoveInitialize() {
-	worldTransformBase_.translate.y = -1.5f;
+	transform_.translate.y = -1.5f;
 	velocity_.y = 0.0f;
 };
 void DebugPlayer::MoveUpdate() {
@@ -159,7 +161,7 @@ void DebugPlayer::MoveUpdate() {
 
 	if (isMove_) {
 		// 平行移動
-		worldTransformBase_.translate += velocity_;
+		transform_.translate += velocity_;
 	}
 
 	// ジャンプ
@@ -179,7 +181,7 @@ void DebugPlayer::JumpInitialize() {
 void DebugPlayer::JumpUpdate() {
 
 	// 移動
-	worldTransformBase_.translate += velocity_;
+	transform_.translate += velocity_;
 	// 重力加速度
 	const float kGravity = playerStatus_.gravity_.second;
 	// 加速ベクトル
@@ -187,7 +189,7 @@ void DebugPlayer::JumpUpdate() {
 	// 加速
 	velocity_ += accelerationVector;
 
-	if (worldTransformBase_.translate.y <= -1.5f) {
+	if (transform_.translate.y <= -1.5f) {
 		// ジャンプ終了
 		behaviorRequest_ = Behavior::kRoot;
 	}
@@ -206,7 +208,7 @@ void DebugPlayer::HeadButtUpdate()
 // ダッシユ
 void DebugPlayer::DashInitialize() {
 	workDash_.dashParameter_ = 0;
-	worldTransformBase_.rotate.y = destinationAngleY_;
+	transform_.rotate.y = destinationAngleY_;
 	dash_ = true;
 }
 void DebugPlayer::DashUpdate() {
@@ -214,8 +216,8 @@ void DebugPlayer::DashUpdate() {
 
 	Vector3 velocity = { 0, 0, workDash_.dashSpeed };
 
-	velocity = Math::TransformNormal(velocity, worldTransformBase_.matWorld_);
-	worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity);
+	velocity = Math::TransformNormal(velocity, transMat_);
+	transform_.translate += velocity;
 
 	// 既定の時間経過で通常行動に戻る
 	if (++workDash_.dashParameter_ >= workDash_.behaviorDashTime) {
@@ -230,6 +232,19 @@ void DebugPlayer::AttackUpdate() {
 	animation_->Update(3);
 }
 
+void DebugPlayer::CalcMatrix()
+{
+	transMat_ = Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+
+}
+
+void DebugPlayer::TransfarSprite()
+{
+	sprite_->SetPosition(pViewProjection_->WorldToScreen(transform_.translate).GetVec2());
+	sprite_->SetRotation(transform_.rotate.z);
+	sprite_->SetSize(transform_.scale.GetVec2() * 100.f);
+}
+
 void DebugPlayer::OnCollision(Collider *collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {}
@@ -242,14 +257,12 @@ const Vector3 DebugPlayer::GetWorldPosition() const
 {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
-	std::memcpy(&worldPos, worldTransformBase_.matWorld_.m[3], sizeof(Vector3));
+	std::memcpy(&worldPos, transMat_.m[3], sizeof(Vector3));
 	return worldPos;
 }
 
 Vector3 DebugPlayer::GetLocalPosition() {
-	// ローカル座標を入れる関数
-	Vector3 localPos = worldTransformSphere_.translate;
-	return localPos;
+	return transform_.translate;
 }
 
 DebugPlayer::~DebugPlayer() {}

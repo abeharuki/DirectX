@@ -92,18 +92,24 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdate();
 
+	/// @brief 行列を計算する
+	void CalcMatrix();
+
+	/// @brief スプライトにデータを渡す
+	void TransfarSprite();
 
 	void OnCollision(Collider *collider) override;
 	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
-	const WorldTransform &GetWorldTransform() const override { return worldTransformSphere_; }
+	const WorldTransform &GetWorldTransform() const override { return unuseData_; }
 	void SetViewProjection(const ViewProjection *viewProjection) {
-		viewProjection_ = viewProjection;
+		pViewProjection_ = viewProjection;
 	}
 private: // メンバ変数
-	WorldTransform worldTransformBase_;
-	WorldTransform worldTransformSphere_;
-	const ViewProjection *viewProjection_;
+	Transform transform_;
+	Matrix4x4 transMat_;
+	WorldTransform unuseData_;
+	const ViewProjection *pViewProjection_;
 	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Sphere> sphere_;
 
