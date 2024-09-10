@@ -35,8 +35,18 @@ public:
 	void SetDebugEnemy(DebugEnemy* debugEnemy) { debugEnemy_ = debugEnemy; }
 	Vector2 GetPos(int i) { return Vector2(enemyAttackTransform_[i].translate.x, enemyAttackTransform_[i].translate.y); }
 	Vector2 GetScale(int i) { return Vector2(enemyAttackTransform_[i].scale.x, enemyAttackTransform_[i].scale.y); }
-	void SetUp(bool up ,int i) { upBox_[i] = true; }
-	void SetDown(bool up, int i) { downBox_[i] = true; }
+	void SetUp(bool up ,int i) {
+		if (!downBox_[i]) {
+			upBox_[i] = true;
+		}
+		
+	}
+	void SetDown(bool up, int i) {
+		if (!upBox_[i]) {
+			downBox_[i] = true;
+		}
+		
+	}
 	bool GetUp(uint32_t index) const { return upBox_.at(index); }
 	bool GetDown(uint32_t index) const { return downBox_.at(index); }
 	static constexpr int32_t kSize_ = 16;
