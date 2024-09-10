@@ -1,6 +1,7 @@
 #pragma once
 #include "Framework/Framework.h"
 #include "SceneFactory.h"
+#include "GlobalVariables.h"
 
 class Game : public Framework {
 public:
@@ -18,7 +19,10 @@ public:
 	/// </summary>
 	void Draw() override;
 
-
-
 private:
+
+
+
+	GlobalVariables *pGVariables_ = nullptr;
+
 };

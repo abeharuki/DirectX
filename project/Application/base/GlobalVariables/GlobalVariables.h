@@ -28,7 +28,7 @@ public:
 	void SetValue(const std::string &grouName, const std::string &key, Vector3 &value);
 
 	// 毎フレーム処理
-	void Updeat();
+	void Update();
 
 	// ファイルに書き出し
 	void SaveFile(const std::string &groupName);

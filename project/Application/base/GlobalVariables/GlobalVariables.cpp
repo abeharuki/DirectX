@@ -86,7 +86,7 @@ void GlobalVariables::AddItem(const std::string &grouName, const std::string &ke
 	}
 }
 
-void GlobalVariables::Updeat() {
+void GlobalVariables::Update() {
 
 	if (!ImGui::Begin("Global Variadles", nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar)) {
 		ImGui::End();

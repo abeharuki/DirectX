@@ -16,55 +16,55 @@ void FollowCamera::Initialize() {
 }
 
 void FollowCamera::Update() {
-	// ゲームパッドの状態を得る変数(XINPUT)
-	XINPUT_STATE joyState;
+	//// ゲームパッドの状態を得る変数(XINPUT)
+	//XINPUT_STATE joyState;
 
 
-	// ジョイスティックの状態取得
-	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-		// 回転速度
-		float kCharacterSpeed = 0.05f;
+	//// ジョイスティックの状態取得
+	//if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+	//	// 回転速度
+	//	float kCharacterSpeed = 0.05f;
 
-		destinationAngleY_ += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kCharacterSpeed;
-		destinationAngleX_ -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * kCharacterSpeed / 4;
-		if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
-			destinationAngleY_ = target_->rotate.y;
-			destinationAngleX_ = target_->rotate.x;
-		}
-	}
-	else {
-		if (Input::PressKey(DIK_UPARROW)) {
-			destinationAngleX_ -= 0.1f;
-		}
-		else if (Input::PressKey(DIK_DOWNARROW)) {
-			destinationAngleX_ += 0.1f;
-		}
+	//	destinationAngleY_ += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * kCharacterSpeed;
+	//	destinationAngleX_ -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * kCharacterSpeed / 4;
+	//	if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) {
+	//		destinationAngleY_ = target_->rotate.y;
+	//		destinationAngleX_ = target_->rotate.x;
+	//	}
+	//}
+	//else {
+	//	if (Input::PressKey(DIK_UPARROW)) {
+	//		destinationAngleX_ -= 0.1f;
+	//	}
+	//	else if (Input::PressKey(DIK_DOWNARROW)) {
+	//		destinationAngleX_ += 0.1f;
+	//	}
 
-		if (Input::PressKey(DIK_LEFTARROW)) {
-			destinationAngleY_ -= 0.1f;
-		}
-		else if (Input::PressKey(DIK_RIGHTARROW)) {
-			destinationAngleY_ += 0.1f;
-		}
-	}
+	//	if (Input::PressKey(DIK_LEFTARROW)) {
+	//		destinationAngleY_ -= 0.1f;
+	//	}
+	//	else if (Input::PressKey(DIK_RIGHTARROW)) {
+	//		destinationAngleY_ += 0.1f;
+	//	}
+	//}
 
 
 
-	viewProjection_.rotation_.y =
-		Math::LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 1.0f);
-	viewProjection_.rotation_.x =
-		Math::LerpShortAngle(viewProjection_.rotation_.x, destinationAngleX_, 1.0f);
+	//viewProjection_.rotation_.y =
+	//	Math::LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 1.0f);
+	//viewProjection_.rotation_.x =
+	//	Math::LerpShortAngle(viewProjection_.rotation_.x, destinationAngleX_, 1.0f);
 
-	// 追従対象がいれば
-	if (target_) {
-		// 追従座標の補間
-		interTarget_ = Math::Lerp(interTarget_, GetTargetWordPos(), delayAmount_);
-	}
-	// 追跡対象からカメラまでのオフセット
-	Vector3 offset = calculateOffset();
+	//// 追従対象がいれば
+	//if (target_) {
+	//	// 追従座標の補間
+	//	interTarget_ = Math::Lerp(interTarget_, GetTargetWordPos(), delayAmount_);
+	//}
+	//// 追跡対象からカメラまでのオフセット
+	//Vector3 offset = calculateOffset();
 
-	// 座標をコピーしてオフセット分ずらす
-	viewProjection_.translation_ = Math::Add(interTarget_, offset);
+	//// 座標をコピーしてオフセット分ずらす
+	//viewProjection_.translation_ = Math::Add(interTarget_, offset);
 
 	// ビュー行列の更新
 	viewProjection_.UpdateMatrix();

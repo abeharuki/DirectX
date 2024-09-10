@@ -65,7 +65,7 @@ void Engine::BeginFrame() {
 	// ImGui受付開始
 	imguiManager->Begin();
 	// グローバル変数の更新
-	GlobalVariables::GetInstance()->Updeat();
+	GlobalVariables::GetInstance()->Update();
 
 	//	Input初期の更新
 	keyInput->Update();

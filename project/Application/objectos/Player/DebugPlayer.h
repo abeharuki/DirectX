@@ -20,8 +20,9 @@ struct PlayerStatus {
 	std::pair<const char *const, float> jumpStrength_ = { "JumpStrength", 0.5f };
 	std::pair<const char *const, float> gravity_ = { "Gravity", 0.03f };
 
-	std::pair<const char *const, float> ceilingHeight_ = { "CeilingHeight", 331.f };
-
+	std::pair<const char *const, float> stageHeight_ = { "StageHeight", 331.f };
+	std::pair<const char *const, float> stageWidth_ = { "StageWidth", 331.f };
+	std::pair<const char *const, float> stageeFloor_ = { "StageFloor", -1.5f };
 
 	std::pair<const char *const, float> drawScale_ = { "DrawScale", 128.f };
 	std::pair<const char *const, float> drawOffset_ = { "DrawOffset", 64.f };

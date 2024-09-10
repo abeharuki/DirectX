@@ -1,0 +1,12 @@
+{
+    "Player": {
+        "DrawOffset": 64.0,
+        "DrawScale": 128.0,
+        "Gravity": 0.029999999329447746,
+        "GroundMoveSpeed": 0.20000000298023224,
+        "JumpStrength": 0.5,
+        "StageFloor": -1.5,
+        "StageHeight": 331.0,
+        "StageWidth": 6.0
+    }
+}

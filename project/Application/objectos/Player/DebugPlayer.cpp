@@ -11,7 +11,7 @@ void DebugPlayer::Initialize() {
 	// 初期化
 	transform_.scale = { 0.5f,0.5f,0.5f };
 	transform_.translate.x = 2.0f;
-	transform_.translate.y = -1.5f;
+	transform_.translate.y = playerStatus_.stageeFloor_.second;
 
 	sphere_ = std::make_unique<Sphere>();
 	sphere_.reset(Sphere::CreateSphere("resources/white.png"));
@@ -86,8 +86,21 @@ void DebugPlayer::Update() {
 
 	}
 
-	if (transform_.translate.x <= -10.0f || transform_.translate.x >= 10.0f) {
-		velocity_.x = 0;
+
+	// プレイヤのX軸移動範囲を制限
+	if (transform_.translate.x <= -playerStatus_.stageWidth_.second) {	// 左方向
+		transform_.translate.x = -playerStatus_.stageWidth_.second;
+		if (velocity_.x < 0.f) { velocity_.x = 0.f; }
+	}
+	if (transform_.translate.x >= +playerStatus_.stageWidth_.second) {	// 右方向
+		transform_.translate.x = playerStatus_.stageWidth_.second;
+		if (velocity_.x > 0.f) { velocity_.x = 0.f; }
+	}
+
+	// プレイヤの地面へのめり込み対策
+	if (transform_.translate.y <= playerStatus_.stageeFloor_.second) {
+		transform_.translate.y = playerStatus_.stageeFloor_.second;
+		if (velocity_.y < 0.f) { velocity_.y = 0.f; }
 	}
 
 	ImGui::Begin("Setting");
@@ -114,7 +127,7 @@ void DebugPlayer::Draw([[maybe_unused]] const ViewProjection &camera) {
 
 // 移動
 void DebugPlayer::MoveInitialize() {
-	transform_.translate.y = -1.5f;
+	transform_.translate.y = playerStatus_.stageeFloor_.second;
 	velocity_.y = 0.0f;
 };
 void DebugPlayer::MoveUpdate() {
@@ -189,7 +202,7 @@ void DebugPlayer::JumpUpdate() {
 	// 加速
 	velocity_ += accelerationVector;
 
-	if (transform_.translate.y <= -1.5f) {
+	if (transform_.translate.y <= playerStatus_.stageeFloor_.second) {
 		// ジャンプ終了
 		behaviorRequest_ = Behavior::kRoot;
 	}
@@ -274,7 +287,9 @@ void PlayerStatus::Save() const
 	gVal->AddItem(kGroupName_, groundMoveSpeed_.first, groundMoveSpeed_.second);
 	gVal->AddItem(kGroupName_, jumpStrength_.first, jumpStrength_.second);
 	gVal->AddItem(kGroupName_, gravity_.first, gravity_.second);
-	gVal->AddItem(kGroupName_, ceilingHeight_.first, ceilingHeight_.second);
+	gVal->AddItem(kGroupName_, stageHeight_.first, stageHeight_.second);
+	gVal->AddItem(kGroupName_, stageWidth_.first, stageWidth_.second);
+	gVal->AddItem(kGroupName_, stageeFloor_.first, stageeFloor_.second);
 	gVal->AddItem(kGroupName_, drawScale_.first, drawScale_.second);
 	gVal->AddItem(kGroupName_, drawOffset_.first, drawOffset_.second);
 }
@@ -287,7 +302,9 @@ void PlayerStatus::Load()
 	gVal->GetValue(kGroupName_, groundMoveSpeed_.first, &groundMoveSpeed_.second);
 	gVal->GetValue(kGroupName_, jumpStrength_.first, &jumpStrength_.second);
 	gVal->GetValue(kGroupName_, gravity_.first, &gravity_.second);
-	gVal->GetValue(kGroupName_, ceilingHeight_.first, &ceilingHeight_.second);
+	gVal->GetValue(kGroupName_, stageHeight_.first, &stageHeight_.second);
+	gVal->GetValue(kGroupName_, stageWidth_.first, &stageWidth_.second);
+	gVal->GetValue(kGroupName_, stageeFloor_.first, &stageeFloor_.second);
 	gVal->GetValue(kGroupName_, drawScale_.first, &drawScale_.second);
 	gVal->GetValue(kGroupName_, drawOffset_.first, &drawOffset_.second);
 }

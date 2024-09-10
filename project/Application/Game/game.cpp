@@ -1,8 +1,10 @@
 #include "Game.h"
 
-void Game::Initialize() { 
+void Game::Initialize() {
 	Framework::Initialize();
 
+	pGVariables_ = GlobalVariables::GetInstance();
+	pGVariables_->LoadFiles();
 
 	//シーンファクトを生成し、マネージャーにセット
 	sceneFactory_ = new SceneFactory();
@@ -16,12 +18,10 @@ void Game::Initialize() {
 
 void Game::Update() {
 
-
-
 	// 基底クラスの更新
 	Framework::Update();
 
-	
+
 }
 
 void Game::Draw() {
