@@ -71,14 +71,14 @@ void DebugEnemy::Update() {
 	}
 
 	enemySprite_->SetTransform(transformBase_);
-	
+	Vector3 playerPos = debugPlayer_->GetWorldPosition();
 
 	ImGui::Begin("Setting");
 	ImGui::Text("posX%f", transformBase_.translate.x);
 	ImGui::Text("posY%f", transformBase_.translate.y);
 	ImGui::Text("posZ%f", transformBase_.translate.z);
 	ImGui::DragFloat3("Pos", &transformBase_.translate.x, 0.1f);
-	ImGui::DragFloat3("Scale", &transformBase_.scale.x, 0.1f);
+	ImGui::DragFloat3("playerPos", &playerPos.x, 0.1f);
 	ImGui::DragFloat3("velocity" ,&velocity_.x, 0.1f);
 	ImGui::End();
 }
@@ -104,7 +104,7 @@ void DebugEnemy::MoveUpdata() {
 	}
 
 	//playerの位置が敵から±2の位置にいるかどうか
-	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x, 1.0f)) {
+	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x, 5.0f)) {
 		
 
 		//playerと敵の距離が5離れたいたらジャンプして移動
@@ -192,6 +192,7 @@ void DebugEnemy::DashUpdata() {
 // 攻撃
 void DebugEnemy::AttackInitialize() {
 	transformBase_.translate.y = 123.0f;
+	velocity_ = { 0.0f,0.0f,0.0f };
 	// ジャンプ初速
 	if (!jump_) {
 		const float kJumpFirstSpeed = -10.0f;
