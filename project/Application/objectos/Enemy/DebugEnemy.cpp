@@ -93,7 +93,7 @@ void DebugEnemy::MoveInitialize() {
 	behaviorAttackTime = 10;
 
 	//velocity_.y = 0.0f;
-	transformBase_.translate.y = 5.0f;
+	transformBase_.translate.y = 123.0f;
 	velocity_ = { 0.0f,0.0f,0.0f };
 	jump_ = false;
 };
@@ -192,7 +192,7 @@ void DebugEnemy::AttackInitialize() {
 	transformBase_.translate.y = 123.0f;
 	// ジャンプ初速
 	if (!jump_) {
-		const float kJumpFirstSpeed = -5.0f;
+		const float kJumpFirstSpeed = -10.0f;
 		velocity_.y = kJumpFirstSpeed;
 	}
 	else {
@@ -209,14 +209,14 @@ void DebugEnemy::AttackUpdata() {
 	
 	if (!jump_) {
 		//最高地点まで行ったら勢いよく落ちる
-		if (velocity_.y <= 500.0f) {
+		if (velocity_.y >= 0.0f) {
 			attack_ = true;
-			velocity_.y = 1.0f;
+			velocity_.y = 20.0f;
 
 		}
 		else {
 			//重力加速度
-			const float kGravity = 3.f;
+			const float kGravity = 0.5f;
 			// 加速ベクトル
 			Vector3 accelerationVector = { 0, kGravity, 0 };
 			// 加速
