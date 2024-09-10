@@ -2,6 +2,7 @@
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 #include <GlobalVariables.h>
+#include <Stage.h>
 
 void DebugPlayer::Initialize() {
 
@@ -267,6 +268,18 @@ void DebugPlayer::HeadButtInitialize()
 	transform_.translate.y = playerStatus_.stageHeight_.second;
 	velocity_.y = 0.f;
 
+	// DxCommonからViewPortを取得する
+	const DirectXCommon *const pDxCommon = DirectXCommon::GetInstance();
+	const auto &vp = pDxCommon->GetViewPort();
+	const int32_t sceneWidth = static_cast<int32_t>(vp.Width);
+
+	// 画面の位置から座標を取得する
+	const int32_t targetPos = std::clamp(static_cast<int32_t>(GetWorldPosition().x * Stage::kSize_ / (sceneWidth - playerStatus_.drawScale_.second * 2)), 0, Stage::kSize_);
+
+	// もしその場所が立ってなかったら
+	if (not pStage_->GetUp(targetPos)) {
+		pStage_->SetUp(true, targetPos);
+	}
 }
 
 void DebugPlayer::HeadButtUpdate()

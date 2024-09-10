@@ -12,6 +12,8 @@
 #include "PostEffects/PostEffect.h"
 #include <Sphere.h>
 
+class Stage;
+
 struct PlayerStatus {
 
 	const char *const kGroupName_ = "Player";
@@ -114,6 +116,7 @@ public: // メンバ関数
 	void SetViewProjection(const ViewProjection *viewProjection) {
 		pViewProjection_ = viewProjection;
 	}
+	void SetStage(Stage *stage) { pStage_ = stage; }
 private: // メンバ変数
 	Transform transform_;
 	Matrix4x4 transMat_;
@@ -121,6 +124,9 @@ private: // メンバ変数
 	const ViewProjection *pViewProjection_;
 	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Sphere> sphere_;
+
+	// ステージへの参照
+	Stage *pStage_ = nullptr;
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;

@@ -7,10 +7,10 @@
 #include <PostEffects/PostEffect.h>
 
 void GameScene::Initialize() {
-	
+
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 2.2f, 3.5f, -15.0f };
-	
+
 	backGroundSprite_[0].reset(Sprite::Create("resources/Stage/backGround_1.png"));
 	backGroundSprite_[1].reset(Sprite::Create("resources/Stage/backGround_2.png"));
 	backGroundSprite_[2].reset(Sprite::Create("resources/Stage/backGround_3.png"));
@@ -28,6 +28,8 @@ void GameScene::Initialize() {
 
 	stage_ = std::make_unique<Stage>();
 	stage_->Initialize();
+
+	debugPlayer_->SetStage(stage_.get());
 
 	emitter_ = {
 		.translate = {0,3,0},
@@ -54,7 +56,7 @@ void GameScene::Initialize() {
 	dissolve_.edgeColor = { 1.0f,-1.0f,-1.0f };
 	bloom_.stepWidth = 0.001f;
 	bloom_.sigma = 0.005f;
-	
+
 }
 
 void GameScene::Update() {
@@ -65,14 +67,14 @@ void GameScene::Update() {
 	}
 
 
-	
+
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {
 		particle_->Update();
 	}
 
-	
+
 	stage_->SetDebugEnemy(debugEnemy_.get());
 	stage_->Update();
 
@@ -80,7 +82,7 @@ void GameScene::Update() {
 	debugEnemy_->SetDebugPlayer(debugPlayer_.get());
 	debugEnemy_->Update();
 
-	
+
 	viewProjection_.UpdateMatrix();
 
 
@@ -149,7 +151,7 @@ void GameScene::Update() {
 		ImGui::TreePop();
 
 	}
-	
+
 
 
 	//Posteffect
