@@ -63,7 +63,8 @@ void DebugEnemy::Update() {
 	}
 
 	if (transformBase_.translate.x <= -30) {
-		velocity_.x = 10.0f;
+		//velocity_.x = 10.0f;
+		velocity_.x = 0.0f;
 	}
 
 	if (transformBase_.translate.x >= 820) {
@@ -105,11 +106,11 @@ void DebugEnemy::MoveUpdata() {
 	}
 
 	//playerの位置が敵から±2の位置にいるかどうか
-	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x-30, transformBase_.translate.x, 5.0f)) {
+	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x-60, transformBase_.translate.x, 5.0f)) {
 		
 
 		//playerと敵の距離が5離れたいたらジャンプして移動
-		if (debugPlayer_->GetWorldPosition().x-30 < transformBase_.translate.x) {
+		if (debugPlayer_->GetWorldPosition().x-60 < transformBase_.translate.x) {
 			velocity_.x = -10.0f;
 		}
 		else {
