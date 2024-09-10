@@ -8,9 +8,11 @@ void Stage::Initialize(){
 		playerAttackSprite_[i].reset(Sprite::Create("resources/Stage/pillar_player.png"));
 		enemyAttackSprite_[i].reset(Sprite::Create("resources/Stage/pillar_boss.png"));
 		boxSprite_[i].reset(Sprite::Create("resources/Stage/block.png"));
+		boxSprite_[i]->SetSize({ 64.0f,64.0f });
 		boxSprite_[i]->SetPosition(Vector2{ 64.0f * i ,331.f });
+		
 		playerAttackTransform_[i].translate.y = 331.0f;
-		playerAttackTransform_[i].translate.x = 64.0f * i;
+		playerAttackTransform_[i].translate.x += 64.0f * i;
 		playerAttackTransform_[i].scale = { 64.0f,64.0f,0.0f };
 		enemyAttackTransform_[i].translate.y = 331.0f;
 		enemyAttackTransform_[i].translate.x = 64.0f*i;
@@ -87,27 +89,8 @@ void Stage::Update(){
 
 		}
 		
-
-		/*if (colliderManager_[i]->GetPlayerHit()) {
-			if (worldTransform_[i].scale.y == 0.5f) {
-				returnScale_[i] = false;
-				hitPlayer_[i] = true;
-				upBox_[i] = true;
-			}
-			colliderManager_[i]->SetPlayerHit(false);
-		}
-
-		if (colliderManager_[i]->GetEnemyHit() ){
-			if (debugEnemy_->GetAttack() && worldTransform_[i].scale.y == 0.5f) {
-				returnScale_[i] = false;
-				downBox_[i] = true;
-			}
-			colliderManager_[i]->SetEnemyHit(false);
-		}*/
 		playerAttackSprite_[i]->SetTransform(playerAttackTransform_[i]);
 		enemyAttackSprite_[i]->SetTransform(enemyAttackTransform_[i]);
-
-
 	}
 	
 

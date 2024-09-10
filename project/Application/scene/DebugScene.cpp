@@ -293,125 +293,14 @@ void DebugScene::Draw() {
 	debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
 
-	stage_->Draw(viewProjection_, true);
+	//stage_->Draw(viewProjection_, true);
 }
 
 void DebugScene::RenderDirect() {
 
 }
 
-void DebugScene::CameraMove() {
-	// ゲームパッドの状態を得る変数(XINPUT)
-	XINPUT_STATE joyState;
 
-	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-
-		const float value = 0.7f;
-		bool isMove = false;
-
-		// 移動速度
-		const float kCharacterSpeed = 0.2f;
-		// 移動量
-		velocity_ = {
-		   (float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.0f,
-		   (float)joyState.Gamepad.sThumbLY / SHRT_MAX };
-
-		if (Math::Length(velocity_) > value) {
-			isMove = true;
-			velocity_ = Math::Normalize(velocity_);
-			velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
-		}
-
-
-
-		if (isMove) {
-			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_.rotation_.y);
-			velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
-			// 現在の位置から移動する位置へのベクトル
-			Vector3 sub = (worldTransform_.translate + velocity_) - GetLocalPosition();
-			// 平行移動
-			worldTransform_.translate = Math::Add(worldTransform_.translate, velocity_);
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-		}
-
-
-
-	}
-	else {
-		const float value = 0.7f;
-		bool isMove_ = false;
-		/*----------移動処理----------*/
-		float kCharacterSpeed = 0.3f;
-		// 移動量
-		velocity_ = { 0.0f, 0.0f, 0.0f };
-
-		// 上下移動
-		if (Input::PressKey(DIK_W)) {
-			velocity_.z = 1;
-
-		}
-		else if (Input::PressKey(DIK_S)) {
-			velocity_.z = -1;
-		}
-
-
-		// 左右移動
-		if (Input::PressKey(DIK_A)) {
-			velocity_.x = -1;
-
-		}
-		else if (Input::PressKey(DIK_D)) {
-			velocity_.x = 1;
-		}
-
-		if (Input::PressKey(DIK_A) || Input::PressKey(DIK_D) || Input::PressKey(DIK_W) ||
-			Input::PressKey(DIK_S)) {
-			isMove_ = true;
-			velocity_ = Math::Normalize(velocity_);
-			velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
-		}
-
-		if (isMove_) {
-			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_.rotation_.y);
-			velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
-			// 現在の位置から移動する位置へのベクトル
-			Vector3 sub = (worldTransform_.translate + velocity_) - GetLocalPosition();
-			// 平行移動
-			worldTransform_.translate = Math::Add(worldTransform_.translate, velocity_);
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-		}
-
-	}
-
-	// 回転
-	worldTransform_.rotate.y = Math::LerpShortAngle(worldTransform_.rotate.y, destinationAngleY_, 0.5f);
-
-	worldTransform_.UpdateMatrix();
-}
 
 Vector3 DebugScene::GetLocalPosition()
 {
@@ -421,7 +310,7 @@ Vector3 DebugScene::GetLocalPosition()
 void DebugScene::CheckAllCollision() {
 	for (int i = 0; i < Stage::kSize_; ++i) {
 		if (debugEnemy_->GetAttack()) {
-			if (IsCollidingRectRect(debugEnemy_->GetPos().x, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x, debugEnemy_->GetScale().y,
+			if (Math::IsBoxCollision(debugEnemy_->GetPos().x, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x, debugEnemy_->GetScale().y,
 				stage_->GetPos(i).x, stage_->GetPos(i).y, stage_->GetScale(i).x, stage_->GetScale(i).y)) {
 				if (stage_->GetScale(i).y == 64.0f) {
 					stage_->SetDown(true, i);

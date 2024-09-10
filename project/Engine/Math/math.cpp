@@ -621,6 +621,16 @@ Vector3 Math::Cross(const Vector3& v1, const Vector3& v2)
 	return result;
 }
 
+bool Math::IsBoxCollision(const float AposX, const float AposY, const float AsizeW, const float AsizeH, const float BposX, const float BposY, const float BsizeW, const float BsizeH)
+{
+
+	if (AposX < BposX + BsizeW && AposX + AsizeW > BposX &&
+		AposY < BposY + BsizeH && AposY + AsizeH > BposY) {
+		return true;
+	}
+	return false;
+}
+
 // 四角形の当たり判定
 bool Math::IsAABBCollision(
     const Vector3& translate1, const Vector3 size1, const Vector3& translate2,

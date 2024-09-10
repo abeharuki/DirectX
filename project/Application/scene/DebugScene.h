@@ -28,47 +28,7 @@ public:
 	void CameraMove();
 	Vector3 GetLocalPosition();
 	void CheckAllCollision();
-	// 当たり判定の関数
-	bool IsCollidingCircleRect(float cx, float cy, float radius,
-		float rx, float ry, float rw, float rh) {
-		// 四角形の中心からのオフセットを計算
-		float dx = std::abs(cx - rx);
-		float dy = std::abs(cy - ry);
-
-		// 円が四角形の外に完全に出ている場合
-		if (dx > (rw / 2 + radius) || dy > (rh / 2 + radius)) {
-			return false;
-		}
-
-		// 円の中心が四角形の中にある場合
-		if (dx <= rw / 2 || dy <= rh / 2) {
-			return true;
-		}
-
-		// 四角形の角との距離が円の半径以下かどうかをチェック
-		float cornerDistanceSq = (dx - rw / 2) * (dx - rw / 2) +
-			(dy - rh / 2) * (dy - rh / 2);
-
-		return cornerDistanceSq <= (radius * radius);
-	}
-	// 四角形同士の当たり判定関数
-	bool IsCollidingRectRect(float x1, float y1, float w1, float h1,
-		float x2, float y2, float w2, float h2) {
-		// 四角形1の右端が四角形2の左端よりも左側にある場合
-		if (x1 + w1 / 2 < x2 - w2 / 2) return false;
-
-		// 四角形1の左端が四角形2の右端よりも右側にある場合
-		if (x1 - w1 / 2 > x2 + w2 / 2) return false;
-
-		// 四角形1の上端が四角形2の下端よりも下側にある場合
-		if (y1 + h1 / 2 < y2 - h2 / 2) return false;
-
-		// 四角形1の下端が四角形2の上端よりも上側にある場合
-		if (y1 - h1 / 2 > y2 + h2 / 2) return false;
-
-		// どれにも該当しなければ重なっている
-		return true;
-	}
+	
 private:
 	// 光の数値
 	DirectionLight directionLight_{

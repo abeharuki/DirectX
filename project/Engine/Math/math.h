@@ -422,6 +422,10 @@ public:
 	static Vector3 Cross(const Vector3 &v1, const Vector3 &v2);
 
 	// 四角形の当たり判定
+	static bool IsBoxCollision(
+		const float AposX, const float AposY, const float AsizeW, const float AsizeH,
+		const float BposX, const float BposY, const float BsizeW, const float BsizeH);
+
 	static bool IsAABBCollision(
 		const Vector3 &translate1, const Vector3 size1, const Vector3 &translate2,
 		const Vector3 size2);

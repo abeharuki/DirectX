@@ -1,90 +1,102 @@
 #pragma once
 #include "Framework/IScene.h"
 #include "Input.h"
-#include "WorldTransform.h"
-#include "ViewProjection.h"
-#include "DirectXCommon.h"
-#include "Model.h"
-#include "Engine.h"
-#include "Sprite.h"
-#include "Skydome.h"
-#include "Sphere.h"
-#include "ParticleSystem.h"
-#include "Ground.h"
-#include <Player/PlayerManager.h>
-#include "camera/followCamera.h"
-#include <Enemy/EnemyManager.h>
-#include <Healer/HealerManager.h>
-#include <Tank/TankManager.h>
-#include <Renju/RenjuManager.h>
+#include <Sprite.h>
+#include "3d/ModelLoader.h"
+#include <camera/followCamera.h>
+#include <PostEffects/PostEffect.h>
+#include <Skybox.h>
+#include <Skydome.h>
+#include "Player/DebugPlayer.h"
+#include <Ground.h>
+#include <Sphere.h>
+#include "3d/LineBox.h"
 #include "CollisionManager/CollisionManager.h"
-#include <Command/Command.h>
-#include <ModelLoader.h>
+#include <ParticleSystem.h>
+#include <Enemy/EnemyManager.h>
+#include "CollisionManager/CollisionConfig.h"
+#include <Enemy/DebugEnemy.h>
+#include <Stage.h>
 
-/// <summary>
-/// ゲームシーン
-/// </summary>
+
 class GameScene : public IScene {
-public: // メンバ関数
+public:
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
 	void RenderDirect() override;
-
-	GameScene();
-	~GameScene();
-
-	//static GameScene* GetInstance();
+	void CameraMove();
+	Vector3 GetLocalPosition();
 	void CheckAllCollision();
 
-	void Fade();
-
-private://基本変数
+private:
 	// 光の数値
 	DirectionLight directionLight_{
 		{1.0f, 1.0f, 1.0f, 1.0f},
-		{0.0f, -2.0f, 0.0f},
+		{0.0f, -2.3f, -1.1f},
 		1.0f,
 		true,
 	};
 
-private: // メンバ変数
+	WorldTransform worldTransform_;
+	WorldTransform worldTransformSkybox_;
+	WorldTransform worldTransformAnimation_;
+	WorldTransform worldTransformModel_;
+
+	//ローダー
+	std::unique_ptr<ModelLoader> loader_;
+	ViewProjection viewProjection_;
+
+	std::unique_ptr<Stage> stage_;
+	std::unique_ptr<DebugPlayer> debugPlayer_;
+	std::unique_ptr<DebugEnemy> debugEnemy_;
+	std::unique_ptr<Skybox> skybox_;
+	std::unique_ptr<Model> model_;
+	std::unique_ptr<Sprite> backGroundSprite_[5];
+	float a_;
+	bool impactScale_;
 
 	//衝突マネージャー
 	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
-	ViewProjection viewProjection_;
-
-	// 天球
-	std::unique_ptr<Skydome> skydome_;
-	// 天球3Dモデル
-	std::unique_ptr<Model> modelSkydome_;
-	//ローダー
-	std::unique_ptr<ModelLoader> loader_;
-
-	//フェードイン・フェードアウト用スプライト
-	std::unique_ptr<Sprite> spriteBack_;
-
+	Vector3 impactVelocity_;
+	Vector3 impactPos_;
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
+	std::unique_ptr<Animations>animation_;
+	int AnimationNum_ = 0;
+	float animaflame_ = 0.0f;
+
+	//パーティクル
+	std::unique_ptr<ParticleSystem> particle_;
+	EmitterSphere emitter_;
+	int particleCount_;
+	bool particleFlag_;
+
+	// 速度
+	Vector3 velocity_ = {};
+	// 目標の角度
+	float destinationAngleY_ = 0.0f;
 
 
-	//プレイヤー
-	std::unique_ptr<PlayerManager> playerManager_;
-	// 敵
-	std::unique_ptr<EnemyManager> enemyManager_;
 
-	//タンク
-	std::unique_ptr<TankManager> tankManager_;
-	//ヒーラー
-	std::unique_ptr<HealerManager> healerManager_;
-	//レンジャー
-	std::unique_ptr<RenjuManager> renjuManager_;
 
-	//コマンド
-	std::unique_ptr<Command> command_;
+	//アニメーションdissolve
+	DissolveStyle animeDissolve_;
+	bool isAnimeDissolve_ = false;
 
-	bool isFadeOut_;
-	bool isFadeIn_;
-	float alpha_;
+	//PosteEffect
+	Grayscale grayscale_;
+	Vignetting vignetting_;
+	Gaussian smoothing_;
+	OutLineStyle outLine_;
+	RadialBlur radialBlur_;
+	DissolveStyle dissolve_;
+	Random random_;
+	int32_t isBlur_;
+	Vector2 gasianBlur_ = { 0.001f,0.001f };
+	BloomStyle bloom_;
+	HSVMaterial hsv_;
+	bool postEffects[9];
 
+	float env_;
 };

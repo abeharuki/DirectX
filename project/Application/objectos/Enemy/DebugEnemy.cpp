@@ -5,72 +5,73 @@
 void DebugEnemy::Initialize() {
 
 	
-	transformBase_.scale = { 50.0f,100.0f,1.0f };
-	transformBase_.translate.x = 2.0f;
-	transformBase_.translate.y = 226.0f;
-	enemySprite_.reset(Sprite::Create("resources/Enemy/red_.png"));
+	transformBase_.scale = { 280.0f,212.0f,1.0f };
+	transformBase_.translate.x = 30.0f;
+	transformBase_.translate.y = 123.0f;
+	velocity_.x = 10.0f;
+	enemySprite_.reset(Sprite::Create("resources/Enemy/boss_kari.png"));
 	
 }
 
 void DebugEnemy::Update() {
 
 	
-	//if (behaviorRequest_) {
-	//	// 振る舞い変更
-	//	behavior_ = behaviorRequest_.value();
-	//	// 各振る舞いごとの初期化
-	//	switch (behavior_) {
-	//	case Behavior::kRoot:
-	//	default:
-	//		MoveInitialize();
-	//		break;
-	//	case Behavior::kJump:
-	//		JumpInitialize();
-	//		break;
-	//	case Behavior::kDash:
-	//		DashInitialize();
-	//		break;
-	//	case Behavior::kAttack:
-	//		AttackInitialize();
-	//		break;
+	if (behaviorRequest_) {
+		// 振る舞い変更
+		behavior_ = behaviorRequest_.value();
+		// 各振る舞いごとの初期化
+		switch (behavior_) {
+		case Behavior::kRoot:
+		default:
+			MoveInitialize();
+			break;
+		case Behavior::kJump:
+			JumpInitialize();
+			break;
+		case Behavior::kDash:
+			DashInitialize();
+			break;
+		case Behavior::kAttack:
+			AttackInitialize();
+			break;
 
-	//	}
+		}
 
-	//	// 振る舞いリセット
-	//	behaviorRequest_ = std::nullopt;
-	//}
+		// 振る舞いリセット
+		behaviorRequest_ = std::nullopt;
+	}
 
-	//switch (behavior_) {
-	//case Behavior::kRoot:
-	//default:
-	//	// 通常行動
-	//	MoveUpdata();
-	//	break;
-	//case Behavior::kJump:
-	//	//ジャンプ
-	//	JumpUpdata();
-	//	break;
-	//case Behavior::kDash:
-	//	// ジャンプ
-	//	DashUpdata();
-	//	break;
-	//case Behavior::kAttack:
-	//	// 攻撃
-	//	AttackUpdata();
-	//	break;
+	switch (behavior_) {
+	case Behavior::kRoot:
+	default:
+		// 通常行動
+		MoveUpdata();
+		break;
+	case Behavior::kJump:
+		//ジャンプ
+		JumpUpdata();
+		break;
+	case Behavior::kDash:
+		// ジャンプ
+		DashUpdata();
+		break;
+	case Behavior::kAttack:
+		// 攻撃
+		AttackUpdata();
+		break;
 
-	//}
+	}
 
-	//if (transformBase_.translate.x <= -10) {
-	//	velocity_.x = 0.3f;
-	//}
+	if (transformBase_.translate.x <= -10) {
+		velocity_.x = 10.0f;
+	}
 
-	//if (transformBase_.translate.x >= 10) {
-	//	velocity_.x = -0.3f;
-	//}
+	if (transformBase_.translate.x >= 750) {
+		velocity_.x = -10.0f;
+	}
 
 	enemySprite_->SetTransform(transformBase_);
-	attack_ = true;
+	
 
 	ImGui::Begin("Setting");
 	ImGui::Text("posX%f", transformBase_.translate.x);
@@ -97,10 +98,10 @@ void DebugEnemy::MoveInitialize() {
 	jump_ = false;
 };
 void DebugEnemy::MoveUpdata() {
-	//float sub = debugPlayer_->GetWorldPosition().x - transformBase_.translate.x;
-	//if (sub < 0) {
-	//	sub *= -1;
-	//}
+	float sub = debugPlayer_->GetWorldPosition().x - transformBase_.translate.x;
+	if (sub < 0) {
+		sub *= -1;
+	}
 
 	////playerの位置が敵から±2の位置にいるかどうか
 	//if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x, 1.0f)) {
@@ -127,7 +128,7 @@ void DebugEnemy::MoveUpdata() {
 	//	
 	//}
 
-	//transformBase_.translate += velocity_;
+	transformBase_.translate += velocity_;
 	if (--behaviorAttackTime <= 0) {
 		behaviorRequest_ = Behavior::kAttack;
 	}
@@ -138,7 +139,7 @@ void DebugEnemy::MoveUpdata() {
 void DebugEnemy::JumpInitialize() {
 	transformBase_.translate.y = 5.0f;
 	// ジャンプ初速
-	const float kJumpFirstSpeed = 0.5f;
+	const float kJumpFirstSpeed = 5.0f;
 	velocity_.y = kJumpFirstSpeed;
 	jump_ = true;
 };
@@ -188,7 +189,7 @@ void DebugEnemy::DashUpdata() {
 
 // 攻撃
 void DebugEnemy::AttackInitialize() {
-	transformBase_.translate.y = 226.0f;
+	transformBase_.translate.y = 123.0f;
 	// ジャンプ初速
 	if (!jump_) {
 		const float kJumpFirstSpeed = -5.0f;
@@ -205,32 +206,37 @@ void DebugEnemy::AttackInitialize() {
 void DebugEnemy::AttackUpdata() {
 	// 移動
 	transformBase_.translate += velocity_;
+	//重力加速度
+	const float kGravity = 0.3f;
+	// 加速ベクトル
+	Vector3 accelerationVector = { 0, -kGravity, 0 };
+	// 加速
+	velocity_ += accelerationVector;
+	//if (!jump_) {
+	//	//最高地点まで行ったら勢いよく落ちる
+	//	if (velocity_.y <= 0.0f) {
+	//		attack_ = true;
+	//		velocity_.y = -1.0f;
 
-	if (!jump_) {
-		//最高地点まで行ったら勢いよく落ちる
-		if (velocity_.y <= 0.0f) {
-			attack_ = true;
-			velocity_.y = -1.0f;
-
-		}
-		else {
-			// 重力加速度
-			const float kGravity = 0.3f;
-			// 加速ベクトル
-			Vector3 accelerationVector = { 0, -kGravity, 0 };
-			// 加速
-			velocity_ += accelerationVector;
-		}
-	}
-	else {
-		attack_ = true;
-		velocity_.y += 5.f;
-	}
+	//	}
+	//	else {
+	//		// 重力加速度
+	//		const float kGravity = 0.3f;
+	//		// 加速ベクトル
+	//		Vector3 accelerationVector = { 0, -kGravity, 0 };
+	//		// 加速
+	//		velocity_ += accelerationVector;
+	//	}
+	//}
+	//else {
+	//	attack_ = true;
+	//	velocity_.y += 5.f;
+	//}
 
 
-	if (transformBase_.translate.y <= 226.0f) {
+	if (transformBase_.translate.y >= 123.0f) {
 		velocity_.y = 0.0f;
-		transformBase_.translate.y = 226.0f;
+		transformBase_.translate.y = 123.0f;
 		
 		// 攻撃終了
 		if (--behaviorMoveTime <= 0) {

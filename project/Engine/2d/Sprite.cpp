@@ -2,8 +2,7 @@
 
 
 
-Microsoft::WRL::ComPtr<IDxcBlob> Sprite::vertexShaderBlob_;
-Microsoft::WRL::ComPtr<IDxcBlob> Sprite::pixelShaderBlob_;
+
 
 
 
