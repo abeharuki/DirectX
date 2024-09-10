@@ -12,7 +12,22 @@
 #include "PostEffects/PostEffect.h"
 #include <Sphere.h>
 
-class DebugPlayer :public Collider{
+struct PlayerStatus {
+
+	const char *const kGroupName_ = "Player";
+
+	std::pair<const char *const, float> groundMoveSpeed_ = { "GroundMoveSpeed", 0.2f };
+	std::pair<const char *const, float> jumpStrength_ = { "JumpStrength", 0.5f };
+	std::pair<const char *const, float> gravity_ = { "Gravity", 0.03f };
+
+	std::pair<const char *const, float> ceilingHeight_ = { "CeilingHeight", 331.f };
+
+	void Save() const;
+	void Load();
+
+};
+
+class DebugPlayer :public Collider {
 public:
 
 	// 攻撃用定数
@@ -55,7 +70,7 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
-	void Draw(const ViewProjection& camera);
+	void Draw(const ViewProjection &camera);
 
 	// 移動
 	void MoveInitialize();
@@ -65,26 +80,30 @@ public: // メンバ関数
 	void JumpInitialize();
 	void JumpUpdate();
 
-	//ダッシュ
+	// 頭突き
+	void HeadButtInitialize();
+	void HeadButtUpdate();
+
+	// ダッシュ
 	void DashInitialize();
 	void DashUpdate();
 
-	//攻撃
+	// 攻撃
 	void AttackInitialize();
 	void AttackUpdate();
 
 
-	void OnCollision(Collider* collider) override;
+	void OnCollision(Collider *collider) override;
 	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
-	const WorldTransform& GetWorldTransform() const override{ return worldTransformSphere_; }
-	void SetViewProjection(const ViewProjection* viewProjection) {
+	const WorldTransform &GetWorldTransform() const override { return worldTransformSphere_; }
+	void SetViewProjection(const ViewProjection *viewProjection) {
 		viewProjection_ = viewProjection;
 	}
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformSphere_;
-	const ViewProjection* viewProjection_;
+	const ViewProjection *viewProjection_;
 	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Sphere> sphere_;
 
@@ -93,12 +112,15 @@ private: // メンバ変数
 
 	// 振る舞い
 	enum class Behavior {
-		kRoot, // 通常状態
-		kJump, // ジャンプ
-		kDash, // ダッシュ
-		kAttack, //攻撃
-		knock,//ノックバック
-		kDead, // 死亡
+		kRoot,		// 通常状態
+		kJump,		// ジャンプ
+		kDash,		// ダッシュ
+		kHeadButt,	// 頭突き
+		kAttack,	// 攻撃
+		knock,		// ノックバック
+		kDead,		// 死亡
+
+		kMaxCount	// ビヘイビアの数
 	};
 
 	Behavior behavior_ = Behavior::kRoot;
@@ -138,5 +160,9 @@ private: // メンバ変数
 
 	// 速度
 	Vector3 velocity_ = {};
+
+
+	// プレイヤのステータス
+	PlayerStatus playerStatus_;
 
 };

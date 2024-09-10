@@ -1,8 +1,12 @@
 #include "DebugPlayer.h"
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
+#include <GlobalVariables.h>
 
 void DebugPlayer::Initialize() {
+
+	playerStatus_.Load();
+	playerStatus_.Save();
 
 	// 初期化
 	worldTransformBase_.Initialize();
@@ -25,6 +29,11 @@ void DebugPlayer::Initialize() {
 }
 
 void DebugPlayer::Update() {
+#ifdef _DEBUG
+	// プレイヤデータのロード
+	playerStatus_.Load();
+
+#endif // _DEBUG
 
 
 
@@ -105,7 +114,7 @@ void DebugPlayer::MoveUpdate() {
 	const float value = 0.7f;
 	bool isMove_ = false;
 	/*----------移動処理----------*/
-	float kCharacterSpeed = 0.3f;
+	const float kCharacterSpeed = playerStatus_.groundMoveSpeed_.second;
 	// 移動量
 	velocity_ = { 0.0f, 0.0f, 0.0f };
 
@@ -116,8 +125,6 @@ void DebugPlayer::MoveUpdate() {
 		constexpr float kDeadZone = 0.7f;
 		bool isMove = false;
 
-		// 移動速度
-		constexpr float kCharacterSpeed = 0.2f;
 		// 移動量
 		Vector3 velocity = {
 		   std::abs(joyState.Gamepad.sThumbLX) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE ? (float)joyState.Gamepad.sThumbLX : 0.f / SHRT_MAX, 0.0f,
@@ -159,7 +166,7 @@ void DebugPlayer::MoveUpdate() {
 void DebugPlayer::JumpInitialize() {
 
 	// ジャンプ初速
-	const float kJumpFirstSpeed = 0.5f;
+	const float kJumpFirstSpeed = playerStatus_.jumpStrength_.second;
 	velocity_.y = kJumpFirstSpeed;
 
 };
@@ -168,7 +175,7 @@ void DebugPlayer::JumpUpdate() {
 	// 移動
 	worldTransformBase_.translate += velocity_;
 	// 重力加速度
-	const float kGravity = 0.03f;
+	const float kGravity = playerStatus_.gravity_.second;
 	// 加速ベクトル
 	Vector3 accelerationVector = { 0, -kGravity, 0 };
 	// 加速
@@ -178,7 +185,18 @@ void DebugPlayer::JumpUpdate() {
 		// ジャンプ終了
 		behaviorRequest_ = Behavior::kRoot;
 	}
-};
+}
+
+void DebugPlayer::HeadButtInitialize()
+{
+	
+
+}
+
+void DebugPlayer::HeadButtUpdate()
+{
+}
+;
 
 // ダッシユ
 void DebugPlayer::DashInitialize() {
@@ -219,21 +237,31 @@ const Vector3 DebugPlayer::GetWorldPosition() const
 {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
-	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransformBase_.matWorld_.m[3][0];
-	worldPos.y = worldTransformBase_.matWorld_.m[3][1];
-	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
+	std::memcpy(&worldPos, worldTransformBase_.matWorld_.m[3], sizeof(Vector3));
 	return worldPos;
 }
 
 Vector3 DebugPlayer::GetLocalPosition() {
-	// ワールド座標を入れる関数
-	Vector3 worldPos;
-	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransformSphere_.translate.x;
-	worldPos.y = worldTransformSphere_.translate.y;
-	worldPos.z = worldTransformSphere_.translate.z;
-	return worldPos;
+	// ローカル座標を入れる関数
+	Vector3 localPos = worldTransformSphere_.translate;
+	return localPos;
 }
 
 DebugPlayer::~DebugPlayer() {}
+
+void PlayerStatus::Save() const
+{
+	// データの格納先
+	GlobalVariables *gVal = GlobalVariables::GetInstance();
+	gVal->AddItem(kGroupName_, groundMoveSpeed_.first, groundMoveSpeed_.second);
+	gVal->AddItem(kGroupName_, jumpStrength_.first, jumpStrength_.second);
+}
+
+void PlayerStatus::Load()
+{
+	// データの格納先
+	const GlobalVariables *gVal = GlobalVariables::GetInstance();
+
+	gVal->GetValue(kGroupName_, groundMoveSpeed_.first, &groundMoveSpeed_.second);
+	gVal->GetValue(kGroupName_, jumpStrength_.first, &jumpStrength_.second);
+}
