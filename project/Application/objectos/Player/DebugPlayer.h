@@ -67,7 +67,14 @@ public: // メンバ関数
 	/// </summary>
 	~DebugPlayer();
 
-	void AnimUpdate(const uint32_t layer, const uint32_t span, const uint32_t begin, const uint32_t end, bool isRoop);
+	/// @brief アニメーションを実際に行う
+	/// @param layer 
+	/// @param span 
+	/// @param begin 
+	/// @param end 
+	/// @param isRoop 
+	/// @return 
+	bool AnimUpdate(const uint32_t layer, const uint32_t span, const uint32_t begin, const uint32_t end, bool isRoop);
 
 	/// <summary>
 	/// 初期化

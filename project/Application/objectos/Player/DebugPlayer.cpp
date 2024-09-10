@@ -197,7 +197,7 @@ void DebugPlayer::MoveUpdate() {
 		AnimUpdate(3, 3, 0, 2, true);
 	}
 	else {
-		AnimUpdate(0, 3, 0, 6, true);
+		AnimUpdate(0, 4, 0, 6, true);
 	}
 
 	// ジャンプ
@@ -213,9 +213,17 @@ void DebugPlayer::JumpInitialize() {
 	const float kJumpFirstSpeed = playerStatus_.jumpStrength_.second;
 	velocity_.y = kJumpFirstSpeed;
 
+	animFlame_ = 0;
+
 };
 void DebugPlayer::JumpUpdate() {
 
+	if (velocity_.y > 0.f) {
+		AnimUpdate(1, 6, 0, 2, false);
+	}
+	else {
+		AnimUpdate(1, 6, 2, 3, true);
+	}
 	// 移動
 	transform_.translate += velocity_;
 	// 重力加速度
@@ -253,10 +261,19 @@ void DebugPlayer::AirJumpInitialize()
 
 	velocity_.x = 0.f;
 
+	animFlame_ = 0;
+
 }
 
 void DebugPlayer::AirJumpUpdate()
 {
+	if (velocity_.y > 0.f) {
+		AnimUpdate(1, 6, 0, 2, false);
+	}
+	else {
+		AnimUpdate(1, 6, 2, 3, true);
+	}
+
 	// 移動
 	transform_.translate += velocity_;
 	// 重力加速度
@@ -362,13 +379,15 @@ const Vector3 DebugPlayer::GetWorldPosition() const
 
 DebugPlayer::~DebugPlayer() {}
 
-void DebugPlayer::AnimUpdate(const uint32_t layer, const uint32_t span, const uint32_t begin, const uint32_t end, bool isRoop)
+bool DebugPlayer::AnimUpdate(const uint32_t layer, const uint32_t span, const uint32_t begin, const uint32_t end, bool isRoop)
 {
 	const uint32_t diff = end - begin;
-	const uint32_t value = isRoop ? (animFlame_ / span) % diff : std::min(animFlame_ / span, diff) + begin;
+	const uint32_t value = (isRoop ? (animFlame_ / span) % diff : std::min(animFlame_ / span, diff)) + begin;
 
 	uvTransform_.translate.x = uvTransform_.scale.x * value;
 	uvTransform_.translate.y = uvTransform_.scale.y * layer;
+
+	return animFlame_ / span >= diff;
 
 }
 
