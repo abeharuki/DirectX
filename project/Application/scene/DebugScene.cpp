@@ -26,9 +26,9 @@ void DebugScene::Initialize() {
 	worldTransformAnimation_.Initialize();
 	
 	worldTransformModel_.Initialize();
-	worldTransformModel_.scale = { 15.0f,0.5f,0.0f };
+	//worldTransformModel_.scale = { 15.0f,0.5f,0.0f };
 	worldTransformModel_.translate.y = 3.5f;
-	sprite_.reset(Sprite::Create("resources/H.png"));
+	sprite_.reset(Sprite::Create("resources/Stage/background.png"));
 	
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
@@ -78,7 +78,7 @@ void DebugScene::Initialize() {
 	dissolve_.edgeColor = { 1.0f,-1.0f,-1.0f };
 	bloom_.stepWidth = 0.001f;
 	bloom_.sigma = 0.005f;
-	AnimationNum_ = 4;
+	AnimationNum_ = 0;
 	a_ = 1.0f;
 }
 
@@ -286,17 +286,17 @@ void DebugScene::Update() {
 }
 
 void DebugScene::Draw() {
-	
-	
-	/*animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	//model_->Draw(worldTransformModel_, viewProjection_, true);
+	/*
 	colliderManager_[0]->Draw(viewProjection_);
 	colliderManager_[1]->Draw(viewProjection_);
 	
 	skybox_->Draw(worldTransformSkybox_,viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
-
-	sprite_->Draw();*/
+	*/
+	
 
 	debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);

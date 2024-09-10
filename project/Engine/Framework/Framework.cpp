@@ -42,7 +42,7 @@ void Framework::Finalize() {
 }
 
 void Framework::Run() {
-	int32_t windowWidth = 1280;
+	int32_t windowWidth = 1047;
 	int32_t windowHeight = 720;
 	std::mutex mutex;
 	std::condition_variable condition;

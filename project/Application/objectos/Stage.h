@@ -41,9 +41,11 @@ private:
 	WorldTransform worldTransform_[21];
 	std::unique_ptr<ColliderManager> colliderManager_[21] = {};
 	DebugEnemy* debugEnemy_;
-
+	std::unique_ptr<Sprite> sprite_;
 	std::unique_ptr<Model> model_[21];
 	bool returnScale_[21];
 	bool hitPlayer_[21];
 	bool moveScale_;
+	bool upBox_[21];
+	bool downBox_[21];
 };

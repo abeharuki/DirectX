@@ -37,7 +37,7 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win, 1280, 720);
-
+	
 	imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win, dxCommon);
 
