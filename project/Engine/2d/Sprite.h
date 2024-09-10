@@ -115,6 +115,11 @@ public: // メンバ関数
 	void SetPosition(const Vector2& position) { position_ = position; }
 	void SetSize(const Vector2& size) { size_ = size; }
 	void SetRotation(const float& rotation) { rotation_ = rotation; }
+	void SetTransform(const Transform& transform) {
+		position_ = Vector2{ transform.translate.x,transform.translate.y };
+		size_ = Vector2{ transform.scale .x,transform.scale.y};
+		rotation_ = transform.rotate.x;
+	}
 	void SetUV(Transform& uvTransform) {
 		// UVTransform用の行列
 		Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
