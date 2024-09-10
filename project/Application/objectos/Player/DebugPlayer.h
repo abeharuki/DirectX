@@ -59,19 +59,19 @@ public: // メンバ関数
 
 	// 移動
 	void MoveInitialize();
-	void MoveUpdata();
+	void MoveUpdate();
 
 	// ジャンプ
 	void JumpInitialize();
-	void JumpUpdata();
+	void JumpUpdate();
 
 	//ダッシュ
 	void DashInitialize();
-	void DashUpdata();
+	void DashUpdate();
 
 	//攻撃
 	void AttackInitialize();
-	void AttackUpdata();
+	void AttackUpdate();
 
 
 	void OnCollision(Collider* collider) override;

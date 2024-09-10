@@ -25,8 +25,8 @@ void DebugPlayer::Initialize() {
 }
 
 void DebugPlayer::Update() {
-	
-	
+
+
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -46,7 +46,7 @@ void DebugPlayer::Update() {
 		case Behavior::kAttack:
 			AttackInitialize();
 			break;
-		
+
 		}
 
 		// 振る舞いリセット
@@ -57,24 +57,24 @@ void DebugPlayer::Update() {
 	case Behavior::kRoot:
 	default:
 		// 通常行動
-		MoveUpdata();
+		MoveUpdate();
 		break;
 	case Behavior::kJump:
 		//ジャンプ
-		JumpUpdata();
+		JumpUpdate();
 		break;
 	case Behavior::kDash:
 		// ジャンプ
-		DashUpdata();
+		DashUpdate();
 		break;
 	case Behavior::kAttack:
 		// 攻撃
-		AttackUpdata();
+		AttackUpdate();
 		break;
 
 	}
 
-	if (worldTransformBase_.translate.x <= -10.0f|| worldTransformBase_.translate.x >= 10.0f) {
+	if (worldTransformBase_.translate.x <= -10.0f || worldTransformBase_.translate.x >= 10.0f) {
 		velocity_.x = 0;
 	}
 
@@ -89,7 +89,7 @@ void DebugPlayer::Update() {
 	ImGui::End();
 }
 
-void DebugPlayer::Draw(const ViewProjection& camera) {
+void DebugPlayer::Draw(const ViewProjection &camera) {
 	//animation_->Draw(worldTransformBase_, camera, false);
 	sphere_->Draw(worldTransformBase_, camera, false);
 	RenderCollisionBounds(worldTransformBase_, camera);
@@ -100,8 +100,8 @@ void DebugPlayer::MoveInitialize() {
 	worldTransformBase_.translate.y = -1.5f;
 	velocity_.y = 0.0f;
 };
-void DebugPlayer::MoveUpdata() {
-	
+void DebugPlayer::MoveUpdate() {
+
 	const float value = 0.7f;
 	bool isMove_ = false;
 	/*----------移動処理----------*/
@@ -109,31 +109,44 @@ void DebugPlayer::MoveUpdata() {
 	// 移動量
 	velocity_ = { 0.0f, 0.0f, 0.0f };
 
-	
-	// 左右移動
-	if (Input::PressKey(DIK_A)) {
-		if (worldTransformBase_.translate.x >= -10.0f) {
-			velocity_.x = -1;
-		}
-		
+	XINPUT_STATE joyState;
 
-	}
-	else if (Input::PressKey(DIK_D)) {
-		if (worldTransformBase_.translate.x <= 10.0f) {
-			velocity_.x = 1;
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+
+		constexpr float kDeadZone = 0.7f;
+		bool isMove = false;
+
+		// 移動速度
+		constexpr float kCharacterSpeed = 0.2f;
+		// 移動量
+		Vector3 velocity = {
+		   std::abs(joyState.Gamepad.sThumbLX) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE ? (float)joyState.Gamepad.sThumbLX : 0.f / SHRT_MAX, 0.0f,
+		   std::abs(joyState.Gamepad.sThumbLY) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE ? (float)joyState.Gamepad.sThumbLY : 0.f / SHRT_MAX };
+
+		if (Math::Length(velocity) > kDeadZone) {
+			velocity_ = Math::Normalize(velocity);
 		}
-		
+	}
+
+	if (Math::Length(velocity_) == 0.f) {
+		// 左右移動
+		if (Input::PressKey(DIK_A)) {
+			velocity_.x--;
+		}
+		if (Input::PressKey(DIK_D)) {
+			velocity_.x++;
+		}
 	}
 
 	if (velocity_.x != 0) {
 		isMove_ = true;
 		velocity_ = Math::Normalize(velocity_);
-		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
+		velocity_ *= kCharacterSpeed;
 	}
 
 	if (isMove_) {
 		// 平行移動
-		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity_);
+		worldTransformBase_.translate += velocity_;
 	}
 
 	// ジャンプ
@@ -148,10 +161,10 @@ void DebugPlayer::JumpInitialize() {
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.5f;
 	velocity_.y = kJumpFirstSpeed;
-	
+
 };
-void DebugPlayer::JumpUpdata() {
-	
+void DebugPlayer::JumpUpdate() {
+
 	// 移動
 	worldTransformBase_.translate += velocity_;
 	// 重力加速度
@@ -160,7 +173,7 @@ void DebugPlayer::JumpUpdata() {
 	Vector3 accelerationVector = { 0, -kGravity, 0 };
 	// 加速
 	velocity_ += accelerationVector;
-	
+
 	if (worldTransformBase_.translate.y <= -1.5f) {
 		// ジャンプ終了
 		behaviorRequest_ = Behavior::kRoot;
@@ -173,7 +186,7 @@ void DebugPlayer::DashInitialize() {
 	worldTransformBase_.rotate.y = destinationAngleY_;
 	dash_ = true;
 }
-void DebugPlayer::DashUpdata() {
+void DebugPlayer::DashUpdate() {
 	// dashTimer -= 4;
 
 	Vector3 velocity = { 0, 0, workDash_.dashSpeed };
@@ -189,17 +202,17 @@ void DebugPlayer::DashUpdata() {
 
 
 // 攻撃
-void DebugPlayer::AttackInitialize(){}
-void DebugPlayer::AttackUpdata(){
+void DebugPlayer::AttackInitialize() {}
+void DebugPlayer::AttackUpdate() {
 	animation_->Update(3);
 }
 
-void DebugPlayer::OnCollision(Collider* collider){
-	
+void DebugPlayer::OnCollision(Collider *collider) {
+
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {}
-	
+
 }
 
 const Vector3 DebugPlayer::GetWorldPosition() const
@@ -223,4 +236,4 @@ Vector3 DebugPlayer::GetLocalPosition() {
 	return worldPos;
 }
 
-DebugPlayer::~DebugPlayer(){}
+DebugPlayer::~DebugPlayer() {}

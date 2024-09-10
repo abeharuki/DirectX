@@ -322,4 +322,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # DirectXTex
-**/project/externals/DirectXTex/Bin/
+/project/externals/DirectXTex/Bin/
