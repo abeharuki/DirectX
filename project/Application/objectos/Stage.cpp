@@ -4,7 +4,7 @@
 void Stage::Initialize(){
 	
 
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < kSize_; ++i) {
 		playerAttackSprite_[i].reset(Sprite::Create("resources/Stage/pillar_player.png"));
 		enemyAttackSprite_[i].reset(Sprite::Create("resources/Stage/pillar_boss.png"));
 		boxSprite_[i].reset(Sprite::Create("resources/Stage/block.png"));
@@ -29,7 +29,7 @@ void Stage::Update(){
 
 	
 
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < kSize_; ++i) {
 		
 
 		if (!returnScale_[i]) {
@@ -124,7 +124,7 @@ void Stage::Update(){
 
 void Stage::Draw(ViewProjection viewprojection, bool light){
 	//backGround_->Draw();
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < kSize_; ++i) {
 		playerAttackSprite_[i]->Draw();
 		enemyAttackSprite_[i]->Draw();
 		boxSprite_[i]->Draw();

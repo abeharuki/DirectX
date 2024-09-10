@@ -1,5 +1,6 @@
 {
     "Player": {
+        "AirJumpStrength": 0.5,
         "DrawOffset": 0.0,
         "DrawScale": 128.0,
         "Gravity": 0.029999999329447746,
@@ -7,6 +8,6 @@
         "JumpStrength": 0.3499999940395355,
         "StageFloor": -1.5,
         "StageHeight": 1.7999999523162842,
-        "StageWidth": 8.0
+        "StageWidth": 8.25
     }
 }
