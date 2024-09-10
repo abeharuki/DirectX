@@ -18,8 +18,7 @@ void DebugScene::Initialize() {
 
 
 	viewProjection_.Initialize();
-	viewProjection_.rotation_.x = 0.28f;
-	viewProjection_.translation_ = { 0.0f, 3.0f, -9.0f };
+	viewProjection_.translation_ = { 2.2f, 3.5f, -15.0f };
 	worldTransform_.Initialize();
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
@@ -66,12 +65,7 @@ void DebugScene::Initialize() {
 
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 
-	//追従カメラ
-	followCamera_ = std::make_unique<FollowCamera>();
-	followCamera_->Initialize();
-	// 自キャラのワールドトランスフォームを追従カメラにセット
-	followCamera_->SetTarget(&worldTransform_);
-	followCamera_->Update();
+
 	PostEffect::GetInstance()->isGrayscale(false);
 
 	vignetting_.intensity = 16.0f;
@@ -107,12 +101,9 @@ void DebugScene::Update() {
 	debugEnemy_->SetDebugPlayer(debugPlayer_.get());
 	debugEnemy_->Update();
 
-	//followCamera_->Update();
-	viewProjection_.matView = followCamera_->GetViewProjection().matView;
-	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-	viewProjection_.TransferMatrix();
+	ImGui::DragFloat3("CameraPos", &viewProjection_.translation_.x);
 
-
+	viewProjection_.UpdateMatrix();
 
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();

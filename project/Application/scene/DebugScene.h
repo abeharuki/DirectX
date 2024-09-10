@@ -19,7 +19,7 @@
 #include <Stage.h>
 
 
-class DebugScene: public IScene {
+class DebugScene : public IScene {
 public:
 	void Initialize() override;
 	void Update() override;
@@ -100,8 +100,7 @@ private:
 	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
 	Vector3 impactVelocity_;
 	Vector3 impactPos_;
-	//追従カメラ
-	std::unique_ptr<FollowCamera> followCamera_;
+
 	std::unique_ptr<Animations>animation_;
 	int AnimationNum_ = 0;
 	float animaflame_ = 0.0f;
@@ -117,8 +116,8 @@ private:
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 
-	
-	
+
+
 
 	//アニメーションdissolve
 	DissolveStyle animeDissolve_;
@@ -133,13 +132,13 @@ private:
 	DissolveStyle dissolve_;
 	Random random_;
 	int32_t isBlur_;
-	Vector2 gasianBlur_ = {0.001f,0.001f};
+	Vector2 gasianBlur_ = { 0.001f,0.001f };
 	BloomStyle bloom_;
 	HSVMaterial hsv_;
 	bool postEffects[9];
 
 	float env_;
 
-	
+
 
 };

@@ -28,7 +28,7 @@ void DebugPlayer::Initialize() {
 
 	sprite_ = std::unique_ptr<Sprite>(Sprite::Create("resources/human/uvChecker.png"));
 
-	sprite_->SetAnchorPoint(Vector2{ 0.5f,0.5f });
+	sprite_->SetAnchorPoint(Vector2{ 0.5f,1.f });
 }
 
 void DebugPlayer::Update() {
@@ -52,6 +52,9 @@ void DebugPlayer::Update() {
 		case Behavior::kJump:
 			JumpInitialize();
 			break;
+		case Behavior::kHeadButt:
+			HeadButtInitialize();
+			break;
 		case Behavior::kDash:
 			DashInitialize();
 			break;
@@ -74,6 +77,9 @@ void DebugPlayer::Update() {
 	case Behavior::kJump:
 		//ジャンプ
 		JumpUpdate();
+		break;
+	case Behavior::kHeadButt:
+		HeadButtUpdate();
 		break;
 	case Behavior::kDash:
 		// ジャンプ
@@ -203,19 +209,38 @@ void DebugPlayer::JumpUpdate() {
 	velocity_ += accelerationVector;
 
 	if (transform_.translate.y <= playerStatus_.stageeFloor_.second) {
-		// ジャンプ終了
+		// 着地処理
 		behaviorRequest_ = Behavior::kRoot;
+	}
+
+	if (transform_.translate.y >= playerStatus_.stageHeight_.second) {
+		// 衝突処理
+		behaviorRequest_ = Behavior::kHeadButt;
 	}
 }
 
 void DebugPlayer::HeadButtInitialize()
 {
-
+	transform_.translate.y = playerStatus_.stageHeight_.second;
+	velocity_.y = 0.f;
 
 }
 
 void DebugPlayer::HeadButtUpdate()
 {
+	// 移動
+	transform_.translate += velocity_;
+	// 重力加速度
+	const float kGravity = playerStatus_.gravity_.second;
+	// 加速ベクトル
+	Vector3 accelerationVector = { 0, -kGravity, 0 };
+	// 加速
+	velocity_ += accelerationVector;
+	if (transform_.translate.y <= playerStatus_.stageeFloor_.second) {
+		// 着地処理
+		behaviorRequest_ = Behavior::kRoot;
+	}
+
 }
 
 // ダッシユ
