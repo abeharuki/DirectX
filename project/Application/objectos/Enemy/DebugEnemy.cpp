@@ -90,7 +90,7 @@ void DebugEnemy::Draw(const ViewProjection& camera) {
 // 移動
 void DebugEnemy::MoveInitialize() {
 	behaviorJumpTime = 10;
-	behaviorAttackTime = 30;
+	behaviorAttackTime = 10;
 
 	//velocity_.y = 0.0f;
 	transformBase_.translate.y = 5.0f;
@@ -206,32 +206,27 @@ void DebugEnemy::AttackInitialize() {
 void DebugEnemy::AttackUpdata() {
 	// 移動
 	transformBase_.translate += velocity_;
-	//重力加速度
-	const float kGravity = 0.3f;
-	// 加速ベクトル
-	Vector3 accelerationVector = { 0, -kGravity, 0 };
-	// 加速
-	velocity_ += accelerationVector;
-	//if (!jump_) {
-	//	//最高地点まで行ったら勢いよく落ちる
-	//	if (velocity_.y <= 0.0f) {
-	//		attack_ = true;
-	//		velocity_.y = -1.0f;
+	
+	if (!jump_) {
+		//最高地点まで行ったら勢いよく落ちる
+		if (velocity_.y <= 500.0f) {
+			attack_ = true;
+			velocity_.y = 1.0f;
 
-	//	}
-	//	else {
-	//		// 重力加速度
-	//		const float kGravity = 0.3f;
-	//		// 加速ベクトル
-	//		Vector3 accelerationVector = { 0, -kGravity, 0 };
-	//		// 加速
-	//		velocity_ += accelerationVector;
-	//	}
-	//}
-	//else {
-	//	attack_ = true;
-	//	velocity_.y += 5.f;
-	//}
+		}
+		else {
+			//重力加速度
+			const float kGravity = 3.f;
+			// 加速ベクトル
+			Vector3 accelerationVector = { 0, kGravity, 0 };
+			// 加速
+			velocity_ += accelerationVector;
+		}
+	}
+	else {
+		attack_ = true;
+		velocity_.y += 5.f;
+	}
 
 
 	if (transformBase_.translate.y >= 123.0f) {

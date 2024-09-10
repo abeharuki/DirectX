@@ -293,7 +293,7 @@ void DebugScene::Draw() {
 	debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
 
-	//stage_->Draw(viewProjection_, true);
+	stage_->Draw(viewProjection_, true);
 }
 
 void DebugScene::RenderDirect() {

@@ -299,16 +299,7 @@ void GameScene::Update() {
 }
 
 void GameScene::Draw() {
-	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
-	//model_->Draw(worldTransformModel_, viewProjection_, true);
-	/*
-	colliderManager_[0]->Draw(viewProjection_);
-	colliderManager_[1]->Draw(viewProjection_);
-
-	skybox_->Draw(worldTransformSkybox_,viewProjection_);
-	loader_->Draw(viewProjection_, true);
-	particle_->Draw(viewProjection_);
-	*/
+	
 	for (int i = 0; i < 5; ++i) {
 		backGroundSprite_[i]->Draw();
 	}
@@ -330,7 +321,7 @@ Vector3 GameScene::GetLocalPosition()
 }
 
 void GameScene::CheckAllCollision() {
-	for (int i = 0; i < Stage::size; ++i) {
+	for (int i = 0; i < Stage::kSize_; ++i) {
 		if (debugEnemy_->GetAttack()) {
 			if (Math::IsBoxCollision(debugEnemy_->GetPos().x+50, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x/2.0f, debugEnemy_->GetScale().y,
 				stage_->GetPos(i).x, stage_->GetPos(i).y, stage_->GetScale(i).x, stage_->GetScale(i).y)) {
