@@ -20,113 +20,66 @@ void Stage::Initialize(){
 
 void Stage::Update(){
 	
-	if (!returnScale_[0]) {
-		//伸びる
-		if (upBox_[0]) {
-			if (spriteTransform_[0].scale.y < 385.0f) {
-				spriteTransform_[0].scale.y += 50.f;
-				spriteTransform_[0].translate.y -= 50;
-			}
-			else {
-				spriteTransform_[0].scale.y = 385.0f;
-				spriteTransform_[0].translate.y = 1.0f;
-				returnScale_[0] = true;
-			}
-		}
 
-		if (downBox_[0]) {
-			if (spriteTransform_[0].scale.y < 321.0f) {
-				spriteTransform_[0].scale.y += 50.f;
-			}
-			else {
-				spriteTransform_[0].scale.y = 321.0f;
-				returnScale_[0] = true;
-			}
-		}
-	
-	}
-	else {
-		if (upBox_[0]) {
-			if (spriteTransform_[0].scale.y > 55.0f) {
-				spriteTransform_[0].scale.y -= 10.f;
-				spriteTransform_[0].translate.y += 10;
-			}
-			else {
-				spriteTransform_[0].scale.y = 55.0f;
-				spriteTransform_[0].translate.y = 331.0f;
-				upBox_[0] = false;
-				returnScale_[0] = false;
-			}
-		}
-
-		if (downBox_[0]) {
-			if (spriteTransform_[0].scale.y > 55.0f) {
-				spriteTransform_[0].scale.y -= 10.f;
-			
-			}
-			else {
-				spriteTransform_[0].scale.y = 55.0f;
-				spriteTransform_[0].translate.y = 331.0f;
-				downBox_[0] = false;
-				returnScale_[0] = false;
-			}
-		}
-		
-	}
 	
 
 	for (int i = 0; i < 21; ++i) {
 		
 
-		//if (!returnScale_[i]) {
-		//	//伸びる
-		//	if (spriteTransform_[i].scale.y < 3.1f) {
-		//		spriteTransform_[i].scale.y += 0.5f;
-		//		if (hitPlayer_[i]) {
-		//			spriteTransform_[i].translate.y += 0.5f;
-		//		}
-		//		else {
-		//			spriteTransform_[i].translate.y -= 0.5f;
-		//		}
-		//		
-		//	}
-		//	else {
-		//		if (hitPlayer_[i]) {
-		//			spriteTransform_[i].translate.y = 6.0f;
-		//		}
-		//		else {
-		//			spriteTransform_[i].translate.y = 1.0f;
-		//		}
-		//		
-		//		spriteTransform_[i].scale.y = 3.0f;
-		//		returnScale_[i] = true;
-		//		
-		//	}
-		//}
-		//else {
-		//	//元に戻る
-		//	if (spriteTransform_[i].scale.y > 0.5f) {
-		//		spriteTransform_[i].scale.y -= 0.05f;
-		//		if (hitPlayer_[i]) {
-		//			spriteTransform_[i].translate.y -= 0.05f;
-		//		}
-		//		else {
-		//			spriteTransform_[i].translate.y += 0.05f;
-		//		}
-		//		
-		//	}
-		//	else {
-		//		if (hitPlayer_[i]) {
-		//			hitPlayer_[i] = false;
-		//			upBox_[i] = false;
-		//		}
-		//		else {
-		//			downBox_[i] = false;
-		//		}
-		//		spriteTransform_[i].translate.y = 3.5f;
-		//		spriteTransform_[i].scale.y = 0.5f;
-		//	}
-		//}
+		if (!returnScale_[i]) {
+			//伸びる
+			if (upBox_[i]) {
+				if (spriteTransform_[i].scale.y < 385.0f) {
+					spriteTransform_[i].scale.y += 50.f;
+					spriteTransform_[i].translate.y -= 50;
+				}
+				else {
+					spriteTransform_[i].scale.y = 385.0f;
+					spriteTransform_[i].translate.y = 1.0f;
+					returnScale_[i] = true;
+				}
+			}
+
+			if (downBox_[i]) {
+				if (spriteTransform_[i].scale.y < 321.0f) {
+					spriteTransform_[i].scale.y += 50.f;
+				}
+				else {
+					spriteTransform_[i].scale.y = 321.0f;
+					returnScale_[i] = true;
+				}
+			}
+
+		}
+		else {
+			//元に戻る
+			if (upBox_[i]) {
+				if (spriteTransform_[i].scale.y > 55.0f) {
+					spriteTransform_[i].translate.y += 7.f;
+					spriteTransform_[i].scale.y -= 7.f;
+					
+				}
+				else {
+					spriteTransform_[i].scale.y = 55.0f;
+					spriteTransform_[i].translate.y = 331.0f;
+					upBox_[i] = false;
+					returnScale_[i] = false;
+				}
+			}
+
+			if (downBox_[i]) {
+				if (spriteTransform_[i].scale.y > 55.0f) {
+					spriteTransform_[i].scale.y -= 7.f;
+				}
+				else {
+					spriteTransform_[i].scale.y = 55.0f;
+					spriteTransform_[i].translate.y = 331.0f;
+					downBox_[i] = false;
+					returnScale_[i] = false;
+				}
+			}
+
+		}
 		
 
 		/*if (colliderManager_[i]->GetPlayerHit()) {
@@ -162,7 +115,7 @@ void Stage::Update(){
 }
 
 void Stage::Draw(ViewProjection viewprojection, bool light){
-	backGround_->Draw();
+	//backGround_->Draw();
 	for (int i = 0; i < 21; ++i) {
 
 		boxSprite_[i]->Draw();
