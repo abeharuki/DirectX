@@ -90,7 +90,7 @@ void DebugEnemy::Draw(const ViewProjection& camera) {
 // 移動
 void DebugEnemy::MoveInitialize() {
 	behaviorJumpTime = 10;
-	behaviorAttackTime = 10;
+	behaviorAttackTime = 30;
 
 	//velocity_.y = 0.0f;
 	transformBase_.translate.y = 123.0f;
@@ -103,30 +103,32 @@ void DebugEnemy::MoveUpdata() {
 		sub *= -1;
 	}
 
-	////playerの位置が敵から±2の位置にいるかどうか
-	//if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x, 1.0f)) {
-	//	
+	//playerの位置が敵から±2の位置にいるかどうか
+	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x, 1.0f)) {
+		
 
-	//	//playerと敵の距離が5離れたいたらジャンプして移動
-	//	if (--behaviorJumpTime <= 0) {
-	//		if (debugPlayer_->GetWorldPosition().x < transformBase_.translate.x) {
-	//			velocity_.x = -0.3f;
-	//		}
-	//		else {
-	//			velocity_.x = 0.3f;
-	//		}
-	//		behaviorRequest_ = Behavior::kJump;
-	//	}
-	//}
-	//else {
-	//	//プレイヤーの上にいる時,速度はゼロ
-	//	velocity_.x = 0.0f;
-	//	//クールタイムが終わったら攻撃
-	//	if (--behaviorAttackTime <= 0) {
-	//		behaviorRequest_ = Behavior::kAttack;
-	//	}
-	//	
-	//}
+		//playerと敵の距離が5離れたいたらジャンプして移動
+		if (debugPlayer_->GetWorldPosition().x < transformBase_.translate.x) {
+			velocity_.x = -10.0f;
+		}
+		else {
+			velocity_.x = 10.0f;
+		}
+
+		/*if (--behaviorJumpTime <= 0) {
+			
+			behaviorRequest_ = Behavior::kJump;
+		}*/
+	}
+	else {
+		//プレイヤーの上にいる時,速度はゼロ
+		velocity_.x = 0.0f;
+		//クールタイムが終わったら攻撃
+		if (--behaviorAttackTime <= 0) {
+			behaviorRequest_ = Behavior::kAttack;
+		}
+		
+	}
 
 	transformBase_.translate += velocity_;
 	if (--behaviorAttackTime <= 0) {
