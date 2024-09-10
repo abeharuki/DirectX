@@ -13,7 +13,7 @@
 #include <Sphere.h>
 #include "Player/DebugPlayer.h"
 
-class DebugEnemy :public Collider {
+class DebugEnemy{
 public: // メンバ関数
 
 	/// <summary>
@@ -51,17 +51,16 @@ public: // メンバ関数
 	void AttackUpdata();
 
 
-	void OnCollision(Collider* collider) override;
-	const Vector3 GetWorldPosition() const override;
-	Vector3 GetLocalPosition();
-	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
 	void SetDebugPlayer(DebugPlayer* debugPlayer) { debugPlayer_ = debugPlayer; }
 	bool GetAttack() { return attack_; }
+	Vector2 GetPos() { return Vector2{ transformBase_.translate.x,transformBase_.translate.y }; }
+	Vector2 GetScale() {return Vector2{ transformBase_.scale.x,transformBase_.scale.y };}
+
 private: // メンバ変数
-	WorldTransform worldTransformBase_;
+	Transform transformBase_;
 	const ViewProjection* viewProjection_;
-	std::unique_ptr<Sphere> sphere_;
+	std::unique_ptr<Sprite> enemySprite_;
 
 	DebugPlayer* debugPlayer_;
 
@@ -105,5 +104,5 @@ private: // メンバ変数
 
 	// 速度
 	Vector3 velocity_ = {};
-
+	
 };
