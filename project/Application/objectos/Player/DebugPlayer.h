@@ -188,4 +188,6 @@ private: // メンバ変数
 
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 
+	Transform uvTransform_;
+
 };

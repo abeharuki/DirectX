@@ -27,9 +27,11 @@ void DebugPlayer::Initialize() {
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionMaskPlayer);
 
-	sprite_ = std::unique_ptr<Sprite>(Sprite::Create("resources/human/uvChecker.png"));
+	sprite_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Player/player_animation.png"));
 
 	sprite_->SetAnchorPoint(Vector2{ 0.5f,1.f });
+
+	uvTransform_.scale = { 1.f / 9, 1.f / 6, 0.f };
 }
 
 void DebugPlayer::Update() {
@@ -39,6 +41,7 @@ void DebugPlayer::Update() {
 
 #endif // _DEBUG
 
+	transform_.scale = Vector3{ 1.f, 40.f / 24.f ,1.f }*playerStatus_.drawScale_.second;
 
 
 	if (behaviorRequest_) {
@@ -136,7 +139,7 @@ void DebugPlayer::Draw([[maybe_unused]] const ViewProjection &camera) {
 
 	sprite_->UpdateVertexBuffer();
 	// 画像の描画
-	sprite_->Draw();
+	sprite_->Draw(uvTransform_);
 }
 
 // 移動
@@ -274,7 +277,7 @@ void DebugPlayer::HeadButtInitialize()
 	const int32_t sceneWidth = static_cast<int32_t>(vp.Width);
 
 	// 画面の位置から座標を取得する
-	const int32_t targetPos = std::clamp(static_cast<int32_t>(GetWorldPosition().x * Stage::kSize_ / (sceneWidth - playerStatus_.drawScale_.second * 2)), 0, Stage::kSize_);
+	const int32_t targetPos = std::clamp(static_cast<int32_t>(GetWorldPosition().x * Stage::kSize_ / (sceneWidth - 128 * 2)), 0, Stage::kSize_);
 
 	// もしその場所が立ってなかったら
 	if (not pStage_->GetUp(targetPos)) {
@@ -336,7 +339,7 @@ void DebugPlayer::TransfarSprite()
 {
 	sprite_->SetPosition(pViewProjection_->WorldToScreen(transform_.translate).GetVec2() - Vector2{ .y = playerStatus_.drawOffset_.second });
 	sprite_->SetRotation(transform_.rotate.z);
-	sprite_->SetSize(transform_.scale.GetVec2() * playerStatus_.drawScale_.second);
+	sprite_->SetSize(transform_.scale.GetVec2());
 }
 
 void DebugPlayer::OnCollision(Collider *collider) {

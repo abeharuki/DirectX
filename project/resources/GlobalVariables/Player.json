@@ -2,7 +2,7 @@
     "Player": {
         "AirJumpStrength": 0.5,
         "DrawOffset": 0.0,
-        "DrawScale": 128.0,
+        "DrawScale": 96.0,
         "Gravity": 0.029999999329447746,
         "GroundMoveSpeed": 0.20000000298023224,
         "JumpStrength": 0.3499999940395355,
