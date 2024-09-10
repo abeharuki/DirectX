@@ -15,12 +15,8 @@ void GameScene::Initialize() {
 	AABB aabb2 = { {-1,-1,-1 },{1,1,1} };
 	OBB obb = Math::ConvertAABBToOBB(aabb);
 
-
-
-
 	viewProjection_.Initialize();
-	viewProjection_.rotation_.x = 0.28f;
-	viewProjection_.translation_ = { 0.0f, 3.0f, -9.0f };
+	viewProjection_.translation_ = { 2.2f, 3.5f, -15.0f };
 	worldTransform_.Initialize();
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
@@ -69,11 +65,6 @@ void GameScene::Initialize() {
 
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 
-	//追従カメラ
-	followCamera_ = std::make_unique<FollowCamera>();
-	followCamera_->Initialize();
-	// 自キャラのワールドトランスフォームを追従カメラにセット
-	followCamera_->SetTarget(&worldTransform_);
 	PostEffect::GetInstance()->isGrayscale(false);
 
 	vignetting_.intensity = 16.0f;
@@ -115,10 +106,10 @@ void GameScene::Update() {
 	debugEnemy_->SetDebugPlayer(debugPlayer_.get());
 	debugEnemy_->Update();
 
-	followCamera_->Update();
+	/*followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
-	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-	viewProjection_.TransferMatrix();
+	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;*/
+	viewProjection_.UpdateMatrix();
 
 
 
@@ -299,7 +290,7 @@ void GameScene::Update() {
 }
 
 void GameScene::Draw() {
-	
+
 	for (int i = 0; i < 5; ++i) {
 		backGroundSprite_[i]->Draw();
 	}
@@ -323,7 +314,7 @@ Vector3 GameScene::GetLocalPosition()
 void GameScene::CheckAllCollision() {
 	for (int i = 0; i < Stage::kSize_; ++i) {
 		if (debugEnemy_->GetAttack()) {
-			if (Math::IsBoxCollision(debugEnemy_->GetPos().x+50, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x/2.0f, debugEnemy_->GetScale().y,
+			if (Math::IsBoxCollision(debugEnemy_->GetPos().x + 50, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
 				stage_->GetPos(i).x, stage_->GetPos(i).y, stage_->GetScale(i).x, stage_->GetScale(i).y)) {
 				if (stage_->GetScale(i).y == 64.0f) {
 					stage_->SetDown(true, i);

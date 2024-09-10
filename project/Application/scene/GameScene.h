@@ -60,8 +60,7 @@ private:
 	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
 	Vector3 impactVelocity_;
 	Vector3 impactPos_;
-	//追従カメラ
-	std::unique_ptr<FollowCamera> followCamera_;
+
 	std::unique_ptr<Animations>animation_;
 	int AnimationNum_ = 0;
 	float animaflame_ = 0.0f;

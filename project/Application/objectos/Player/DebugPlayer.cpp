@@ -124,7 +124,7 @@ void DebugPlayer::Update() {
 	ImGui::End();
 
 	// トランスフォームから行列を計算する
-	CalcMatrix();
+	//CalcMatrix();
 }
 
 void DebugPlayer::Draw([[maybe_unused]] const ViewProjection &camera) {
@@ -336,14 +336,7 @@ void DebugPlayer::OnCollision(Collider *collider) {
 
 const Vector3 DebugPlayer::GetWorldPosition() const
 {
-	// ワールド座標を入れる関数
-	Vector3 worldPos;
-	std::memcpy(&worldPos, transMat_.m[3], sizeof(Vector3));
-	return worldPos;
-}
-
-Vector3 DebugPlayer::GetLocalPosition() {
-	return transform_.translate;
+	return { sprite_->GetPosition().x,  sprite_->GetPosition().y ,0.f };
 }
 
 DebugPlayer::~DebugPlayer() {}
