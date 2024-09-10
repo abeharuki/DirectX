@@ -67,6 +67,7 @@ public: // メンバ関数
 	/// </summary>
 	~DebugPlayer();
 
+	void AnimUpdate(const uint32_t layer, const uint32_t span, const uint32_t begin, const uint32_t end, bool isRoop);
 
 	/// <summary>
 	/// 初期化
@@ -189,5 +190,7 @@ private: // メンバ変数
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 
 	Transform uvTransform_;
+
+	uint32_t animFlame_;
 
 };

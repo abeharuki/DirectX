@@ -42,7 +42,7 @@ void DebugPlayer::Update() {
 #endif // _DEBUG
 
 	transform_.scale = Vector3{ 1.f, 40.f / 24.f ,1.f }*playerStatus_.drawScale_.second;
-
+	animFlame_++;
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -103,6 +103,7 @@ void DebugPlayer::Update() {
 
 	}
 
+	if (velocity_.x) { sprite_->SetFlipX(velocity_.x < 0.f); }
 
 	// プレイヤのX軸移動範囲を制限
 	if (transform_.translate.x <= -playerStatus_.stageWidth_.second) {	// 左方向
@@ -192,6 +193,11 @@ void DebugPlayer::MoveUpdate() {
 	if (isMove_) {
 		// 平行移動
 		transform_.translate += velocity_;
+
+		AnimUpdate(3, 3, 0, 2, true);
+	}
+	else {
+		AnimUpdate(0, 3, 0, 6, true);
 	}
 
 	// ジャンプ
@@ -309,7 +315,6 @@ void DebugPlayer::DashInitialize() {
 	dash_ = true;
 }
 void DebugPlayer::DashUpdate() {
-	// dashTimer -= 4;
 
 	Vector3 velocity = { 0, 0, workDash_.dashSpeed };
 
@@ -356,6 +361,16 @@ const Vector3 DebugPlayer::GetWorldPosition() const
 }
 
 DebugPlayer::~DebugPlayer() {}
+
+void DebugPlayer::AnimUpdate(const uint32_t layer, const uint32_t span, const uint32_t begin, const uint32_t end, bool isRoop)
+{
+	const uint32_t diff = end - begin;
+	const uint32_t value = isRoop ? (animFlame_ / span) % diff : std::min(animFlame_ / span, diff) + begin;
+
+	uvTransform_.translate.x = uvTransform_.scale.x * value;
+	uvTransform_.translate.y = uvTransform_.scale.y * layer;
+
+}
 
 void PlayerStatus::Save() const
 {
