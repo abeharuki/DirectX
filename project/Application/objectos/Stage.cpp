@@ -22,7 +22,8 @@ void Stage::Initialize(){
 		colliderManager_[i]->SetEnemyHit(false);
 		hitPlayer_[i] = false;
 	}
-
+	sprite_.reset(Sprite::Create("resources/Stage/background.png"));
+	
 }
 
 void Stage::Update(){
@@ -73,6 +74,10 @@ void Stage::Update(){
 			else {
 				if (hitPlayer_[i]) {
 					hitPlayer_[i] = false;
+					upBox_[i] = false;
+				}
+				else {
+					downBox_[i] = false;
 				}
 				worldTransform_[i].translate.y = 3.5f;
 				worldTransform_[i].scale.y = 0.5f;
@@ -86,6 +91,7 @@ void Stage::Update(){
 			if (worldTransform_[i].scale.y == 0.5f) {
 				returnScale_[i] = false;
 				hitPlayer_[i] = true;
+				upBox_[i] = true;
 			}
 			colliderManager_[i]->SetPlayerHit(false);
 		}
@@ -93,6 +99,7 @@ void Stage::Update(){
 		if (colliderManager_[i]->GetEnemyHit() ){
 			if (debugEnemy_->GetAttack() && worldTransform_[i].scale.y == 0.5f) {
 				returnScale_[i] = false;
+				downBox_[i] = true;
 			}
 			colliderManager_[i]->SetEnemyHit(false);
 		}
@@ -113,7 +120,7 @@ void Stage::Draw(ViewProjection viewprojection, bool light){
 		//model_[i]->Draw(worldTransform_[i], viewprojection, true);
 		colliderManager_[i]->Draw(viewprojection);
 	}
-	
+	//sprite_->Draw();
 }
 
 
