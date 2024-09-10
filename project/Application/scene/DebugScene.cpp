@@ -9,14 +9,6 @@ void DebugScene::Initialize() {
 	//衝突マネージャーの作成
 	collisionManager_ = std::make_unique<CollisionManager>();
 
-
-	AABB aabb = { {-7.0f,-0.2f,-1 },{7.0f,0.2f,1} };
-	AABB aabb2 = { {-1,-1,-1 },{1,1,1} };
-	OBB obb = Math::ConvertAABBToOBB(aabb);
-
-
-
-
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 2.2f, 3.5f, -15.0f };
 	worldTransform_.Initialize();

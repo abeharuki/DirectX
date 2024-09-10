@@ -18,6 +18,7 @@ struct PlayerStatus {
 
 	std::pair<const char *const, float> groundMoveSpeed_ = { "GroundMoveSpeed", 0.2f };
 	std::pair<const char *const, float> jumpStrength_ = { "JumpStrength", 0.5f };
+	std::pair<const char *const, float> airJumpStrength_ = { "AirJumpStrength", 0.5f };
 	std::pair<const char *const, float> gravity_ = { "Gravity", 0.03f };
 
 	std::pair<const char *const, float> stageHeight_ = { "StageHeight", 331.f };
@@ -85,6 +86,10 @@ public: // メンバ関数
 	void JumpInitialize();
 	void JumpUpdate();
 
+	// ジャンプ
+	void AirJumpInitialize();
+	void AirJumpUpdate();
+
 	// 頭突き
 	void HeadButtInitialize();
 	void HeadButtUpdate();
@@ -125,6 +130,7 @@ private: // メンバ変数
 	enum class Behavior {
 		kRoot,		// 通常状態
 		kJump,		// ジャンプ
+		kAirJump,	// 空中ジャンプ
 		kDash,		// ダッシュ
 		kHeadButt,	// 頭突き
 		kAttack,	// 攻撃

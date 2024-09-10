@@ -52,6 +52,9 @@ void DebugPlayer::Update() {
 		case Behavior::kJump:
 			JumpInitialize();
 			break;
+		case Behavior::kAirJump:
+			AirJumpInitialize();
+			break;
 		case Behavior::kHeadButt:
 			HeadButtInitialize();
 			break;
@@ -77,6 +80,10 @@ void DebugPlayer::Update() {
 	case Behavior::kJump:
 		//ジャンプ
 		JumpUpdate();
+		break;
+	case Behavior::kAirJump:
+		//ジャンプ
+		AirJumpUpdate();
 		break;
 	case Behavior::kHeadButt:
 		HeadButtUpdate();
@@ -213,6 +220,42 @@ void DebugPlayer::JumpUpdate() {
 		behaviorRequest_ = Behavior::kRoot;
 	}
 
+	else if (transform_.translate.y >= playerStatus_.stageHeight_.second) {
+		// 衝突処理
+		behaviorRequest_ = Behavior::kHeadButt;
+	}
+	else {
+		Input *const pInput = Input::GetInstance();
+
+		if (pInput->GetPadButtonDown(XINPUT_GAMEPAD_A) or pInput->PushKey(DIK_SPACE)) {
+			behaviorRequest_ = Behavior::kAirJump;
+		}
+
+
+	}
+}
+
+void DebugPlayer::AirJumpInitialize()
+{
+	// ジャンプ初速
+	const float kJumpFirstSpeed = playerStatus_.airJumpStrength_.second;
+	velocity_.y = kJumpFirstSpeed;
+
+	velocity_.x = 0.f;
+
+}
+
+void DebugPlayer::AirJumpUpdate()
+{
+	// 移動
+	transform_.translate += velocity_;
+	// 重力加速度
+	const float kGravity = playerStatus_.gravity_.second;
+	// 加速ベクトル
+	Vector3 accelerationVector = { 0, -kGravity, 0 };
+	// 加速
+	velocity_ += accelerationVector;
+
 	if (transform_.translate.y >= playerStatus_.stageHeight_.second) {
 		// 衝突処理
 		behaviorRequest_ = Behavior::kHeadButt;
@@ -311,6 +354,7 @@ void PlayerStatus::Save() const
 	GlobalVariables *gVal = GlobalVariables::GetInstance();
 	gVal->AddItem(kGroupName_, groundMoveSpeed_.first, groundMoveSpeed_.second);
 	gVal->AddItem(kGroupName_, jumpStrength_.first, jumpStrength_.second);
+	gVal->AddItem(kGroupName_, airJumpStrength_.first, airJumpStrength_.second);
 	gVal->AddItem(kGroupName_, gravity_.first, gravity_.second);
 	gVal->AddItem(kGroupName_, stageHeight_.first, stageHeight_.second);
 	gVal->AddItem(kGroupName_, stageWidth_.first, stageWidth_.second);
@@ -326,6 +370,7 @@ void PlayerStatus::Load()
 
 	gVal->GetValue(kGroupName_, groundMoveSpeed_.first, &groundMoveSpeed_.second);
 	gVal->GetValue(kGroupName_, jumpStrength_.first, &jumpStrength_.second);
+	gVal->GetValue(kGroupName_, airJumpStrength_.first, &airJumpStrength_.second);
 	gVal->GetValue(kGroupName_, gravity_.first, &gravity_.second);
 	gVal->GetValue(kGroupName_, stageHeight_.first, &stageHeight_.second);
 	gVal->GetValue(kGroupName_, stageWidth_.first, &stageWidth_.second);
