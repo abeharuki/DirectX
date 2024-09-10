@@ -78,7 +78,7 @@ void DebugScene::Update() {
 	animation_->Update(AnimationNum_);
 	animation_->SetFlameTimer(animaflame_);
 	model_->DirectionalLightDraw(directionLight_);
-	stage_->SetLight(directionLight_);
+	
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {

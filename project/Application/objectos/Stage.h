@@ -25,11 +25,8 @@ public:
 
 	
 
-	void SetLight(DirectionLight directionLight) { 
-		for (int i = 0; i < 21; ++i) {
-			//model_[i]->DirectionalLightDraw(directionLight);
-		}
-
+	void SetShake(Vector2 shake) { 
+		shake_ = shake;
 	}
 
 	void SetDebugEnemy(DebugEnemy* debugEnemy) { debugEnemy_ = debugEnemy; }
@@ -52,6 +49,7 @@ public:
 	static constexpr int32_t kSize_ = 16;
 private:
 	
+	Vector2 boxPos_[kSize_];
 	Transform playerAttackTransform_[kSize_];
 	Transform enemyAttackTransform_[kSize_];
 	DebugEnemy* debugEnemy_;
@@ -65,4 +63,5 @@ private:
 	std::array<bool ,kSize_> upBox_;
 	std::array<bool ,kSize_> downBox_;
 	int boxNum_ = 0;
+	Vector2 shake_;
 };
