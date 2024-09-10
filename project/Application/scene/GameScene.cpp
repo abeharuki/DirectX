@@ -254,7 +254,7 @@ Vector3 GameScene::GetLocalPosition()
 void GameScene::CheckAllCollision() {
 	for (int i = 0; i < Stage::kSize_; ++i) {
 		if (debugEnemy_->GetAttack()) {
-			if (Math::IsBoxCollision(debugEnemy_->GetPos().x + 50, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
+			if (Math::IsBoxCollision(debugEnemy_->GetPos().x + 25, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
 				stage_->GetPos(i).x, stage_->GetPos(i).y, stage_->GetScale(i).x, stage_->GetScale(i).y)) {
 				if (stage_->GetScale(i).y == 64.0f) {
 					stage_->SetDown(true, i);

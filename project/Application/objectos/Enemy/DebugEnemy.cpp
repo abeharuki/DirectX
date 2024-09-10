@@ -10,7 +10,7 @@ void DebugEnemy::Initialize() {
 	transformBase_.translate.y = 123.0f;
 	velocity_.x = 10.0f;
 	enemySprite_.reset(Sprite::Create("resources/Enemy/boss_kari.png"));
-	
+	enemySprite_->SetAnchorPoint({ 0.25f,0.0f });
 }
 
 void DebugEnemy::Update() {
@@ -63,11 +63,13 @@ void DebugEnemy::Update() {
 	}
 
 	if (transformBase_.translate.x <= -30) {
-		velocity_.x = 10.0f;
+		//velocity_.x = 10.0f;
+		velocity_.x = 0.0f;
 	}
 
-	if (transformBase_.translate.x >= 750) {
-		velocity_.x = -10.0f;
+	if (transformBase_.translate.x >= 820) {
+		velocity_.x = 0.0f;
+		//velocity_.x = -10.0f;
 	}
 
 	enemySprite_->SetTransform(transformBase_);
@@ -90,7 +92,7 @@ void DebugEnemy::Draw(const ViewProjection& camera) {
 // 移動
 void DebugEnemy::MoveInitialize() {
 	behaviorJumpTime = 10;
-	behaviorAttackTime = 30;
+	behaviorAttackTime = 10;
 
 	//velocity_.y = 0.0f;
 	transformBase_.translate.y = 123.0f;
@@ -104,11 +106,11 @@ void DebugEnemy::MoveUpdata() {
 	}
 
 	//playerの位置が敵から±2の位置にいるかどうか
-	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x-100, transformBase_.translate.x, 5.0f)) {
+	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x-60, transformBase_.translate.x, 5.0f)) {
 		
 
 		//playerと敵の距離が5離れたいたらジャンプして移動
-		if (debugPlayer_->GetWorldPosition().x < transformBase_.translate.x) {
+		if (debugPlayer_->GetWorldPosition().x-60 < transformBase_.translate.x) {
 			velocity_.x = -10.0f;
 		}
 		else {
@@ -131,9 +133,9 @@ void DebugEnemy::MoveUpdata() {
 	}
 
 	transformBase_.translate += velocity_;
-	if (--behaviorAttackTime <= 0) {
-		behaviorRequest_ = Behavior::kAttack;
-	}
+	//if (--behaviorAttackTime <= 0) {
+	//	behaviorRequest_ = Behavior::kAttack;
+	//}
 	
 };
 
