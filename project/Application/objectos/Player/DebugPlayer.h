@@ -161,8 +161,9 @@ private: // メンバ変数
 	// 速度
 	Vector3 velocity_ = {};
 
-
 	// プレイヤのステータス
 	PlayerStatus playerStatus_;
+
+	std::unique_ptr<Sprite> sprite_ = nullptr;
 
 };

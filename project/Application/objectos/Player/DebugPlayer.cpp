@@ -26,6 +26,8 @@ void DebugPlayer::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionMaskPlayer);
+
+	sprite_ = std::unique_ptr<Sprite>(Sprite::Create("resources/human/uvChecker.png"));
 }
 
 void DebugPlayer::Update() {
@@ -96,12 +98,16 @@ void DebugPlayer::Update() {
 	ImGui::Text("posZ%f", GetWorldPosition().z);
 	ImGui::DragFloat("PosY", &worldTransformBase_.translate.y, 0.1f);
 	ImGui::End();
+
+	sprite_->UpdateVertexBuffer();
 }
 
 void DebugPlayer::Draw(const ViewProjection &camera) {
 	//animation_->Draw(worldTransformBase_, camera, false);
 	sphere_->Draw(worldTransformBase_, camera, false);
 	RenderCollisionBounds(worldTransformBase_, camera);
+
+	sprite_->Draw();
 }
 
 // 移動
@@ -189,14 +195,13 @@ void DebugPlayer::JumpUpdate() {
 
 void DebugPlayer::HeadButtInitialize()
 {
-	
+
 
 }
 
 void DebugPlayer::HeadButtUpdate()
 {
 }
-;
 
 // ダッシユ
 void DebugPlayer::DashInitialize() {
