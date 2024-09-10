@@ -38,32 +38,15 @@ private:
 		true,
 	};
 
-	WorldTransform worldTransform_;
-	WorldTransform worldTransformSkybox_;
-	WorldTransform worldTransformAnimation_;
-	WorldTransform worldTransformModel_;
-
-	//ローダー
-	std::unique_ptr<ModelLoader> loader_;
 	ViewProjection viewProjection_;
 
 	std::unique_ptr<Stage> stage_;
 	std::unique_ptr<DebugPlayer> debugPlayer_;
 	std::unique_ptr<DebugEnemy> debugEnemy_;
-	std::unique_ptr<Skybox> skybox_;
-	std::unique_ptr<Model> model_;
 	std::unique_ptr<Sprite> backGroundSprite_[5];
-	float a_;
-	bool impactScale_;
 
-	//衝突マネージャー
-	std::unique_ptr<CollisionManager> collisionManager_ = nullptr;
-	Vector3 impactVelocity_;
-	Vector3 impactPos_;
 
-	std::unique_ptr<Animations>animation_;
-	int AnimationNum_ = 0;
-	float animaflame_ = 0.0f;
+	
 
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;
@@ -71,17 +54,7 @@ private:
 	int particleCount_;
 	bool particleFlag_;
 
-	// 速度
-	Vector3 velocity_ = {};
-	// 目標の角度
-	float destinationAngleY_ = 0.0f;
-
-
-
-
-	//アニメーションdissolve
-	DissolveStyle animeDissolve_;
-	bool isAnimeDissolve_ = false;
+	
 
 	//PosteEffect
 	Grayscale grayscale_;

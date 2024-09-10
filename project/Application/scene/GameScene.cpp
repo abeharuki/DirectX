@@ -7,24 +7,10 @@
 #include <PostEffects/PostEffect.h>
 
 void GameScene::Initialize() {
-	//衝突マネージャーの作成
-	collisionManager_ = std::make_unique<CollisionManager>();
-
-
-	AABB aabb = { {-7.0f,-0.2f,-1 },{7.0f,0.2f,1} };
-	AABB aabb2 = { {-1,-1,-1 },{1,1,1} };
-	OBB obb = Math::ConvertAABBToOBB(aabb);
-
+	
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 2.2f, 3.5f, -15.0f };
-	worldTransform_.Initialize();
-	worldTransform_.translate.z = -5.0f;
-	worldTransformSkybox_.Initialize();
-	worldTransformAnimation_.Initialize();
-
-	worldTransformModel_.Initialize();
-	//worldTransformModel_.scale = { 15.0f,0.5f,0.0f };
-	worldTransformModel_.translate.y = 3.5f;
+	
 	backGroundSprite_[0].reset(Sprite::Create("resources/Stage/backGround_1.png"));
 	backGroundSprite_[1].reset(Sprite::Create("resources/Stage/backGround_2.png"));
 	backGroundSprite_[2].reset(Sprite::Create("resources/Stage/backGround_3.png"));
@@ -33,14 +19,6 @@ void GameScene::Initialize() {
 	for (int i = 0; i < 5; ++i) {
 		backGroundSprite_[i]->SetSize({ 1024,704 });
 	}
-
-	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
-
-	model_.reset(Model::CreateModelFromObj("resources/box.obj", "resources/Enemy/red_.png"));
-	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
-
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
 
 	debugPlayer_ = std::make_unique<DebugPlayer>();
 	debugPlayer_->Initialize();
@@ -76,8 +54,7 @@ void GameScene::Initialize() {
 	dissolve_.edgeColor = { 1.0f,-1.0f,-1.0f };
 	bloom_.stepWidth = 0.001f;
 	bloom_.sigma = 0.005f;
-	AnimationNum_ = 0;
-	a_ = 1.0f;
+	
 }
 
 void GameScene::Update() {
@@ -87,18 +64,15 @@ void GameScene::Update() {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
 	}
 
-	animation_->DirectionalLightDraw(directionLight_);
-	animation_->Update(AnimationNum_);
-	animation_->SetFlameTimer(animaflame_);
-	model_->DirectionalLightDraw(directionLight_);
-	stage_->SetLight(directionLight_);
+
+	
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {
 		particle_->Update();
 	}
 
-	loader_->Update();
+	
 	stage_->SetDebugEnemy(debugEnemy_.get());
 	stage_->Update();
 
@@ -106,17 +80,8 @@ void GameScene::Update() {
 	debugEnemy_->SetDebugPlayer(debugPlayer_.get());
 	debugEnemy_->Update();
 
-	/*followCamera_->Update();
-	viewProjection_.matView = followCamera_->GetViewProjection().matView;
-	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;*/
+	
 	viewProjection_.UpdateMatrix();
-
-
-
-	worldTransformSkybox_.UpdateMatrix();
-	worldTransformAnimation_.UpdateMatrix();
-	worldTransformModel_.UpdateMatrix();
-
 
 
 
@@ -127,13 +92,10 @@ void GameScene::Update() {
 	radialBlur_.isEnble = postEffects[4];
 	dissolve_.isEnble = postEffects[5];
 	random_.isEnble = postEffects[6];
-	animeDissolve_.isEnble = isAnimeDissolve_;
+
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
-	model_->SetThreshold(animeDissolve_.threshold);
-	animation_->SetThreshold(animeDissolve_.threshold);
-	animation_->SetEdgeColor(dissolve_.edgeColor);
-	animation_->SetEnvironment(env_, true);
+
 	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
 	PostEffect::GetInstance()->Vignette(vignetting_);
 	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
@@ -187,33 +149,9 @@ void GameScene::Update() {
 		ImGui::TreePop();
 
 	}
-	if (ImGui::TreeNode("Model")) {
-		ImGui::Checkbox("scale", &impactScale_);
-		ImGui::DragFloat3("Pos", &worldTransformModel_.translate.x, 0.1f);
-		ImGui::DragFloat3("Rotate", &worldTransformModel_.rotate.x, 0.01f);
-		ImGui::DragFloat3("Size", &worldTransformModel_.scale.x, 0.1f);
-		ImGui::SliderFloat("Color", &a_, -1.0f, 1.0f);
-		ImGui::TreePop();
-	}
-	//ローダーオブジェクト
-	if (ImGui::TreeNode("LoaderObj")) {
-		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
-		ImGui::TreePop();
-	}
+	
 
 
-	//アニメーション
-	if (ImGui::TreeNode("Animation")) {
-		ImGui::SliderInt("AnimationNum", &AnimationNum_, 0, 7);
-		ImGui::SliderFloat("AnimationFlame", &animaflame_, 0, 60);
-		ImGui::DragFloat3("AnimationPos", &worldTransformAnimation_.translate.x, 0.1f);
-		ImGui::DragFloat3("AnimationRotate", &worldTransformAnimation_.rotate.x, 0.01f);
-		ImGui::DragFloat3("AnimationSize", &worldTransformAnimation_.scale.x, 0.1f);
-		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
-		ImGui::SliderFloat("Thresholed", &animeDissolve_.threshold, 0.01f, 1.0f);
-		ImGui::Text("AnimationTimer%f", animation_->GetAnimationTimer());
-		ImGui::TreePop();
-	}
 	//Posteffect
 	if (ImGui::TreeNode("PostEffect")) {
 		// Grayscale
