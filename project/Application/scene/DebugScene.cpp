@@ -28,7 +28,11 @@ void DebugScene::Initialize() {
 	worldTransformModel_.Initialize();
 	//worldTransformModel_.scale = { 15.0f,0.5f,0.0f };
 	worldTransformModel_.translate.y = 3.5f;
-	sprite_.reset(Sprite::Create("resources/Stage/background.png"));
+	backGroundSprite_[0].reset(Sprite::Create("resources/Stage/backGround_1.png"));
+	backGroundSprite_[1].reset(Sprite::Create("resources/Stage/backGround_2.png"));
+	backGroundSprite_[2].reset(Sprite::Create("resources/Stage/backGround_3.png"));
+	backGroundSprite_[3].reset(Sprite::Create("resources/Stage/backGround_4.png"));
+	backGroundSprite_[4].reset(Sprite::Create("resources/Stage/floor.png"));
 	
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
@@ -296,8 +300,9 @@ void DebugScene::Draw() {
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
 	*/
-	
-	sprite_->Draw();
+	for (int i = 0; i < 5; ++i) {
+		backGroundSprite_[i]->Draw();
+	}
 	debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
 
@@ -421,24 +426,27 @@ void DebugScene::CameraMove() {
 	worldTransform_.UpdateMatrix();
 }
 
-void DebugScene::CheckAllCollision() {
-	//コリジョン関係
-	collisionManager_->ClearColliderList();
-	collisionManager_->SetColliderList(debugPlayer_.get());
-	collisionManager_->SetColliderList(debugEnemy_.get());
-	
-	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
-		collisionManager_->SetColliderList(loader_->GetCollider(i));
-	}
-	collisionManager_->CheckAllCollisions();
+Vector3 DebugScene::GetLocalPosition()
+{
+	return Vector3();
 }
 
-Vector3 DebugScene::GetLocalPosition() {
-	// ワールド座標を入れる関数
-	Vector3 worldPos;
-	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransform_.translate.x;
-	worldPos.y = worldTransform_.translate.y;
-	worldPos.z = worldTransform_.translate.z;
-	return worldPos;
+void DebugScene::CheckAllCollision() {
+	for (int i = 0; i < Stage::size; ++i) {
+		if (debugEnemy_->GetAttack()) {
+			if (IsCollidingRectRect(debugEnemy_->GetPos().x, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x, debugEnemy_->GetScale().y,
+				stage_->GetPos(i).x, stage_->GetPos(i).y, stage_->GetScale(i).x, stage_->GetScale(i).y)) {
+				if (stage_->GetScale(i).y == 64.0f) {
+					stage_->SetDown(true, i);
+				}
+				
+
+
+			}
+		}
+		
+	}
+
+
 }
+

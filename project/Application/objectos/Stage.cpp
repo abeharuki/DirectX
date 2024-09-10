@@ -4,17 +4,23 @@
 void Stage::Initialize(){
 	
 
-	for (int i = 0; i < 21; ++i) {
-		boxSprite_[i].reset(Sprite::Create("resources/HPG.png"));
-		spriteTransform_[i].translate.x = 1.3f;
-		spriteTransform_[i].translate.y = 331.0f;
-		spriteTransform_[i].translate.x = 60.0f*i;
-		spriteTransform_[i].scale = { 60.0f,55.0f,0.0f };
+	for (int i = 0; i < size; ++i) {
+		playerAttackSprite_[i].reset(Sprite::Create("resources/Stage/pillar_player.png"));
+		enemyAttackSprite_[i].reset(Sprite::Create("resources/Stage/pillar_boss.png"));
+		boxSprite_[i].reset(Sprite::Create("resources/Stage/block.png"));
+		boxSprite_[i]->SetPosition(Vector2{ 64.0f * i ,331.f });
+		playerAttackTransform_[i].translate.y = 331.0f;
+		playerAttackTransform_[i].translate.x = 64.0f * i;
+		playerAttackTransform_[i].scale = { 64.0f,64.0f,0.0f };
+		enemyAttackTransform_[i].translate.y = 331.0f;
+		enemyAttackTransform_[i].translate.x = 64.0f*i;
+		enemyAttackTransform_[i].scale = { 64.0f,64.0f,0.0f };
+		
 		returnScale_[i] = false;
 		
 		hitPlayer_[i] = false;
 	}
-	backGround_.reset(Sprite::Create("resources/Stage/background.png"));
+	
 	
 }
 
@@ -23,29 +29,29 @@ void Stage::Update(){
 
 	
 
-	for (int i = 0; i < 21; ++i) {
+	for (int i = 0; i < size; ++i) {
 		
 
 		if (!returnScale_[i]) {
 			//伸びる
 			if (upBox_[i]) {
-				if (spriteTransform_[i].scale.y < 385.0f) {
-					spriteTransform_[i].scale.y += 50.f;
-					spriteTransform_[i].translate.y -= 50;
+				if (playerAttackTransform_[i].scale.y < 394.0f) {
+					playerAttackTransform_[i].scale.y += 50.f;
+					playerAttackTransform_[i].translate.y -= 50;
 				}
 				else {
-					spriteTransform_[i].scale.y = 385.0f;
-					spriteTransform_[i].translate.y = 1.0f;
+					playerAttackTransform_[i].scale.y = 394.0f;
+					playerAttackTransform_[i].translate.y = 1.0f;
 					returnScale_[i] = true;
 				}
 			}
 
 			if (downBox_[i]) {
-				if (spriteTransform_[i].scale.y < 321.0f) {
-					spriteTransform_[i].scale.y += 50.f;
+				if (enemyAttackTransform_[i].scale.y < 321.0f) {
+					enemyAttackTransform_[i].scale.y += 50.f;
 				}
 				else {
-					spriteTransform_[i].scale.y = 321.0f;
+					enemyAttackTransform_[i].scale.y = 321.0f;
 					returnScale_[i] = true;
 				}
 			}
@@ -54,26 +60,26 @@ void Stage::Update(){
 		else {
 			//元に戻る
 			if (upBox_[i]) {
-				if (spriteTransform_[i].scale.y > 55.0f) {
-					spriteTransform_[i].translate.y += 7.f;
-					spriteTransform_[i].scale.y -= 7.f;
+				if (playerAttackTransform_[i].scale.y > 64.0f) {
+					playerAttackTransform_[i].translate.y += 7.f;
+					playerAttackTransform_[i].scale.y -= 7.f;
 					
 				}
 				else {
-					spriteTransform_[i].scale.y = 55.0f;
-					spriteTransform_[i].translate.y = 331.0f;
+					playerAttackTransform_[i].scale.y = 64.0f;
+					playerAttackTransform_[i].translate.y = 331.0f;
 					upBox_[i] = false;
 					returnScale_[i] = false;
 				}
 			}
 
 			if (downBox_[i]) {
-				if (spriteTransform_[i].scale.y > 55.0f) {
-					spriteTransform_[i].scale.y -= 7.f;
+				if (enemyAttackTransform_[i].scale.y > 64.0f) {
+					enemyAttackTransform_[i].scale.y -= 7.f;
 				}
 				else {
-					spriteTransform_[i].scale.y = 55.0f;
-					spriteTransform_[i].translate.y = 331.0f;
+					enemyAttackTransform_[i].scale.y = 64.0f;
+					enemyAttackTransform_[i].translate.y = 331.0f;
 					downBox_[i] = false;
 					returnScale_[i] = false;
 				}
@@ -98,7 +104,8 @@ void Stage::Update(){
 			}
 			colliderManager_[i]->SetEnemyHit(false);
 		}*/
-		boxSprite_[i]->SetTransform(spriteTransform_[i]);
+		playerAttackSprite_[i]->SetTransform(playerAttackTransform_[i]);
+		enemyAttackSprite_[i]->SetTransform(enemyAttackTransform_[i]);
 
 
 	}
@@ -106,18 +113,20 @@ void Stage::Update(){
 
 
 	ImGui::Begin("Stage");
-	ImGui::DragFloat3("Pos", &spriteTransform_[0].translate.x, 0.1f);
-	ImGui::DragFloat3("Scale", &spriteTransform_[0].scale.x, 0.1f);
+	ImGui::DragFloat3("Pos", &enemyAttackTransform_[0].translate.x, 0.1f);
+	ImGui::DragFloat3("Scale", &enemyAttackTransform_[0].scale.x, 0.1f);
 	ImGui::Checkbox("box", &returnScale_[0]);
-	ImGui::Checkbox("up", &upBox_[0]);
-	ImGui::Checkbox("down", &downBox_[0]);
+	ImGui::DragInt("BoxNum", &boxNum_,1,0,16);
+	ImGui::Checkbox("up", &upBox_[boxNum_]);
+	ImGui::Checkbox("down", &downBox_[boxNum_]);
 	ImGui::End();
 }
 
 void Stage::Draw(ViewProjection viewprojection, bool light){
 	//backGround_->Draw();
-	for (int i = 0; i < 21; ++i) {
-
+	for (int i = 0; i < size; ++i) {
+		playerAttackSprite_[i]->Draw();
+		enemyAttackSprite_[i]->Draw();
 		boxSprite_[i]->Draw();
 	}
 }

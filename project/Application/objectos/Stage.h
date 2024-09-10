@@ -32,16 +32,24 @@ public:
 	}
 
 	void SetDebugEnemy(DebugEnemy* debugEnemy) { debugEnemy_ = debugEnemy; }
-
+	Vector2 GetPos(int i) { return Vector2(enemyAttackTransform_[i].translate.x, enemyAttackTransform_[i].translate.y); }
+	Vector2 GetScale(int i) { return Vector2(enemyAttackTransform_[i].scale.x, enemyAttackTransform_[i].scale.y); }
+	void SetUp(bool up ,int i) { upBox_[i] = true; }
+	void SetDown(bool up, int i) { downBox_[i] = true; }
+	static constexpr int size = 16;
 private:
 	
-	Transform spriteTransform_[21];
+	Transform playerAttackTransform_[size];
+	Transform enemyAttackTransform_[size];
 	DebugEnemy* debugEnemy_;
 	std::unique_ptr<Sprite> backGround_;
-	std::unique_ptr<Sprite> boxSprite_[21];
-	bool returnScale_[21];
-	bool hitPlayer_[21];
+	std::unique_ptr<Sprite> boxSprite_[size];
+	std::unique_ptr<Sprite> playerAttackSprite_[size];
+	std::unique_ptr<Sprite> enemyAttackSprite_[size];
+	bool returnScale_[size];
+	bool hitPlayer_[size];
 	bool moveScale_;
-	bool upBox_[21];
-	bool downBox_[21];
+	bool upBox_[size];
+	bool downBox_[size];
+	int boxNum_ = 0;
 };
