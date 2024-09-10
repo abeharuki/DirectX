@@ -240,9 +240,9 @@ void DebugPlayer::CalcMatrix()
 
 void DebugPlayer::TransfarSprite()
 {
-	sprite_->SetPosition(pViewProjection_->WorldToScreen(transform_.translate).GetVec2());
+	sprite_->SetPosition(pViewProjection_->WorldToScreen(transform_.translate).GetVec2() - Vector2{ .y = playerStatus_.drawOffset_.second });
 	sprite_->SetRotation(transform_.rotate.z);
-	sprite_->SetSize(transform_.scale.GetVec2() * 100.f);
+	sprite_->SetSize(transform_.scale.GetVec2() * playerStatus_.drawScale_.second);
 }
 
 void DebugPlayer::OnCollision(Collider *collider) {
@@ -275,6 +275,8 @@ void PlayerStatus::Save() const
 	gVal->AddItem(kGroupName_, jumpStrength_.first, jumpStrength_.second);
 	gVal->AddItem(kGroupName_, gravity_.first, gravity_.second);
 	gVal->AddItem(kGroupName_, ceilingHeight_.first, ceilingHeight_.second);
+	gVal->AddItem(kGroupName_, drawScale_.first, drawScale_.second);
+	gVal->AddItem(kGroupName_, drawOffset_.first, drawOffset_.second);
 }
 
 void PlayerStatus::Load()
@@ -286,4 +288,6 @@ void PlayerStatus::Load()
 	gVal->GetValue(kGroupName_, jumpStrength_.first, &jumpStrength_.second);
 	gVal->GetValue(kGroupName_, gravity_.first, &gravity_.second);
 	gVal->GetValue(kGroupName_, ceilingHeight_.first, &ceilingHeight_.second);
+	gVal->GetValue(kGroupName_, drawScale_.first, &drawScale_.second);
+	gVal->GetValue(kGroupName_, drawOffset_.first, &drawOffset_.second);
 }
