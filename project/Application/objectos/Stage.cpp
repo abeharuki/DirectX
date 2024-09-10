@@ -9,7 +9,8 @@ void Stage::Initialize(){
 		enemyAttackSprite_[i].reset(Sprite::Create("resources/Stage/pillar_boss.png"));
 		boxSprite_[i].reset(Sprite::Create("resources/Stage/block.png"));
 		boxSprite_[i]->SetSize({ 64.0f,64.0f });
-		boxSprite_[i]->SetPosition(Vector2{ 64.0f * i ,331.f });
+		boxPos_[i] = Vector2{64.0f * i ,331.f};
+		
 		
 		playerAttackTransform_[i].translate.y = 331.0f;
 		playerAttackTransform_[i].translate.x += 64.0f * i;
@@ -32,6 +33,7 @@ void Stage::Update(){
 	
 
 	for (int i = 0; i < kSize_; ++i) {
+		
 		
 
 		if (!returnScale_[i]) {
@@ -89,6 +91,25 @@ void Stage::Update(){
 
 		}
 		
+		if (shake_.x != 0 || shake_.y != 0) {
+			boxPos_[i].x += shake_.x;
+			boxPos_[i].y += shake_.y;
+			playerAttackTransform_[i].translate += Vector3{ shake_.x,shake_.y,0.0f };
+			enemyAttackTransform_[i].translate += Vector3{ shake_.x,shake_.y,0.0f };
+		}
+		else {
+			boxPos_[i] = Vector2{ 64.0f * i ,331.f };
+			if (!upBox_[i]) {
+				playerAttackTransform_[i].translate.y = 331.0f;
+
+			}
+
+			playerAttackTransform_[i].translate.x += 64.0f * i;
+			enemyAttackTransform_[i].translate.x = 64.0f * i;
+			enemyAttackTransform_[i].translate.y = 331.0f;
+		}
+
+		boxSprite_[i]->SetPosition(boxPos_[i]);
 		playerAttackSprite_[i]->SetTransform(playerAttackTransform_[i]);
 		enemyAttackSprite_[i]->SetTransform(enemyAttackTransform_[i]);
 	}

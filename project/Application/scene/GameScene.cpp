@@ -73,8 +73,22 @@ void GameScene::Update() {
 	if (particleFlag_) {
 		particle_->Update();
 	}
+	if (shakeFlag_) {
+		shake_.x = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
+		shake_.y = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
+		backGroundPos_.x += shake_.x;
+		backGroundPos_.y += shake_.y;
 
+	}
+	else {
+		shake_ = { 0.0f,0.0f };
+		backGroundPos_ = { 0.0f,0.0f };
+	}
+	for (int i = 0; i < 5; ++i) {
+		backGroundSprite_[i]->SetPosition(backGroundPos_);
+	}
 
+	stage_->SetShake(shake_);
 	stage_->SetDebugEnemy(debugEnemy_.get());
 	stage_->Update();
 
@@ -124,7 +138,8 @@ void GameScene::Update() {
 
 
 	ImGui::Begin("Setting");
-
+	ImGui::DragFloat3("camera", &viewProjection_.translation_.x);
+	ImGui::Checkbox("ShakeFlag", &shakeFlag_);
 	if (ImGui::TreeNode("Particle")) {
 		ImGui::Checkbox("ParticleFlag", &particleFlag_);
 		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
