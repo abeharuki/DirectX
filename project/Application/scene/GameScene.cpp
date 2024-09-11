@@ -30,21 +30,21 @@ void GameScene::Initialize() {
 	stage_->Initialize();
 
 	debugPlayer_->SetStage(stage_.get());
-
+	particleCount_ = 30;
 	emitter_ = {
-		.translate = {0,3,0},
+		.translate = {0,2.8f,0},
 		.count{50},
 		.frequency{0.075f},
-		.frequencyTime{0.5f},
-		.scaleRange{.min{2.2f,1.0f,11.0f},.max{2.2f,3.5f,1.0f}},
-		.translateRange{.min{-3.2f,-1.2f,0.0f},.max{3.2f,1.2f,0.0f}},
-		.colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
-		.lifeTimeRange{.min{0.1f},.max{1.0f}},
-		.velocityRange{.min{0.0f,0.1f,0.0f},.max{0.0f,0.4f,0.3f}},
+		.frequencyTime{0.1f},
+		.scaleRange{.min{0.1f,0.1f,0.0f},.max{0.2f,0.2f,0.0f}},
+		.translateRange{.min{-0.25f,0.f,0.0f},.max{0.25f,0.1f,0.0f}},
+		.colorRange{.min{1.f,0.3f,0.f},.max{1.f,0.4f,0.0f}},
+		.lifeTimeRange{.min{0.1f},.max{0.15f}},
+		.velocityRange{.min{-0.2f,-0.1f,0.0f},.max{0.2f,-0.5f,0.3f}},
 	};
 
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
-
+	
 	PostEffect::GetInstance()->isGrayscale(false);
 
 	vignetting_.intensity = 16.0f;
@@ -56,7 +56,8 @@ void GameScene::Initialize() {
 	dissolve_.edgeColor = { 1.0f,-1.0f,-1.0f };
 	bloom_.stepWidth = 0.001f;
 	bloom_.sigma = 0.005f;
-
+	postEffects[8] = true;
+	
 }
 
 void GameScene::Update() {
@@ -73,9 +74,10 @@ void GameScene::Update() {
 	if (particleFlag_) {
 		particle_->Update();
 	}
-
+	
 
 	if (shakeFlag_) {
+		particle_->Update();
 		shake_.x = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
 		shake_.y = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
 		backGroundPos_.x += shake_.x;
@@ -85,6 +87,7 @@ void GameScene::Update() {
 	else {
 		shake_ = { 0.0f,0.0f };
 		backGroundPos_ = { 0.0f,0.0f };
+		
 		if (debugPlayer_->GetHitBlock()) {
 			shakeFlag_ = true;
 		}
@@ -98,6 +101,7 @@ void GameScene::Update() {
 	stage_->Update();
 
 	debugPlayer_->Update();
+	emitter_.translate.x = debugPlayer_->GetTransformTranslate().x;
 	debugEnemy_->SetDebugPlayer(debugPlayer_.get());
 	debugEnemy_->Update();
 
@@ -116,32 +120,33 @@ void GameScene::Update() {
 
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
+	PostEffect* const posteffect = PostEffect::GetInstance();
 
-	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
-	PostEffect::GetInstance()->Vignette(vignetting_);
-	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
-	PostEffect::GetInstance()->GaussianKernelSize(smoothing_.kernelSize);
-	PostEffect::GetInstance()->isOutLine(outLine_.isEnable);
-	PostEffect::GetInstance()->ValueOutLine(outLine_.differenceValue);
-	PostEffect::GetInstance()->isRadialBlur(radialBlur_.isEnble);
-	PostEffect::GetInstance()->RadialBlurCenter(radialBlur_.center);
-	PostEffect::GetInstance()->RadialBlurWidth(radialBlur_.blurWidth);
-	PostEffect::GetInstance()->isDissolve(dissolve_.isEnble);
-	PostEffect::GetInstance()->dissolveThreshold(dissolve_.threshold);
-	PostEffect::GetInstance()->EdgeColor(dissolve_.edgeColor);
-	PostEffect::GetInstance()->isRandom(random_.isEnble);
-	PostEffect::GetInstance()->SetBlurWidth(gasianBlur_.x);
-	PostEffect::GetInstance()->SetBlurSigma(gasianBlur_.y);
-	PostEffect::GetInstance()->isGasianBlur(isBlur_);
-	PostEffect::GetInstance()->SetBloomSigma(bloom_.sigma);
-	PostEffect::GetInstance()->SetBloomWidth(bloom_.stepWidth);
-	PostEffect::GetInstance()->BloomLightStrength(bloom_.lightStrength);
-	PostEffect::GetInstance()->BloomTreshold(bloom_.bloomThreshold);
-	PostEffect::GetInstance()->isBloom(bloom_.isEnble);
-	PostEffect::GetInstance()->SetHsv(hsv_);
+	posteffect->isGrayscale(grayscale_.isEnable);
+	posteffect->Vignette(vignetting_);
+	posteffect->isGaussian(smoothing_.isEnable);
+	posteffect->GaussianKernelSize(smoothing_.kernelSize);
+	posteffect->isOutLine(outLine_.isEnable);
+	posteffect->ValueOutLine(outLine_.differenceValue);
+	posteffect->isRadialBlur(radialBlur_.isEnble);
+	posteffect->RadialBlurCenter(radialBlur_.center);
+	posteffect->RadialBlurWidth(radialBlur_.blurWidth);
+	posteffect->isDissolve(dissolve_.isEnble);
+	posteffect->dissolveThreshold(dissolve_.threshold);
+	posteffect->EdgeColor(dissolve_.edgeColor);
+	posteffect->isRandom(random_.isEnble);
+	posteffect->SetBlurWidth(gasianBlur_.x);
+	posteffect->SetBlurSigma(gasianBlur_.y);
+	posteffect->isGasianBlur(isBlur_);
+	/*posteffect->SetBloomSigma(bloom_.sigma);
+	posteffect->SetBloomWidth(bloom_.stepWidth);
+	posteffect->BloomLightStrength(bloom_.lightStrength);
+	posteffect->BloomTreshold(bloom_.bloomThreshold);
+	posteffect->isBloom(bloom_.isEnble);*/
+	posteffect->SetHsv(hsv_);
 	CheckAllCollision();
 
-
+	particle_->DebugParameter();
 	ImGui::Begin("Setting");
 	ImGui::DragFloat3("camera", &viewProjection_.translation_.x);
 	ImGui::Checkbox("ShakeFlag", &shakeFlag_);

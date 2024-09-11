@@ -87,7 +87,10 @@ public:
 
 	static ParticleSystem*Create(const std::string& filename);
 
-	void StopParticle() { emitterSphere_->frequencyTime = 0.0f; }
+	void StopParticle() { 
+
+		emitterSphere_->frequencyTime = 0.1f; 
+	}
 
 	bool GetEmit() {
 		if (emitterSphere_->emit != 0) {

@@ -120,6 +120,7 @@ public: // メンバ関数
 
 	void OnCollision(Collider *collider) override;
 	const Vector3 GetWorldPosition() const override;
+	const Vector3 GetTransformTranslate() { return transform_.translate; }
 	const WorldTransform &GetWorldTransform() const override { return unuseData_; }
 	void SetViewProjection(const ViewProjection *viewProjection) {
 		pViewProjection_ = viewProjection;

@@ -327,7 +327,7 @@ void DebugPlayer::HeadButtUpdate()
 	if (transform_.translate.y <= playerStatus_.stageeFloor_.second) {
 		// 着地処理
 		behaviorRequest_ = Behavior::kRoot;
-		hitBlock_ = false;
+		//hitBlock_ = false;
 	}
 
 }
