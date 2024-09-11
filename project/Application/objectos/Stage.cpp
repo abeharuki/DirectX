@@ -97,7 +97,7 @@ void Stage::Update(){
 			playerAttackTransform_[i].translate += Vector3{ shake_.x,shake_.y,0.0f };
 			enemyAttackTransform_[i].translate += Vector3{ shake_.x,shake_.y,0.0f };
 		}
-		else {
+		/*else {
 			boxPos_[i] = Vector2{ 64.0f * i ,331.f };
 			if (!upBox_[i]) {
 				playerAttackTransform_[i].translate.y = 331.0f;
@@ -107,7 +107,7 @@ void Stage::Update(){
 			playerAttackTransform_[i].translate.x += 64.0f * i;
 			enemyAttackTransform_[i].translate.x = 64.0f * i;
 			enemyAttackTransform_[i].translate.y = 331.0f;
-		}
+		}*/
 
 		boxSprite_[i]->SetPosition(boxPos_[i]);
 		playerAttackSprite_[i]->SetTransform(playerAttackTransform_[i]);
