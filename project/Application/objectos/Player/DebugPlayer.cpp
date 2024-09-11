@@ -416,8 +416,14 @@ void DebugPlayer::DeadInitialize()
 void DebugPlayer::DeadUpdate()
 {
 	AnimUpdate(5, 3, 0, 8, false);
-
-
+	// 移動
+	transform_.translate.y += velocity_.y;
+	// 重力加速度
+	const float kGravity = playerStatus_.gravity_.second;
+	// 加速ベクトル
+	Vector3 accelerationVector = { 0, -kGravity, 0 };
+	// 加速
+	velocity_ += accelerationVector;
 
 }
 
