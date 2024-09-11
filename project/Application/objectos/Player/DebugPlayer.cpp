@@ -415,6 +415,8 @@ void DebugPlayer::DeadInitialize()
 
 void DebugPlayer::DeadUpdate()
 {
+	AnimUpdate(5, 3, 0, 8, false);
+
 
 
 }
@@ -508,6 +510,17 @@ float DebugPlayer::GetOnStagePosX() const
 
 	// 画面の位置から座標を取得する
 	return std::clamp(GetWorldPosition().x * Stage::kSize_ / (sceneWidth - 128 * 2), 0.f, static_cast<float>(Stage::kSize_));
+}
+
+bool DebugPlayer::IsGameOver() const
+{
+	return
+		// 体力が0になってるか
+		health_ <= 0 and
+		// 死亡状態である
+		behavior_ == Behavior::kDead and
+		// 死亡の待機時間が終わっている
+		animFlame_ >= static_cast<uint32_t>(playerStatus_.deadFlame.second);
 }
 
 DebugPlayer::~DebugPlayer() {}

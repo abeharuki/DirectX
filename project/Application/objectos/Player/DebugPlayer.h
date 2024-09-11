@@ -170,6 +170,10 @@ public: // メンバ関数
 	/// @return ステージ上においてのX座標
 	float GetOnStagePosX() const;
 
+	/// @brief ゲームオーバーになったかどうか
+	/// @return ゲームオーバーになったらtrue
+	bool IsGameOver() const;
+
 private: // メンバ変数
 	Transform transform_;
 	Matrix4x4 transMat_;
