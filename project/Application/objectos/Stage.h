@@ -30,8 +30,8 @@ public:
 	}
 
 	void SetDebugEnemy(DebugEnemy* debugEnemy) { debugEnemy_ = debugEnemy; }
-	Vector2 GetPlayerPos(uint32_t i) { return Vector2(playerAttackTransform_[i].translate.x, playerAttackTransform_[i].translate.y); }
-	Vector2 GetPlayerScale(uint32_t i) { return Vector2(playerAttackTransform_[i].scale.x, playerAttackTransform_[i].scale.y); }
+	Vector2 GetPlayerAttackPos(uint32_t i) { return Vector2(playerAttackTransform_[i].translate.x, playerAttackTransform_[i].translate.y); }
+	Vector2 GetPlayerAttackScale(uint32_t i) { return Vector2(playerAttackTransform_[i].scale.x, playerAttackTransform_[i].scale.y); }
 	Vector2 GetEnemyAttackPos(int i) { return Vector2(enemyAttackTransform_[i].translate.x, enemyAttackTransform_[i].translate.y); }
 	Vector2 GetEnemyAttackScale(int i) { return Vector2(enemyAttackTransform_[i].scale.x, enemyAttackTransform_[i].scale.y); }
 	void SetUp(bool up ,int i) {

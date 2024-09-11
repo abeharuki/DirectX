@@ -288,6 +288,12 @@ void GameScene::CheckAllCollision() {
 			}
 		}
 
+		if (Math::IsBoxCollision(debugEnemy_->GetPos().x + 25, debugEnemy_->GetPos().y-10, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
+			stage_->GetPlayerAttackPos(i).x, stage_->GetPlayerAttackPos(i).y, stage_->GetPlayerAttackScale(i).x, stage_->GetPlayerAttackScale(i).y)) {
+			ImGui::Begin("EnemyHit");
+			ImGui::End();
+		}
+
 	}
 
 
