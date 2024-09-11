@@ -25,7 +25,7 @@ public:
 	// 値のセット(float)
 	void SetValue(const std::string &grouName, const std::string &key, float value);
 	// 値のセット(Vector3)
-	void SetValue(const std::string &grouName, const std::string &key, Vector3 &value);
+	void SetValue(const std::string &grouName, const std::string &key, const Vector3 &value);
 
 	// 毎フレーム処理
 	void Update();

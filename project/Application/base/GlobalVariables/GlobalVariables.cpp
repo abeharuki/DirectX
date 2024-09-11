@@ -39,7 +39,7 @@ void GlobalVariables::SetValue(const std::string &grouName, const std::string &k
 
 // Vector3
 void GlobalVariables::SetValue(
-	const std::string &grouName, const std::string &key, Vector3 &value) {
+	const std::string &grouName, const std::string &key, const Vector3 &value) {
 	// グループの参照を取得
 	Group &group = datas_[grouName];
 	// 新しい項目のデータ

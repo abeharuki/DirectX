@@ -1,7 +1,6 @@
 #include "DebugPlayer.h"
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
-#include <GlobalVariables.h>
 #include <Stage.h>
 
 void DebugPlayer::Initialize() {
@@ -44,6 +43,9 @@ void DebugPlayer::Update() {
 	transform_.scale = Vector3{ 1.f, 40.f / 24.f ,1.f }*playerStatus_.drawScale_.second;
 	animFlame_++;
 
+	// ステージの棒との当たり判定
+	StageBarCollision();
+
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -67,6 +69,9 @@ void DebugPlayer::Update() {
 			break;
 		case Behavior::kAttack:
 			AttackInitialize();
+			break;
+		case Behavior::kKnockBack:
+			KnockBackInitialize();
 			break;
 
 		}
@@ -100,10 +105,19 @@ void DebugPlayer::Update() {
 		// 攻撃
 		AttackUpdate();
 		break;
+	case Behavior::kKnockBack:
+		// 攻撃
+		KnockBackUpdate();
+		break;
 
 	}
 
-	if (velocity_.x) { sprite_->SetFlipX(velocity_.x < 0.f); }
+	if (velocity_.x) {
+		// 左に動いているか
+		const bool isMoveLeft = velocity_.x < 0.f;
+		// ノックバック以外なら移動方向と同じ方向を向かせる
+		sprite_->SetFlipX(behavior_ != Behavior::kKnockBack ? isMoveLeft : not isMoveLeft);
+	}
 
 	// プレイヤのX軸移動範囲を制限
 	if (transform_.translate.x <= -playerStatus_.stageWidth_.second) {	// 左方向
@@ -294,13 +308,8 @@ void DebugPlayer::HeadButtInitialize()
 	transform_.translate.y = playerStatus_.stageHeight_.second;
 	velocity_.y = 0.f;
 
-	// DxCommonからViewPortを取得する
-	const DirectXCommon *const pDxCommon = DirectXCommon::GetInstance();
-	const auto &vp = pDxCommon->GetViewPort();
-	const int32_t sceneWidth = static_cast<int32_t>(vp.Width);
-
-	// 画面の位置から座標を取得する
-	const int32_t targetPos = std::clamp(static_cast<int32_t>(GetWorldPosition().x * Stage::kSize_ / (sceneWidth - 128 * 2)), 0, Stage::kSize_);
+	// ステージ上においての座標を返す
+	const int32_t targetPos = static_cast<int32_t>(GetOnStagePosX());
 
 	// もしその場所が立ってなかったら
 	if (not pStage_->GetUp(targetPos)) {
@@ -311,7 +320,7 @@ void DebugPlayer::HeadButtInitialize()
 
 void DebugPlayer::HeadButtUpdate()
 {
-	
+
 	// 移動
 	transform_.translate += velocity_;
 	// 重力加速度
@@ -323,7 +332,7 @@ void DebugPlayer::HeadButtUpdate()
 	if (velocity_.y <= -0.3f) {
 		hitBlock_ = false;
 	}
-	
+
 	if (transform_.translate.y <= playerStatus_.stageeFloor_.second) {
 		// 着地処理
 		behaviorRequest_ = Behavior::kRoot;
@@ -358,6 +367,23 @@ void DebugPlayer::AttackUpdate() {
 	animation_->Update(3);
 }
 
+void DebugPlayer::KnockBackInitialize()
+{
+	animFlame_ = 0;
+}
+
+void DebugPlayer::KnockBackUpdate()
+{
+	// ノックバック時間の間隔
+	const uint32_t animSpan = 5;
+	AnimUpdate(4, animSpan, 0, 2, false);
+
+	// ノックバック時間が終了したら
+	if (animFlame_ >= static_cast<uint32_t>(playerStatus_.knockBackFlame_.second)) {
+		behaviorRequest_ = Behavior::kRoot;
+	}
+}
+
 void DebugPlayer::CalcMatrix()
 {
 	transMat_ = Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -371,17 +397,70 @@ void DebugPlayer::TransfarSprite()
 	sprite_->SetSize(transform_.scale.GetVec2());
 }
 
-void DebugPlayer::OnCollision(Collider *collider) {
+void DebugPlayer::StageBarCollision()
+{
+	// ノックバックと死亡状態以外であれば
+	if (behaviorRequest_ != Behavior::kKnockBack and behaviorRequest_ != Behavior::kDead) {
 
-	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {}
+		// 攻撃状態の棒のリスト
+		const std::bitset<Stage::kSize_> isBarAttack = pStage_->IsAttacking(false);
+		// プレイヤの座標
+		const float playerPos = GetOnStagePosX();
+		// プレイヤの両端のIndex
+		const std::array<uint32_t, 2> playerSidePos{
+			static_cast<uint32_t>(std::floor(playerPos)),
+			static_cast<uint32_t>(std::ceil(playerPos))
+		};
+		for (uint32_t target : playerSidePos) {
+			// どちらかが攻撃範囲に入ってたら
+			if (isBarAttack[target]) {
+				// ダメージ判定して終わる
+				OnCollision(target);
+				break;
+			}
+		}
+	}
+}
 
-	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {}
+void DebugPlayer::OnCollision(const uint32_t index) {
+	// プレイヤの状態をノックバックにする
+	behaviorRequest_ = Behavior::kKnockBack;
+
+	// プレイヤの座標を取得する
+	const float playerPos = GetOnStagePosX();
+
+	// 棒の座標からどれくらいの距離にいるのかを返す
+	const float posDiff = (playerPos - 0.5f) - index;
+
+	// ベクトルを与える
+	velocity_ = playerStatus_.knockBackPower.second;
+
+	// もし左側なら
+	if (posDiff < 0.f) {
+		// ベクトルを反転させる
+		velocity_.x *= -1.f;
+	}
+
+}
+
+void DebugPlayer::OnCollision([[maybe_unused]] Collider *collider) {
 
 }
 
 const Vector3 DebugPlayer::GetWorldPosition() const
 {
 	return { sprite_->GetPosition().x,  sprite_->GetPosition().y ,0.f };
+}
+
+float DebugPlayer::GetOnStagePosX() const
+{
+	// DxCommonからViewPortを取得する
+	const DirectXCommon *const pDxCommon = DirectXCommon::GetInstance();
+	const auto &vp = pDxCommon->GetViewPort();
+	const int32_t sceneWidth = static_cast<int32_t>(vp.Width);
+
+	// 画面の位置から座標を取得する
+	return std::clamp(GetWorldPosition().x * Stage::kSize_ / (sceneWidth - 128 * 2), 0.f, static_cast<float>(Stage::kSize_));
 }
 
 DebugPlayer::~DebugPlayer() {}
@@ -401,30 +480,35 @@ bool DebugPlayer::AnimUpdate(const uint32_t layer, const uint32_t span, const ui
 void PlayerStatus::Save() const
 {
 	// データの格納先
-	GlobalVariables *gVal = GlobalVariables::GetInstance();
-	gVal->AddItem(kGroupName_, groundMoveSpeed_.first, groundMoveSpeed_.second);
-	gVal->AddItem(kGroupName_, jumpStrength_.first, jumpStrength_.second);
-	gVal->AddItem(kGroupName_, airJumpStrength_.first, airJumpStrength_.second);
-	gVal->AddItem(kGroupName_, gravity_.first, gravity_.second);
-	gVal->AddItem(kGroupName_, stageHeight_.first, stageHeight_.second);
-	gVal->AddItem(kGroupName_, stageWidth_.first, stageWidth_.second);
-	gVal->AddItem(kGroupName_, stageeFloor_.first, stageeFloor_.second);
-	gVal->AddItem(kGroupName_, drawScale_.first, drawScale_.second);
-	gVal->AddItem(kGroupName_, drawOffset_.first, drawOffset_.second);
+	LoadHelper helper{ GlobalVariables::GetInstance() };
+	helper << groundMoveSpeed_;
+	helper << jumpStrength_;
+	helper << airJumpStrength_;
+	helper << gravity_;
+	helper << stageHeight_;
+	helper << stageWidth_;
+	helper << stageeFloor_;
+	helper << drawScale_;
+	helper << drawOffset_;
+	helper << knockBackFlame_;
+	helper << knockBackPower;
+	helper << maxHealth_;
 }
 
 void PlayerStatus::Load()
 {
 	// データの格納先
-	const GlobalVariables *gVal = GlobalVariables::GetInstance();
-
-	gVal->GetValue(kGroupName_, groundMoveSpeed_.first, &groundMoveSpeed_.second);
-	gVal->GetValue(kGroupName_, jumpStrength_.first, &jumpStrength_.second);
-	gVal->GetValue(kGroupName_, airJumpStrength_.first, &airJumpStrength_.second);
-	gVal->GetValue(kGroupName_, gravity_.first, &gravity_.second);
-	gVal->GetValue(kGroupName_, stageHeight_.first, &stageHeight_.second);
-	gVal->GetValue(kGroupName_, stageWidth_.first, &stageWidth_.second);
-	gVal->GetValue(kGroupName_, stageeFloor_.first, &stageeFloor_.second);
-	gVal->GetValue(kGroupName_, drawScale_.first, &drawScale_.second);
-	gVal->GetValue(kGroupName_, drawOffset_.first, &drawOffset_.second);
+	const LoadHelper helper{ GlobalVariables::GetInstance() };
+	helper >> groundMoveSpeed_;
+	helper >> jumpStrength_;
+	helper >> airJumpStrength_;
+	helper >> gravity_;
+	helper >> stageHeight_;
+	helper >> stageWidth_;
+	helper >> stageeFloor_;
+	helper >> drawScale_;
+	helper >> drawOffset_;
+	helper >> knockBackFlame_;
+	helper >> knockBackPower;
+	helper >> maxHealth_;
 }

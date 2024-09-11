@@ -11,12 +11,13 @@
 #include <Animation/Animation.h>
 #include "PostEffects/PostEffect.h"
 #include <Sphere.h>
+#include <GlobalVariables.h>
 
 class Stage;
 
 struct PlayerStatus {
 
-	const char *const kGroupName_ = "Player";
+	inline static const char *const kGroupName_ = "Player";
 
 	std::pair<const char *const, float> groundMoveSpeed_ = { "GroundMoveSpeed", 0.2f };
 	std::pair<const char *const, float> jumpStrength_ = { "JumpStrength", 0.5f };
@@ -30,8 +31,28 @@ struct PlayerStatus {
 	std::pair<const char *const, float> drawScale_ = { "DrawScale", 128.f };
 	std::pair<const char *const, float> drawOffset_ = { "DrawOffset", 64.f };
 
+	std::pair<const char *const, int32_t> knockBackFlame_ = { "KnockBackFlame", 30 };
+	std::pair<const char *const, Vector3> knockBackPower = { "KnockBackPower", {5.f, 2.f,0.f} };
+	std::pair<const char *const, int32_t> maxHealth_ = { "MaxHealth", 10 };
+
 	void Save() const;
 	void Load();
+
+	struct LoadHelper
+	{
+		GlobalVariables *const pGVal_;
+
+		template<typename T>
+		void operator>>(std::pair<const char *const, T> &value) const {
+			pGVal_->GetValue<T>(kGroupName_, value.first, &value.second);
+		}
+
+		template<typename T>
+		void operator<<(const std::pair<const char *const, T> &value) {
+			pGVal_->SetValue(kGroupName_, value.first, value.second);
+		}
+
+	};
 
 };
 
@@ -112,11 +133,22 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdate();
 
+	// ノックバック
+	void KnockBackInitialize();
+	void KnockBackUpdate();
+
 	/// @brief 行列を計算する
 	void CalcMatrix();
 
 	/// @brief スプライトにデータを渡す
 	void TransfarSprite();
+
+	/// @brief ステージの棒との当たり判定の検知
+	void StageBarCollision();
+
+	/// @brief 棒にあたった場合の処理
+	/// @param index 棒の番号
+	void OnCollision(const uint32_t index);
 
 	void OnCollision(Collider *collider) override;
 	const Vector3 GetWorldPosition() const override;
@@ -126,7 +158,12 @@ public: // メンバ関数
 		pViewProjection_ = viewProjection;
 	}
 	void SetStage(Stage *stage) { pStage_ = stage; }
-	bool GetHitBlock() { return hitBlock_; }
+	bool GetHitBlock() const { return hitBlock_; }
+
+	/// @brief ステージ上のプレイヤの位置を返す
+	/// @return ステージ上においてのX座標
+	float GetOnStagePosX() const;
+
 private: // メンバ変数
 	Transform transform_;
 	Matrix4x4 transMat_;
@@ -149,7 +186,7 @@ private: // メンバ変数
 		kDash,		// ダッシュ
 		kHeadButt,	// 頭突き
 		kAttack,	// 攻撃
-		knock,		// ノックバック
+		kKnockBack,	// ノックバック
 		kDead,		// 死亡
 
 		kMaxCount	// ビヘイビアの数

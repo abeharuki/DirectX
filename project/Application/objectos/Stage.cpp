@@ -1,36 +1,36 @@
 #include "Stage.h"
 #include <CollisionManager/CollisionConfig.h>
 
-void Stage::Initialize(){
-	
+void Stage::Initialize() {
+
 
 	for (int i = 0; i < kSize_; ++i) {
 		playerAttackSprite_[i].reset(Sprite::Create("resources/Stage/pillar_player.png"));
 		enemyAttackSprite_[i].reset(Sprite::Create("resources/Stage/pillar_boss.png"));
 		boxSprite_[i].reset(Sprite::Create("resources/Stage/block.png"));
 		boxSprite_[i]->SetSize({ 64.0f,64.0f });
-		boxPos_[i] = Vector2{64.0f * i ,331.f};
-		
-		
+		boxPos_[i] = Vector2{ 64.0f * i ,331.f };
+
+
 		playerAttackTransform_[i].translate.y = 331.0f;
 		playerAttackTransform_[i].translate.x += 64.0f * i;
 		playerAttackTransform_[i].scale = { 64.0f,64.0f,0.0f };
 		enemyAttackTransform_[i].translate.y = 331.0f;
-		enemyAttackTransform_[i].translate.x = 64.0f*i;
+		enemyAttackTransform_[i].translate.x = 64.0f * i;
 		enemyAttackTransform_[i].scale = { 64.0f,64.0f,0.0f };
-		
+
 		returnScale_[i] = false;
-		
+
 		hitPlayer_[i] = false;
 	}
-	
-	
+
+
 }
 
-void Stage::Update(){
-	
-	
-	
+void Stage::Update() {
+
+
+
 
 	for (int i = 0; i < kSize_; ++i) {
 
@@ -51,7 +51,7 @@ void Stage::Update(){
 			enemyAttackTransform_[i].translate.x = 64.0f * i;
 			enemyAttackTransform_[i].translate.y = 331.0f;
 		}
-		
+
 		if (!returnScale_[i]) {
 			//伸びる
 			if (upBox_[i]) {
@@ -85,7 +85,7 @@ void Stage::Update(){
 				if (playerAttackTransform_[i].scale.y > 64.0f) {
 					playerAttackTransform_[i].translate.y += 7.f;
 					playerAttackTransform_[i].scale.y -= 7.f;
-					
+
 				}
 				else {
 					playerAttackTransform_[i].scale.y = 64.0f;
@@ -108,7 +108,7 @@ void Stage::Update(){
 			}
 
 		}
-		
+
 
 
 		boxSprite_[i]->SetPosition(boxPos_[i]);
@@ -118,20 +118,20 @@ void Stage::Update(){
 
 
 	}
-	
+
 
 
 	ImGui::Begin("Stage");
 	ImGui::DragFloat3("Pos", &enemyAttackTransform_[0].translate.x, 0.1f);
 	ImGui::DragFloat3("Scale", &enemyAttackTransform_[0].scale.x, 0.1f);
 	ImGui::Checkbox("box", &returnScale_[0]);
-	ImGui::DragInt("BoxNum", &boxNum_,1,0,16);
+	ImGui::InputInt("BoxNum", &boxNum_, 1, 0, kSize_ - 1);
 	ImGui::Checkbox("up", &upBox_[boxNum_]);
 	ImGui::Checkbox("down", &downBox_[boxNum_]);
 	ImGui::End();
 }
 
-void Stage::Draw(ViewProjection viewprojection, bool light){
+void Stage::Draw(ViewProjection viewprojection, bool light) {
 	//backGround_->Draw();
 	for (int i = 0; i < kSize_; ++i) {
 		playerAttackSprite_[i]->Draw();
