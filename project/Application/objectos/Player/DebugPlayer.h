@@ -32,7 +32,7 @@ struct PlayerStatus {
 	std::pair<const char *const, float> drawOffset_ = { "DrawOffset", 64.f };
 
 	std::pair<const char *const, int32_t> knockBackFlame_ = { "KnockBackFlame", 30 };
-	std::pair<const char *const, Vector3> knockBackPower = { "KnockBackPower", {5.f, 2.f,0.f} };
+	std::pair<const char *const, Vector3> knockBackPower = { "KnockBackPower", {0.5f, 0.2f,0.f} };
 	std::pair<const char *const, int32_t> maxHealth_ = { "MaxHealth", 10 };
 
 	void Save() const;

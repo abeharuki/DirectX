@@ -378,6 +378,23 @@ void DebugPlayer::KnockBackUpdate()
 	const uint32_t animSpan = 5;
 	AnimUpdate(4, animSpan, 0, 2, false);
 
+	// もし床に触れていたら横へのベクトルを0に
+	if (transform_.translate.y <= playerStatus_.stageeFloor_.second) { velocity_.x *= 0.75f; }
+	// もし天井に触れていたら落とす
+	if (transform_.translate.y > playerStatus_.stageHeight_.second) {
+		transform_.translate.y = playerStatus_.stageHeight_.second;
+		velocity_.y = 0.f;
+	}
+
+	// 移動
+	transform_.translate += velocity_;
+	// 重力加速度
+	const float kGravity = playerStatus_.gravity_.second;
+	// 加速ベクトル
+	Vector3 accelerationVector = { 0, -kGravity, 0 };
+	// 加速
+	velocity_ += accelerationVector;
+
 	// ノックバック時間が終了したら
 	if (animFlame_ >= static_cast<uint32_t>(playerStatus_.knockBackFlame_.second)) {
 		behaviorRequest_ = Behavior::kRoot;
@@ -405,7 +422,7 @@ void DebugPlayer::StageBarCollision()
 		// 攻撃状態の棒のリスト
 		const std::bitset<Stage::kSize_> isBarAttack = pStage_->IsAttacking(false);
 		// プレイヤの座標
-		const float playerPos = GetOnStagePosX();
+		const float playerPos = GetOnStagePosX() - 0.5f;
 		// プレイヤの両端のIndex
 		const std::array<uint32_t, 2> playerSidePos{
 			static_cast<uint32_t>(std::floor(playerPos)),
@@ -413,7 +430,7 @@ void DebugPlayer::StageBarCollision()
 		};
 		for (uint32_t target : playerSidePos) {
 			// どちらかが攻撃範囲に入ってたら
-			if (isBarAttack[target]) {
+			if (target >= 0 and target < Stage::kSize_ and isBarAttack[target]) {
 				// ダメージ判定して終わる
 				OnCollision(target);
 				break;
