@@ -68,12 +68,12 @@ public: // メンバ関数
 	~DebugPlayer();
 
 	/// @brief アニメーションを実際に行う
-	/// @param layer 
-	/// @param span 
-	/// @param begin 
-	/// @param end 
-	/// @param isRoop 
-	/// @return 
+	/// @param layer 縦方向のレイヤー
+	/// @param span アニメーションの秒間
+	/// @param begin アニメーションの開始地点
+	/// @param end アニメーションの終了地点
+	/// @param isRoop ループするかどうか
+	/// @return 終端に達しているかどうか
 	bool AnimUpdate(const uint32_t layer, const uint32_t span, const uint32_t begin, const uint32_t end, bool isRoop);
 
 	/// <summary>
