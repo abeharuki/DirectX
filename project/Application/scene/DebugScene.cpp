@@ -308,21 +308,7 @@ Vector3 DebugScene::GetLocalPosition()
 }
 
 void DebugScene::CheckAllCollision() {
-	for (int i = 0; i < Stage::kSize_; ++i) {
-		if (debugEnemy_->GetAttack()) {
-			if (Math::IsBoxCollision(debugEnemy_->GetPos().x, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x, debugEnemy_->GetScale().y,
-				stage_->GetPos(i).x, stage_->GetPos(i).y, stage_->GetScale(i).x, stage_->GetScale(i).y)) {
-				if (stage_->GetScale(i).y == 64.0f) {
-					stage_->SetDown(true, i);
-				}
-
-
-
-			}
-		}
-
-	}
-
+	
 
 }
 

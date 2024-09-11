@@ -258,6 +258,7 @@ void GameScene::Draw() {
 	debugEnemy_->Draw(viewProjection_);
 
 	stage_->Draw(viewProjection_, true);
+	particle_->Draw(viewProjection_);
 }
 
 void GameScene::RenderDirect() {
@@ -275,13 +276,10 @@ void GameScene::CheckAllCollision() {
 	for (int i = 0; i < Stage::kSize_; ++i) {
 		if (debugEnemy_->GetAttack()) {
 			if (Math::IsBoxCollision(debugEnemy_->GetPos().x + 25, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
-				stage_->GetPos(i).x, stage_->GetPos(i).y, stage_->GetScale(i).x, stage_->GetScale(i).y)) {
-				if (stage_->GetScale(i).y == 64.0f) {
+				stage_->GetEnemyAttackPos(i).x, stage_->GetEnemyAttackPos(i).y, stage_->GetEnemyAttackScale(i).x, stage_->GetEnemyAttackScale(i).y)) {
+				if (stage_->GetEnemyAttackScale(i).y == 64.0f) {
 					stage_->SetDown(true, i);
 				}
-
-
-
 			}
 		}
 

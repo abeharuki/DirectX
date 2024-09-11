@@ -548,7 +548,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateSpritePipelin
 		// DepthStencilStateの設定
 		D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
 		// Depthの機能を有効化する
-		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.DepthEnable = false;
 		// 書き込みします
 		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 		// 比較関数はLessEqual。つまり、近ければ描画される
