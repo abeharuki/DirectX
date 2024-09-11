@@ -125,6 +125,7 @@ public: // メンバ関数
 		pViewProjection_ = viewProjection;
 	}
 	void SetStage(Stage *stage) { pStage_ = stage; }
+	bool GetHitBlock() { return hitBlock_; }
 private: // メンバ変数
 	Transform transform_;
 	Matrix4x4 transMat_;
@@ -184,6 +185,7 @@ private: // メンバ変数
 	bool combo_;
 	bool noAttack_;
 	bool preNoAttack_;
+	bool hitBlock_;
 
 	// ジャンプの時間
 	uint32_t behaviorJumpTime = 20;

@@ -73,16 +73,21 @@ void GameScene::Update() {
 	if (particleFlag_) {
 		particle_->Update();
 	}
+
+
 	if (shakeFlag_) {
 		shake_.x = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
 		shake_.y = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
 		backGroundPos_.x += shake_.x;
 		backGroundPos_.y += shake_.y;
-
+		shakeFlag_ = false;
 	}
 	else {
 		shake_ = { 0.0f,0.0f };
 		backGroundPos_ = { 0.0f,0.0f };
+		if (debugPlayer_->GetHitBlock()) {
+			shakeFlag_ = true;
+		}
 	}
 	for (int i = 0; i < 5; ++i) {
 		backGroundSprite_[i]->SetPosition(backGroundPos_);

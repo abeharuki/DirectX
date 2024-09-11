@@ -64,4 +64,5 @@ private:
 	std::array<bool ,kSize_> downBox_;
 	int boxNum_ = 0;
 	Vector2 shake_;
+	float posY[kSize_];
 };

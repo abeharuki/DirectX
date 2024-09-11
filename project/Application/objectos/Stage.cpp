@@ -29,24 +29,42 @@ void Stage::Initialize(){
 
 void Stage::Update(){
 	
-
+	
 	
 
 	for (int i = 0; i < kSize_; ++i) {
-		
-		
 
+		if (shake_.x != 0 || shake_.y != 0) {
+			boxPos_[i].x += shake_.x;
+			boxPos_[i].y += shake_.y;
+			playerAttackTransform_[i].translate += Vector3{ shake_.x,shake_.y,0.0f };
+			enemyAttackTransform_[i].translate += Vector3{ shake_.x,shake_.y,0.0f };
+		}
+		else {
+			boxPos_[i] = Vector2{ 64.0f * i ,331.f };
+			if (!upBox_[i]) {
+				playerAttackTransform_[i].translate.y = 331.0f;
+
+			}
+
+			playerAttackTransform_[i].translate.x = 64.0f * i;
+			enemyAttackTransform_[i].translate.x = 64.0f * i;
+			enemyAttackTransform_[i].translate.y = 331.0f;
+		}
+		
 		if (!returnScale_[i]) {
 			//伸びる
 			if (upBox_[i]) {
 				if (playerAttackTransform_[i].scale.y < 394.0f) {
 					playerAttackTransform_[i].scale.y += 50.f;
-					playerAttackTransform_[i].translate.y -= 50;
+					posY[i] -= 50.0f;
+					playerAttackTransform_[i].translate.y = boxPos_[i].y + posY[i];
 				}
 				else {
 					playerAttackTransform_[i].scale.y = 394.0f;
-					playerAttackTransform_[i].translate.y = 1.0f;
+					//playerAttackTransform_[i].translate.y = boxPos_[i].y -330.0f;
 					returnScale_[i] = true;
+					posY[i] = 0.0f;
 				}
 			}
 
@@ -71,7 +89,7 @@ void Stage::Update(){
 				}
 				else {
 					playerAttackTransform_[i].scale.y = 64.0f;
-					playerAttackTransform_[i].translate.y = 331.0f;
+					playerAttackTransform_[i].translate.y = boxPos_[i].y;
 					upBox_[i] = false;
 					returnScale_[i] = false;
 				}
@@ -91,27 +109,14 @@ void Stage::Update(){
 
 		}
 		
-		if (shake_.x != 0 || shake_.y != 0) {
-			boxPos_[i].x += shake_.x;
-			boxPos_[i].y += shake_.y;
-			playerAttackTransform_[i].translate += Vector3{ shake_.x,shake_.y,0.0f };
-			enemyAttackTransform_[i].translate += Vector3{ shake_.x,shake_.y,0.0f };
-		}
-		/*else {
-			boxPos_[i] = Vector2{ 64.0f * i ,331.f };
-			if (!upBox_[i]) {
-				playerAttackTransform_[i].translate.y = 331.0f;
 
-			}
-
-			playerAttackTransform_[i].translate.x += 64.0f * i;
-			enemyAttackTransform_[i].translate.x = 64.0f * i;
-			enemyAttackTransform_[i].translate.y = 331.0f;
-		}*/
 
 		boxSprite_[i]->SetPosition(boxPos_[i]);
 		playerAttackSprite_[i]->SetTransform(playerAttackTransform_[i]);
 		enemyAttackSprite_[i]->SetTransform(enemyAttackTransform_[i]);
+
+
+
 	}
 	
 
