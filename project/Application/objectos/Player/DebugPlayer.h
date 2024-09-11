@@ -120,11 +120,13 @@ public: // メンバ関数
 
 	void OnCollision(Collider *collider) override;
 	const Vector3 GetWorldPosition() const override;
+	const Vector3 GetTransformTranslate() { return transform_.translate; }
 	const WorldTransform &GetWorldTransform() const override { return unuseData_; }
 	void SetViewProjection(const ViewProjection *viewProjection) {
 		pViewProjection_ = viewProjection;
 	}
 	void SetStage(Stage *stage) { pStage_ = stage; }
+	bool GetHitBlock() { return hitBlock_; }
 private: // メンバ変数
 	Transform transform_;
 	Matrix4x4 transMat_;
@@ -184,6 +186,7 @@ private: // メンバ変数
 	bool combo_;
 	bool noAttack_;
 	bool preNoAttack_;
+	bool hitBlock_;
 
 	// ジャンプの時間
 	uint32_t behaviorJumpTime = 20;

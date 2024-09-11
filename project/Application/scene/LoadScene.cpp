@@ -35,7 +35,7 @@ void LoadScene::RenderDirect() {
 }
 
 void LoadScene::Draw() {
-	backSprite_->Draw(uv);
-	nowLoadingSprite_->Draw(uv);
-	loadSprite_->Draw(uv);
+	backSprite_->Draw();
+	nowLoadingSprite_->Draw();
+	loadSprite_->Draw();
 }

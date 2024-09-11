@@ -16,66 +16,66 @@ void DebugEnemy::Initialize() {
 void DebugEnemy::Update() {
 
 	
-	if (behaviorRequest_) {
-		// 振る舞い変更
-		behavior_ = behaviorRequest_.value();
-		// 各振る舞いごとの初期化
-		switch (behavior_) {
-		case Behavior::kRoot:
-		default:
-			MoveInitialize();
-			break;
-		case Behavior::kJump:
-			JumpInitialize();
-			break;
-		case Behavior::kDash:
-			DashInitialize();
-			break;
-		case Behavior::kAttack:
-			AttackInitialize();
-			break;
+	//if (behaviorRequest_) {
+	//	// 振る舞い変更
+	//	behavior_ = behaviorRequest_.value();
+	//	// 各振る舞いごとの初期化
+	//	switch (behavior_) {
+	//	case Behavior::kRoot:
+	//	default:
+	//		MoveInitialize();
+	//		break;
+	//	case Behavior::kJump:
+	//		JumpInitialize();
+	//		break;
+	//	case Behavior::kDash:
+	//		DashInitialize();
+	//		break;
+	//	case Behavior::kAttack:
+	//		AttackInitialize();
+	//		break;
 
-		}
+	//	}
 
-		// 振る舞いリセット
-		behaviorRequest_ = std::nullopt;
-	}
+	//	// 振る舞いリセット
+	//	behaviorRequest_ = std::nullopt;
+	//}
 
-	switch (behavior_) {
-	case Behavior::kRoot:
-	default:
-		// 通常行動
-		MoveUpdata();
-		break;
-	case Behavior::kJump:
-		//ジャンプ
-		JumpUpdata();
-		break;
-	case Behavior::kDash:
-		// ジャンプ
-		DashUpdata();
-		break;
-	case Behavior::kAttack:
-		// 攻撃
-		AttackUpdata();
-		break;
+	//switch (behavior_) {
+	//case Behavior::kRoot:
+	//default:
+	//	// 通常行動
+	//	MoveUpdata();
+	//	break;
+	//case Behavior::kJump:
+	//	//ジャンプ
+	//	JumpUpdata();
+	//	break;
+	//case Behavior::kDash:
+	//	// ジャンプ
+	//	DashUpdata();
+	//	break;
+	//case Behavior::kAttack:
+	//	// 攻撃
+	//	AttackUpdata();
+	//	break;
 
-	}
+	//}
 
-	if (transformBase_.translate.x <= -30) {
-		//velocity_.x = 10.0f;
-		velocity_.x = 0.0f;
-	}
+	//if (transformBase_.translate.x <= -30) {
+	//	//velocity_.x = 10.0f;
+	//	velocity_.x = 0.0f;
+	//}
 
-	if (transformBase_.translate.x >= 820) {
-		velocity_.x = 0.0f;
-		//velocity_.x = -10.0f;
-	}
+	//if (transformBase_.translate.x >= 820) {
+	//	velocity_.x = 0.0f;
+	//	//velocity_.x = -10.0f;
+	//}
 
 	enemySprite_->SetTransform(transformBase_);
 	Vector3 playerPos = debugPlayer_->GetWorldPosition();
 
-	ImGui::Begin("Setting");
+	ImGui::Begin("Enemy");
 	ImGui::Text("posX%f", transformBase_.translate.x);
 	ImGui::Text("posY%f", transformBase_.translate.y);
 	ImGui::Text("posZ%f", transformBase_.translate.z);

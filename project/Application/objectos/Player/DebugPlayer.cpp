@@ -305,11 +305,13 @@ void DebugPlayer::HeadButtInitialize()
 	// もしその場所が立ってなかったら
 	if (not pStage_->GetUp(targetPos)) {
 		pStage_->SetUp(true, targetPos);
+		hitBlock_ = true;
 	}
 }
 
 void DebugPlayer::HeadButtUpdate()
 {
+	
 	// 移動
 	transform_.translate += velocity_;
 	// 重力加速度
@@ -318,9 +320,14 @@ void DebugPlayer::HeadButtUpdate()
 	Vector3 accelerationVector = { 0, -kGravity, 0 };
 	// 加速
 	velocity_ += accelerationVector;
+	if (velocity_.y <= -0.3f) {
+		hitBlock_ = false;
+	}
+	
 	if (transform_.translate.y <= playerStatus_.stageeFloor_.second) {
 		// 着地処理
 		behaviorRequest_ = Behavior::kRoot;
+		//hitBlock_ = false;
 	}
 
 }
