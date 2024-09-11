@@ -35,6 +35,8 @@ struct PlayerStatus {
 	std::pair<const char *const, Vector3> knockBackPower = { "KnockBackPower", {0.5f, 0.2f,0.f} };
 	std::pair<const char *const, int32_t> maxHealth_ = { "MaxHealth", 10 };
 
+	std::pair<const char *const, int32_t> deadFlame = { "DeadFlame", 30 };
+
 	void Save() const;
 	void Load();
 
@@ -137,6 +139,10 @@ public: // メンバ関数
 	void KnockBackInitialize();
 	void KnockBackUpdate();
 
+	// 死亡状態
+	void DeadInitialize();
+	void DeadUpdate();
+
 	/// @brief 行列を計算する
 	void CalcMatrix();
 
@@ -234,10 +240,15 @@ private: // メンバ変数
 	// プレイヤのステータス
 	PlayerStatus playerStatus_;
 
+	// プレイヤのスプライトデータ
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 
-	Transform uvTransform_;
+	// 体力
+	int32_t health_;
 
+	// プレイヤのテクスチャUV座標
+	Transform uvTransform_;
+	// アニメーションのフレームカウント
 	uint32_t animFlame_;
 
 };

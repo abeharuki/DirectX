@@ -31,6 +31,9 @@ void DebugPlayer::Initialize() {
 	sprite_->SetAnchorPoint(Vector2{ 0.5f,1.f });
 
 	uvTransform_.scale = { 1.f / 9, 1.f / 6, 0.f };
+
+	// 体力を最大にする
+	health_ = playerStatus_.maxHealth_.second;
 }
 
 void DebugPlayer::Update() {
@@ -73,6 +76,9 @@ void DebugPlayer::Update() {
 		case Behavior::kKnockBack:
 			KnockBackInitialize();
 			break;
+		case Behavior::kDead:
+			DeadInitialize();
+			break;
 
 		}
 
@@ -109,7 +115,9 @@ void DebugPlayer::Update() {
 		// 攻撃
 		KnockBackUpdate();
 		break;
-
+	case Behavior::kDead:
+		DeadUpdate();
+		break;
 	}
 
 	if (velocity_.x) {
@@ -136,9 +144,8 @@ void DebugPlayer::Update() {
 	}
 
 	ImGui::Begin("Setting");
-	ImGui::Text("posX%f", GetWorldPosition().x);
-	ImGui::Text("posY%f", GetWorldPosition().y);
-	ImGui::Text("posZ%f", GetWorldPosition().z);
+	const auto &worldPos = GetWorldPosition();
+	ImGui::Text("posX%f\nposY%f\nposZ%f", worldPos.x, worldPos.y, worldPos.z);
 	ImGui::DragFloat("PosY", &transform_.translate.y, 0.1f);
 	ImGui::End();
 
@@ -378,7 +385,7 @@ void DebugPlayer::KnockBackUpdate()
 	const uint32_t animSpan = 5;
 	AnimUpdate(4, animSpan, 0, 2, false);
 
-	// もし床に触れていたら横へのベクトルを0に
+	// もし床に触れていたら横へのベクトルを減速させる
 	if (transform_.translate.y <= playerStatus_.stageeFloor_.second) { velocity_.x *= 0.75f; }
 	// もし天井に触れていたら落とす
 	if (transform_.translate.y > playerStatus_.stageHeight_.second) {
@@ -401,6 +408,17 @@ void DebugPlayer::KnockBackUpdate()
 	}
 }
 
+void DebugPlayer::DeadInitialize()
+{
+	animFlame_ = 0;
+}
+
+void DebugPlayer::DeadUpdate()
+{
+
+
+}
+
 void DebugPlayer::CalcMatrix()
 {
 	transMat_ = Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
@@ -417,7 +435,7 @@ void DebugPlayer::TransfarSprite()
 void DebugPlayer::StageBarCollision()
 {
 	// ノックバックと死亡状態以外であれば
-	if (behaviorRequest_ != Behavior::kKnockBack and behaviorRequest_ != Behavior::kDead) {
+	if (behavior_ != Behavior::kKnockBack and behavior_ != Behavior::kDead) {
 
 		// 攻撃状態の棒のリスト
 		const std::bitset<Stage::kSize_> isBarAttack = pStage_->IsAttacking(false);
@@ -440,8 +458,6 @@ void DebugPlayer::StageBarCollision()
 }
 
 void DebugPlayer::OnCollision(const uint32_t index) {
-	// プレイヤの状態をノックバックにする
-	behaviorRequest_ = Behavior::kKnockBack;
 
 	// プレイヤの座標を取得する
 	const float playerPos = GetOnStagePosX();
@@ -456,6 +472,20 @@ void DebugPlayer::OnCollision(const uint32_t index) {
 	if (posDiff < 0.f) {
 		// ベクトルを反転させる
 		velocity_.x *= -1.f;
+	}
+
+	// プレイヤの体力を削る
+	health_--;
+
+	// もし体力がまだ残っていたら
+	if (health_ > 0) {
+		// プレイヤの状態をノックバックにする
+		behaviorRequest_ = Behavior::kKnockBack;
+	}
+	else
+	{
+		// プレイヤの状態を死亡状態にする
+		behaviorRequest_ = Behavior::kDead;
 	}
 
 }
