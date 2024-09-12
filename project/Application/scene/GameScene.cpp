@@ -44,7 +44,7 @@ void GameScene::Initialize() {
 	};
 
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
-	
+
 	PostEffect::GetInstance()->isGrayscale(false);
 
 	vignetting_.intensity = 16.0f;
@@ -57,7 +57,7 @@ void GameScene::Initialize() {
 	bloom_.stepWidth = 0.001f;
 	bloom_.sigma = 0.005f;
 	postEffects[8] = true;
-	
+
 }
 
 void GameScene::Update() {
@@ -67,7 +67,7 @@ void GameScene::Update() {
 	if (particleFlag_) {
 		particle_->Update();
 	}
-	
+
 
 	if (shakeFlag_) {
 		particle_->Update();
@@ -80,7 +80,7 @@ void GameScene::Update() {
 	else {
 		shake_ = { 0.0f,0.0f };
 		backGroundPos_ = { 0.0f,0.0f };
-		
+
 		if (debugPlayer_->GetHitBlock()) {
 			shakeFlag_ = true;
 		}
@@ -258,12 +258,34 @@ void GameScene::Draw() {
 	debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
 
-	
+
 	particle_->Draw(viewProjection_);
 }
 
 void GameScene::RenderDirect() {
 
+}
+
+void GameScene::Fade() {
+	if (alpha_ > 0.0f) {
+		alpha_ -= 0.02f;
+	}
+	else {
+		alpha_ = 0.0f;
+		isFadeIn_ = false;
+	}
+
+
+	if (isFadeOut_) {
+		if (alpha_ < 1) {
+			alpha_ += 0.02f;
+		}
+		else {
+			alpha_ = 1.0f;
+			sceneManager_->ChangeScene("GameScene");
+
+		}
+	}
 }
 
 
@@ -275,10 +297,10 @@ Vector3 GameScene::GetLocalPosition()
 
 void GameScene::CheckAllCollision() {
 	//debugEnemy_->SetHitBody(false);
-	
+
 	for (int i = 0; i < Stage::kSize_; ++i) {
 		//押し出し処理のためにBarr情報の受け取り
-		debugEnemy_->SetBarr(Vector2{ stage_->GetPlayerAttackPos(i).x,stage_->GetPlayerAttackPos(i).y }, Vector2{ stage_->GetPlayerAttackScale(i).x, stage_->GetPlayerAttackScale(i).y },i);
+		debugEnemy_->SetBarr(Vector2{ stage_->GetPlayerAttackPos(i).x,stage_->GetPlayerAttackPos(i).y }, Vector2{ stage_->GetPlayerAttackScale(i).x, stage_->GetPlayerAttackScale(i).y }, i);
 
 
 		//
@@ -292,14 +314,14 @@ void GameScene::CheckAllCollision() {
 		}
 
 		//体の当たり判定
-		if (Math::IsBoxCollision(debugEnemy_->GetPos().x-42, debugEnemy_->GetPos().y-30, debugEnemy_->GetScale().x*0.8f, debugEnemy_->GetScale().y,
+		if (Math::IsBoxCollision(debugEnemy_->GetPos().x - 42, debugEnemy_->GetPos().y - 30, debugEnemy_->GetScale().x * 0.8f, debugEnemy_->GetScale().y,
 			stage_->GetPlayerAttackPos(i).x, stage_->GetPlayerAttackPos(i).y, stage_->GetPlayerAttackScale(i).x, stage_->GetPlayerAttackScale(i).y)) {
 			debugEnemy_->SetHitBody(true);
 			ImGui::Begin("EnemyHitBody");
 			ImGui::End();
 		}
 
-	
+
 	}
 
 

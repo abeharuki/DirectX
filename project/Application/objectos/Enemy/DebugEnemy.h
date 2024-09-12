@@ -64,7 +64,7 @@ public: // メンバ関数
 	Vector2 GetScale() {return Vector2{ transformBase_.scale.x,transformBase_.scale.y };}
 	Vector2 GetCorePos() { return Vector2{ transformCore_.translate.x,transformCore_.translate.y }; }
 	Vector2 GetCoreScale() { return Vector2{ transformCore_.scale.x,transformCore_.scale.y }; }
-
+	float GetHpLength() const { return (transformUI_[1].scale.x / 494.0f); }
 
 	//押し出し関数
 	void ResolveBoxCollision(float AposX, float AposY, const float AsizeW, const float AsizeH,
@@ -144,7 +144,7 @@ private: // メンバ変数
 	// ジャンプの時間
 	uint32_t behaviorJumpTime = 30;
 	//攻撃までの時間(クールタイム)
-	uint32_t behaviorAttackTime = 60;
+	uint32_t behaviorAttackTime = 30;
 	//移動可能になるまでの時間
 	uint32_t behaviorMoveTime = 20;
 

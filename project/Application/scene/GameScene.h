@@ -25,7 +25,7 @@ public:
 	void Update() override;
 	void Draw() override;
 	void RenderDirect() override;
-	void CameraMove();
+	void Fade();
 	Vector3 GetLocalPosition();
 	void CheckAllCollision();
 
@@ -44,7 +44,7 @@ private:
 	std::unique_ptr<DebugPlayer> debugPlayer_;
 	std::unique_ptr<DebugEnemy> debugEnemy_;
 	std::unique_ptr<Sprite> backGroundSprite_[5];
-	
+
 	Vector2 backGroundPos_ = { 0.0f,0.0f };
 	Vector2 shake_;
 	bool shakeFlag_;
@@ -55,7 +55,10 @@ private:
 	int particleCount_;
 	bool particleFlag_;
 
-	
+	bool isFadeOut_;
+	bool isFadeIn_;
+	bool isFede_;
+	float alpha_;
 
 	//PosteEffect
 	Grayscale grayscale_;

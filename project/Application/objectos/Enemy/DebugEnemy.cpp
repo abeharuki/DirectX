@@ -87,6 +87,9 @@ void DebugEnemy::Update() {
 		velocity_.x = 0.0f;
 		//velocity_.x = -10.0f;
 	}
+	if (transformUI_[1].scale.x <= 0) {
+		transformUI_[1].scale.x = 0.0f;
+	}
 	for (int i = 0; i < 3; ++i) {
 		enemyUI_[i]->SetTransform(transformUI_[i]);
 	}
@@ -107,12 +110,7 @@ void DebugEnemy::Update() {
 	ImGui::DragFloat2("CoreSub", &coreSub_.x, 0.1f);
 	ImGui::DragFloat3("CoreScale", &transformCore_.scale.x, 0.1f);
 
-	ImGui::DragFloat3("Hp_FPos", &transformUI_[0].translate.x, 0.1f);
-	ImGui::DragFloat3("Hp_FSize", &transformUI_[0].scale.x, 0.1f);
-	ImGui::DragFloat3("Hp_GPos", &transformUI_[1].translate.x, 0.1f);
-	ImGui::DragFloat3("Hp_GSize", &transformUI_[1].scale.x, 0.1f);
-	ImGui::DragFloat3("Hp_IPos", &transformUI_[2].translate.x, 0.1f);
-	ImGui::DragFloat3("Hp_ISize", &transformUI_[2].scale.x, 0.1f);
+	ImGui::Text("Hp%f", GetHpLength(), 0.1f);
 	ImGui::End();
 }
 
@@ -183,6 +181,7 @@ void DebugEnemy::MoveUpdata() {
 		//プレイヤーの上にいる時,速度はゼロ
 		velocity_.x = 0.0f;
 		//クールタイムが終わったら攻撃
+		
 		if (--behaviorAttackTime <= 0) {
 			behaviorRequest_ = Behavior::kAttack;
 		}
@@ -312,6 +311,9 @@ void DebugEnemy::AttackUpdata() {
 		velocity_.y += 5.f;
 	}
 
+
+	if (Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x + 80, 80.0f)) {
+	}
 
 	if (transformBase_.translate.y >= 123.0f) {
 		velocity_.y = 0.0f;
