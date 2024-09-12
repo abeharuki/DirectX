@@ -71,7 +71,7 @@ void Audio::SoundPlayMP3(uint32_t audioHandle, bool roopFlag, float volume) {
 
 	// コンテナに追加
 	Voice* voice = new Voice();
-	voice->handle = voiceHandle_;
+	voice->handle = audioHandle;
 	voice->sourceVoice = pSourceVoice;
 	sourceVoices_.insert(voice);
 
@@ -254,9 +254,6 @@ uint32_t Audio::SoundLoadMP3(const std::filesystem::path& filename) {
 	CoTaskMemFree(waveFormat);
 	pMFMediaType->Release();
 	pMFSourceReader->Release();
-
-	MFShutdown();
-	CoUninitialize();
 
 	return audioHandle_;
 }
