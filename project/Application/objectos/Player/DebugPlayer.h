@@ -170,6 +170,10 @@ public: // メンバ関数
 	/// @return ステージ上においてのX座標
 	float GetOnStagePosX() const;
 
+	/// @brief プレイヤがステージのY座標からどれだけの割合にいるのか
+	/// @return Yの高さ { 0.f ~ 1.f }
+	float GetOnStagePosYPercent() const;
+
 	/// @brief ゲームオーバーになったかどうか
 	/// @return ゲームオーバーになったらtrue
 	bool IsGameOver() const;

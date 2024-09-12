@@ -453,6 +453,12 @@ void DebugPlayer::StageBarCollision()
 		for (uint32_t target : playerSidePos) {
 			// どちらかが攻撃範囲に入ってたら
 			if (target >= 0 and target < Stage::kSize_ and isBarAttack[target]) {
+				// 棒の長さ
+				const float barLength = pStage_->GetBarLength(target);
+				// なおかつその棒がプレイヤまで達していたら
+				// 合計値が1以上である場合､お互いに交点が発生するものとする
+				if (GetOnStagePosYPercent() + barLength < 1.f) { continue; } // それ未満なら終わる
+
 				// ダメージ判定して終わる
 				OnCollision(target);
 				break;
@@ -511,6 +517,18 @@ float DebugPlayer::GetOnStagePosX() const
 
 	// 画面の位置から座標を取得する
 	return std::clamp(GetWorldPosition().x * Stage::kSize_ / (sceneWidth - 128 * 2), 0.f, static_cast<float>(Stage::kSize_));
+}
+
+float DebugPlayer::GetOnStagePosYPercent() const
+{
+	// 床から天井までの高さ
+	const float stageSize = playerStatus_.stageHeight_.second - playerStatus_.stageeFloor_.second;
+
+	// 床から天井までの高さ
+	const float playerPosY = transform_.translate.y - playerStatus_.stageeFloor_.second;
+
+	// 天井を1.fとした割合を取る
+	return playerPosY / stageSize;
 }
 
 bool DebugPlayer::IsGameOver() const
