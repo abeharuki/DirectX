@@ -562,10 +562,10 @@ bool DebugPlayer::AnimUpdate(const uint32_t layer, const uint32_t span, const ui
 
 }
 
-void PlayerStatus::Save() const
+void JsonStatus::Save() const
 {
 	// データの格納先
-	LoadHelper helper{ GlobalVariables::GetInstance() };
+	LoadHelper helper = GenerateLoadHelper();
 	helper << groundMoveSpeed_;
 	helper << jumpStrength_;
 	helper << airJumpStrength_;
@@ -580,10 +580,10 @@ void PlayerStatus::Save() const
 	helper << maxHealth_;
 }
 
-void PlayerStatus::Load()
+void JsonStatus::Load()
 {
 	// データの格納先
-	const LoadHelper helper{ GlobalVariables::GetInstance() };
+	const LoadHelper helper = GenerateLoadHelper();
 	helper >> groundMoveSpeed_;
 	helper >> jumpStrength_;
 	helper >> airJumpStrength_;
@@ -596,4 +596,9 @@ void PlayerStatus::Load()
 	helper >> knockBackFlame_;
 	helper >> knockBackPower;
 	helper >> maxHealth_;
+}
+
+JsonStatus::LoadHelper JsonStatus::GenerateLoadHelper() const
+{
+	return LoadHelper(GlobalVariables::GetInstance(), groupName_);
 }

@@ -15,9 +15,9 @@
 
 class Stage;
 
-struct PlayerStatus {
+struct JsonStatus {
 
-	inline static const char *const kGroupName_ = "Player";
+	const char *const groupName_;
 
 	std::pair<const char *const, float> groundMoveSpeed_ = { "GroundMoveSpeed", 0.2f };
 	std::pair<const char *const, float> jumpStrength_ = { "JumpStrength", 0.5f };
@@ -43,18 +43,22 @@ struct PlayerStatus {
 	struct LoadHelper
 	{
 		GlobalVariables *const pGVal_;
+		const std::string groupName_;
 
 		template<typename T>
 		void operator>>(std::pair<const char *const, T> &value) const {
-			pGVal_->GetValue<T>(kGroupName_, value.first, &value.second);
+			pGVal_->GetValue<T>(groupName_, value.first, &value.second);
 		}
 
 		template<typename T>
 		void operator<<(const std::pair<const char *const, T> &value) {
-			pGVal_->SetValue(kGroupName_, value.first, value.second);
+			pGVal_->SetValue(groupName_, value.first, value.second);
 		}
 
 	};
+
+	LoadHelper GenerateLoadHelper() const;
+
 
 };
 
@@ -245,7 +249,7 @@ private: // メンバ変数
 	Vector3 velocity_ = {};
 
 	// プレイヤのステータス
-	PlayerStatus playerStatus_;
+	JsonStatus playerStatus_{ "Player" };
 
 	// プレイヤのスプライトデータ
 	std::unique_ptr<Sprite> sprite_ = nullptr;
