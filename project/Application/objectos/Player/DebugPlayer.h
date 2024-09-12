@@ -179,7 +179,6 @@ private: // メンバ変数
 	Matrix4x4 transMat_;
 	WorldTransform unuseData_;
 	const ViewProjection *pViewProjection_;
-	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Sphere> sphere_;
 
 	// ステージへの参照

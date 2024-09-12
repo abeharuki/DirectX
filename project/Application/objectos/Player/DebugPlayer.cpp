@@ -17,9 +17,6 @@ void DebugPlayer::Initialize() {
 	sphere_.reset(Sphere::CreateSphere("resources/white.png"));
 	velocity_.x = 0.3f;
 
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/human", "uvChecker.png", "Human.gltf"));
-	animation_->SetAnimationTimer(0.0f, 30.0f);
 	AABB aabbSize{ .min{-0.0f,-0.25f,-0.0f},.max{0.01f,0.25f,0.0f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
@@ -371,7 +368,6 @@ void DebugPlayer::DashUpdate() {
 // 攻撃
 void DebugPlayer::AttackInitialize() {}
 void DebugPlayer::AttackUpdate() {
-	animation_->Update(3);
 }
 
 void DebugPlayer::KnockBackInitialize()
@@ -490,8 +486,7 @@ void DebugPlayer::OnCollision(const uint32_t index) {
 		// プレイヤの状態をノックバックにする
 		behaviorRequest_ = Behavior::kKnockBack;
 	}
-	else
-	{
+	else {
 		// プレイヤの状態を死亡状態にする
 		behaviorRequest_ = Behavior::kDead;
 	}
