@@ -6,11 +6,25 @@ void DebugEnemy::Initialize() {
 	transformBase_.scale = { 280.0f,212.0f,1.0f };
 	transformBase_.translate.x = 30.0f;
 	transformBase_.translate.y = 123.0f;
-	transformCore_.scale = { 20.0f,20.0f,0.0f};
+	transformCore_.scale = { 20.0f,20.0f,0.0f };
+
+	transformUI_[0].translate = { 284.0f,29.6f,0.0f };
+	transformUI_[0].scale = { 500.0f,30.0f,0.0f };
+	transformUI_[1].translate = { 285.0f,34.5f,0.0f };
+	transformUI_[1].scale = { 494.0f,21.0f,0.0f };
+	transformUI_[2].translate = { 240.0f,9.0f,0.0f };
+	transformUI_[2].scale = { 70.0f,70.0f,0.0f };
+
 	coreSub_ = { 57.0f,92.0f };
 	velocity_.x = 10.0f;
 	enemySprite_.reset(Sprite::Create("resources/Enemy/boss_kari.png"));
 	enemySprite_->SetAnchorPoint({ 0.25f,0.0f });
+
+	enemyUI_[0].reset(Sprite::Create("resources/Enemy/boss_HpFlame.png"));
+	enemyUI_[1].reset(Sprite::Create("resources/Enemy/boss_HpGauge.png"));
+	enemyUI_[2].reset(Sprite::Create("resources/Enemy/boss_HpIcon.png"));
+
+
 	hitBody_ = false;
 	hitCore_ = false;
 }
@@ -20,7 +34,7 @@ void DebugEnemy::Update() {
 	hitBody_ = false;
 	preHitCore_ = hitCore_;
 	hitCore_ = false;
-	
+
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -67,17 +81,20 @@ void DebugEnemy::Update() {
 
 	}
 
-	
 
-	if (transformBase_.translate.x >= 930|| transformBase_.translate.x <= -30) {
+
+	if (transformBase_.translate.x >= 930 || transformBase_.translate.x <= -30) {
 		velocity_.x = 0.0f;
 		//velocity_.x = -10.0f;
 	}
-
+	for (int i = 0; i < 3; ++i) {
+		enemyUI_[i]->SetTransform(transformUI_[i]);
+	}
 	enemySprite_->SetTransform(transformBase_);
 	Vector3 playerPos = debugPlayer_->GetWorldPosition();
-	transformCore_.translate = (transformBase_.translate + Vector3{ coreSub_.x,coreSub_.y,0.0f});
+	transformCore_.translate = (transformBase_.translate + Vector3{ coreSub_.x,coreSub_.y,0.0f });
 
+	Damage();
 
 	ImGui::Begin("Enemy");
 	ImGui::Text("posX%f", transformBase_.translate.x);
@@ -85,15 +102,25 @@ void DebugEnemy::Update() {
 	ImGui::Text("posZ%f", transformBase_.translate.z);
 	ImGui::DragFloat3("Pos", &transformBase_.translate.x, 0.1f);
 	ImGui::DragFloat3("playerPos", &playerPos.x, 0.1f);
-	ImGui::DragFloat3("velocity" ,&velocity_.x, 0.1f);
+	ImGui::DragFloat3("velocity", &velocity_.x, 0.1f);
 	ImGui::DragFloat3("CoreTranslate", &transformCore_.translate.x, 0.1f);
 	ImGui::DragFloat2("CoreSub", &coreSub_.x, 0.1f);
 	ImGui::DragFloat3("CoreScale", &transformCore_.scale.x, 0.1f);
+
+	ImGui::DragFloat3("Hp_FPos", &transformUI_[0].translate.x, 0.1f);
+	ImGui::DragFloat3("Hp_FSize", &transformUI_[0].scale.x, 0.1f);
+	ImGui::DragFloat3("Hp_GPos", &transformUI_[1].translate.x, 0.1f);
+	ImGui::DragFloat3("Hp_GSize", &transformUI_[1].scale.x, 0.1f);
+	ImGui::DragFloat3("Hp_IPos", &transformUI_[2].translate.x, 0.1f);
+	ImGui::DragFloat3("Hp_ISize", &transformUI_[2].scale.x, 0.1f);
 	ImGui::End();
 }
 
 void DebugEnemy::Draw(const ViewProjection& camera) {
 	enemySprite_->Draw();
+	for (int i = 0; i < 3; ++i) {
+		enemyUI_[i]->Draw();
+	}
 }
 
 // 移動
@@ -111,11 +138,11 @@ void DebugEnemy::MoveUpdata() {
 	}
 
 	//playerの位置が敵から±2の位置にいるかどうか
-	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x+80, 80.0f)) {
-		
+	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x + 80, 80.0f)) {
+
 
 		//playerと敵の距離が5離れたいたらジャンプして移動
-		if (debugPlayer_->GetWorldPosition().x-60 < transformBase_.translate.x) {
+		if (debugPlayer_->GetWorldPosition().x - 60 < transformBase_.translate.x) {
 			for (int i = 0; i < 16; ++i) {
 				if (Math::IsBoxCollision(transformBase_.translate.x - 52, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
 					transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y)) {
@@ -126,8 +153,8 @@ void DebugEnemy::MoveUpdata() {
 					velocity_.x = -10.0f;
 				}
 			}
-		
-			
+
+
 		}
 		else {
 			for (int i = 0; i < 16; ++i) {
@@ -140,17 +167,17 @@ void DebugEnemy::MoveUpdata() {
 					velocity_.x = 10.0f;
 				}
 			}
-			
+
 		}
 
 		if (velocity_.x != 0) {
 			--behaviorJumpTime;
 		}
-		if (behaviorJumpTime <= 0 ) {
+		if (behaviorJumpTime <= 0) {
 			behaviorRequest_ = Behavior::kJump;
 		}
 
-		
+
 	}
 	else {
 		//プレイヤーの上にいる時,速度はゼロ
@@ -159,7 +186,7 @@ void DebugEnemy::MoveUpdata() {
 		if (--behaviorAttackTime <= 0) {
 			behaviorRequest_ = Behavior::kAttack;
 		}
-		
+
 	}
 
 	for (int i = 0; i < 16; ++i) {
@@ -167,16 +194,16 @@ void DebugEnemy::MoveUpdata() {
 			transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y);
 	}
 
-	
+
 
 	transformBase_.translate += velocity_;
 
-	
-	
+
+
 	//if (--behaviorAttackTime <= 0) {
 	//	behaviorRequest_ = Behavior::kAttack;
 	//}
-	
+
 };
 
 // ジャンプ
@@ -190,7 +217,7 @@ void DebugEnemy::JumpInitialize() {
 };
 void DebugEnemy::JumpUpdata() {
 
-	
+
 
 	// 移動
 	transformBase_.translate += velocity_;
@@ -206,9 +233,9 @@ void DebugEnemy::JumpUpdata() {
 		ResolveBoxCollision(transformBase_.translate.x - 42, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
 			transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y);
 	}
-	if (hitBody_ ) {
+	if (hitBody_) {
 		velocity_.x = 0.0f;
-	
+
 	}
 
 	//ジャンプ中にプレイヤーが真下に来たら攻撃
@@ -222,13 +249,13 @@ void DebugEnemy::JumpUpdata() {
 
 	//	
 	//}
-	
-	
+
+
 
 	if (transformBase_.translate.y >= 123.0f) {
 		velocity_.y = 0.0f;
 		transformBase_.translate.y = 123.0f;
-	
+
 		behaviorRequest_ = Behavior::kRoot;
 
 	}
@@ -236,8 +263,8 @@ void DebugEnemy::JumpUpdata() {
 
 // ダッシユ
 void DebugEnemy::DashInitialize() {
-	
-	
+
+
 }
 void DebugEnemy::DashUpdata() {
 
@@ -253,9 +280,9 @@ void DebugEnemy::AttackInitialize() {
 		velocity_.y = kJumpFirstSpeed;
 	}
 	else {
-		
+
 	}
-	
+
 	behaviorAttackTime = 15;
 	behaviorMoveTime = 20;
 
@@ -263,7 +290,7 @@ void DebugEnemy::AttackInitialize() {
 void DebugEnemy::AttackUpdata() {
 	// 移動
 	transformBase_.translate += velocity_;
-	
+
 	if (!jump_) {
 		//最高地点まで行ったら勢いよく落ちる
 		if (velocity_.y >= 0.0f) {
@@ -289,21 +316,37 @@ void DebugEnemy::AttackUpdata() {
 	if (transformBase_.translate.y >= 123.0f) {
 		velocity_.y = 0.0f;
 		transformBase_.translate.y = 123.0f;
-		
+
 		// 攻撃終了
 		if (--behaviorMoveTime <= 0) {
-			
+
 			behaviorRequest_ = Behavior::kRoot;
 			attack_ = false;
 		}
-		
+
 	}
 }
 
-void DebugEnemy::Damage(){
-	if (hitCore_ != preHitCore_) {
+void DebugEnemy::Damage() {
+
+	//コアの当たり判定
+	for (int i = 0; i < 16; ++i) {
+		if (Math::IsBoxCollision(transformCore_.translate.x, transformCore_.translate.y, transformCore_.scale.x, transformCore_.scale.y,
+			transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y)) {
+			
+			hitCore_ = true;
+
+			if (hitCore_ != preHitCore_) {
+				if (transformUI_[1].scale.x > 0) {
+					transformUI_[1].scale.x -= 50;
+				}
+
+			}
+		}
 
 	}
+
+
 }
 
 

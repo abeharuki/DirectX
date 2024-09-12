@@ -306,13 +306,7 @@ void GameScene::CheckAllCollision() {
 			ImGui::End();
 		}
 
-		//コアの当たり判定
-		if (Math::IsBoxCollision(debugEnemy_->GetCorePos().x, debugEnemy_->GetCorePos().y, debugEnemy_->GetCoreScale().x, debugEnemy_->GetCoreScale().y,
-			stage_->GetPlayerAttackPos(i).x, stage_->GetPlayerAttackPos(i).y, stage_->GetPlayerAttackScale(i).x, stage_->GetPlayerAttackScale(i).y)) {
-			debugEnemy_->SetHitCore(true);
-			ImGui::Begin("EnemyHitCore");
-			ImGui::End();
-		}
+	
 	}
 
 

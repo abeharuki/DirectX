@@ -111,10 +111,12 @@ public: // メンバ関数
 private: // メンバ変数
 	Transform transformBase_;
 	Transform transformCore_;
+	std::array<Transform, 3> transformUI_;
 	std::array<Transform,16> transformBarr_;
 	Vector2 coreSub_;
 	const ViewProjection* viewProjection_;
 	std::unique_ptr<Sprite> enemySprite_;
+	std::unique_ptr<Sprite> enemyUI_[3];
 
 	DebugPlayer* debugPlayer_;
 
