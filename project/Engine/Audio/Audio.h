@@ -139,6 +139,6 @@ struct AudioHelper {
 
 private:
 
-	uint32_t handle_;
+	uint32_t handle_ = (std::numeric_limits<uint32_t>::max)();
 	bool isWav_;
 };

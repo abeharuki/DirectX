@@ -297,12 +297,18 @@ void Audio::Finalize() {
 
 void AudioHelper::Play(bool roopFlag, float volume) const
 {
+	// 最大値は無効な値として扱う
+	if (handle_ == (std::numeric_limits<uint32_t>::max)()) { return; }
+
 	Audio *const audio = Audio::GetInstance();
 	isWav_ ? audio->SoundPlayWave(handle_, roopFlag, volume) : audio->SoundPlayMP3(handle_, roopFlag, volume);
 }
 
 void AudioHelper::Stop() const
 {
+	// 最大値は無効な値として扱う
+	if (handle_ == (std::numeric_limits<uint32_t>::max)()) { return; }
+
 	Audio *const audio = Audio::GetInstance();
 	audio->StopAudio(handle_);
 }
