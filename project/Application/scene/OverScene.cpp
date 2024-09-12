@@ -3,7 +3,7 @@
 #include <PostEffects/PostEffect.h>
 
 void OverScene::Initialize() {
-	spriteOver_.reset(Sprite::Create("resources/over.png"));
+	spriteOver_.reset(Sprite::Create("resources/gameover.png"));
 	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
 
 	alpha_ = 1.0f;
@@ -28,7 +28,7 @@ void OverScene::Update() {
 		}
 	}
 
-	if (Input::PushKey(DIK_P)) {
+	if (Input::PushKey(DIK_SPACE) && !isFadeIn_) {
 		
 		isFadeOut_ = true;
 	}
@@ -39,13 +39,8 @@ void OverScene::Update() {
 }
 
 void OverScene::Draw() {
-	Transform uv;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f, 0.0f };
-	spriteOver_->Draw(uv);
-	spritePushA_->Draw(uv);
-	spriteBack_->Draw(uv);
+	spriteOver_->Draw();
+	spriteBack_->Draw();
 }
 
 void OverScene::RenderDirect() {

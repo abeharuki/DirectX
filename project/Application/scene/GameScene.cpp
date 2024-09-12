@@ -62,13 +62,6 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-
-	if (Input::PushKey(DIK_P)) {
-		SceneManager::GetInstance()->ChangeScene("ClearScene");
-	}
-
-
-
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {

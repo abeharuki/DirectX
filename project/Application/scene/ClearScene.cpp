@@ -2,7 +2,7 @@
 #include "Framework/SceneManager.h"
 
 void ClearScene::Initialize() {
-	spriteClear_.reset(Sprite::Create("resources/clear.png"));
+	spriteClear_.reset(Sprite::Create("resources/gameclear.png"));
 	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
@@ -23,7 +23,7 @@ void ClearScene::Update() {
 		}
 	}
 
-	if (Input::PushKey(DIK_P) && !isFadeIn_) {
+	if (Input::PushKey(DIK_SPACE) && !isFadeIn_) {
 		isFadeOut_ = true;
 
 	}
@@ -34,13 +34,8 @@ void ClearScene::Update() {
 }
 
 void ClearScene::Draw() {
-	Transform uv;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f, 0.0f };
-	spriteClear_->Draw(uv);
-	spritePushA_->Draw(uv);
-	spriteBack_->Draw(uv);
+	spriteClear_->Draw();
+	spriteBack_->Draw();
 }
 
 void ClearScene::RenderDirect() {

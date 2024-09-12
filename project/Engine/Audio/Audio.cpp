@@ -71,7 +71,7 @@ void Audio::SoundPlayMP3(uint32_t audioHandle, bool roopFlag, float volume) {
 
 	// コンテナに追加
 	Voice* voice = new Voice();
-	voice->handle = voiceHandle_;
+	voice->handle = audioHandle;
 	voice->sourceVoice = pSourceVoice;
 	sourceVoices_.insert(voice);
 
@@ -270,6 +270,7 @@ void Audio::StopAudio(uint32_t audioHandle) {
 	for (const Voice* voice : sourceVoices_) {
 		if (voice->handle == audioHandle) {
 			result = voice->sourceVoice->Stop();
+			assert(SUCCEEDED(result));
 		}
 	}
 }
