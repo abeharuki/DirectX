@@ -21,6 +21,15 @@ void TitleScene::Initialize() {
 	isFadeOut_ = false;
 	isFede_ = false;
 
+	// タイトル文字の設定
+	{
+		titleText_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Title/title.png"));
+
+		titleText_->SetAnchorPoint({ 0.5f,0.5f });
+		titleText_->SetSize(Vector2{ 768.f,384.f });
+		titleText_->SetPosition(Vector2{ 1024.f, 704.f} *0.5f);
+	}
+
 
 	PostEffect::GetInstance()->isGrayscale(false);
 	PostEffect::GetInstance()->isOutLine(true);
@@ -57,6 +66,8 @@ void TitleScene::Update() {
 
 #endif // _DEBUG
 
+	titleText_->UpdateVertexBuffer();
+
 	PostEffect::GetInstance()->ValueOutLine(a_);
 
 	ImGui::Begin("Player");
@@ -73,6 +84,7 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 
+	titleText_->Draw();
 }
 
 void TitleScene::RenderDirect() {
