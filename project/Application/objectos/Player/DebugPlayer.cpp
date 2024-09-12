@@ -31,6 +31,10 @@ void DebugPlayer::Initialize() {
 
 	// 体力を最大にする
 	health_ = playerStatus_.maxHealth_.second;
+
+	healthDrawer_ = std::make_unique<PlayerHealthDrawer>();
+	healthDrawer_->SetPlayer(this, &playerStatus_);
+	healthDrawer_->Init();
 }
 
 void DebugPlayer::Update() {
@@ -146,6 +150,9 @@ void DebugPlayer::Update() {
 	ImGui::DragFloat("PosY", &transform_.translate.y, 0.1f);
 	ImGui::End();
 
+	// プレイヤの体力描画のデータ更新
+	healthDrawer_->Update();
+
 	// トランスフォームから行列を計算する
 	//CalcMatrix();
 }
@@ -159,6 +166,8 @@ void DebugPlayer::Draw([[maybe_unused]] const ViewProjection &camera) {
 	sprite_->UpdateVertexBuffer();
 	// 画像の描画
 	sprite_->Draw(uvTransform_);
+
+	healthDrawer_->Draw();
 }
 
 // 移動
@@ -437,7 +446,9 @@ void DebugPlayer::CalcMatrix()
 void DebugPlayer::TransfarSprite()
 {
 	// プレイヤの位置を3D座標からカメラ座標に変換して渡す
-	sprite_->SetPosition(pViewProjection_->WorldToScreen(transform_.translate).GetVec2() - Vector2{ .y = playerStatus_.drawOffset_.second });
+	stagePos_ = pViewProjection_->WorldToScreen(transform_.translate).GetVec2() - Vector2{ .y = playerStatus_.drawOffset_.second };
+	// 一旦変換を挟んだデータを格納する
+	sprite_->SetPosition(stagePos_);
 	sprite_->SetRotation(transform_.rotate.z);
 	sprite_->SetSize(transform_.scale.GetVec2());
 }
@@ -511,7 +522,7 @@ void DebugPlayer::OnCollision([[maybe_unused]] Collider *collider) {
 
 const Vector3 DebugPlayer::GetWorldPosition() const
 {
-	return { sprite_->GetPosition().x,  sprite_->GetPosition().y ,0.f };
+	return { stagePos_.x, stagePos_.y ,0.f };
 }
 
 float DebugPlayer::GetOnStagePosX() const
@@ -562,10 +573,10 @@ bool DebugPlayer::AnimUpdate(const uint32_t layer, const uint32_t span, const ui
 
 }
 
-void JsonStatus::Save() const
+void PlayerStatus::Save() const
 {
 	// データの格納先
-	LoadHelper helper = GenerateLoadHelper();
+	JsonLoadHelper helper = GenerateLoadHelper();
 	helper << groundMoveSpeed_;
 	helper << jumpStrength_;
 	helper << airJumpStrength_;
@@ -580,10 +591,10 @@ void JsonStatus::Save() const
 	helper << maxHealth_;
 }
 
-void JsonStatus::Load()
+void PlayerStatus::Load()
 {
 	// データの格納先
-	const LoadHelper helper = GenerateLoadHelper();
+	const JsonLoadHelper helper = GenerateLoadHelper();
 	helper >> groundMoveSpeed_;
 	helper >> jumpStrength_;
 	helper >> airJumpStrength_;
@@ -598,7 +609,89 @@ void JsonStatus::Load()
 	helper >> maxHealth_;
 }
 
-JsonStatus::LoadHelper JsonStatus::GenerateLoadHelper() const
+void PlayerHealthDrawer::Init()
 {
-	return LoadHelper(GlobalVariables::GetInstance(), groupName_);
+	Load();
+	Save();
+
+	const uint32_t healthCount = static_cast<uint32_t>(pPlayerStatus_->maxHealth_.second);
+	healthSpriteData_ = std::make_unique<AnimateSprite[]>(healthCount);
+	healthSpriteList_ = { healthSpriteData_.get(), healthCount };
+
+	// すべてのスプライトをfor文で回す
+	for (uint32_t i = 0; i < healthSpriteList_.size(); i++) {
+		// 対象となるスプライト
+		auto &sprite = healthSpriteList_[i].first;
+		// 体力のスプライトを生成して格納する
+		sprite = Sprite::Create("resources/Player/player_hp.png");
+
+		sprite->SetAnchorPoint({ 0.5f,0.5f });
+
+		// 初期値に合わせてスケールを調整する
+		sprite->SetSize(vScale_.second.GetVec2());
+
+
+	}
+
+
+}
+
+void PlayerHealthDrawer::Update()
+{
+#ifdef _DEBUG
+
+	Load();
+
+#endif // _DEBUG
+
+	// 中心となるIndex
+	const float centerPos = static_cast<float>(pPlayerStatus_->maxHealth_.second - 1) / 2.f;
+
+	// すべてのスプライトをfor文で回す
+	for (uint32_t i = 0; i < healthSpriteList_.size(); i++) {
+		// 対象となるスプライト
+		Sprite &sprite = *healthSpriteList_[i].first;
+
+		// プレイヤからの差分
+		const Vector2 offset{ (i - centerPos) * vDistanceX_.second, vOffsetY_.second };
+
+		// プレイヤの座標に差分を加算して保存する
+		sprite.SetPosition(offset + pPlayer_->GetWorldPosition().GetVec2());
+
+		// スケールを調整する
+		sprite.SetSize(vScale_.second.GetVec2());
+
+	}
+}
+
+void PlayerHealthDrawer::Draw()
+{
+	// すべてのスプライトをfor文で回す
+	for (int32_t i = 0; i < (std::min)(static_cast<int32_t>(healthSpriteList_.size()), pPlayer_->GetHealth()); i++) {	// より小さい方に達したら終わる
+		// 対象となるスプライト
+		Sprite &sprite = *healthSpriteList_[i].first;
+		sprite.Draw();
+	}
+}
+
+void PlayerHealthDrawer::CalcPos()
+{
+}
+
+void PlayerHealthDrawer::Save() const
+{
+	auto helper = GenerateLoadHelper();
+	helper << vScale_;
+	helper << vOffsetY_;
+	helper << vDistanceX_;
+
+}
+
+void PlayerHealthDrawer::Load()
+{
+	const auto helper = GenerateLoadHelper();
+	helper >> vScale_;
+	helper >> vOffsetY_;
+	helper >> vDistanceX_;
+
 }

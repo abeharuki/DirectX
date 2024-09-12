@@ -14,8 +14,27 @@
 #include <GlobalVariables.h>
 
 class Stage;
+// プレイヤの前方宣言
+class DebugPlayer;
 
-struct JsonStatus {
+struct JsonLoadHelper
+{
+	const std::string groupName_;
+	GlobalVariables *const pGVal_ = GlobalVariables::GetInstance();
+
+	template<typename T>
+	void operator>>(std::pair<const char *const, T> &value) const {
+		pGVal_->GetValue<T>(groupName_, value.first, &value.second);
+	}
+
+	template<typename T>
+	void operator<<(const std::pair<const char *const, T> &value) {
+		pGVal_->SetValue(groupName_, value.first, value.second);
+	}
+
+};
+
+struct PlayerStatus {
 
 	const char *const groupName_;
 
@@ -39,26 +58,65 @@ struct JsonStatus {
 
 	void Save() const;
 	void Load();
+	/// @brief 読み書きのヘルパを生成
+	/// @return jsonへの書き込みを簡略化するヘルパ
+	JsonLoadHelper GenerateLoadHelper() const { return JsonLoadHelper(groupName_); }
+};
 
-	struct LoadHelper
-	{
-		GlobalVariables *const pGVal_;
-		const std::string groupName_;
 
-		template<typename T>
-		void operator>>(std::pair<const char *const, T> &value) const {
-			pGVal_->GetValue<T>(groupName_, value.first, &value.second);
-		}
+/// @brief プレイヤの体力を描画するマネージャ
+class PlayerHealthDrawer {
+public:
+	PlayerHealthDrawer() = default;
+	~PlayerHealthDrawer() = default;
 
-		template<typename T>
-		void operator<<(const std::pair<const char *const, T> &value) {
-			pGVal_->SetValue(groupName_, value.first, value.second);
-		}
+public:
 
-	};
+	/// @brief プレイヤステータスを代入する
+	/// @param player プレイヤへの参照
+	/// @param playerStatus プレイヤのステータス情報群
+	void SetPlayer(const DebugPlayer *player, const PlayerStatus *playerStatus) { pPlayer_ = player; pPlayerStatus_ = playerStatus; }
 
-	LoadHelper GenerateLoadHelper() const;
+	void Init();
 
+	void Update();
+
+	void Draw();
+
+private:
+
+	/// @brief ハートの座標を計算する
+	void CalcPos();
+
+public:
+	void Save() const;
+	void Load();
+
+	/// @brief 読み書きのヘルパを生成
+	/// @return jsonへの書き込みを簡略化するヘルパ
+	JsonLoadHelper GenerateLoadHelper() const { return JsonLoadHelper(groupName_); }
+
+private:
+
+	// ImGuiに表示されるグループ名
+	static inline const char *const groupName_ = "PlayerHealthDrawer";
+
+	using AnimateSprite = std::pair<Sprite *, float>;
+
+private:
+	// Json保存変数 //
+
+	std::pair<const char *const, Vector3> vScale_ = { "Scale", {32.f ,32.f ,0.f} };
+	std::pair<const char *const, float> vOffsetY_ = { "OffsetY", -48.f };
+	std::pair<const char *const, float> vDistanceX_ = { "DistanceX", 24.f };
+
+private:
+	const PlayerStatus *pPlayerStatus_ = nullptr;
+	const DebugPlayer *pPlayer_ = nullptr;
+
+	// 描画するスプライトのデータ
+	std::unique_ptr<AnimateSprite[]> healthSpriteData_;
+	std::span<AnimateSprite> healthSpriteList_;
 
 };
 
@@ -182,9 +240,14 @@ public: // メンバ関数
 	/// @return ゲームオーバーになったらtrue
 	bool IsGameOver() const;
 
+	int32_t GetHealth() const { return health_; }
+	float GetHealthParcent() const { return static_cast<float>(health_) / playerStatus_.maxHealth_.second; }
+
 private: // メンバ変数
 	Transform transform_;
 	Matrix4x4 transMat_;
+	// ステージにおいての座標
+	Vector2 stagePos_;
 	WorldTransform unuseData_;
 	const ViewProjection *pViewProjection_;
 	std::unique_ptr<Sphere> sphere_;
@@ -249,7 +312,7 @@ private: // メンバ変数
 	Vector3 velocity_ = {};
 
 	// プレイヤのステータス
-	JsonStatus playerStatus_{ "Player" };
+	PlayerStatus playerStatus_{ "Player" };
 
 	// プレイヤのスプライトデータ
 	std::unique_ptr<Sprite> sprite_ = nullptr;
@@ -261,5 +324,8 @@ private: // メンバ変数
 	Transform uvTransform_;
 	// アニメーションのフレームカウント
 	uint32_t animFlame_;
+
+	// プレイヤの体力の描画
+	std::unique_ptr<PlayerHealthDrawer> healthDrawer_;
 
 };
