@@ -10,9 +10,10 @@ void TitleScene::Initialize() {
 	
 
 	audio_ = Audio::GetInstance();
-	audioData_[0] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
-	audio_->SoundPlayMP3(audioData_[1], true, 3.0f);
-
+	audioData_[0] = audio_->SoundLoadMP3("resources/audio/bgm.mp3");
+	audioData_[1] = audio_->SoundLoadMP3("resources/audio/headtButt.mp3"); 
+	audio_->SoundPlayMP3(audioData_[0], true, 3.0f);
+	audio_->SoundPlayMP3(audioData_[0], true, 3.0f);
 	
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
@@ -32,6 +33,9 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Update() {
+
+	
+
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
 	if (Input::GetInstance()->GetPadConnect()) {
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
