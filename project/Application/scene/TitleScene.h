@@ -25,8 +25,13 @@ public:
 	void Draw() override;
 	void RenderDirect() override;
 	void Fade();
+	~TitleScene() override;
 
 	void cameraMove();
+
+private:
+
+	void StartTransition();
 
 private: // 基本変数
 	// 光の数値
@@ -38,17 +43,18 @@ private: // 基本変数
 	};
 
 private:
-	Audio* audio_ = nullptr;
-	uint32_t audioData_[10];
 
-	//std::unique_ptr<Sprite> spriteRule_;
+	// bgmのハンドル
+	AudioHelper bgm_;
+
+	AudioHelper pressStart_;
 
 	// フェードイン・フェードアウト用スプライト
 	std::unique_ptr<Sprite> spriteBack_;
 
-	
 
-	
+
+
 
 	Vector2 pos_;
 	bool rule_;

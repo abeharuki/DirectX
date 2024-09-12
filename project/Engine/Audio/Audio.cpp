@@ -199,9 +199,12 @@ uint32_t Audio::SoundLoadMP3(const std::filesystem::path& filename) {
 		}
 	}
 
+	HRESULT hr = S_FALSE;
+
 	audioHandle_++;
 	IMFSourceReader* pMFSourceReader = nullptr;
-	MFCreateSourceReaderFromURL(filename.c_str(), NULL, &pMFSourceReader);
+	hr = MFCreateSourceReaderFromURL(filename.c_str(), NULL, &pMFSourceReader);
+	assert(SUCCEEDED(hr) and "ファイルを読み込めませんでした");
 
 	IMFMediaType* pMFMediaType = nullptr;
 	MFCreateMediaType(&pMFMediaType);
@@ -290,4 +293,16 @@ void Audio::Finalize() {
 	for (int i = 0; i < soundDatasWav_.size(); i++) {
 		SoundUnload(&soundDatasWav_[i]);
 	}
+}
+
+void AudioHelper::Play(bool roopFlag, float volume) const
+{
+	Audio *const audio = Audio::GetInstance();
+	isWav_ ? audio->SoundPlayWave(handle_, roopFlag, volume) : audio->SoundPlayMP3(handle_, roopFlag, volume);
+}
+
+void AudioHelper::Stop() const
+{
+	Audio *const audio = Audio::GetInstance();
+	audio->StopAudio(handle_);
 }

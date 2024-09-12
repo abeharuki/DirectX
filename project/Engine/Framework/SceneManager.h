@@ -13,7 +13,7 @@ public:
 
 	void Draw();	
 
-	void  RenderDirect();
+	void RenderDirect();
 
 	void Loading();
 

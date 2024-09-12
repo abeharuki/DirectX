@@ -65,21 +65,21 @@ public:
 
 
 	// パッドに接続されてるか
-	bool GetPadConnect();
+	bool GetPadConnect() const;
 
 	// パッドのボタンが押されているか
-	bool GetPadButton(UINT button);
+	bool GetPadButton(UINT button) const;
 
 	// パッドのボタンが離れた瞬間か
-	bool GetPadButtonUp(UINT button);
+	bool GetPadButtonUp(UINT button) const;
 
 	// パッドのボタンが押された瞬間か
-	bool GetPadButtonDown(UINT button);
+	bool GetPadButtonDown(UINT button) const;
 
 	// パッドの左スティック
-	Vector2 GetPadLStick();
+	Vector2 GetPadLStick() const;
 
 	// パッドの右スティック
-	Vector2 GetPadRStick();
+	Vector2 GetPadRStick() const;
 
 };

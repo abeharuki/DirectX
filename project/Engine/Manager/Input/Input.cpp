@@ -88,31 +88,31 @@ bool Input::ReleaseKey(uint8_t keynumber) {
 	return !Input::GetInstance()->key[keynumber] && Input::GetInstance()->oldKey[keynumber];
 }
 
-bool Input::GetPadConnect() { return isConnectPad; }
+bool Input::GetPadConnect() const { return isConnectPad; }
 
-bool Input::GetPadButton(UINT button) { 
+bool Input::GetPadButton(UINT button) const { 
 	if (xInputState.Gamepad.wButtons & button) {
 		return true;
 	}
 	return false;
 }
 
-bool Input::GetPadButtonUp(UINT button) {
+bool Input::GetPadButtonUp(UINT button) const {
 	return xInputState.Gamepad.wButtons != button && oldXInputState.Gamepad.wButtons == button;
 }
 
-bool Input::GetPadButtonDown(UINT button) {
+bool Input::GetPadButtonDown(UINT button) const {
 	return xInputState.Gamepad.wButtons == button && oldXInputState.Gamepad.wButtons != button;
 }
 
-Vector2 Input::GetPadLStick() {
+Vector2 Input::GetPadLStick() const {
 	SHORT x = xInputState.Gamepad.sThumbLX;
 	SHORT y = xInputState.Gamepad.sThumbLY;
 
 	return Vector2(static_cast<float>(x) / 32767.0f, static_cast<float>(y) / 32767.0f);
 }
 
-Vector2 Input::GetPadRStick() {
+Vector2 Input::GetPadRStick() const {
 	SHORT x = xInputState.Gamepad.sThumbRX;
 	SHORT y = xInputState.Gamepad.sThumbRY;
 

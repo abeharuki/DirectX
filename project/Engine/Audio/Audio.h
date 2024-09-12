@@ -48,7 +48,7 @@ public:
 		//波形フォーマット
 		WAVEFORMATEX wfex;
 		//バッファの先頭アドレス
-		BYTE* pBuffer;
+		BYTE *pBuffer;
 		//バッファのサイズ
 		unsigned int bufferSize;
 		//名前
@@ -73,12 +73,12 @@ public:
 	/// ボイスデータ
 	struct Voice {
 		uint32_t handle = 0;
-		IXAudio2SourceVoice* sourceVoice = nullptr;
+		IXAudio2SourceVoice *sourceVoice = nullptr;
 	};
 
 
 	/// シングルトンインスタンスの取得
-	static Audio* GetInstance();
+	static Audio *GetInstance();
 
 
 	/// 解放処理
@@ -90,12 +90,12 @@ public:
 
 
 	/// 音声データの読み込み
-	uint32_t SoundLoadWave(const char* filename);
-	uint32_t SoundLoadMP3(const std::filesystem::path& filename);
+	uint32_t SoundLoadWave(const char *filename);
+	uint32_t SoundLoadMP3(const std::filesystem::path &filename);
 
 	/// 音声データ開放
-	void SoundUnload(SoundData* soundData);
-	void SoundUnload(SoundDataWav* soundData);
+	void SoundUnload(SoundData *soundData);
+	void SoundUnload(SoundDataWav *soundData);
 
 
 	/// 音声再生
@@ -109,16 +109,36 @@ public:
 private:
 	Audio() = default;
 	~Audio() = default;
-	Audio(const Audio&) = delete;
-	const Audio& operator=(const Audio&) = delete;
+	Audio(const Audio &) = delete;
+	const Audio &operator=(const Audio &) = delete;
 
 private:
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_ = nullptr;
-	IXAudio2MasteringVoice* masterVoice_ = nullptr;
+	IXAudio2MasteringVoice *masterVoice_ = nullptr;
 	std::array<SoundData, kMaxSoundData> soundDatas_{};
 	std::array<SoundDataWav, kMaxSoundData> soundDatasWav_{};
-	std::set<Voice*> sourceVoices_{};
+	std::set<Voice *> sourceVoices_{};
 	//IXAudio2SourceVoice* sourceVoice_ = nullptr;
 	uint32_t audioHandle_ = -1;
 	uint32_t voiceHandle_ = -1;
+};
+
+struct AudioHelper {
+	AudioHelper() = default;
+	AudioHelper(const AudioHelper &) = default;
+	AudioHelper(const std::string &filePath) {
+		Audio *const audio = Audio::GetInstance();
+		isWav_ = filePath.ends_with(".wav");
+
+		// ハンドルにデータを格納する
+		handle_ = not isWav_ ? audio->SoundLoadMP3(filePath) : audio->SoundLoadWave(filePath.c_str());
+	}
+
+	void Play(bool roopFlag, float volume) const;
+	void Stop() const;
+
+private:
+
+	uint32_t handle_;
+	bool isWav_;
 };

@@ -4,21 +4,18 @@
 
 
 void TitleScene::Initialize() {
-	
-	
 
-	
+	sceneManager_ = SceneManager::GetInstance();
 
-	audio_ = Audio::GetInstance();
-	audioData_[0] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
-	audio_->SoundPlayMP3(audioData_[1], true, 3.0f);
+	pressStart_ = AudioHelper{ "resources/audio/jump.mp3" };
+	bgm_ = AudioHelper{ "resources/audio/bgm.mp3" };
+	bgm_.Play(true, 3.0f);
 
-	
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
-	spriteBack_.reset(Sprite::Create("resources/Black.png"));
+	spriteBack_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Black.png"));
 	rule_ = false;
-	
+
 	spriteBack_->SetSize({ 1280.0f,720.0f });
 	isFadeIn_ = true;
 	isFadeOut_ = false;
@@ -28,57 +25,38 @@ void TitleScene::Initialize() {
 	PostEffect::GetInstance()->isGrayscale(false);
 	PostEffect::GetInstance()->isOutLine(true);
 	//PostEffect::GetInstance()->isBloom(true);
-	
+
 }
 
 void TitleScene::Update() {
+	const auto *const input = Input::GetInstance();
+	// フェード用のスプライト
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-	if (Input::GetInstance()->GetPadConnect()) {
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
-			//rule_ = true;
+
+	if (input->GetPadConnect()) {
+		if (input->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
+			StartTransition();
 		}
 	}
 
-	if (Input::PushKey(DIK_G)) {
-		//rule_ = true;
+	if (Input::PushKey(DIK_SPACE)) {
+		StartTransition();
 	}
-	
-
-	if (Input::GetInstance()->GetPadConnect()) {
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
-			isFadeOut_ = true;
-		}
-
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B) && !isFadeIn_) {
-			//rule_ = true;
-			//isFadeOut_ = true;
-		}
-
-	}
-
-	if (Input::PushKey(DIK_G) && !isFadeIn_) {
-		isFadeOut_ = true;
-	}
-
-	if (Input::PushKey(DIK_H) && !isFadeIn_) {
-		//rule_ = true;
-		//isFadeOut_ = true;
-	}
-
-
-
 
 	Fade();
-	
-	
+
+#ifdef _DEBUG
 
 	if (Input::PushKey(DIK_C)) {
-		SceneManager::GetInstance()->ChangeScene("ClearScene");
+		sceneManager_->ChangeScene("ClearScene");
 	}
 
 	if (Input::PushKey(DIK_O)) {
-		SceneManager::GetInstance()->ChangeScene("OverScene");
+		sceneManager_->ChangeScene("OverScene");
 	}
+
+#endif // _DEBUG
+
 	PostEffect::GetInstance()->ValueOutLine(a_);
 
 	ImGui::Begin("Player");
@@ -94,20 +72,28 @@ void TitleScene::Update() {
 
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
-	
+
 }
 
 void TitleScene::RenderDirect() {
-	
+
 	spriteBack_->Draw();
 }
 
 void TitleScene::cameraMove() {
 
-	
+
 
 }
 
+void TitleScene::StartTransition()
+{
+	if (not isFadeIn_) {
+		isFadeOut_ = true;
+
+		pressStart_.Play(false, 0.5f);
+	}
+}
 
 void TitleScene::Fade() {
 	if (isFadeIn_) {
@@ -130,9 +116,14 @@ void TitleScene::Fade() {
 				//SceneManager::GetInstance()->ChangeScene("TutorialScene");
 			}
 			else {
-				SceneManager::GetInstance()->ChangeScene("GameScene");
+				sceneManager_->ChangeScene("GameScene");
 			}
-			
+
 		}
 	}
+}
+
+TitleScene::~TitleScene()
+{
+	bgm_.Stop();
 }
