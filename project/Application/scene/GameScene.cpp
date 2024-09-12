@@ -10,7 +10,9 @@ void GameScene::Initialize() {
 
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 2.2f, 3.5f, -15.0f };
-
+	alpha_ = 1.0f;
+	spriteBack_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Black.png"));
+	spriteBack_->SetSize({ 1280.0f,720.0f });
 	backGroundSprite_[0].reset(Sprite::Create("resources/Stage/backGround_1.png"));
 	backGroundSprite_[1].reset(Sprite::Create("resources/Stage/backGround_2.png"));
 	backGroundSprite_[2].reset(Sprite::Create("resources/Stage/backGround_3.png"));
@@ -58,9 +60,22 @@ void GameScene::Initialize() {
 	bloom_.sigma = 0.005f;
 	postEffects[8] = true;
 
+	clear_ = false;
+	over_ = false;
 }
 
 void GameScene::Update() {
+
+	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
+	if (debugPlayer_->IsGameOver()) {
+		isFadeOut_ = true;
+		over_ = true;
+	}
+
+	if (debugEnemy_->GetHpLength() == 0) {
+		isFadeOut_ = true;
+		clear_ = true;
+	}
 
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
@@ -101,7 +116,7 @@ void GameScene::Update() {
 
 	viewProjection_.UpdateMatrix();
 
-
+	Fade();
 
 	grayscale_.isEnable = postEffects[0];
 	vignetting_.isEnable = postEffects[1];
@@ -260,6 +275,8 @@ void GameScene::Draw() {
 
 
 	particle_->Draw(viewProjection_);
+
+	spriteBack_->Draw();
 }
 
 void GameScene::RenderDirect() {
@@ -267,13 +284,7 @@ void GameScene::RenderDirect() {
 }
 
 void GameScene::Fade() {
-	if (alpha_ > 0.0f) {
-		alpha_ -= 0.02f;
-	}
-	else {
-		alpha_ = 0.0f;
-		isFadeIn_ = false;
-	}
+	
 
 
 	if (isFadeOut_) {
@@ -282,8 +293,23 @@ void GameScene::Fade() {
 		}
 		else {
 			alpha_ = 1.0f;
-			sceneManager_->ChangeScene("GameScene");
+			if (over_) {
+				sceneManager_->ChangeScene("OverScene");
+			}
+		
+			if (clear_) {
+				sceneManager_->ChangeScene("ClearScene");
+			}
 
+		}
+	}
+	else {
+		if (alpha_ > 0.0f) {
+			alpha_ -= 0.02f;
+		}
+		else {
+			alpha_ = 0.0f;
+			isFadeIn_ = false;
 		}
 	}
 }

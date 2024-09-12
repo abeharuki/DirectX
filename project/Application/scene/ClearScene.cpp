@@ -3,7 +3,7 @@
 
 void ClearScene::Initialize() {
 	spriteClear_.reset(Sprite::Create("resources/gameclear.png"));
-	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
+	
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Black.png"));

@@ -53,7 +53,10 @@ void DebugEnemy::Update() {
 		case Behavior::kAttack:
 			AttackInitialize();
 			break;
-
+		case Behavior::kDead:
+			DeadInitilize();
+			break;
+		
 		}
 
 		// 振る舞いリセット
@@ -78,7 +81,9 @@ void DebugEnemy::Update() {
 		// 攻撃
 		AttackUpdata();
 		break;
-
+	case Behavior::kDead:
+		DeadUpdata();
+		break;
 	}
 
 
@@ -197,7 +202,9 @@ void DebugEnemy::MoveUpdata() {
 
 	transformBase_.translate += velocity_;
 
-
+	if (transformUI_[1].scale.x <= 0) {
+		behaviorRequest_ = Behavior::kDead;
+	}
 
 	//if (--behaviorAttackTime <= 0) {
 	//	behaviorRequest_ = Behavior::kAttack;
@@ -327,6 +334,14 @@ void DebugEnemy::AttackUpdata() {
 		}
 
 	}
+}
+
+void DebugEnemy::DeadInitilize()
+{
+}
+
+void DebugEnemy::DeadUpdata()
+{
 }
 
 void DebugEnemy::Damage() {

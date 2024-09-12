@@ -50,6 +50,10 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdata();
 
+	//死亡
+	void DeadInitilize();
+	void DeadUpdata();
+
 	//攻撃を食らったときの計算
 	void Damage();
 

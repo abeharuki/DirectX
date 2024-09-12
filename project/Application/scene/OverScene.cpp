@@ -4,7 +4,7 @@
 
 void OverScene::Initialize() {
 	spriteOver_.reset(Sprite::Create("resources/gameover.png"));
-	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
+	
 
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
