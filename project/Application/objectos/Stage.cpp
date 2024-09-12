@@ -140,3 +140,4 @@ void Stage::Draw(ViewProjection viewprojection, bool light) {
 	}
 }
 
+

@@ -259,10 +259,13 @@ void GameScene::Draw() {
 	for (int i = 0; i < 5; ++i) {
 		backGroundSprite_[i]->Draw();
 	}
+
+	stage_->Draw(viewProjection_, true);
+
 	debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
 
-	stage_->Draw(viewProjection_, true);
+	
 	particle_->Draw(viewProjection_);
 }
 
