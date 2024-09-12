@@ -425,7 +425,7 @@ void DebugPlayer::DeadInitialize()
 
 void DebugPlayer::DeadUpdate()
 {
-	AnimUpdate(5, 3, 0, 8, false);
+	AnimUpdate(5, 4, 0, 8, false);
 	// 移動
 	transform_.translate.y += velocity_.y;
 	// 重力加速度
@@ -589,6 +589,7 @@ void PlayerStatus::Save() const
 	helper << knockBackFlame_;
 	helper << knockBackPower;
 	helper << maxHealth_;
+	helper << deadFlame;
 }
 
 void PlayerStatus::Load()
@@ -607,6 +608,7 @@ void PlayerStatus::Load()
 	helper >> knockBackFlame_;
 	helper >> knockBackPower;
 	helper >> maxHealth_;
+	helper >> deadFlame;
 }
 
 void PlayerHealthDrawer::Init()
@@ -621,7 +623,7 @@ void PlayerHealthDrawer::Init()
 	// すべてのスプライトをfor文で回す
 	for (uint32_t i = 0; i < healthSpriteList_.size(); i++) {
 		// 対象となるスプライト
-		auto &sprite = healthSpriteList_[i].first;
+		auto &[sprite, value] = healthSpriteList_[i];
 		// 体力のスプライトを生成して格納する
 		sprite = Sprite::Create("resources/Player/player_hp.png");
 
@@ -630,6 +632,7 @@ void PlayerHealthDrawer::Init()
 		// 初期値に合わせてスケールを調整する
 		sprite->SetSize(vScale_.second.GetVec2());
 
+		value = 1.f;
 
 	}
 
@@ -644,24 +647,8 @@ void PlayerHealthDrawer::Update()
 
 #endif // _DEBUG
 
-	// 中心となるIndex
-	const float centerPos = static_cast<float>(pPlayerStatus_->maxHealth_.second - 1) / 2.f;
+	CalcPos();
 
-	// すべてのスプライトをfor文で回す
-	for (uint32_t i = 0; i < healthSpriteList_.size(); i++) {
-		// 対象となるスプライト
-		Sprite &sprite = *healthSpriteList_[i].first;
-
-		// プレイヤからの差分
-		const Vector2 offset{ (i - centerPos) * vDistanceX_.second, vOffsetY_.second };
-
-		// プレイヤの座標に差分を加算して保存する
-		sprite.SetPosition(offset + pPlayer_->GetWorldPosition().GetVec2());
-
-		// スケールを調整する
-		sprite.SetSize(vScale_.second.GetVec2());
-
-	}
 }
 
 void PlayerHealthDrawer::Draw()
@@ -676,6 +663,24 @@ void PlayerHealthDrawer::Draw()
 
 void PlayerHealthDrawer::CalcPos()
 {
+	// 中心となるIndex
+	const float centerPos = static_cast<float>(pPlayerStatus_->maxHealth_.second - 1) / 2.f;
+
+	// すべてのスプライトをfor文で回す
+	for (uint32_t i = 0; i < healthSpriteList_.size(); i++) {
+		// 対象となるスプライト
+		auto &[sprite, value] = healthSpriteList_[i];
+
+		// プレイヤからの差分
+		const Vector2 offset{ (i - centerPos) * vDistanceX_.second, vOffsetY_.second };
+
+		// プレイヤの座標に差分を加算して保存する
+		sprite->SetPosition(offset + pPlayer_->GetWorldPosition().GetVec2());
+
+		// スケールを調整する
+		sprite->SetSize(vScale_.second.GetVec2() * value);
+
+	}
 }
 
 void PlayerHealthDrawer::Save() const

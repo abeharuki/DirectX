@@ -1,6 +1,7 @@
 {
     "Player": {
         "AirJumpStrength": 0.5,
+        "DeadFlame": 60,
         "DrawOffset": 0.0,
         "DrawScale": 96.0,
         "Gravity": 0.029999999329447746,
@@ -12,7 +13,7 @@
             0.20000000298023224,
             0.0
         ],
-        "MaxHealth": 6,
+        "MaxHealth": 3,
         "StageFloor": -1.5,
         "StageHeight": 1.7999999523162842,
         "StageWidth": 8.25
