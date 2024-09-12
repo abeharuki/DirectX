@@ -272,8 +272,8 @@ void ParticleSystem::sPipeline() {
 };
 
 void ParticleSystem::DebugParameter() {
-	//emitter_.count = particleCount_;
-	//SetEmitter(emitter_);
+	/*emitter_.count = particleCount_;
+	SetEmitter(emitter_);*/
 	ImGui::Begin("DebugParticle");
 	ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
 	ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);

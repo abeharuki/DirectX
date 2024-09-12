@@ -281,9 +281,16 @@ Vector3 GameScene::GetLocalPosition()
 }
 
 void GameScene::CheckAllCollision() {
+	//debugEnemy_->SetHitBody(false);
+	
 	for (int i = 0; i < Stage::kSize_; ++i) {
+		//押し出し処理のためにBarr情報の受け取り
+		debugEnemy_->SetBarr(Vector2{ stage_->GetPlayerAttackPos(i).x,stage_->GetPlayerAttackPos(i).y }, Vector2{ stage_->GetPlayerAttackScale(i).x, stage_->GetPlayerAttackScale(i).y },i);
+
+
+		//
 		if (debugEnemy_->GetAttack()) {
-			if (Math::IsBoxCollision(debugEnemy_->GetPos().x + 25, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
+			if (Math::IsBoxCollision(debugEnemy_->GetPos().x - 25, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
 				stage_->GetEnemyAttackPos(i).x, stage_->GetEnemyAttackPos(i).y, stage_->GetEnemyAttackScale(i).x, stage_->GetEnemyAttackScale(i).y)) {
 				if (stage_->GetEnemyAttackScale(i).y == 64.0f) {
 					stage_->SetDown(true, i);
@@ -291,12 +298,15 @@ void GameScene::CheckAllCollision() {
 			}
 		}
 
-		if (Math::IsBoxCollision(debugEnemy_->GetPos().x + 25, debugEnemy_->GetPos().y-10, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
+		//体の当たり判定
+		if (Math::IsBoxCollision(debugEnemy_->GetPos().x-42, debugEnemy_->GetPos().y-30, debugEnemy_->GetScale().x*0.8f, debugEnemy_->GetScale().y,
 			stage_->GetPlayerAttackPos(i).x, stage_->GetPlayerAttackPos(i).y, stage_->GetPlayerAttackScale(i).x, stage_->GetPlayerAttackScale(i).y)) {
-			ImGui::Begin("EnemyHit");
+			debugEnemy_->SetHitBody(true);
+			ImGui::Begin("EnemyHitBody");
 			ImGui::End();
 		}
 
+	
 	}
 
 

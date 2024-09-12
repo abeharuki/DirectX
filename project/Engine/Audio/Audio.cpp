@@ -202,6 +202,8 @@ uint32_t Audio::SoundLoadMP3(const std::filesystem::path& filename) {
 	HRESULT hr = S_FALSE;
 
 	audioHandle_++;
+
+	
 	IMFSourceReader* pMFSourceReader = nullptr;
 	hr = MFCreateSourceReaderFromURL(filename.c_str(), NULL, &pMFSourceReader);
 	assert(SUCCEEDED(hr) and "ファイルを読み込めませんでした");
@@ -257,9 +259,6 @@ uint32_t Audio::SoundLoadMP3(const std::filesystem::path& filename) {
 	CoTaskMemFree(waveFormat);
 	pMFMediaType->Release();
 	pMFSourceReader->Release();
-
-	MFShutdown();
-	CoUninitialize();
 
 	return audioHandle_;
 }
