@@ -285,10 +285,13 @@ void DebugPlayer::AirJumpInitialize()
 
 void DebugPlayer::AirJumpUpdate()
 {
+	// 上方向にベクトルがかかっていたら
 	if (velocity_.y > 0.f) {
+		// 上昇アニメーションを行う
 		AnimUpdate(1, 6, 0, 2, false);
 	}
 	else {
+		// 下降のアニメーションを行う
 		AnimUpdate(1, 6, 2, 3, true);
 	}
 
@@ -301,6 +304,7 @@ void DebugPlayer::AirJumpUpdate()
 	// 加速
 	velocity_ += accelerationVector;
 
+	// 天井に到達していたら
 	if (transform_.translate.y >= playerStatus_.stageHeight_.second) {
 		// 衝突処理
 		behaviorRequest_ = Behavior::kHeadButt;
@@ -315,8 +319,9 @@ void DebugPlayer::HeadButtInitialize()
 	// ステージ上においての座標を返す
 	const int32_t targetPos = static_cast<int32_t>(GetOnStagePosX());
 
-	// もしその場所が立ってなかったら
+	// もしその場所のフラグが立ってなかったら
 	if (not pStage_->GetUp(targetPos)) {
+		// 棒を生やすフラグを立てる
 		pStage_->SetUp(true, targetPos);
 		hitBlock_ = true;
 	}
@@ -431,6 +436,7 @@ void DebugPlayer::CalcMatrix()
 
 void DebugPlayer::TransfarSprite()
 {
+	// プレイヤの位置を3D座標からカメラ座標に変換して渡す
 	sprite_->SetPosition(pViewProjection_->WorldToScreen(transform_.translate).GetVec2() - Vector2{ .y = playerStatus_.drawOffset_.second });
 	sprite_->SetRotation(transform_.rotate.z);
 	sprite_->SetSize(transform_.scale.GetVec2());
@@ -447,8 +453,8 @@ void DebugPlayer::StageBarCollision()
 		const float playerPos = GetOnStagePosX() - 0.5f;
 		// プレイヤの両端のIndex
 		const std::array<uint32_t, 2> playerSidePos{
-			static_cast<uint32_t>(std::floor(playerPos)),
-			static_cast<uint32_t>(std::ceil(playerPos))
+			static_cast<uint32_t>(std::floor(playerPos)),	// 左側のIndex
+			static_cast<uint32_t>(std::ceil(playerPos))		// 右側のIndex
 		};
 		for (uint32_t target : playerSidePos) {
 			// どちらかが攻撃範囲に入ってたら
@@ -459,7 +465,7 @@ void DebugPlayer::StageBarCollision()
 				// 合計値が1以上である場合､お互いに交点が発生するものとする
 				if (GetOnStagePosYPercent() + barLength < 1.f) { continue; } // それ未満なら終わる
 
-				// ダメージ判定して終わる
+				// ダメージ処理を行って終わる
 				OnCollision(target);
 				break;
 			}

@@ -52,7 +52,9 @@ public:
 	bool GetUp(uint32_t index) const { return upBox_.at(index); }
 	bool GetDown(uint32_t index) const { return downBox_.at(index); }
 
-	//バーの長さを0.f~1.fで検出
+	/// @brief 赤い棒の長さを返す
+	/// @param index 棒のIndex番号
+	/// @return 棒の長さ { 0.f ~ 1.f }
 	float GetBarLength(uint32_t index) const { return (enemyAttackTransform_[index].scale.y - 64.0f) / (331.0f - 64.0f); };
 
 	/// @brief 指定している場所の棒が攻撃状態か検知する
