@@ -1,10 +1,10 @@
 {
     "PlayerHealthDrawer": {
-        "DistanceX": 13.020999908447266,
-        "OffsetY": -96.0,
+        "DistanceX": 36.0,
+        "OffsetY": 24.0,
         "Scale": [
-            12.0,
-            16.0,
+            32.0,
+            32.0,
             0.0
         ]
     }

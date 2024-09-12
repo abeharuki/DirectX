@@ -150,9 +150,6 @@ void DebugPlayer::Update() {
 	ImGui::DragFloat("PosY", &transform_.translate.y, 0.1f);
 	ImGui::End();
 
-	// プレイヤの体力描画のデータ更新
-	healthDrawer_->Update();
-
 	// トランスフォームから行列を計算する
 	//CalcMatrix();
 }
@@ -162,6 +159,9 @@ void DebugPlayer::Draw([[maybe_unused]] const ViewProjection &camera) {
 	SetViewProjection(&camera);
 	// スプライトにデータを転送する
 	TransfarSprite();
+
+	// プレイヤの体力描画のデータ更新
+	healthDrawer_->Update();
 
 	sprite_->UpdateVertexBuffer();
 	// 画像の描画
