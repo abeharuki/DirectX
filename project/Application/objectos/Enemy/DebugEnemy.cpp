@@ -67,10 +67,7 @@ void DebugEnemy::Update() {
 
 	}
 
-	for (int i = 0; i < 16; ++i) {
-		ResolveBoxCollision(transformBase_.translate.x - 42, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
-			transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y);
-	}
+	
 
 	if (transformBase_.translate.x >= 930|| transformBase_.translate.x <= -30) {
 		velocity_.x = 0.0f;
@@ -165,12 +162,9 @@ void DebugEnemy::MoveUpdata() {
 		
 	}
 
-	if (hitBody_ != preHitBody_) {
-		for (int i = 0; i < 16; ++i) {
-			ResolveBoxCollision(transformBase_.translate.x - 42, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
-				transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y);
-		}
-
+	for (int i = 0; i < 16; ++i) {
+		ResolveBoxCollision(transformBase_.translate.x - 42, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
+			transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y);
 	}
 
 	
@@ -206,7 +200,13 @@ void DebugEnemy::JumpUpdata() {
 	Vector3 accelerationVector = { 0, kGravity, 0 };
 	// 加速
 	velocity_ += accelerationVector;
-	if (hitBody_) {
+
+
+	for (int i = 0; i < 16; ++i) {
+		ResolveBoxCollision(transformBase_.translate.x - 42, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
+			transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y);
+	}
+	if (hitBody_ ) {
 		velocity_.x = 0.0f;
 	
 	}

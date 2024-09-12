@@ -77,31 +77,32 @@ public: // メンバ関数
 			float overlapX2 = (BposX + BsizeW) - AposX; // Aが右側からBに重なっている場合の重なり量
 			float overlapY1 = (AposY + AsizeH) - BposY; // Aが上側からBに重なっている場合の重なり量
 			float overlapY2 = (BposY + BsizeH) - AposY; // Aが下側からBに重なっている場合の重なり量
+			hitBody_ = true;
 
-			// 最小の重なりを見つけ、その方向に押し出す
-			if (overlapX1 < overlapX2 && overlapX1 < overlapY1 && overlapX1 < overlapY2) {
-				// Aを左側に押し出す
-				transformBase_.translate.x -= overlapX1;
-				if (velocity_.x >= 1) {
-					velocity_.x = 0;
+			if (hitBody_ != preHitBody_) {
+				// AがBの下から当たっている場合は押し出し処理を行わない
+				if (overlapY2 < overlapY1) {
+					// 横方向の押し出し処理のみを行う
+					if (overlapX1 < overlapX2) {
+						// Aを左側に押し出す
+						transformBase_.translate.x -= overlapX1;
+						if (velocity_.x > 0) {
+							velocity_.x = 0; // 右向きの速度をリセット
+						}
+					}
+					else {
+						// Aを右側に押し出す
+						transformBase_.translate.x += overlapX2;
+						if (velocity_.x < 0) {
+							velocity_.x = 0; // 左向きの速度をリセット
+						}
+					}
 				}
-			}
-			else if (overlapX2 < overlapY1 && overlapX2 < overlapY2) {
-				// Aを右側に押し出す
-				transformBase_.translate.x += overlapX2;
-				if (velocity_.x <= 1) {
-					velocity_.x = 0;
-				}
+				
+				
 			}
 
-			if (overlapY1 < overlapY2) {
-				// Aを上側に押し出す
-				//preHitBody_ = hitBody_;
-				//transformBase_.translate.y -= overlapY1;
-			}
-			else {
 			
-			}
 		}
 		
 	}

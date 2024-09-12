@@ -281,7 +281,7 @@ Vector3 GameScene::GetLocalPosition()
 }
 
 void GameScene::CheckAllCollision() {
-	debugEnemy_->SetHitBody(false);
+	//debugEnemy_->SetHitBody(false);
 	
 	for (int i = 0; i < Stage::kSize_; ++i) {
 		//押し出し処理のためにBarr情報の受け取り
