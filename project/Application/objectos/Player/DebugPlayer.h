@@ -333,4 +333,6 @@ private: // メンバ変数
 
 	AudioHelper jumpSound_;
 
+	AudioHelper damageSound_;
+
 };

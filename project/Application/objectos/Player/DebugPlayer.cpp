@@ -8,8 +8,9 @@ void DebugPlayer::Initialize() {
 	playerStatus_.Load();
 	playerStatus_.Save();
 
-	headButtSound_ = AudioHelper{"resources/audio/headtButt.mp3"};
-	jumpSound_ = AudioHelper{"resources/audio/jump.mp3"};
+	headButtSound_ = AudioHelper{ "resources/audio/headtButt.mp3" };
+	jumpSound_ = AudioHelper{ "resources/audio/jump.mp3" };
+	damageSound_ = AudioHelper{ "resources/audio/blockBreak.mp3" };
 
 	// 初期化
 	transform_.scale = { 0.5f,0.5f,0.5f };
@@ -511,6 +512,8 @@ void DebugPlayer::OnCollision(const uint32_t index) {
 
 	// プレイヤの体力を削る
 	health_--;
+
+	damageSound_.Play(false, 0.5f);
 
 	// もし体力がまだ残っていたら
 	if (health_ > 0) {
