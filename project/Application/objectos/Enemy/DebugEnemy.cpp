@@ -6,7 +6,7 @@ void DebugEnemy::Initialize() {
 	transformBase_.scale = { 280.0f,212.0f,1.0f };
 	transformBase_.translate.x = 30.0f;
 	transformBase_.translate.y = 123.0f;
-	transformCore_.scale = { 20.0f,20.0f,0.0f };
+	transformCore_.scale = { 40.0f,20.0f,0.0f };
 
 	transformUI_[0].translate = { 284.0f,29.6f,0.0f };
 	transformUI_[0].scale = { 500.0f,30.0f,0.0f };
@@ -15,7 +15,7 @@ void DebugEnemy::Initialize() {
 	transformUI_[2].translate = { 240.0f,9.0f,0.0f };
 	transformUI_[2].scale = { 70.0f,70.0f,0.0f };
 
-	coreSub_ = { 57.0f,92.0f };
+	coreSub_ = { 47.0f,92.0f };
 	velocity_.x = 10.0f;
 	enemySprite_.reset(Sprite::Create("resources/Enemy/boss_kari.png"));
 	enemySprite_->SetAnchorPoint({ 0.25f,0.0f });
@@ -35,56 +35,56 @@ void DebugEnemy::Update() {
 	preHitCore_ = hitCore_;
 	hitCore_ = false;
 
-	if (behaviorRequest_) {
-		// 振る舞い変更
-		behavior_ = behaviorRequest_.value();
-		// 各振る舞いごとの初期化
-		switch (behavior_) {
-		case Behavior::kRoot:
-		default:
-			MoveInitialize();
-			break;
-		case Behavior::kJump:
-			JumpInitialize();
-			break;
-		case Behavior::kDash:
-			DashInitialize();
-			break;
-		case Behavior::kAttack:
-			AttackInitialize();
-			break;
-		case Behavior::kDead:
-			DeadInitilize();
-			break;
-		
-		}
+	//if (behaviorRequest_) {
+	//	// 振る舞い変更
+	//	behavior_ = behaviorRequest_.value();
+	//	// 各振る舞いごとの初期化
+	//	switch (behavior_) {
+	//	case Behavior::kRoot:
+	//	default:
+	//		MoveInitialize();
+	//		break;
+	//	case Behavior::kJump:
+	//		JumpInitialize();
+	//		break;
+	//	case Behavior::kDash:
+	//		DashInitialize();
+	//		break;
+	//	case Behavior::kAttack:
+	//		AttackInitialize();
+	//		break;
+	//	case Behavior::kDead:
+	//		DeadInitilize();
+	//		break;
+	//	
+	//	}
 
-		// 振る舞いリセット
-		behaviorRequest_ = std::nullopt;
-	}
+	//	// 振る舞いリセット
+	//	behaviorRequest_ = std::nullopt;
+	//}
 
-	switch (behavior_) {
-	case Behavior::kRoot:
-	default:
-		// 通常行動
-		MoveUpdata();
-		break;
-	case Behavior::kJump:
-		//ジャンプ
-		JumpUpdata();
-		break;
-	case Behavior::kDash:
-		// ジャンプ
-		DashUpdata();
-		break;
-	case Behavior::kAttack:
-		// 攻撃
-		AttackUpdata();
-		break;
-	case Behavior::kDead:
-		DeadUpdata();
-		break;
-	}
+	//switch (behavior_) {
+	//case Behavior::kRoot:
+	//default:
+	//	// 通常行動
+	//	MoveUpdata();
+	//	break;
+	//case Behavior::kJump:
+	//	//ジャンプ
+	//	JumpUpdata();
+	//	break;
+	//case Behavior::kDash:
+	//	// ジャンプ
+	//	DashUpdata();
+	//	break;
+	//case Behavior::kAttack:
+	//	// 攻撃
+	//	AttackUpdata();
+	//	break;
+	//case Behavior::kDead:
+	//	DeadUpdata();
+	//	break;
+	//}
 
 
 

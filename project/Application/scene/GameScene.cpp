@@ -340,7 +340,7 @@ void GameScene::CheckAllCollision() {
 
 		//
 		if (debugEnemy_->GetAttack()) {
-			if (Math::IsBoxCollision(debugEnemy_->GetPos().x - 25, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
+			if (Math::IsBoxCollision(debugEnemy_->GetCorePos().x - 50, debugEnemy_->GetPos().y, debugEnemy_->GetScale().x / 2.0f, debugEnemy_->GetScale().y,
 				stage_->GetEnemyAttackPos(i).x, stage_->GetEnemyAttackPos(i).y, stage_->GetEnemyAttackScale(i).x, stage_->GetEnemyAttackScale(i).y)) {
 				if (stage_->GetEnemyAttackScale(i).y == 64.0f) {
 					stage_->SetDown(true, i);
