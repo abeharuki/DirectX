@@ -245,16 +245,15 @@ void DebugEnemy::JumpUpdata() {
 	}
 
 	//ジャンプ中にプレイヤーが真下に来たら攻撃
-	//if (Math::isWithinRange(debugPlayer_->GetWorldPosition().x,transformBase_.translate.x, 1.0f)) {
-	//	if (transformBase_.translate.y >= 8.5f) {
-	//		//プレイヤーの上にいる時,速度はゼロ
-	//		velocity_.x = 0.0f;
-	//		//クールタイムが終わったら攻撃
-	//		behaviorRequest_ = Behavior::kAttack;
-	//	}
-
-	//	
-	//}
+	if (Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x + 80, 80.0f)) {
+		if (velocity_.y >= 0) {
+			//プレイヤーの上にいる時,速度はゼロ
+			velocity_.x = 0.0f;
+			//クールタイムが終わったら攻撃
+			behaviorRequest_ = Behavior::kAttack;
+		}
+		
+	}
 
 
 
@@ -278,15 +277,17 @@ void DebugEnemy::DashUpdata() {
 
 // 攻撃
 void DebugEnemy::AttackInitialize() {
-	transformBase_.translate.y = 123.0f;
+	
 	velocity_ = { 0.0f,0.0f,0.0f };
 	// ジャンプ初速
 	if (!jump_) {
+		transformBase_.translate.y = 123.0f;
 		const float kJumpFirstSpeed = -10.0f;
 		velocity_.y = kJumpFirstSpeed;
 	}
 	else {
-
+		const float kJumpFirstSpeed = -5.0f;
+		velocity_.y = kJumpFirstSpeed;
 	}
 
 	behaviorAttackTime = 15;
@@ -314,8 +315,20 @@ void DebugEnemy::AttackUpdata() {
 		}
 	}
 	else {
-		attack_ = true;
-		velocity_.y += 5.f;
+		//最高地点まで行ったら勢いよく落ちる
+		if (velocity_.y >= 0.0f) {
+			attack_ = true;
+			velocity_.y = 20.0f;
+
+		}
+		else {
+			//重力加速度
+			const float kGravity = 0.5f;
+			// 加速ベクトル
+			Vector3 accelerationVector = { 0, kGravity, 0 };
+			// 加速
+			velocity_ += accelerationVector;
+		}
 	}
 
 

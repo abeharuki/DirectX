@@ -96,7 +96,7 @@ void GameScene::Update() {
 		shake_ = { 0.0f,0.0f };
 		backGroundPos_ = { 0.0f,0.0f };
 
-		if (debugPlayer_->GetHitBlock()) {
+		if (debugPlayer_->GetHitBlock()&& !over_) {
 			shakeFlag_ = true;
 		}
 	}
