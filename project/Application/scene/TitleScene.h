@@ -51,7 +51,7 @@ private:
 
 	// フェードイン・フェードアウト用スプライト
 	std::unique_ptr<Sprite> spriteBack_;
-
+	std::unique_ptr<Sprite> backGroundSprite_;
 	std::unique_ptr<Sprite> titleText_;
 
 

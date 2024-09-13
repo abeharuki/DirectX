@@ -14,7 +14,9 @@ void TitleScene::Initialize() {
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Black.png"));
-	rule_ = false;
+	backGroundSprite_.reset(Sprite::Create("resources/Stage/backGround.png"));
+	backGroundSprite_->SetSize({ 1024,704 });
+	
 
 	spriteBack_->SetSize({ 1280.0f,720.0f });
 	isFadeIn_ = true;
@@ -83,7 +85,7 @@ void TitleScene::Update() {
 
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
-
+	backGroundSprite_->Draw();
 	titleText_->Draw();
 }
 
