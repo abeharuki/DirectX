@@ -120,12 +120,15 @@ void GameScene::Update() {
 		backGroundSprite_[i]->SetPosition(backGroundPos_);
 	}
 
+	
+	
 	stage_->SetShake(shake_);
 	stage_->SetDebugEnemy(debugEnemy_.get());
 	stage_->Update();
 
 	debugPlayer_->Update();
 	emitter_.translate.x = debugPlayer_->GetTransformTranslate().x;
+	debugEnemy_->SetShake(shakeFlag_);
 	debugEnemy_->SetDebugPlayer(debugPlayer_.get());
 	debugEnemy_->Update();
 
@@ -343,8 +346,8 @@ Vector3 GameScene::GetLocalPosition()
 }
 
 void GameScene::CheckAllCollision() {
-	//debugEnemy_->SetHitBody(false);
-
+	debugEnemy_->Damage();
+	
 	for (int i = 0; i < Stage::kSize_; ++i) {
 		//押し出し処理のためにBarr情報の受け取り
 		debugEnemy_->SetBarr(Vector2{ stage_->GetPlayerAttackPos(i).x,stage_->GetPlayerAttackPos(i).y }, Vector2{ stage_->GetPlayerAttackScale(i).x, stage_->GetPlayerAttackScale(i).y }, i);
