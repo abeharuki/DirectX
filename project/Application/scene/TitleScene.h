@@ -47,8 +47,6 @@ private: // 基本変数
 
 private:
 
-	// bgmのハンドル
-	AudioHelper bgm_;
 
 	AudioHelper pressStart_;
 

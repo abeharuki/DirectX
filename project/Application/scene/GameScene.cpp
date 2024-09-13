@@ -6,7 +6,14 @@
 #include <numbers>
 #include <PostEffects/PostEffect.h>
 
+GameScene::~GameScene()
+{
+	bgm_.Stop();
+}
+
 void GameScene::Initialize() {
+	bgm_ = AudioHelper{ "resources/audio/bgm.mp3" };
+	bgm_.Play(true, 0.8f);
 
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 2.2f, 3.5f, -15.0f };
@@ -68,19 +75,19 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-	if (debugPlayer_->IsGameOver()&&!clear_) {
+	if (debugPlayer_->IsGameOver() && !clear_) {
 		isFadeOut_ = true;
 		over_ = true;
 	}
 
-	if (debugEnemy_->GetHpLength() == 0&&!over_) {
+	if (debugEnemy_->GetHpLength() == 0 && !over_) {
 		isFadeOut_ = true;
 		clear_ = true;
 	}
 
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
-	
+
 
 	if (shakeFlag_) {
 		if (!over_) {
@@ -91,7 +98,7 @@ void GameScene::Update() {
 			backGroundPos_.y += shake_.y;
 			shakeFlag_ = false;
 		}
-		
+
 	}
 	else {
 		shake_ = { 0.0f,0.0f };
@@ -129,7 +136,7 @@ void GameScene::Update() {
 
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
-	PostEffect* const posteffect = PostEffect::GetInstance();
+	PostEffect *const posteffect = PostEffect::GetInstance();
 
 	posteffect->isGrayscale(grayscale_.isEnable);
 	posteffect->Vignette(vignetting_);
@@ -286,7 +293,7 @@ void GameScene::RenderDirect() {
 }
 
 void GameScene::Fade() {
-	
+
 
 
 	if (isFadeOut_) {
@@ -298,7 +305,7 @@ void GameScene::Fade() {
 			if (over_) {
 				sceneManager_->ChangeScene("OverScene");
 			}
-		
+
 			if (clear_) {
 				sceneManager_->ChangeScene("ClearScene");
 			}

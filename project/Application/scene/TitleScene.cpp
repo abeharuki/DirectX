@@ -13,8 +13,6 @@ void TitleScene::Initialize() {
 	sceneManager_ = SceneManager::GetInstance();
 
 	pressStart_ = AudioHelper{ "resources/audio/jump.mp3" };
-	bgm_ = AudioHelper{ "resources/audio/bgm.mp3" };
-	bgm_.Play(true, 0.8f);
 
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
@@ -97,7 +95,7 @@ void TitleScene::Update() {
 	}
 
 #ifdef _DEBUG
-	
+
 	// UIのアニメーション
 	{
 
@@ -148,7 +146,7 @@ void TitleScene::cameraMove() {
 
 void TitleScene::StartTransition()
 {
-	if (not isFadeIn_) {
+	if (not isFadeIn_ and not isFadeOut_) {
 		isFadeOut_ = true;
 
 		pressStart_.Play(false, 1.f);
@@ -203,5 +201,4 @@ void TitleScene::Fade() {
 
 TitleScene::~TitleScene()
 {
-	bgm_.Stop();
 }

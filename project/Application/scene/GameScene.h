@@ -17,10 +17,11 @@
 #include "CollisionManager/CollisionConfig.h"
 #include <Enemy/DebugEnemy.h>
 #include <Stage.h>
-
+#include <Audio/Audio.h>
 
 class GameScene : public IScene {
 public:
+	~GameScene();
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
@@ -39,6 +40,9 @@ private:
 	};
 
 	ViewProjection viewProjection_;
+
+	// bgmのハンドル
+	AudioHelper bgm_;
 
 	std::unique_ptr<Stage> stage_;
 	std::unique_ptr<DebugPlayer> debugPlayer_;

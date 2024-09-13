@@ -283,6 +283,7 @@ void Audio::Finalize() {
 		}
 		delete voice;
 	}
+	sourceVoices_.clear();
 
 	// XAudio2解放
 	xAudio2_.Reset();
