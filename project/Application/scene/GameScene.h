@@ -49,6 +49,8 @@ private:
 	std::unique_ptr<DebugEnemy> debugEnemy_;
 	std::unique_ptr<Sprite> backGroundSprite_[6];
 	std::unique_ptr<Sprite> spriteBack_;
+
+	std::unique_ptr<Sprite> keyViewer_;
 	Vector2 backGroundPos_ = { 0.0f,0.0f };
 	Vector2 shake_;
 	bool shakeFlag_;

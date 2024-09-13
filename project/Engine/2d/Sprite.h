@@ -135,6 +135,7 @@ public: // メンバ関数
 
 
 	const Vector2& GetPosition() const { return position_; }
+	Vector2& GetPosition() { return position_; }
 
 
 	//アンカーポイント

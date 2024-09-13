@@ -15,6 +15,14 @@ void GameScene::Initialize() {
 	bgm_ = AudioHelper{ "resources/audio/bgm.mp3" };
 	bgm_.Play(true, 0.8f);
 
+	{
+		keyViewer_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Stage/text2.png"));
+		keyViewer_->SetAnchorPoint({ 0.f,0.f });
+		keyViewer_->SetPosition({ 100.f, 420.f });
+		keyViewer_->SetSize({ 305.f, 81.f });
+		keyViewer_->UpdateVertexBuffer();
+	}
+
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 2.2f, 3.5f, -15.0f };
 	alpha_ = 1.0f;
@@ -193,6 +201,8 @@ void GameScene::Update() {
 
 	}
 
+	ImGui::DragFloat2("pos", &keyViewer_->GetPosition().x);
+	keyViewer_->UpdateVertexBuffer();
 
 
 	//Posteffect
@@ -286,6 +296,8 @@ void GameScene::Draw() {
 	particle_->Draw(viewProjection_);
 
 	spriteBack_->Draw();
+
+	keyViewer_->Draw();
 }
 
 void GameScene::RenderDirect() {
