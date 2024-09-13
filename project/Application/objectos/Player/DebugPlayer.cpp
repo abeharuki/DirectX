@@ -387,6 +387,7 @@ void DebugPlayer::AttackUpdate() {
 void DebugPlayer::KnockBackInitialize()
 {
 	animFlame_ = 0;
+	hitBlock_ = false;
 }
 
 void DebugPlayer::KnockBackUpdate()
@@ -421,6 +422,7 @@ void DebugPlayer::KnockBackUpdate()
 void DebugPlayer::DeadInitialize()
 {
 	animFlame_ = 0;
+	hitBlock_ = false;
 }
 
 void DebugPlayer::DeadUpdate()

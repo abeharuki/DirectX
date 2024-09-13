@@ -18,7 +18,8 @@ void GameScene::Initialize() {
 	backGroundSprite_[2].reset(Sprite::Create("resources/Stage/backGround_3.png"));
 	backGroundSprite_[3].reset(Sprite::Create("resources/Stage/backGround_4.png"));
 	backGroundSprite_[4].reset(Sprite::Create("resources/Stage/floor.png"));
-	for (int i = 0; i < 5; ++i) {
+	backGroundSprite_[5].reset(Sprite::Create("resources/Stage/backGround.png"));
+	for (int i = 0; i < 6; ++i) {
 		backGroundSprite_[i]->SetSize({ 1024,704 });
 	}
 
@@ -67,36 +68,36 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-	if (debugPlayer_->IsGameOver()) {
+	if (debugPlayer_->IsGameOver()&&!clear_) {
 		isFadeOut_ = true;
 		over_ = true;
 	}
 
-	if (debugEnemy_->GetHpLength() == 0) {
+	if (debugEnemy_->GetHpLength() == 0&&!over_) {
 		isFadeOut_ = true;
 		clear_ = true;
 	}
 
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
-	if (particleFlag_) {
-		particle_->Update();
-	}
-
+	
 
 	if (shakeFlag_) {
-		particle_->Update();
-		shake_.x = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
-		shake_.y = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
-		backGroundPos_.x += shake_.x;
-		backGroundPos_.y += shake_.y;
-		shakeFlag_ = false;
+		if (!over_) {
+			particle_->Update();
+			shake_.x = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
+			shake_.y = RandomGenerator::GetRandomFloat(-5.0f, 5.0f);
+			backGroundPos_.x += shake_.x;
+			backGroundPos_.y += shake_.y;
+			shakeFlag_ = false;
+		}
+		
 	}
 	else {
 		shake_ = { 0.0f,0.0f };
 		backGroundPos_ = { 0.0f,0.0f };
 
-		if (debugPlayer_->GetHitBlock()&& !over_) {
+		if (debugPlayer_->GetHitBlock()) {
 			shakeFlag_ = true;
 		}
 	}
@@ -264,6 +265,7 @@ void GameScene::Update() {
 
 void GameScene::Draw() {
 
+	backGroundSprite_[5]->Draw();
 	for (int i = 0; i < 5; ++i) {
 		backGroundSprite_[i]->Draw();
 	}

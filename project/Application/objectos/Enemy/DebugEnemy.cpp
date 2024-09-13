@@ -103,7 +103,7 @@ void DebugEnemy::Update() {
 	transformCore_.translate = (transformBase_.translate + Vector3{ coreSub_.x,coreSub_.y,0.0f });
 
 	Damage();
-
+	--behaviorStopTime;
 	ImGui::Begin("Enemy");
 	ImGui::Text("posX%f", transformBase_.translate.x);
 	ImGui::Text("posY%f", transformBase_.translate.y);
@@ -115,7 +115,7 @@ void DebugEnemy::Update() {
 	ImGui::DragFloat2("CoreSub", &coreSub_.x, 0.1f);
 	ImGui::DragFloat3("CoreScale", &transformCore_.scale.x, 0.1f);
 
-	ImGui::Text("Hp%f", GetHpLength(), 0.1f);
+	ImGui::Text("stopTime%d", behaviorStopTime);
 	ImGui::End();
 }
 
@@ -135,80 +135,102 @@ void DebugEnemy::MoveInitialize() {
 	jump_ = false;
 };
 void DebugEnemy::MoveUpdata() {
-	float sub = debugPlayer_->GetWorldPosition().x - transformBase_.translate.x;
-	if (sub < 0) {
-		sub *= -1;
-	}
+	
+	if (behaviorStopTime >= 0) {
+		float sub = debugPlayer_->GetWorldPosition().x - transformBase_.translate.x + 80;
+		if (sub < 0) {
+			sub *= -1;
+		}
 
-	//playerの位置が敵から±2の位置にいるかどうか
-	if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x + 80, 80.0f)) {
-
-
-		//playerと敵の距離が5離れたいたらジャンプして移動
-		if (debugPlayer_->GetWorldPosition().x - 60 < transformBase_.translate.x) {
-			for (int i = 0; i < 16; ++i) {
-				if (Math::IsBoxCollision(transformBase_.translate.x - 52, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
-					transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y)) {
-					velocity_.x = 0.0f;
-					break;
-				}
-				else {
-					velocity_.x = -10.0f;
-				}
+		if (sub >= 600) {
+			jumpAttack_ = true;
+			if (debugPlayer_->GetWorldPosition().x < transformBase_.translate.x + 80) {
+				velocity_.x = -12.0f;
 			}
-
-
-		}
-		else {
-			for (int i = 0; i < 16; ++i) {
-				if (Math::IsBoxCollision(transformBase_.translate.x - 32, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
-					transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y)) {
-					velocity_.x = 0.0f;
-					break;
-				}
-				else {
-					velocity_.x = 10.0f;
-				}
+			else {
+				velocity_.x = 12.0f;
 			}
-
-		}
-
-		if (velocity_.x != 0) {
-			--behaviorJumpTime;
-		}
-		if (behaviorJumpTime <= 0) {
 			behaviorRequest_ = Behavior::kJump;
 		}
+		else {
+			//playerの位置が敵から±2の位置にいるかどうか
+			if (!Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x + 80, 80.0f)) {
 
 
-	}
-	else {
-		//プレイヤーの上にいる時,速度はゼロ
-		velocity_.x = 0.0f;
-		//クールタイムが終わったら攻撃
-		
-		if (--behaviorAttackTime <= 0) {
-			behaviorRequest_ = Behavior::kAttack;
+				//playerと敵の距離が5離れたいたらジャンプして移動
+				if (debugPlayer_->GetWorldPosition().x - 60 < transformBase_.translate.x) {
+					for (int i = 0; i < 16; ++i) {
+						if (Math::IsBoxCollision(transformBase_.translate.x - 52, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
+							transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y)) {
+							velocity_.x = 0.0f;
+							break;
+						}
+						else {
+							velocity_.x = -10.0f;
+						}
+					}
+
+
+				}
+				else {
+					for (int i = 0; i < 16; ++i) {
+						if (Math::IsBoxCollision(transformBase_.translate.x - 32, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
+							transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y)) {
+							velocity_.x = 0.0f;
+							break;
+						}
+						else {
+							velocity_.x = 10.0f;
+						}
+					}
+
+				}
+
+				if (velocity_.x != 0) {
+					--behaviorJumpTime;
+				}
+				if (behaviorJumpTime <= 0) {
+					behaviorRequest_ = Behavior::kJump;
+				}
+
+
+			}
+			else {
+				//プレイヤーの上にいる時,速度はゼロ
+				velocity_.x = 0.0f;
+				//クールタイムが終わったら攻撃
+
+				if (--behaviorAttackTime <= 0) {
+					behaviorRequest_ = Behavior::kAttack;
+				}
+
+			}
 		}
 
+
+
+		for (int i = 0; i < 16; ++i) {
+			ResolveBoxCollision(transformBase_.translate.x - 42, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
+				transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y);
+		}
+
+
+
+		transformBase_.translate += velocity_;
+
+		if (transformUI_[1].scale.x <= 0) {
+			behaviorRequest_ = Behavior::kDead;
+		}
+	}
+	else {
+		if (behaviorStopTime < -60) {
+			behaviorStopTime = 300;
+		}
 	}
 
-	for (int i = 0; i < 16; ++i) {
-		ResolveBoxCollision(transformBase_.translate.x - 42, transformBase_.translate.y - 10, transformBase_.scale.x * 0.8f, transformBase_.scale.y,
-			transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y);
-	}
+	
 
-
-
-	transformBase_.translate += velocity_;
-
-	if (transformUI_[1].scale.x <= 0) {
-		behaviorRequest_ = Behavior::kDead;
-	}
-
-	//if (--behaviorAttackTime <= 0) {
-	//	behaviorRequest_ = Behavior::kAttack;
-	//}
+	
 
 };
 
@@ -216,8 +238,15 @@ void DebugEnemy::MoveUpdata() {
 void DebugEnemy::JumpInitialize() {
 	transformBase_.translate.y = 123.0f;
 	// ジャンプ初速
-	const float kJumpFirstSpeed = -10.0f;
-	velocity_.y = kJumpFirstSpeed;
+	if (!jumpAttack_) {
+		const float kJumpFirstSpeed = -10.0f;
+		velocity_.y = kJumpFirstSpeed;
+	}
+	else {
+		const float kJumpFirstSpeed = -13.0f;
+		velocity_.y = kJumpFirstSpeed;
+	}
+	
 	jump_ = true;
 	behaviorJumpTime = 10;
 };
@@ -246,16 +275,30 @@ void DebugEnemy::JumpUpdata() {
 
 	//ジャンプ中にプレイヤーが真下に来たら攻撃
 	if (Math::isWithinRange(debugPlayer_->GetWorldPosition().x, transformBase_.translate.x + 80, 80.0f)) {
-		if (velocity_.y >= 0) {
+		if (!jumpAttack_) {
+			if (velocity_.y >= 0) {
+				//プレイヤーの上にいる時,速度はゼロ
+				velocity_.x = 0.0f;
+				//クールタイムが終わったら攻撃
+				behaviorRequest_ = Behavior::kAttack;
+			}
+		}
+		else {
 			//プレイヤーの上にいる時,速度はゼロ
 			velocity_.x = 0.0f;
 			//クールタイムが終わったら攻撃
 			behaviorRequest_ = Behavior::kAttack;
 		}
 		
+		
 	}
 
-
+	if (jumpAttack_) {
+		if (velocity_.y >= 10) {
+			//クールタイムが終わったら攻撃
+			behaviorRequest_ = Behavior::kAttack;
+		}
+	}
 
 	if (transformBase_.translate.y >= 123.0f) {
 		velocity_.y = 0.0f;
@@ -289,9 +332,16 @@ void DebugEnemy::AttackInitialize() {
 		const float kJumpFirstSpeed = -5.0f;
 		velocity_.y = kJumpFirstSpeed;
 	}
+	
 
+	if (!jumpAttack_) {
+		behaviorMoveTime = 40;
+	}
+	else {
+		behaviorMoveTime = 60;
+	}
 	behaviorAttackTime = 15;
-	behaviorMoveTime = 20;
+	
 
 }
 void DebugEnemy::AttackUpdata() {
@@ -339,11 +389,18 @@ void DebugEnemy::AttackUpdata() {
 		velocity_.y = 0.0f;
 		transformBase_.translate.y = 123.0f;
 
+		if (behaviorMoveTime < 40) {
+			attack_ = false;
+		}
+
 		// 攻撃終了
 		if (--behaviorMoveTime <= 0) {
 
+			
+
 			behaviorRequest_ = Behavior::kRoot;
-			attack_ = false;
+			jumpAttack_ = false;
+			
 		}
 
 	}

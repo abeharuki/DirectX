@@ -140,6 +140,7 @@ private: // メンバ変数
 
 	bool attack_;
 	bool jump_;
+	bool jumpAttack_;
 	bool hitBody_;
 	bool preHitBody_;
 	bool hitCore_;
@@ -151,7 +152,7 @@ private: // メンバ変数
 	uint32_t behaviorAttackTime = 30;
 	//移動可能になるまでの時間
 	uint32_t behaviorMoveTime = 20;
-
+	int behaviorStopTime = 30;
 	// 速度
 	Vector3 velocity_ = {};
 	

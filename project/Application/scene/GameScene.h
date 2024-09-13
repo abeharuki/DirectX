@@ -43,7 +43,7 @@ private:
 	std::unique_ptr<Stage> stage_;
 	std::unique_ptr<DebugPlayer> debugPlayer_;
 	std::unique_ptr<DebugEnemy> debugEnemy_;
-	std::unique_ptr<Sprite> backGroundSprite_[5];
+	std::unique_ptr<Sprite> backGroundSprite_[6];
 	std::unique_ptr<Sprite> spriteBack_;
 	Vector2 backGroundPos_ = { 0.0f,0.0f };
 	Vector2 shake_;
