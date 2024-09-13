@@ -35,7 +35,10 @@ void DebugEnemy::Update() {
 	preHitBody_ = hitBody_;
 	hitBody_ = false;
 	preHitCore_ = hitCore_;
-	hitCore_ = false;
+	if (!shake_) {
+		hitCore_ = false;
+	}
+	
 
 	if (behaviorRequest_) {
 		// 振る舞い変更
@@ -100,11 +103,13 @@ void DebugEnemy::Update() {
 	for (int i = 0; i < 3; ++i) {
 		enemyUI_[i]->SetTransform(transformUI_[i]);
 	}
+	
+	
 	enemySprite_->SetTransform(transformBase_);
 	Vector3 playerPos = debugPlayer_->GetWorldPosition();
 	transformCore_.translate = (transformBase_.translate + Vector3{ coreSub_.x,coreSub_.y,0.0f });
 
-	Damage();
+	
 	--behaviorStopTime;
 	ImGui::Begin("Enemy");
 	ImGui::Text("posX%f", transformBase_.translate.x);

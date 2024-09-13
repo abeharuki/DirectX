@@ -62,6 +62,7 @@ public: // メンバ関数
 	void SetDebugPlayer(DebugPlayer *debugPlayer) { debugPlayer_ = debugPlayer; }
 	void SetHitBody(bool hit) { hitBody_ = hit; }
 	void SetHitCore(bool hit) { hitCore_ = hit; }
+	void SetShake(bool flag) { shake_ = flag; }
 	void SetBarr(Vector2 pos, Vector2 scale, uint32_t i) { transformBarr_[i].translate = Vector3{ pos.x,pos.y,0.0f };  transformBarr_[i].scale = Vector3{ scale.x,scale.y,0.0f }; }
 	bool GetAttack() { return attack_; }
 	Vector2 GetPos() { return Vector2{ transformBase_.translate.x,transformBase_.translate.y }; }
@@ -124,6 +125,7 @@ private: // メンバ変数
 
 	DebugPlayer *debugPlayer_;
 
+
 	// 振る舞い
 	enum class Behavior {
 		kRoot, // 通常状態
@@ -145,6 +147,7 @@ private: // メンバ変数
 	bool preHitBody_;
 	bool hitCore_;
 	bool preHitCore_;
+	bool shake_;
 
 	// ジャンプの時間
 	uint32_t behaviorJumpTime = 30;
