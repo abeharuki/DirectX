@@ -25,6 +25,8 @@ void DebugEnemy::Initialize() {
 	enemyUI_[2].reset(Sprite::Create("resources/Enemy/boss_HpIcon.png"));
 
 
+	damageSound_ = AudioHelper{ "resources/audio/boss_crash.wav" };
+
 	hitBody_ = false;
 	hitCore_ = false;
 }
@@ -56,7 +58,7 @@ void DebugEnemy::Update() {
 		case Behavior::kDead:
 			DeadInitilize();
 			break;
-		
+
 		}
 
 		// 振る舞いリセット
@@ -119,7 +121,7 @@ void DebugEnemy::Update() {
 	ImGui::End();
 }
 
-void DebugEnemy::Draw(const ViewProjection& camera) {
+void DebugEnemy::Draw(const ViewProjection &camera) {
 	enemySprite_->Draw();
 	for (int i = 0; i < 3; ++i) {
 		enemyUI_[i]->Draw();
@@ -135,7 +137,7 @@ void DebugEnemy::MoveInitialize() {
 	jump_ = false;
 };
 void DebugEnemy::MoveUpdata() {
-	
+
 	if (behaviorStopTime >= 0) {
 		float sub = debugPlayer_->GetWorldPosition().x - transformBase_.translate.x + 80;
 		if (sub < 0) {
@@ -228,9 +230,9 @@ void DebugEnemy::MoveUpdata() {
 		}
 	}
 
-	
 
-	
+
+
 
 };
 
@@ -246,7 +248,7 @@ void DebugEnemy::JumpInitialize() {
 		const float kJumpFirstSpeed = -13.0f;
 		velocity_.y = kJumpFirstSpeed;
 	}
-	
+
 	jump_ = true;
 	behaviorJumpTime = 10;
 };
@@ -289,8 +291,8 @@ void DebugEnemy::JumpUpdata() {
 			//クールタイムが終わったら攻撃
 			behaviorRequest_ = Behavior::kAttack;
 		}
-		
-		
+
+
 	}
 
 	if (jumpAttack_) {
@@ -320,7 +322,7 @@ void DebugEnemy::DashUpdata() {
 
 // 攻撃
 void DebugEnemy::AttackInitialize() {
-	
+
 	velocity_ = { 0.0f,0.0f,0.0f };
 	// ジャンプ初速
 	if (!jump_) {
@@ -332,7 +334,7 @@ void DebugEnemy::AttackInitialize() {
 		const float kJumpFirstSpeed = -5.0f;
 		velocity_.y = kJumpFirstSpeed;
 	}
-	
+
 
 	if (!jumpAttack_) {
 		behaviorMoveTime = 40;
@@ -341,7 +343,7 @@ void DebugEnemy::AttackInitialize() {
 		behaviorMoveTime = 60;
 	}
 	behaviorAttackTime = 15;
-	
+
 
 }
 void DebugEnemy::AttackUpdata() {
@@ -396,11 +398,11 @@ void DebugEnemy::AttackUpdata() {
 		// 攻撃終了
 		if (--behaviorMoveTime <= 0) {
 
-			
+
 
 			behaviorRequest_ = Behavior::kRoot;
 			jumpAttack_ = false;
-			
+
 		}
 
 	}
@@ -420,10 +422,11 @@ void DebugEnemy::Damage() {
 	for (int i = 0; i < 16; ++i) {
 		if (Math::IsBoxCollision(transformCore_.translate.x, transformCore_.translate.y, transformCore_.scale.x, transformCore_.scale.y,
 			transformBarr_[i].translate.x, transformBarr_[i].translate.y, transformBarr_[i].scale.x, transformBarr_[i].scale.y)) {
-			
+
 			hitCore_ = true;
 
 			if (hitCore_ != preHitCore_) {
+				damageSound_.Play(false, 0.75f);
 				if (transformUI_[1].scale.x > 0) {
 					transformUI_[1].scale.x -= 50;
 				}

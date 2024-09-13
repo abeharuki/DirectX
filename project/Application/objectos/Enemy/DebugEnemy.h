@@ -13,7 +13,7 @@
 #include <Sphere.h>
 #include "Player/DebugPlayer.h"
 
-class DebugEnemy{
+class DebugEnemy {
 public: // メンバ関数
 
 	/// <summary>
@@ -32,7 +32,7 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
-	void Draw(const ViewProjection& camera);
+	void Draw(const ViewProjection &camera);
 
 	// 移動
 	void MoveInitialize();
@@ -58,21 +58,21 @@ public: // メンバ関数
 	void Damage();
 
 	/*ゲッターとセッター*/
-	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
-	void SetDebugPlayer(DebugPlayer* debugPlayer) { debugPlayer_ = debugPlayer; }
+	void SetViewProjection(const ViewProjection *viewProjection) { viewProjection_ = viewProjection; }
+	void SetDebugPlayer(DebugPlayer *debugPlayer) { debugPlayer_ = debugPlayer; }
 	void SetHitBody(bool hit) { hitBody_ = hit; }
 	void SetHitCore(bool hit) { hitCore_ = hit; }
-	void SetBarr(Vector2 pos, Vector2 scale,uint32_t i) { transformBarr_[i].translate = Vector3{pos.x,pos.y,0.0f};  transformBarr_[i].scale = Vector3{scale.x,scale.y,0.0f}; }
+	void SetBarr(Vector2 pos, Vector2 scale, uint32_t i) { transformBarr_[i].translate = Vector3{ pos.x,pos.y,0.0f };  transformBarr_[i].scale = Vector3{ scale.x,scale.y,0.0f }; }
 	bool GetAttack() { return attack_; }
 	Vector2 GetPos() { return Vector2{ transformBase_.translate.x,transformBase_.translate.y }; }
-	Vector2 GetScale() {return Vector2{ transformBase_.scale.x,transformBase_.scale.y };}
+	Vector2 GetScale() { return Vector2{ transformBase_.scale.x,transformBase_.scale.y }; }
 	Vector2 GetCorePos() { return Vector2{ transformCore_.translate.x,transformCore_.translate.y }; }
 	Vector2 GetCoreScale() { return Vector2{ transformCore_.scale.x,transformCore_.scale.y }; }
 	float GetHpLength() const { return (transformUI_[1].scale.x / 494.0f); }
 
 	//押し出し関数
 	void ResolveBoxCollision(float AposX, float AposY, const float AsizeW, const float AsizeH,
-		float& BposX, float& BposY, const float BsizeW, const float BsizeH)
+		float &BposX, float &BposY, const float BsizeW, const float BsizeH)
 	{
 		// 衝突判定を行う
 		if (Math::IsBoxCollision(AposX, AposY, AsizeW, AsizeH, BposX, BposY, BsizeW, BsizeH)) {
@@ -102,13 +102,13 @@ public: // メンバ関数
 						}
 					}
 				}
-				
-				
+
+
 			}
 
-			
+
 		}
-		
+
 	}
 
 
@@ -116,13 +116,13 @@ private: // メンバ変数
 	Transform transformBase_;
 	Transform transformCore_;
 	std::array<Transform, 3> transformUI_;
-	std::array<Transform,16> transformBarr_;
+	std::array<Transform, 16> transformBarr_;
 	Vector2 coreSub_;
-	const ViewProjection* viewProjection_;
+	const ViewProjection *viewProjection_;
 	std::unique_ptr<Sprite> enemySprite_;
 	std::unique_ptr<Sprite> enemyUI_[3];
 
-	DebugPlayer* debugPlayer_;
+	DebugPlayer *debugPlayer_;
 
 	// 振る舞い
 	enum class Behavior {
@@ -155,5 +155,6 @@ private: // メンバ変数
 	int behaviorStopTime = 30;
 	// 速度
 	Vector3 velocity_ = {};
-	
+
+	AudioHelper damageSound_;
 };
