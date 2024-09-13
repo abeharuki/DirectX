@@ -18,8 +18,9 @@ void GameScene::Initialize() {
 	{
 		keyViewer_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Stage/text2.png"));
 		keyViewer_->SetAnchorPoint({ 0.f,0.f });
-		keyViewer_->SetPosition({ 100.f, 420.f });
+		keyViewer_->SetPosition({ 64.f, 420.f });
 		keyViewer_->SetSize({ 305.f, 81.f });
+		keyViewer_->SetColor({ 1.f,1.f,1.f, 0.75f });
 		keyViewer_->UpdateVertexBuffer();
 	}
 
@@ -120,8 +121,8 @@ void GameScene::Update() {
 		backGroundSprite_[i]->SetPosition(backGroundPos_);
 	}
 
-	
-	
+
+
 	stage_->SetShake(shake_);
 	stage_->SetDebugEnemy(debugEnemy_.get());
 	stage_->Update();
@@ -292,15 +293,15 @@ void GameScene::Draw() {
 
 	stage_->Draw(viewProjection_, true);
 
+	keyViewer_->Draw();
+
 	debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
-
 
 	particle_->Draw(viewProjection_);
 
 	spriteBack_->Draw();
 
-	keyViewer_->Draw();
 }
 
 void GameScene::RenderDirect() {
@@ -347,7 +348,7 @@ Vector3 GameScene::GetLocalPosition()
 
 void GameScene::CheckAllCollision() {
 	debugEnemy_->Damage();
-	
+
 	for (int i = 0; i < Stage::kSize_; ++i) {
 		//押し出し処理のためにBarr情報の受け取り
 		debugEnemy_->SetBarr(Vector2{ stage_->GetPlayerAttackPos(i).x,stage_->GetPlayerAttackPos(i).y }, Vector2{ stage_->GetPlayerAttackScale(i).x, stage_->GetPlayerAttackScale(i).y }, i);
