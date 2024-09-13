@@ -12,6 +12,7 @@
 #include "PostEffects/PostEffect.h"
 #include <Sphere.h>
 #include <GlobalVariables.h>
+#include <Audio/Audio.h>
 
 class Stage;
 // プレイヤの前方宣言
@@ -327,5 +328,9 @@ private: // メンバ変数
 
 	// プレイヤの体力の描画
 	std::unique_ptr<PlayerHealthDrawer> healthDrawer_;
+
+	AudioHelper headButtSound_;
+
+	AudioHelper jumpSound_;
 
 };

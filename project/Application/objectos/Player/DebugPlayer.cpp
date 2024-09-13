@@ -8,6 +8,9 @@ void DebugPlayer::Initialize() {
 	playerStatus_.Load();
 	playerStatus_.Save();
 
+	headButtSound_ = AudioHelper{"resources/audio/headtButt.mp3"};
+	jumpSound_ = AudioHelper{"resources/audio/jump.mp3"};
+
 	// 初期化
 	transform_.scale = { 0.5f,0.5f,0.5f };
 	transform_.translate.x = 2.0f;
@@ -241,6 +244,7 @@ void DebugPlayer::JumpInitialize() {
 	velocity_.y = kJumpFirstSpeed;
 
 	animFlame_ = 0;
+	jumpSound_.Play(false, 0.75f);
 
 };
 void DebugPlayer::JumpUpdate() {
@@ -289,6 +293,7 @@ void DebugPlayer::AirJumpInitialize()
 	velocity_.x = 0.f;
 
 	animFlame_ = 0;
+	jumpSound_.Play(false, 0.75f);
 
 }
 
@@ -324,6 +329,7 @@ void DebugPlayer::HeadButtInitialize()
 {
 	transform_.translate.y = playerStatus_.stageHeight_.second;
 	velocity_.y = 0.f;
+	headButtSound_.Play(false, 0.75f);
 
 	// ステージ上においての座標を返す
 	const int32_t targetPos = static_cast<int32_t>(GetOnStagePosX());
