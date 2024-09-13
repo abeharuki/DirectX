@@ -68,22 +68,19 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-	if (debugPlayer_->IsGameOver()) {
+	if (debugPlayer_->IsGameOver()&&!clear_) {
 		isFadeOut_ = true;
 		over_ = true;
 	}
 
-	if (debugEnemy_->GetHpLength() == 0) {
+	if (debugEnemy_->GetHpLength() == 0&&!over_) {
 		isFadeOut_ = true;
 		clear_ = true;
 	}
 
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
-	if (particleFlag_) {
-		particle_->Update();
-	}
-
+	
 
 	if (shakeFlag_) {
 		if (!over_) {
