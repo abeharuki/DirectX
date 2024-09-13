@@ -1,9 +1,14 @@
 #include "TitleScene.h"
 #include "Framework/SceneManager.h"
+#include <Player/DebugPlayer.h>
+#include <numbers>
 
 
 
 void TitleScene::Initialize() {
+
+	Load();
+	Save();
 
 	sceneManager_ = SceneManager::GetInstance();
 
@@ -26,18 +31,33 @@ void TitleScene::Initialize() {
 		titleText_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Title/title.png"));
 
 		titleText_->SetAnchorPoint({ 0.5f,0.5f });
-		titleText_->SetSize(Vector2{ 768.f,384.f });
-		titleText_->SetPosition(Vector2{ 1024.f, 704.f} *0.5f);
+		titleText_->SetSize(Vector2{ 768.f,384.f }*vCenerOffset_.second.z);
+		titleText_->SetPosition(Vector2{ 1024.f, 704.f } *0.5f + vCenerOffset_.second.GetVec2());
+	}
+	{
+		background_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Stage/background_0.png"));
+
+		background_->SetAnchorPoint({ 0.5f,0.5f });
+		background_->SetSize(Vector2{ 1024.f, 704.f });
+		background_->SetPosition(Vector2{ 1024.f, 704.f }*0.5f);
+	}
+	{
+		startText_ = std::unique_ptr<Sprite>(Sprite::Create("resources/Title/text1.png"));
+
+		startText_->SetAnchorPoint({ 0.5f,0.5f });
+		startText_->SetPosition(Vector2{ 1024.f, 704.f } *0.5f + vButtonOffset_.second.GetVec2());
+		startText_->SetSize(Vector2{ 268.f, 37.f }*(vButtonOffset_.second.z));
 	}
 
-
-	PostEffect::GetInstance()->isGrayscale(false);
-	PostEffect::GetInstance()->isOutLine(true);
-	//PostEffect::GetInstance()->isBloom(true);
+	auto *postEffect = PostEffect::GetInstance();
+	postEffect->isGrayscale(false);
+	postEffect->isOutLine(true);
+	animFlame_ = 0;
 
 }
 
 void TitleScene::Update() {
+	Load();
 	const auto *const input = Input::GetInstance();
 	// フェード用のスプライト
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
@@ -66,7 +86,33 @@ void TitleScene::Update() {
 
 #endif // _DEBUG
 
+	// タイトルのアニメーション
+	{
+		const float t = std::sin(static_cast<float>((animFlame_ % vMoveTime_.second)) / vMoveTime_.second * std::numbers::pi_v<float> *2);
+
+		titleText_->SetPosition(Vector2{ 1024.f, 704.f } *0.5f + vCenerOffset_.second.GetVec2() + vMoveSize_.second.GetVec2() * t);
+		titleText_->SetSize(Vector2{ 768.f,384.f }*(vCenerOffset_.second.z + vMoveSize_.second.z * t));
+
+		animFlame_++;
+	}
+
+#ifdef _DEBUG
+	
+	// UIのアニメーション
+	{
+
+		startText_->SetPosition(Vector2{ 1024.f, 704.f } *0.5f + vButtonOffset_.second.GetVec2());
+		startText_->SetSize(Vector2{ 268.f, 37.f }*(vButtonOffset_.second.z));
+
+		animFlame_++;
+	}
+
+#endif // _DEBUG
+
+
 	titleText_->UpdateVertexBuffer();
+	background_->UpdateVertexBuffer();
+	startText_->UpdateVertexBuffer();
 
 	PostEffect::GetInstance()->ValueOutLine(a_);
 
@@ -84,6 +130,8 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 
+	background_->Draw();
+	startText_->Draw();
 	titleText_->Draw();
 }
 
@@ -105,6 +153,24 @@ void TitleScene::StartTransition()
 
 		pressStart_.Play(false, 1.f);
 	}
+}
+
+void TitleScene::Save() const
+{
+	JsonLoadHelper helper{ "Title" };
+	helper << vCenerOffset_;
+	helper << vMoveSize_;
+	helper << vMoveTime_;
+	helper << vButtonOffset_;
+}
+
+void TitleScene::Load()
+{
+	const JsonLoadHelper helper{ "Title" };
+	helper >> vCenerOffset_;
+	helper >> vMoveSize_;
+	helper >> vMoveTime_;
+	helper >> vButtonOffset_;
 }
 
 void TitleScene::Fade() {

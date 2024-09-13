@@ -33,6 +33,9 @@ private:
 
 	void StartTransition();
 
+	void Save() const;
+	void Load();
+
 private: // 基本変数
 	// 光の数値
 	DirectionLight directionLight_{
@@ -53,6 +56,18 @@ private:
 	std::unique_ptr<Sprite> spriteBack_;
 
 	std::unique_ptr<Sprite> titleText_;
+	std::unique_ptr<Sprite> background_;
+
+	std::unique_ptr<Sprite> startText_;
+
+	std::pair<const char *const, Vector3> vCenerOffset_ = { "CenerOffset", {0.f,0.f,0.75f} };
+	std::pair<const char *const, Vector3> vMoveSize_ = { "MoveSize", {0.f,0.f,0.f} };
+	std::pair<const char *const, int32_t> vMoveTime_ = { "MoveTime", 30 };
+	std::pair<const char *const, Vector3> vButtonOffset_ = { "ButtonOffset", {0.f,-96.f, 0.75f} };
+
+private:
+
+	uint32_t animFlame_ = 0;
 
 
 	Vector2 pos_;
