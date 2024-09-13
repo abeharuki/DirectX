@@ -92,6 +92,9 @@ void TitleScene::Update() {
 		titleText_->SetSize(Vector2{ 768.f,384.f }*(vCenerOffset_.second.z + vMoveSize_.second.z * t));
 
 		animFlame_++;
+
+		startText_->SetColor({ 1.f,1.f,1.f, std::clamp(std::sin(static_cast<float>((animFlame_ % vMoveTime_.second)) / vMoveTime_.second * std::numbers::pi_v<float> *(isFadeOut_ ? 16 : 4)) + 0.5f,0.f,1.f) });
+
 	}
 
 #ifdef _DEBUG
