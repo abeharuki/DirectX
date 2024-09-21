@@ -102,15 +102,29 @@ public:
 	void SoundPlayWave(uint32_t audioHandle, bool roopFlag, float volume);
 	void SoundPlayMP3(uint32_t audioHandle, bool roopFlag, float volume);
 
-
-	/// 音声停止
-	void StopAudio(uint32_t audioHandle);
-
 private:
 	Audio() = default;
 	~Audio() = default;
 	Audio(const Audio&) = delete;
 	const Audio& operator=(const Audio&) = delete;
+
+
+	std::wstring ConvertString(const std::string& str)
+	{
+		if (str.empty())
+		{
+			return std::wstring();
+		}
+
+		auto sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<const char*>(&str[0]), static_cast<int>(str.size()), NULL, 0);
+		if (sizeNeeded == 0)
+		{
+			return std::wstring();
+		}
+		std::wstring result(sizeNeeded, 0);
+		MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<const char*>(&str[0]), static_cast<int>(str.size()), &result[0], sizeNeeded);
+		return result;
+	}
 
 private:
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_ = nullptr;
@@ -121,4 +135,23 @@ private:
 	//IXAudio2SourceVoice* sourceVoice_ = nullptr;
 	uint32_t audioHandle_ = -1;
 	uint32_t voiceHandle_ = -1;
+};
+struct AudioHelper {
+	AudioHelper() = default;
+	AudioHelper(const AudioHelper&) = default;
+	AudioHelper(const std::string& filePath) {
+		Audio* const audio = Audio::GetInstance();
+		isWav_ = filePath.ends_with(".wav");
+
+		// ハンドルにデータを格納する
+		handle_ = not isWav_ ? audio->SoundLoadMP3(filePath) : audio->SoundLoadWave(filePath.c_str());
+	}
+
+	void Play(bool roopFlag, float volume) const;
+	void Stop() const;
+
+private:
+
+	uint32_t handle_ = (std::numeric_limits<uint32_t>::max)();
+	bool isWav_;
 };

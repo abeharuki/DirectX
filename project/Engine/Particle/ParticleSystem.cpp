@@ -53,10 +53,11 @@ void ParticleSystem::Initialize(const std::string& filename) {
 void ParticleSystem::Update() {
 	
 	perFrame_->time = Engine::gameTime;
-	emitterSphere_->frequencyTime += kDeltaTime;//タイムの加算
+	emitterSphere_->frequencyTime -= kDeltaTime;//タイムの加算
+
 	//射出間隔を上回ったら射出許可を出して時間を調整
-	if (emitterSphere_->frequency <= emitterSphere_->frequencyTime) {
-		emitterSphere_->frequencyTime -= emitterSphere_->frequency;
+	if (emitterSphere_->frequencyTime <= 0.0f) {
+		emitterSphere_->frequencyTime = emitterSphere_->frequency;
 		emitterSphere_->emit = 1;
 	}
 	else {
@@ -67,12 +68,6 @@ void ParticleSystem::Update() {
 		emitterSphere_->velocityRange.min -= accelerationField_.acceleration;
 		emitterSphere_->velocityRange.max += accelerationField_.acceleration;
 	}
-	/*
-	ImGui::Begin("GameTime");
-	ImGui::Text("perFrame%f", perFrame_->time);
-	ImGui::Text("gameTime%f", Engine::gameTime);
-	ImGui::End();
-	*/
 }
 
 void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection) {
