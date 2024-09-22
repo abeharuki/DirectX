@@ -51,7 +51,6 @@ void ParticleSystem::Initialize(const std::string& filename) {
 
 
 void ParticleSystem::Update() {
-	
 	perFrame_->time = Engine::gameTime;
 	emitterSphere_->frequencyTime -= kDeltaTime;//タイムの加算
 
@@ -68,6 +67,9 @@ void ParticleSystem::Update() {
 		emitterSphere_->velocityRange.min -= accelerationField_.acceleration;
 		emitterSphere_->velocityRange.max += accelerationField_.acceleration;
 	}
+
+
+
 }
 
 void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection) {
@@ -85,7 +87,6 @@ void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection)
 
 void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
-
 	//CSでの初期化と更新
 	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	if (!initializeCS_) {
@@ -94,13 +95,13 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 	}
 	UpdateCS();
 	Engine::GetInstance()->TransitionResource(*particleResource_, D3D12_RESOURCE_STATE_GENERIC_READ);
-	
+
 #ifdef _DEBUG
 	linebox_->Update({ emitterSphere_->translateRange.min, emitterSphere_->translateRange.max });
 	worldTransform_.translate = emitterSphere_->translate;
 	worldTransform_.UpdateMatrix();
 #endif // DEBUG
-	
+
 
 	UpdatePerViewResource(viewProjection);
 
@@ -133,8 +134,8 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 	linebox_->Draw(worldTransform_, viewProjection, false);
 
 #endif // DEBUG
-	
-	
+
+
 
 }
 
@@ -271,10 +272,10 @@ void ParticleSystem::sPipeline() {
 };
 
 void ParticleSystem::DebugParameter() {
-	emitter_.count = particleCount_;
-	SetEmitter(emitter_);
+	//emitter_.count = particleCount_;
+//	SetEmitter(emitter_);
 	ImGui::Begin("DebugParticle");
-	ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
+	/*ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
 	ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);
 	ImGui::DragFloat3("Pos", &emitter_.translate.x, 0.1f);
 	ImGui::DragFloat3("ScaleRangeMin", &emitter_.scaleRange.min.x, 0.1f);
@@ -286,6 +287,10 @@ void ParticleSystem::DebugParameter() {
 	ImGui::SliderFloat("lifeTimeMin", &emitter_.lifeTimeRange.min, 0.0f, 1.0f);
 	ImGui::SliderFloat("lifeTimeMax", &emitter_.lifeTimeRange.max, 0.0f, 1.0f);
 	ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
-	ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
+	ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);*/
+
+	ImGui::Text("FrequeyTime%f", emitterSphere_->frequencyTime);
+	ImGui::Text("perFrame%f", perFrame_->time);
+	ImGui::Text("gameTime%f", Engine::gameTime);
 	ImGui::End();
 }

@@ -38,9 +38,9 @@ void HealerManager::Initialize() {
 
 	emitter_ = {
 		.translate{0,0,0},
-		.count{1},
-		.frequency{0.5f},
-		.frequencyTime{0.5f},
+		.count{10},
+		.frequency{0.02f},
+		.frequencyTime{0.0f},
 		.scaleRange{.min{1,1,1},.max{1,1,1}},
 		.translateRange{.min{0,0,0},.max{0,0,0}},
 		.colorRange{.min{1,1,1},.max{1,1,1}},
@@ -61,16 +61,14 @@ void HealerManager::Update() {
 	preHitE_ = isHitE_;
 	isHitE_ = false;
 	particle_->SetEmitter(emitter_);
-	particle_->Update();
+	
 	if (isParticle_) {
-		particle_->SetFrequencyTime(0.5f);
-		if (particle_->GetEmit()) {
+		particle_->Update();
+		if (!particle_->GetEmit()) {
 			isParticle_ = false;
 		}
 	}
-	else {
-		particle_->StopParticle();
-	}
+	
 	
 
 	healer_->Update();

@@ -180,14 +180,14 @@ void GameScene::Draw() {
 	
 	//プレイヤー
 	if (!playerManager_->GetPlayer()->IsDash()) {
-		playerManager_->Draw(viewProjection_);
+		//playerManager_->Draw(viewProjection_);
 	}
 	//敵
 	enemyManager_->Draw(viewProjection_);
 	// タンク
-	tankManager_->Draw(viewProjection_);
+	//tankManager_->Draw(viewProjection_);
 	// ヒーラー
-	healerManager_->Draw(viewProjection_);
+	//healerManager_->Draw(viewProjection_);
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
 	//コマンド

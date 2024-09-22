@@ -179,7 +179,7 @@ void DebugScene::Update() {
 	PostEffect::GetInstance()->SetHsv(hsv_);
 	CheckAllCollision();
 
-
+	particle_->DebugParameter();
 	ImGui::Begin("Setting");
 
 	if (ImGui::TreeNode("Particle")) {
@@ -197,6 +197,7 @@ void DebugScene::Update() {
 		ImGui::SliderFloat("lifeTimeMax", &emitter_.lifeTimeRange.max, 0.0f, 1.0f);
 		ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
 		ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
+	
 		ImGui::TreePop();
 	}
 
@@ -330,7 +331,7 @@ void DebugScene::Update() {
 void DebugScene::Draw() {
 	
 	
-	/*animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	colliderManager_[0]->Draw(viewProjection_);
 	colliderManager_[1]->Draw(viewProjection_);
 	
@@ -338,12 +339,12 @@ void DebugScene::Draw() {
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
 
-	sprite_->Draw();*/
+	sprite_->Draw();
 
-	debugPlayer_->Draw(viewProjection_);
+	/*debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
 
-	model_->Draw(worldTransformModel_, viewProjection_, true);
+	model_->Draw(worldTransformModel_, viewProjection_, true);*/
 }
 
 void DebugScene::RenderDirect() {

@@ -258,6 +258,18 @@ uint32_t Audio::SoundLoadMP3(const std::filesystem::path& filename) {
 	return audioHandle_;
 }
 
+//ストップ
+void Audio::StopAudio(uint32_t audioHandle) {
+	HRESULT result;
+	for (const Voice* voice : sourceVoices_) {
+		if (voice->handle == audioHandle) {
+			result = voice->sourceVoice->Stop();
+			assert(SUCCEEDED(result));
+		}
+	}
+}
+
+
 void AudioHelper::Play(bool roopFlag, float volume) const
 {
 	// 最大値は無効な値として扱う

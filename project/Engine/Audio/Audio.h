@@ -102,6 +102,9 @@ public:
 	void SoundPlayWave(uint32_t audioHandle, bool roopFlag, float volume);
 	void SoundPlayMP3(uint32_t audioHandle, bool roopFlag, float volume);
 
+	/// 音声停止
+	void StopAudio(uint32_t audioHandle);
+
 private:
 	Audio() = default;
 	~Audio() = default;

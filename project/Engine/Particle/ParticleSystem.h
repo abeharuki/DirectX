@@ -90,7 +90,7 @@ public:
 	void StopParticle() { emitterSphere_->frequencyTime = 0.0f; }
 
 	bool GetEmit() {
-		if (emitterSphere_->emit != 0) {
+		if (emitterSphere_->emit == 1) {
 			return true;
 		}
 		else {
