@@ -96,7 +96,7 @@ public: // メンバ関数
 		viewProjection_ = viewProjection;
 	}
 	float GetHp() { return hp_; }
-
+	void SetHeal(float heal) { hp_ += heal; }
 	bool GetAttack() { return attack_; }
 
 	//敵の情報の受け取り

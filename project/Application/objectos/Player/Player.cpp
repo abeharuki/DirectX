@@ -147,6 +147,9 @@ void Player::Update() {
 	ImGui::SliderFloat("Thres", &threshold_, 0.0f, 1.0f);
 	ImGui::Text("%d", root_);
 	ImGui::End();
+	ImGui::Begin("Sprite");
+	ImGui::DragFloat("PlayerHp", &hp_, 1.0f);
+	ImGui::End();
 }
 
 void Player::Draw(const ViewProjection& camera) {

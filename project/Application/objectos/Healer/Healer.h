@@ -69,8 +69,6 @@ public: // メンバ関数
 	//逃げる方向
 	void RunAway();
 
-	void Billboard();
-
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
 
 	void SetOperation(bool flag) { operation_ = flag; }
@@ -102,13 +100,24 @@ public: // メンバ関数
 
 	bool IsAttack() { return workAttack_.isAttack; }
 	float GetHp() { return hp_; }
+	float GetMp() { return mp_; }
+	bool GetHeal() { return heal_; }
+	bool GetAllHeal() { return allHeal_; }
+	bool GetOneHeal() { return oneHeal_; }
+	float GetHealAmount() { return healAmount_; }
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
 
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
-	
+	//味方キャラのHpの受け取り
+	void SetHp(Vector3 hp) { 
+		playerHp_ = hp.x;
+		renjuHp_ = hp.y;
+		tankHp_ = hp.z;
+	}
+	void SetHeal(float heal) { hp_ += heal; }
 	bool IsDead() { return isDead_; }
 
 	void Dissolve() {
@@ -171,6 +180,14 @@ private: // メンバ変数
 
 	//体力
 	float hp_ = 100.0f;
+	//マジックポイント
+	float mp_ = 100.0f;
+	//回復フラグ
+	bool allHeal_;
+	bool oneHeal_;
+	bool heal_;
+	//回復量
+	float healAmount_;
 	//復活時間
 	int revivalCount_ = 0;
 
@@ -203,4 +220,10 @@ private: // メンバ変数
 	float angleRange_ = 35.0f * kDegreeToRandian;
 	//敵の攻撃範囲ないかどうか
 	bool isArea_ = false;
+
+	//味方のHp
+	float playerHp_;
+	float renjuHp_;
+	float tankHp_;
+
 };

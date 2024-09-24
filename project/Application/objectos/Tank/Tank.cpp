@@ -98,6 +98,10 @@ void Tank::Update() {
 	ImGui::Text("%d", fireTimer_);
 	ImGui::Text("%f", hp_);
 	ImGui::End();
+
+	ImGui::Begin("Sprite");
+	ImGui::DragFloat("TankHp", &hp_, 1.0f);
+	ImGui::End();
 };
 
 void Tank::Draw(const ViewProjection& camera) {

@@ -105,6 +105,10 @@ void Renju::Update() {
 		animation_->SetLoop(false);
 		animation_->Update(0);
 	}
+
+	ImGui::Begin("Sprite");
+	ImGui::DragFloat("RenjuHp", &hp_, 1.0f);
+	ImGui::End();
 };
 
 void Renju::Draw(const ViewProjection& view) {

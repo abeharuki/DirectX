@@ -68,40 +68,40 @@ void Enemy::Initialize() {
 void Enemy::Update() {
 
 
-	if (behaviorRequest_) {
-		// 振る舞い変更
-		behavior_ = behaviorRequest_.value();
-		// 各振る舞いごとの初期化
-		switch (behavior_) {
-		case Behavior::kRoot:
-		default:
-			MoveInitialize();
-			break;
-		case Behavior::kAttack:
-			AttackInitialize();
-			break;
-		case Behavior::kDead:
-			DeadInitilize();
-			break;
-		}
+	//if (behaviorRequest_) {
+	//	// 振る舞い変更
+	//	behavior_ = behaviorRequest_.value();
+	//	// 各振る舞いごとの初期化
+	//	switch (behavior_) {
+	//	case Behavior::kRoot:
+	//	default:
+	//		MoveInitialize();
+	//		break;
+	//	case Behavior::kAttack:
+	//		AttackInitialize();
+	//		break;
+	//	case Behavior::kDead:
+	//		DeadInitilize();
+	//		break;
+	//	}
 
-		// 振る舞いリセット
-		behaviorRequest_ = std::nullopt;
-	}
+	//	// 振る舞いリセット
+	//	behaviorRequest_ = std::nullopt;
+	//}
 
-	switch (behavior_) {
-	case Behavior::kRoot:
-	default:
-		// 通常行動
-		MoveUpdata();
-		break;
-	case Behavior::kAttack:
-		AttackUpdata();
-		break;
-	case Behavior::kDead:
-		DeadUpdata();
-		break;
-	}
+	//switch (behavior_) {
+	//case Behavior::kRoot:
+	//default:
+	//	// 通常行動
+	//	MoveUpdata();
+	//	break;
+	//case Behavior::kAttack:
+	//	AttackUpdata();
+	//	break;
+	//case Behavior::kDead:
+	//	DeadUpdata();
+	//	break;
+	//}
 
 
 	animation_->Update(animationNumber_);

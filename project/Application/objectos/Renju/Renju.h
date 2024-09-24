@@ -106,7 +106,7 @@ public: // メンバ関数
 
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
-	
+	void SetHeal(float heal) { hp_ += heal; }
 	bool IsDead() { return isDead_; }
 
 	void Dissolve() {

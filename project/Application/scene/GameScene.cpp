@@ -88,9 +88,11 @@ void GameScene::Update() {
 	//当たり判定
 	CheckAllCollision();
 
+
 	playerManager_->GetPlayer()->SetEnemyLength(enemyManager_->GetWorldTransform().translate);
 	playerManager_->Update();
 	
+
 	//コマンドの更新
 	command_->SetBehavior(playerManager_->GetPlayer()->IsRoot());
 	command_->Update();
@@ -124,12 +126,46 @@ void GameScene::Update() {
 		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
 	}
 
+
+	//hp情報の取得
+	healerManager_->GetHealer()->SetHp({ playerManager_->GetPlayer()->GetHp(),renjuManager_->GetRenju()->GetHp(),tankManager_->GetTank()->GetHp() });
+
+	
+	if (healerManager_->GetHealer()->GetHeal()) {
+		//全体回復
+		if (healerManager_->GetHealer()->GetAllHeal()) {
+			playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			renjuManager_->GetRenju()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			healerManager_->GetHealer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			tankManager_->GetTank()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+		}
+		//個人回復
+		if (healerManager_->GetHealer()->GetOneHeal()) {
+			if (playerManager_->GetPlayer()->GetHp() <= 20) {
+				playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			}
+			else if (healerManager_->GetHealer()->GetHp() <= 20) {
+				healerManager_->GetHealer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			}
+			else if (renjuManager_->GetRenju()->GetHp() <= 20) {
+				renjuManager_->GetRenju()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			}
+			else if (tankManager_->GetTank()->GetHp() <= 20) {
+				tankManager_->GetTank()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			}
+
+		}
+	}
+	
+
+	//各キャラの更新
 	if (!enemyManager_->IsClear()) {
 		healerManager_->Update();
 		renjuManager_->Update();
 		tankManager_->Update();
 	}
 
+	//敵の更新
 	if (!playerManager_->IsOver()) {
 		enemyManager_->Update();
 
@@ -180,14 +216,14 @@ void GameScene::Draw() {
 	
 	//プレイヤー
 	if (!playerManager_->GetPlayer()->IsDash()) {
-		//playerManager_->Draw(viewProjection_);
+		playerManager_->Draw(viewProjection_);
 	}
 	//敵
 	enemyManager_->Draw(viewProjection_);
 	// タンク
-	//tankManager_->Draw(viewProjection_);
+	tankManager_->Draw(viewProjection_);
 	// ヒーラー
-	//healerManager_->Draw(viewProjection_);
+	healerManager_->Draw(viewProjection_);
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
 	//コマンド

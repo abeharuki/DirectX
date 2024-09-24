@@ -99,7 +99,13 @@ void PlayerManager::Update() {
 	player_->Update();
 
 	spriteHpSize_.x = player_->GetHp();
-	
+	spriteHP_->SetColor(hpColor_);
+	if (spriteHpSize_.x < 20) {
+		hpColor_ = { 5.0f,0.0f,0.0f,1.0f };
+	}
+	else {
+		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	}
 
 	Revival();
 	if (revivalTransform_.scale.x >= 120.0f) {
@@ -114,6 +120,7 @@ void PlayerManager::Update() {
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat2("Hpsize", &spriteHpSize_.x, 1.0f);
 	ImGui::DragFloat2("Mpsize", &spriteMpSize_.x, 1.0f);
+	ImGui::DragFloat4("HpColor", &hpColor_.x, 0.1f);
 	ImGui::End();
 
 };

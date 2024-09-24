@@ -331,7 +331,7 @@ void DebugScene::Update() {
 void DebugScene::Draw() {
 	
 	
-	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	colliderManager_[0]->Draw(viewProjection_);
 	colliderManager_[1]->Draw(viewProjection_);
 	

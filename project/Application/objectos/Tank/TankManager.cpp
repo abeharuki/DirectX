@@ -72,6 +72,16 @@ void TankManager::Update() {
 
 	spriteHP_->SetSize(spriteHpSize_);
 	spriteMP_->SetSize(spriteMpSize_);
+
+	spriteHP_->SetColor(hpColor_);
+	if (spriteHpSize_.x < 20) {
+		hpColor_ = { 5.0f,0.0f,0.0f,1.0f };
+	}
+	else {
+		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	}
+
+	
 };
 
 void TankManager::Draw(const ViewProjection& camera) {

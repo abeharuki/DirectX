@@ -55,6 +55,8 @@ class TankManager {
 		Vector2 spriteHpSize_;
 		Vector2 spriteMpSize_;
 
+		Vector4 hpColor_;
+
 		// 味方の判定
 		bool preHit_;
 		bool isHit_;

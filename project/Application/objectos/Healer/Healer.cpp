@@ -100,6 +100,10 @@ void Healer::Update() {
 		animation_->Update(0);
 	}
 
+	ImGui::Begin("Sprite");
+	ImGui::DragFloat("HealerHp", &hp_, 1.0f);
+	ImGui::End();
+
 };
 
 void Healer::Draw(const ViewProjection& camera) {
@@ -111,7 +115,12 @@ void Healer::Draw(const ViewProjection& camera) {
 void Healer::MoveInitialize() { 
 	worldTransformBase_.translate.y = 0.0f;
 	velocity_ = { 0.0f,0.0f,0.0f };
-	searchTarget_ = false; };
+	searchTarget_ = false; 
+	allHeal_ = false;
+	oneHeal_ = false;
+	heal_ = false;
+};
+
 void Healer::MoveUpdate() {
 	--coolTime;
 	// プレイヤーに集合
@@ -167,9 +176,20 @@ void Healer::MoveUpdate() {
 
 	}
 
-	//味方の体力が60以下なら回復
-	if (false) {
-		state_ = CharacterState::Unique;
+	//味方の体力全員が50以下なら全体回復
+	//味方の体力が誰か20以下なら回復
+	if (playerHp_ <= 20 || renjuHp_ <= 20 || tankHp_ <= 20 || hp_ <= 20) {
+		if(mp_ >= 10){
+			oneHeal_ = true;
+			state_ = CharacterState::Unique;
+		}
+		
+	}
+	else if (playerHp_ < 50 && renjuHp_ < 50 && tankHp_ < 50 && hp_ < 50) {
+		if(mp_ >= 20){
+			allHeal_ = true;
+			state_ = CharacterState::Unique;
+		}
 	}
 
 };
@@ -307,10 +327,29 @@ void Healer::AttackUpdate() {
 }
 
 void Healer::UniqueInitialize(){
-
+	//20回復
+	if (oneHeal_) {
+		mp_ -= 10;
+		healAmount_ = 20;
+	}
+	//全員10回復
+	if (allHeal_) {
+		mp_ -= 20;
+		healAmount_ = 10;
+	}
+	coolTime = 60;
 }
 void Healer::UniqueUpdate(){
+	
+	--coolTime;
 
+
+
+	if (coolTime <= 0) {
+		heal_ = true;
+		state_ = CharacterState::Moveing;
+		coolTime = 60;
+	}
 }
 
 void Healer::DeadInitialize() {

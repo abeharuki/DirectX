@@ -75,8 +75,18 @@ void HealerManager::Update() {
 	healer_->followPlayer(playerPos_);
 
 	spriteHpSize_.x = healer_->GetHp();
+	spriteMpSize_.x = healer_->GetMp();
 	spriteHP_->SetSize(spriteHpSize_);
 	spriteMP_->SetSize(spriteMpSize_);
+
+	spriteHP_->SetColor(hpColor_);
+	if (spriteHpSize_.x < 20) {
+		hpColor_ = { 5.0f,0.0f,0.0f,1.0f };
+	}
+	else {
+		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	}
+
 };
 
 void HealerManager::Draw(const ViewProjection& camera) {

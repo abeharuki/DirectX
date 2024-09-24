@@ -102,6 +102,8 @@ private:
 	Vector2 spriteHpSize_;
 	Vector2 spriteMpSize_;
 
+	Vector4 hpColor_;
+
 	bool isDead_ = false;
 	int revivalCount_;
 

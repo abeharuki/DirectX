@@ -103,7 +103,7 @@ public: // メンバ関数
 	bool IsOver() { return isOver_; }
 	float GetHp() { return hp_; }
 	
-
+	void SetHeal(float heal) { hp_ += heal; }
 	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
 
 	//敵攻撃フラグ
