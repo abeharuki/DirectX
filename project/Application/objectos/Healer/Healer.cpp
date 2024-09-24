@@ -2,6 +2,7 @@
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 
+
 Healer::~Healer() {
 	delete behaviorTree_;
 
@@ -40,6 +41,18 @@ void Healer::Initialize() {
 		animation_->Update(0);
 	}
 	
+	emitter_ = {
+		.translate{0,0,0},
+		.count{10},
+		.frequency{0.02f},
+		.frequencyTime{0.0f},
+		.scaleRange{.min{0.05f,0.2f,0.2f},.max{0.05f,0.5f,0.2f}},
+		.translateRange{.min{-0.5f,-0.5f,-0.5f},.max{0.5f,0.5f,0.5f}},
+		.colorRange{.min{0.4f,1,0.3f},.max{0.4f,1,0.5f}},
+		.lifeTimeRange{.min{0.1f},.max{0.5f}},
+		.velocityRange{.min{0.f,0.1f,0.f},.max{0.f,0.4f,0.0f}},
+	};
+	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
@@ -108,6 +121,7 @@ void Healer::Update() {
 
 void Healer::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera,true);
+	particle_->Draw(camera);
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
@@ -120,7 +134,6 @@ void Healer::MoveInitialize() {
 	oneHeal_ = false;
 	heal_ = false;
 };
-
 void Healer::MoveUpdate() {
 	--coolTime;
 	// プレイヤーに集合
@@ -337,13 +350,14 @@ void Healer::UniqueInitialize(){
 		mp_ -= 20;
 		healAmount_ = 10;
 	}
+	particle_->SetEmitter(emitter_);
 	coolTime = 60;
 }
 void Healer::UniqueUpdate(){
 	
 	--coolTime;
-
-
+	particle_->SetTranslate(worldTransformBase_.translate);
+	particle_->Update();
 
 	if (coolTime <= 0) {
 		heal_ = true;

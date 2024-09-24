@@ -9,6 +9,7 @@
 #include <Animation/Animation.h>
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
+#include <ParticleSystem.h>
 
 /// <summary>
 /// ゲームシーン
@@ -137,6 +138,10 @@ private: // メンバ変数
 	std::unique_ptr<Animations>animation_;
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
+
+	//パーティクル
+	std::unique_ptr<ParticleSystem> particle_;
+	EmitterSphere emitter_{};
 
 	//ビヘイビアツリー
 	BehaviorTree<Healer>* behaviorTree_;
