@@ -351,10 +351,13 @@ void GameScene::CheckAllCollision() {
 	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x, enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
 	posB = tankManager_->GetTank()->GetWorldPosition();
 
-	if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.0f }, posB, { 1.0f, 1.0f, 1.0f })) {
+	if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.0f }, posB, { 1.5f, 1.f, 1.5f })) {
 		if (tankManager_->GetAttack()) {
 			enemyManager_->OnCollision();
 			tankManager_->SetParticlePos(posB);
+		}
+		if (tankManager_->GetTank()->GetStanAttack()) {
+			enemyManager_->GetEnemy()->StanBehavior();
 		}
 	}
 #pragma endregion

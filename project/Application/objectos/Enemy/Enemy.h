@@ -84,8 +84,11 @@ public: // メンバ関数
 	//スタン中
 	void StanInitalize();
 	void StanUpdata();
+	void StanBehavior();
+	
 
 	BehaviorAttack GetBehaviorAttack() { return attack_; }
+	Behavior GetBehavior() { return behavior_; }
 
 	Collider* GetCollider(int i) { return colliderManager_[i].get(); }
 

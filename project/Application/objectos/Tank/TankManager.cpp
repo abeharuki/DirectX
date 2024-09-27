@@ -69,7 +69,7 @@ void TankManager::Update() {
 	tank_->followPlayer(playerPos_);
 	
 	spriteHpSize_.x = tank_->GetHp();
-
+	spriteMpSize_.x = tank_->GetMp();
 	spriteHP_->SetSize(spriteHpSize_);
 	spriteMP_->SetSize(spriteMpSize_);
 

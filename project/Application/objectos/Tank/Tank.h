@@ -47,7 +47,7 @@ public: // メンバ関数
 	void AttackInitialize();
 	void AttackUpdate();
 
-	//ヘイト管理
+	//スタン攻撃
 	void UniqueInitialize();
 	void UniqueUpdate();
 
@@ -99,8 +99,10 @@ public: // メンバ関数
 		viewProjection_ = viewProjection;
 	}
 	float GetHp() { return hp_; }
+	float GetMp() { return mp_; }
 	void SetHeal(float heal) { hp_ += heal; }
 	bool GetAttack() { return attack_; }
+	bool GetStanAttack() { return stanAttack_; }
 
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
@@ -152,11 +154,14 @@ private: // メンバ変数
 	Vector3 playerPos_;
 
 	bool attack_ = false;
+	bool stanAttack_ = false;
 	//攻撃ができるようになるまでの
 	int coolTime = 60;
 
 	//体力
 	float hp_ = 100.0f;
+	//マジックポイント
+	float mp_ = 100.0f;
 	//復活時間
 	int revivalCount_;
 

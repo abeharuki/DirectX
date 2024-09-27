@@ -190,9 +190,6 @@ void Enemy::MoveUpdata() {
 	if (--time_ <= 0) {
 		behaviorRequest_ = Behavior::kAttack;
 	}
-
-	
-	
 };
 
 void Enemy::AttackInitialize() {
@@ -688,7 +685,7 @@ void Enemy::StanInitalize(){
 	sterAngle_[2] = 4.0f;
 	animationNumber_ = nomal;
 
-	time_ = 60 * 5;
+	time_ = 60 * 3;
 }
 void Enemy::StanUpdata(){
 	--time_;
@@ -700,7 +697,8 @@ void Enemy::StanUpdata(){
 	if (time_ <= 0) {
 		behaviorRequest_ = Behavior::kRoot;
 	}
-};
+}
+void Enemy::StanBehavior(){ behaviorRequest_ = Behavior::kStan; };
 
 void Enemy::GroundAttackInitialize() {
 	worldTransformImpact_.translate = worldTransformBase_.translate;

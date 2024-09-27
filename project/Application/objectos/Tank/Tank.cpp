@@ -112,7 +112,9 @@ void Tank::Update() {
 
 void Tank::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera,true);
-	shield_->Draw(worldTransformShield_, camera, true);
+	if (state_ == CharacterState::Unique) {
+		shield_->Draw(worldTransformShield_, camera, true);
+	}
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
@@ -122,6 +124,7 @@ void Tank::MoveInitialize() {
 	velocity_ = { 0.0f,0.0f,0.0f };
 	searchTarget_ = false; 
 	attack_ = false;
+	stanAttack_ = false;
 };
 void Tank::MoveUpdate() {
 	--coolTime;
@@ -139,7 +142,17 @@ void Tank::MoveUpdate() {
 		searchTarget(enemy_->GetWorldPosition());
 	}
 
+	if (enemy_->GetBehavior() != Behavior::kStan && !operation_) {
+		if (enemy_->IsBehaberAttack() && enemy_->GetBehaviorAttack() != BehaviorAttack::kGround && mp_ >= 20) {
+			state_ = CharacterState::Unique;
+		}
+	}
 	
+
+	if (Input::PressKey(DIK_T)) {
+		state_ = CharacterState::Unique;
+	}
+
 	if (isArea_ && searchTarget_ && enemy_->IsAreaDraw()) {
 		
 		const float kCharacterSpeed = 0.3f;
@@ -328,9 +341,51 @@ void Tank::AttackUpdate() {
 
 
 void Tank::UniqueInitialize(){
-
+	mp_ -= 20;
+	fireTimer_ = 40;
+	stanAttack_ = false;
 }
 void Tank::UniqueUpdate(){
+	--fireTimer_;
+
+	// 追従対象からロックオン対象へのベクトル
+	Vector3 sub = enemyPos_ - GetWorldPosition();
+
+	// y軸周りの回転
+	if (sub.z != 0.0) {
+		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+		if (sub.z < 0.0) {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> -destinationAngleY_
+				: -std::numbers::pi_v<float> -destinationAngleY_;
+		}
+	}
+	else {
+		destinationAngleY_ =
+			(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
+	}
+
+	// 敵の座標までの距離
+	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
+	if (fireTimer_ > 10) {
+		velocity_ = { 0.0f,0.0f,-0.01f };
+		const float kCharacterSpeed = 0.1f;
+		velocity_ = Math::Normalize(velocity_);
+		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
+		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
+		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+		worldTransformBase_.translate += velocity_;
+	}
+	else if (fireTimer_ <= 5 && fireTimer_ > 0) {
+		stanAttack_ = true;
+		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos_, 0.2f);
+	}
+	else if (fireTimer_ <= 0) {
+		fireTimer_ = 40;
+		coolTime = 60;
+		stanAttack_ = false;
+		state_ = CharacterState::Moveing;
+	}
 
 }
 
@@ -602,6 +657,10 @@ void Tank::OnCollision(Collider* collider) {
 						hp_ -= 5.0f;
 					}
 
+				}
+
+				if (stanAttack_) {
+					stanAttack_ = false;
 				}
 
 			}
