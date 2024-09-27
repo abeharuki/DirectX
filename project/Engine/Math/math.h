@@ -285,6 +285,8 @@ public:
 
 	static float Dot(const Vector3& v1, const Vector3& v2);
 
+	static void UpdateCircularMotion3D(float& posX, float& posZ, float centerX, float centerZ, float radius, float& angle, float speed);
+
 	// 正規化
 	static Vector3 Normalize(const Vector3& v);
 

@@ -7,6 +7,20 @@ float Math::Dot(const Vector3& v1, const Vector3& v2)
 	return result;
 }
 
+void Math::UpdateCircularMotion3D(float& posX, float& posZ, float centerX, float centerZ, float radius, float& angle, float speed) {
+	// 角度を更新
+	angle += speed;
+
+	// オブジェクトの位置を計算
+	posX = centerX + radius * cos(angle);
+	posZ = centerZ + radius * sin(angle);
+
+	// 角度が 2π（360度）を超えたらリセット
+	if (angle > 2 * 3.1415f) {
+		angle -= 2 * 3.1415f;
+	}
+}
+
 // 加算
 Vector3 Math::Add(const Vector3& v1, const Vector3& v2) {
 	Vector3 add;

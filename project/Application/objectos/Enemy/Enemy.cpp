@@ -10,6 +10,11 @@ void Enemy::Initialize() {
 	impactModel_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj", "resources/white.png"));
 	areaModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/red_.png"));
 	circleAreaModel_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj", "resources/Enemy/red_.png"));
+	for (int i = 0; i < 3; ++i) {
+		sterModel_[i].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
+		worldTransformSter_[i].Initialize();
+		worldTransformSter_[i].translate.y = 12.0f;
+	}
 	areaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	//circleAreaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	animationNumber_ = nomal;
@@ -62,47 +67,54 @@ void Enemy::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveOBB);
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
-
+	
 }
 
 void Enemy::Update() {
 
 
-	//if (behaviorRequest_) {
-	//	// 振る舞い変更
-	//	behavior_ = behaviorRequest_.value();
-	//	// 各振る舞いごとの初期化
-	//	switch (behavior_) {
-	//	case Behavior::kRoot:
-	//	default:
-	//		MoveInitialize();
-	//		break;
-	//	case Behavior::kAttack:
-	//		AttackInitialize();
-	//		break;
-	//	case Behavior::kDead:
-	//		DeadInitilize();
-	//		break;
-	//	}
+	if (behaviorRequest_) {
+		// 振る舞い変更
+		behavior_ = behaviorRequest_.value();
+		// 各振る舞いごとの初期化
+		switch (behavior_) {
+		case Behavior::kRoot:
+		default:
+			MoveInitialize();
+			break;
+		case Behavior::kAttack:
+			AttackInitialize();
+			break;
+		case Behavior::kStan:
+			StanInitalize();
+			break;
+		case Behavior::kDead:
+			DeadInitilize();
+			break;
+		}
 
-	//	// 振る舞いリセット
-	//	behaviorRequest_ = std::nullopt;
-	//}
+		// 振る舞いリセット
+		behaviorRequest_ = std::nullopt;
+	}
 
-	//switch (behavior_) {
-	//case Behavior::kRoot:
-	//default:
-	//	// 通常行動
-	//	MoveUpdata();
-	//	break;
-	//case Behavior::kAttack:
-	//	AttackUpdata();
-	//	break;
-	//case Behavior::kDead:
-	//	DeadUpdata();
-	//	break;
-	//}
+	switch (behavior_) {
+	case Behavior::kRoot:
+	default:
+		// 通常行動
+		MoveUpdata();
+		break;
+	case Behavior::kAttack:
+		AttackUpdata();
+		break;
+	case Behavior::kStan:
+		StanUpdata();
+		break;
+	case Behavior::kDead:
+		DeadUpdata();
+		break;
+	}
 
+	
 
 	animation_->Update(animationNumber_);
 	Relationship();
@@ -112,12 +124,17 @@ void Enemy::Update() {
 	worldTransformImpact_.UpdateMatrix();
 	worldTransformArea_.UpdateMatrix();
 	worldTransformCircleArea_.UpdateMatrix();
+	for (int i = 0; i < 3; ++i) {
+		worldTransformSter_[i].UpdateMatrix();
+	}
 	for (int i = 0; i < 15; ++i) {
 		worldTransformColliderImpact_[i].UpdateMatrix();
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
 	}
 
-
+	if (Input::PressKey(DIK_4)) {
+		behaviorRequest_ = Behavior::kStan;
+	}
 
 	ImGui::Begin("EnemyRock");
 	ImGui::SliderFloat3("pos", &worldTransformRock_.translate.x, -150.0f, 150.0f);
@@ -151,9 +168,12 @@ void Enemy::Draw(const ViewProjection& camera) {
 		}
 	}
 	
-	for (int i = 0; i < 15; ++i) {
-		//colliderManager_[i]->Draw(camera);
+	if (behavior_ == Behavior::kStan) {
+		for (int i = 0; i < 3; ++i) {
+			sterModel_[i]->Draw(worldTransformSter_[i], camera, true);
+		}
 	}
+	
 	RenderCollisionBounds(worldTransformBody_, camera);
 }
 
@@ -171,22 +191,8 @@ void Enemy::MoveUpdata() {
 		behaviorRequest_ = Behavior::kAttack;
 	}
 
-	//if (Input::PressKey(DIK_4)) {
-	//	behaviorRequest_ = Behavior::kAttack;
-	//	attackRequest_ = BehaviorAttack::kNomal;
-	//}
-	//if (Input::PressKey(DIK_5)) {
-	//	behaviorRequest_ = Behavior::kAttack;
-	//	attackRequest_ = BehaviorAttack::kDash;
-	//}
-	//if (Input::PressKey(DIK_6)) {
-	//	behaviorRequest_ = Behavior::kAttack;
-	//	attackRequest_ = BehaviorAttack::kThrowing;
-	//}
-	//if (Input::PressKey(DIK_7)) {
-	//	behaviorRequest_ = Behavior::kAttack;
-	//	attackRequest_ = BehaviorAttack::kGround;
-	//}
+	
+	
 };
 
 void Enemy::AttackInitialize() {
@@ -672,6 +678,28 @@ void Enemy::UpdataImpact() {
 	}
 
 
+}
+
+
+
+void Enemy::StanInitalize(){
+	sterAngle_[0] = 0.0f;
+	sterAngle_[1] = 2.0f;
+	sterAngle_[2] = 4.0f;
+	animationNumber_ = nomal;
+
+	time_ = 60 * 5;
+}
+void Enemy::StanUpdata(){
+	--time_;
+	for (int i = 0; i < 3; ++i) {
+		Math::UpdateCircularMotion3D(worldTransformSter_[i].translate.x, worldTransformSter_[i].translate.z, worldTransformBase_.translate.x, worldTransformBase_.translate.z-2, 2.0f, sterAngle_[i], 0.1f);
+	}
+
+
+	if (time_ <= 0) {
+		behaviorRequest_ = Behavior::kRoot;
+	}
 };
 
 void Enemy::GroundAttackInitialize() {

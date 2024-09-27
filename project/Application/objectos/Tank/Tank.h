@@ -68,7 +68,10 @@ public: // メンバ関数
 
 	void Relationship();
 
-	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
+	void SetLight(DirectionLight directionLight) { 
+		animation_->DirectionalLightDraw(directionLight); 
+		shield_->DirectionalLightDraw(directionLight);
+	}
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
@@ -114,6 +117,7 @@ public: // メンバ関数
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformShield_;
 	WorldTransform worldTransformHp_[3];
 	WorldTransform worldTransformHead_;
 	ViewProjection viewProjection_;
@@ -124,6 +128,7 @@ private: // メンバ変数
 	BehaviorTree<Tank>* behaviorTree_;
 	CharacterState state_;
 	CharacterState previousState_;
+	std::unique_ptr<Model>shield_;
 
 	// 速度
 	Vector3 velocity_ = {};

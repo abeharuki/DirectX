@@ -10,12 +10,15 @@ Tank::~Tank() {
 void Tank::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
-
+	shield_.reset(Model::CreateModelFromObj("resources/Tank/shield.obj", "resources/white.png"));
 
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformHead_.Initialize();
-	
+	worldTransformShield_.Initialize();
+	worldTransformShield_.translate = { 0.0f,1.f,0.45f };
+	worldTransformShield_.rotate.y = 3.1415f;
+
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].Initialize();
 		worldTransformHp_[i].translate.y = 1.5f;
@@ -82,6 +85,7 @@ void Tank::Update() {
 
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
+	worldTransformShield_.TransferMatrix();
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
@@ -93,6 +97,8 @@ void Tank::Update() {
 
 	ImGui::Begin("Tank");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
+	ImGui::SliderFloat3("shieldpos", &worldTransformShield_.translate.x, -10.0f, 10.0f);
+	ImGui::SliderFloat3("shieldrotate", &worldTransformShield_.rotate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("enemypos", &enemy_->GetWorldTransformArea().translate.x, -10.0f, 10.0f);
 	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
 	ImGui::Text("%d", fireTimer_);
@@ -106,6 +112,7 @@ void Tank::Update() {
 
 void Tank::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera,true);
+	shield_->Draw(worldTransformShield_, camera, true);
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
@@ -535,6 +542,11 @@ void Tank::Relationship() {
 	worldTransformHead_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(
 			worldTransformHead_.scale, worldTransformHead_.rotate, worldTransformHead_.translate),
+		worldTransformBase_.matWorld_);
+
+	worldTransformShield_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformShield_.scale, worldTransformShield_.rotate, worldTransformShield_.translate),
 		worldTransformBase_.matWorld_);
 
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);

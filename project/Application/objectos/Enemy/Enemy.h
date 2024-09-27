@@ -25,6 +25,7 @@ enum AnimationNumber {
 enum class Behavior {
 	kRoot, // 通常状態
 	kAttack, // 攻撃
+	kStan,//スタン
 	kDead, // 死亡
 };
 
@@ -80,6 +81,9 @@ public: // メンバ関数
 	void GroundAttackUpdata();
 	void InitializeImpact();
 	void UpdataImpact();
+	//スタン中
+	void StanInitalize();
+	void StanUpdata();
 
 	BehaviorAttack GetBehaviorAttack() { return attack_; }
 
@@ -95,7 +99,9 @@ public: // メンバ関数
 	void SetLight(DirectionLight directionLight) { 
 		animation_->DirectionalLightDraw(directionLight);
 		impactModel_->DirectionalLightDraw(directionLight);
-	
+		for (int i = 0; i < 3; ++i) {
+			sterModel_[i]->DirectionalLightDraw(directionLight);
+		}
 	}
 
 
@@ -136,6 +142,7 @@ private: // メンバ変数
 	WorldTransform worldTransformArea_;
 	WorldTransform worldTransformCircleArea_;
 	WorldTransform worldTransformColliderImpact_[15];
+	WorldTransform worldTransformSter_[3];
 	std::unique_ptr<ColliderManager> colliderManager_[15] = {};
 	std::unique_ptr<Animations>animation_;
 	int animationNumber_;
@@ -143,6 +150,7 @@ private: // メンバ変数
 	std::unique_ptr<Model> impactModel_;
 	std::unique_ptr<Model> areaModel_;
 	std::unique_ptr<Model> circleAreaModel_;
+	std::unique_ptr<Model> sterModel_[3];
 	Vector3 areaPos_;
 	bool areaDraw_;
 
@@ -160,7 +168,8 @@ private: // メンバ変数
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
-	
+	float sterAngle_[3];
+
 	Behavior behavior_ = Behavior::kRoot;
 	// 次の振る舞いリクエスト
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;

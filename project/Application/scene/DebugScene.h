@@ -43,7 +43,7 @@ private:
 	WorldTransform worldTransformCollider2_;
 	WorldTransform worldTransformCollider3_;
 	WorldTransform worldTransformModel_;
-
+	WorldTransform worldTransformSter_[2];
 	//ローダー
 	std::unique_ptr<ModelLoader> loader_;
 	ViewProjection viewProjection_;
@@ -52,6 +52,7 @@ private:
 	std::unique_ptr<DebugEnemy> debugEnemy_;
 	std::unique_ptr<Skybox> skybox_;
 	std::unique_ptr<Model> model_;
+	std::unique_ptr<Model> ster_[2];
 	std::unique_ptr<Sprite> sprite_;
 	float a_;
 	bool impactScale_;
@@ -79,7 +80,7 @@ private:
 	float destinationAngleY_ = 0.0f;
 
 	
-	
+	float angle_[3];
 
 	//アニメーションdissolve
 	DissolveStyle animeDissolve_;

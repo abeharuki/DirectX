@@ -52,12 +52,16 @@ void DebugScene::Initialize() {
 	worldTransformModel_.Initialize();
 	worldTransformModel_.scale = { 15.0f,0.5f,0.0f };
 	worldTransformModel_.translate.y = 3.5f;
+	worldTransformSter_[0].Initialize();
+	worldTransformSter_[1].Initialize();
 	sprite_.reset(Sprite::Create("resources/H.png"));
 	
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateModelFromObj("resources/box.obj","resources/Enemy/red_.png"));
+	model_.reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
+	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
+	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
@@ -102,6 +106,11 @@ void DebugScene::Initialize() {
 	directionLight_.direction.z = 2;
 	AnimationNum_ = 4;
 	a_ = 1.0f;
+
+	angle_[0] = 0.0f;
+	angle_[1] = 2.0f;
+	angle_[2] = 4.0f;
+
 }
 
 void DebugScene::Update() {
@@ -128,6 +137,10 @@ void DebugScene::Update() {
 	viewProjection_.TransferMatrix();
 	
 	
+
+	Math::UpdateCircularMotion3D(worldTransformAnimation_.translate.x, worldTransformAnimation_.translate.z, 0, 0, 2.0f, angle_[0], 0.05f);
+	Math::UpdateCircularMotion3D(worldTransformSter_[0].translate.x, worldTransformSter_[0].translate.z, 0, 0, 2.0f, angle_[1], 0.05f);
+	Math::UpdateCircularMotion3D(worldTransformSter_[1].translate.x, worldTransformSter_[1].translate.z, 0, 0, 2.0f, angle_[2], 0.05f);
 	
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
@@ -135,6 +148,8 @@ void DebugScene::Update() {
 	worldTransformCollider2_.UpdateMatrix();
 	worldTransformCollider3_.UpdateMatrix();
 	worldTransformModel_.UpdateMatrix();
+	worldTransformSter_[0].UpdateMatrix();
+	worldTransformSter_[1].UpdateMatrix();
 	colliderManager_[0]->SetWorldTransform(worldTransformCollider1_);
 	colliderManager_[1]->SetWorldTransform(worldTransformCollider2_);
 	colliderManager_[2]->SetWorldTransform(worldTransformCollider3_);
@@ -181,7 +196,7 @@ void DebugScene::Update() {
 
 	particle_->DebugParameter();
 	ImGui::Begin("Setting");
-
+	ImGui::Text("Angle%f", angle_[0]);
 	if (ImGui::TreeNode("Particle")) {
 		ImGui::Checkbox("ParticleFlag", &particleFlag_);
 		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
@@ -338,7 +353,9 @@ void DebugScene::Draw() {
 	skybox_->Draw(worldTransformSkybox_,viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
-
+	model_->Draw(worldTransformAnimation_, viewProjection_, true);
+	ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
+	ster_[1]->Draw(worldTransformSter_[1], viewProjection_, true);
 	sprite_->Draw();
 
 	/*debugPlayer_->Draw(viewProjection_);
@@ -485,3 +502,4 @@ Vector3 DebugScene::GetLocalPosition() {
 	worldPos.z = worldTransform_.translate.z;
 	return worldPos;
 }
+
