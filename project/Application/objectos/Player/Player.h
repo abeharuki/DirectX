@@ -11,9 +11,20 @@
 #include <Animation/Animation.h>
 #include "PostEffects/PostEffect.h"
 #include "Command/Command.h"
+#include "Enemy/Enemy.h"
 
 class Player : public Collider {
 public:
+
+	// 振る舞い
+	enum class Behavior {
+		kRoot, // 通常状態
+		kJump, // ジャンプ
+		kDash, // ダッシュ
+		kAttack, //攻撃
+		knock,//ノックバック
+		kDead, // 死亡
+	};
 
 	// 攻撃用定数
 	struct ConstAttack {
@@ -93,6 +104,8 @@ public: // メンバ関数
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
+	//状態
+	Behavior GetBehavior() {return behavior_;}
 
 	//こうげきフラグ
 	bool SetAttack(bool flag,int i) { return attackType_[i] = flag; }
@@ -101,11 +114,13 @@ public: // メンバ関数
 	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }
 	bool IsOver() { return isOver_; }
+	bool IsOuto() { return outo_; }
 	float GetHp() { return hp_; }
 	
 	void SetHeal(float heal) { hp_ += heal; }
 	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
-
+	//敵の情報の受け取り
+	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 	//敵攻撃フラグ
 	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
 	void SetEnemyLength(Vector3 pos){
@@ -145,15 +160,7 @@ private: // メンバ変数
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 
-	// 振る舞い
-	enum class Behavior {
-		kRoot, // 通常状態
-		kJump, // ジャンプ
-		kDash, // ダッシュ
-		kAttack, //攻撃
-		knock,//ノックバック
-		kDead, // 死亡
-	};
+	
 
 	Behavior behavior_ = Behavior::kRoot;
 	// 次の振る舞いリクエスト
@@ -187,6 +194,7 @@ private: // メンバ変数
 	bool combo_;
 	bool noAttack_;
 	bool preNoAttack_;
+	bool outo_;
 
 	// 攻撃の時間
 	const uint32_t behaviorAttackTime = 15;
@@ -224,4 +232,7 @@ private: // メンバ変数
 	std::vector<bool> attackType_;
 
 	float length_ = 0.0f;
+
+	//敵の情報
+	Enemy* enemy_;
 };

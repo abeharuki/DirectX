@@ -79,6 +79,17 @@ void Tank::Update() {
 	
 
 	Relationship();
+
+
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimTank()) {
+		if (enemy_->isAttack()) {
+			isHit_ = true;
+			if (isHit_ != preHit_) {
+				hp_ -= 10;
+			}
+		}
+	}
+
 	// 回転
 	worldTransformBase_.rotate.y =
 		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -294,6 +305,7 @@ void Tank::AttackUpdate() {
 	}
 	else if (fireTimer_ <= 5 && fireTimer_ > 0) {
 		attack_ = true;
+
 		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos_, 0.2f);
 	}
 	else if (fireTimer_ <= 0) {
@@ -332,6 +344,8 @@ void Tank::AttackUpdate() {
 
 	// プレイヤーに集合
 	if (operation_) {
+		
+
 		state_ = CharacterState::Moveing;
 		followPlayer_ = true;
 		searchTarget_ = false;
@@ -639,7 +653,7 @@ void Tank::OnCollision(const WorldTransform& worldTransform) {
 void Tank::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash || enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal) {
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			if (enemy_->isAttack()) {
 				const float kSpeed = 3.0f;
 				//velocity_ = { 0.0f, 0.0f, -kSpeed };

@@ -129,7 +129,7 @@ void PlayerManager::Draw(const ViewProjection& camera) {
 	
 	player_->Draw(camera);
 	particle_->Draw(camera);
-	if (player_->IsAttack()) {
+	if (player_->GetBehavior() == Player::Behavior::kAttack) {
 		HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);
 	}
 };

@@ -92,6 +92,16 @@ void Renju::Update() {
 
 	Relationship();
 
+
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimRenju()) {
+		if (enemy_->isAttack()) {
+			isHit_ = true;
+			if (isHit_ != preHit_) {
+				hp_ -= 10;
+			}
+		}
+	}
+
 	// 回転
 	worldTransformBase_.rotate.y =
 		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -543,7 +553,7 @@ void Renju::OnCollision(const WorldTransform& worldTransform) {
 void Renju::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash || enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal) {
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			if (enemy_->isAttack()) {
 				const float kSpeed = 3.0f;
 				//velocity_ = { 0.0f, 0.0f, -kSpeed };

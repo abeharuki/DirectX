@@ -116,6 +116,14 @@ void Player::Update() {
 
 	Relationship();
 
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimPlayer()) {
+		if (enemy_->isAttack()) {
+			isHit_ = true;
+			if (isHit_ != preHit_) {
+				hp_ -= 10;
+			}
+		}
+	}
 
 	if (Input::PushKey(DIK_O)) {
 		isOver_ = true;
@@ -164,6 +172,7 @@ void Player::MoveInitialize() {
 	workAttack_.isAttack = false;
 	dash_ = false;
 	combo_ = false;
+	outo_ = false;
 };
 void Player::MoveUpdata() {
 	root_ = true;
@@ -190,8 +199,6 @@ void Player::MoveUpdata() {
 			velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
 		}
 
-
-
 		if (isMove) {
 			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_->rotation_.y);
 			velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
@@ -214,6 +221,36 @@ void Player::MoveUpdata() {
 			}
 		}
 
+		if (outo_) {
+			// 敵の座標までの距離
+			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+			// 追従対象からロックオン対象へのベクトル
+			Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
+
+			// y軸周りの回転
+			if (sub.z != 0.0) {
+				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+				if (sub.z < 0.0) {
+					destinationAngleY_ = (sub.x >= 0.0)
+						? std::numbers::pi_v<float> -destinationAngleY_
+						: -std::numbers::pi_v<float> -destinationAngleY_;
+				}
+			}
+			else {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+					: -std::numbers::pi_v<float> / 2.0f;
+			}
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.07f);
+
+
+			if (length < 5) {
+				outo_ = false;
+				behaviorRequest_ = Behavior::kAttack;
+			}
+
+		}
+
 		// ジャンプ
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
 			behaviorRequest_ = Behavior::kJump;
@@ -221,13 +258,19 @@ void Player::MoveUpdata() {
 
 		// 攻撃
 		if (attackType_[kNormalAttack] && !preNoAttack_) {
-			behaviorRequest_ = Behavior::kAttack;
+			outo_ = true;
+			// 敵の座標までの距離
+			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+			if (length < 5) {
+				outo_ = false;
+				behaviorRequest_ = Behavior::kAttack;
+			}
 		}
 
 
 		// ダッシュボタンを押したら
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
-			//behaviorRequest_ = Behavior::kDash;
+			behaviorRequest_ = Behavior::kDash;
 		}
 
 
@@ -249,12 +292,15 @@ void Player::MoveUpdata() {
 
 	}
 	else {
+
 		const float value = 0.7f;
 		bool isMove_ = false;
 		/*----------移動処理----------*/
 		float kCharacterSpeed = 0.3f;
+
 		// 移動量
 		velocity_ = { 0.0f, 0.0f, 0.0f };
+
 
 		// 上下移動
 		if (Input::PressKey(DIK_W)) {
@@ -303,6 +349,37 @@ void Player::MoveUpdata() {
 					: -std::numbers::pi_v<float> / 2.0f;
 			}
 		}
+		
+
+		if (outo_) {
+			// 敵の座標までの距離
+			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+			// 追従対象からロックオン対象へのベクトル
+			Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
+
+			// y軸周りの回転
+			if (sub.z != 0.0) {
+				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+				if (sub.z < 0.0) {
+					destinationAngleY_ = (sub.x >= 0.0)
+						? std::numbers::pi_v<float> -destinationAngleY_
+						: -std::numbers::pi_v<float> -destinationAngleY_;
+				}
+			}
+			else {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+					: -std::numbers::pi_v<float> / 2.0f;
+			}
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.07f);
+
+
+			if (length < 5) {
+				outo_ = false;
+				behaviorRequest_ = Behavior::kAttack;
+			}
+
+		}
 
 		// ジャンプ
 		if (Input::PushKey(DIK_SPACE)) {
@@ -311,7 +388,14 @@ void Player::MoveUpdata() {
 
 		//攻撃
 		if (attackType_[kNormalAttack]) {
-			behaviorRequest_ = Behavior::kAttack;
+			outo_ = true;
+			// 敵の座標までの距離
+			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+			if (length < 5) {
+				outo_ = false;
+				behaviorRequest_ = Behavior::kAttack;
+			}
+			
 		}
 
 		// ダッシュ
@@ -410,7 +494,7 @@ void Player::AttackInitialize() {
 	workAttack_.comboIndex = 0;
 	workAttack_.inComboPhase = 0;
 	workAttack_.comboNext = false;
-	workAttack_.isAttack = true;
+	//workAttack_.isAttack = false;
 	workAttack_.isFinalAttack = false;
 }
 void Player::AttackUpdata() {
@@ -604,7 +688,7 @@ void Player::OnCollision(Collider* collider) {
 
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (isEnemyAttack_) {
+		if (isEnemyAttack_&& enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);

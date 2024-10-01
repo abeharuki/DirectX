@@ -99,6 +99,11 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformRock() { return worldTransformRock_; }
 	WorldTransform& GetWorldTransformArea() { return worldTransformArea_; }
 
+	bool GetAimPlayer() { return aimPlayer_; }
+	bool GetAimHealer() { return aimHealer_; }
+	bool GetAimRenju() { return aimRenju_; }
+	bool GetAimTank() { return aimTank_; }
+
 	void SetLight(DirectionLight directionLight) { 
 		animation_->DirectionalLightDraw(directionLight);
 		impactModel_->DirectionalLightDraw(directionLight);
@@ -169,6 +174,12 @@ private: // メンバ変数
 	bool isAttack_ = false;
 	bool behaviorAttack_ = false;
 
+	//狙っている相手は誰か
+	bool aimPlayer_;
+	bool aimHealer_;
+	bool aimRenju_;
+	bool aimTank_;
+
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 	float sterAngle_[3];
@@ -196,4 +207,6 @@ private: // メンバ変数
 	float randX = 0;
 	float randZ = 0;
 
+	//動き始めるまでの時間
+	int moveTime_ = 0;
 };

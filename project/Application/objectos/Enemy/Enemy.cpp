@@ -181,6 +181,10 @@ void Enemy::Draw(const ViewProjection& camera) {
 void Enemy::MoveInitialize() {
 	time_ = 60 * 2;
 	isAttack_ = false;
+	aimPlayer_ = false;
+	aimHealer_ = false;
+	aimRenju_ = false;
+	aimTank_  = false;
 	behaviorAttack_ = false;
 	animationNumber_ = nomal;
 	animation_->SetLoop(true);
@@ -190,11 +194,49 @@ void Enemy::MoveUpdata() {
 	if (--time_ <= 0) {
 		behaviorRequest_ = Behavior::kAttack;
 	}
+	else {
+
+		
+		// 敵の座標までの距離
+		float length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
+		sub = playerPos_ - GetWorldPosition();
+		if (length > 10) {
+			++moveTime_;
+			if (moveTime_ > 30) {
+				animationNumber_ = run;
+				// y軸周りの回転
+				if (sub.z != 0.0) {
+					destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+					if (sub.z < 0.0) {
+						destinationAngleY_ = (sub.x >= 0.0)
+							? std::numbers::pi_v<float> -destinationAngleY_
+							: -std::numbers::pi_v<float> -destinationAngleY_;
+					}
+				}
+				else {
+					destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+						: -std::numbers::pi_v<float> / 2.0f;
+				}
+
+
+				worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+				worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, playerPos_, 0.03f);
+			}
+			
+		}
+		else {
+			moveTime_ = 0;
+			animationNumber_ = nomal;
+		}
+
+		
+	}
 };
 
 void Enemy::AttackInitialize() {
 
-	int num = RandomGenerator::GetRandomInt(1, 4);
+	/*int num = RandomGenerator::GetRandomInt(1, 4);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -206,12 +248,23 @@ void Enemy::AttackInitialize() {
 	}
 	else if (num == 4) {
 		attackRequest_ = BehaviorAttack::kGround;
-	}
+	}*/
 	behaviorAttack_ = true;
 }
 void Enemy::AttackUpdata() {
 
-
+	if (Input::PressKey(DIK_7)) {
+		attackRequest_ = BehaviorAttack::kNomal;
+	}
+	else if (Input::PressKey(DIK_8)) {
+		attackRequest_ = BehaviorAttack::kDash;
+	}
+	else if (Input::PressKey(DIK_9)) {
+		attackRequest_ = BehaviorAttack::kThrowing;
+	}
+	else if (Input::PressKey(DIK_0)) {
+		attackRequest_ = BehaviorAttack::kGround;
+	}
 
 	if (attackRequest_) {
 		// 振る舞い変更
@@ -252,21 +305,25 @@ void Enemy::AttackUpdata() {
 	}
 }
 
-
+//殴り攻撃
 void Enemy::NomalAttackInitialize() {
 	//対象が死んでいたらもう一回抽選
 	while (true) {
 		num_ = RandomGenerator::GetRandomInt(1, 4);
 		if (num_ == 1) {
+			aimPlayer_ = true;
 			break;
 		}
 		else if (!isDeadHealer_ && num_ == 2) {
+			aimHealer_ = true;
 			break;
 		}
 		else if (!isDeadRenju_ && num_ == 3) {
+			aimRenju_ = true;
 			break;
 		}
 		else if (!isDeadTank_ && num_ == 4) {
+			aimTank_ = true;
 			break;
 		}
 	}

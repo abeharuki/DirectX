@@ -88,14 +88,28 @@ void GameScene::Update() {
 	//当たり判定
 	CheckAllCollision();
 
+	//敵の更新
+	if (!playerManager_->IsOver()) {
+		enemyManager_->Update();
 
+	}
+
+	//敵の情報取得
+	playerManager_->GetPlayer()->SetEnemy(enemyManager_->GetEnemy());
+	healerManager_->GetHealer()->SetEnemy(enemyManager_->GetEnemy());
+	renjuManager_->GetRenju()->SetEnemy(enemyManager_->GetEnemy());
+	tankManager_->GetTank()->SetEnemy(enemyManager_->GetEnemy());
+
+	//playerの更新
 	playerManager_->GetPlayer()->SetEnemyLength(enemyManager_->GetWorldTransform().translate);
 	playerManager_->Update();
-	
 
 	//コマンドの更新
-	command_->SetBehavior(playerManager_->GetPlayer()->IsRoot());
-	command_->Update();
+	if (!playerManager_->GetPlayer()->IsOuto()) {
+		command_->SetBehavior(playerManager_->GetPlayer()->IsRoot());
+		command_->Update();
+	}
+	
 	for (int i = 0; i < kAttackMax; ++i) {
 		playerManager_->GetPlayer()->SetAttack(command_->GetAttack(i), i);
 	}
@@ -103,10 +117,12 @@ void GameScene::Update() {
 	renjuManager_->GetRenju()->SetOperation(command_->GetOperatin());
 	tankManager_->GetTank()->SetOperation(command_->GetOperatin());
 
-	//敵の情報取得
-	healerManager_->GetHealer()->SetEnemy(enemyManager_->GetEnemy());
-	renjuManager_->GetRenju()->SetEnemy(enemyManager_->GetEnemy());
-	tankManager_->GetTank()->SetEnemy(enemyManager_->GetEnemy());
+	//各キャラの更新
+	if (!enemyManager_->IsClear()) {
+		healerManager_->Update();
+		renjuManager_->Update();
+		tankManager_->Update();
+	}
 
 	//プレイヤーに追従
 	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
@@ -165,18 +181,14 @@ void GameScene::Update() {
 	}
 	
 
-	//各キャラの更新
-	if (!enemyManager_->IsClear()) {
-		healerManager_->Update();
-		renjuManager_->Update();
-		tankManager_->Update();
-	}
+	
 
-	//敵の更新
-	if (!playerManager_->IsOver()) {
-		enemyManager_->Update();
+	//攻撃の受け取り
+	if (healerManager_->IsAttack()) {enemyManager_->OnHealerCollision();}
+	if (tankManager_->GetAttack()) {enemyManager_->OnTankCollision();}
+	if (playerManager_->IsAttack()) {enemyManager_->OnCollision();}
 
-	}
+	
 
 	//倒された時のディゾルブ
 	if (playerManager_->GetPlayer()->GetHp() <= 0) {
@@ -343,45 +355,6 @@ void GameScene::CheckAllCollision() {
 			bullet->OnCollision();
 			enemyManager_->OnCollision();
 			renjuManager_->SetParticlePos(posB);
-		}
-	}
-#pragma endregion
-#pragma region 敵キャラとタンクの当たり判定
-	// 敵キャラ座標
-	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x, enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
-	posB = tankManager_->GetTank()->GetWorldPosition();
-
-	if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.0f }, posB, { 1.5f, 1.f, 1.5f })) {
-		if (tankManager_->GetAttack()) {
-			enemyManager_->OnCollision();
-			tankManager_->SetParticlePos(posB);
-		}
-		if (tankManager_->GetTank()->GetStanAttack()) {
-			enemyManager_->GetEnemy()->StanBehavior();
-		}
-	}
-#pragma endregion
-#pragma region 敵キャラとヒーラーの攻撃当たり判定
-	// 敵キャラ座標
-	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x,enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
-	posB = healerManager_->GetCanePos();
-
-	if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.6f }, posB, { 0.25f, 0.4f, 1.0f })) {
-		if (healerManager_->IsAttack()) {
-			enemyManager_->OnCollision();
-			healerManager_->SetParticlePos(posB);
-		}
-	}
-#pragma endregion
-#pragma region 敵キャラと自キャラの攻撃当たり判定
-	// 敵キャラ座標
-	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x,enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
-	posB = playerManager_->katanaPos();
-
-	if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.5f }, posB, { 0.1f, 1.0f, 0.1f })) {
-		if (playerManager_->IsAttack()) {
-			enemyManager_->OnCollision();
-			playerManager_->SetParticlePos(posB);
 		}
 	}
 #pragma endregion
