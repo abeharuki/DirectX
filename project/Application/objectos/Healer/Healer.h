@@ -75,7 +75,10 @@ public: // メンバ関数
 		DirectionLight light;
 		light = directionLight;
 		light.direction *= -1.0f;
-		magicCircle_->DirectionalLightDraw(light);
+		for (int i = 0; i < 4; ++i) {
+			magicCircle_[i]->DirectionalLightDraw(light);
+		}
+		
 	}
 
 	void SetOperation(bool flag) { operation_ = flag; }
@@ -115,7 +118,12 @@ public: // メンバ関数
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
-
+	//座標の受け取り
+	void SetPos(Vector3 playerPos, Vector3 renjuPos, Vector3 tankPos) {
+		pos[0] = playerPos;
+		pos[1] = renjuPos;
+		pos[2] = tankPos;
+	}
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 	//味方キャラのHpの受け取り
@@ -139,15 +147,16 @@ private: // メンバ変数
 	WorldTransform worldTransformHp_[3];
 	WorldTransform worldTransformCane_;
 	WorldTransform worldTransformCollision_;
-	WorldTransform worldTransformMagicCircle_;
+	WorldTransform worldTransformMagicCircle_[4];
 	ViewProjection viewProjection_;
 
 	std::unique_ptr<Animations>animation_;
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 	//魔法陣
-	std::unique_ptr<Model> magicCircle_;
-	float t_;
+	std::unique_ptr<Model> magicCircle_[4];
+	float t_[4];
+	Vector3 pos[3];
 
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;

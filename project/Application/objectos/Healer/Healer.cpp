@@ -15,7 +15,7 @@ void Healer::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
-	magicCircle_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/mahoujin.png"));
+	
 
 
 	// 初期化
@@ -36,10 +36,15 @@ void Healer::Initialize() {
 	worldTransformCollision_.scale = { 0.27f, 0.27f, 1.0f };
 	worldTransformCollision_.translate.z = 1.5f;
 
-	worldTransformMagicCircle_.Initialize();
-	worldTransformMagicCircle_.translate.y = 0.1f;
-	worldTransformMagicCircle_.rotate.x = 4.7f;
-	worldTransformMagicCircle_.scale = { 2.0f,2.0f,2.0f };
+	for (int i = 0; i < 4; ++i) {
+		magicCircle_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/mahoujin.png"));
+		worldTransformMagicCircle_[i].Initialize();
+		worldTransformMagicCircle_[i].translate.y = 0.1f;
+		worldTransformMagicCircle_[i].rotate.x = 4.7f;
+		worldTransformMagicCircle_[i].scale = { 2.0f,2.0f,2.0f };
+		t_[i] = 0.8f;
+	}
+
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -71,7 +76,7 @@ void Healer::Initialize() {
 	behaviorTree_ = new BehaviorTree<Healer>(this);
 	behaviorTree_->Initialize();
 
-	t_ = 0.8f;
+	
 };
 
 /// <summary>
@@ -105,7 +110,10 @@ void Healer::Update() {
 	}
 
 	Relationship();
-	magicCircle_->SetThreshold(t_);
+	for (int i = 0; i < 4; ++i) {
+		magicCircle_[i]->SetThreshold(t_[i]);
+	}
+	
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimHealer()) {
 		if (enemy_->isAttack()) {
@@ -123,7 +131,10 @@ void Healer::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformCane_.TransferMatrix();
-	worldTransformMagicCircle_.UpdateMatrix();
+	for (int i = 0; i < 4; ++i) {
+		worldTransformMagicCircle_[i].UpdateMatrix();
+	}
+	
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
@@ -139,18 +150,21 @@ void Healer::Update() {
 
 	ImGui::Begin("Healer");
 	ImGui::Text("%f", t_);
-	ImGui::DragFloat3("translat", &worldTransformMagicCircle_.translate.x, 0.1f);
-	ImGui::DragFloat3("rotate", &worldTransformMagicCircle_.rotate.x, 0.1f);
-	ImGui::DragFloat3("scale", &worldTransformMagicCircle_.scale.x, 0.1f);
-	ImGui::DragFloat("magicCirecle", &t_, 0.01f);
+	ImGui::DragFloat3("translat", &worldTransformMagicCircle_[0].translate.x, 0.1f);
+	ImGui::DragFloat3("rotate", &worldTransformMagicCircle_[0].rotate.x, 0.1f);
+	ImGui::DragFloat3("scale", &worldTransformMagicCircle_[0].scale.x, 0.1f);
+	ImGui::DragFloat("magicCirecle", &t_[0], 0.01f);
 	ImGui::End();
 };
 
 void Healer::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera,true);
 	particle_->Draw(camera);
+	for (int i = 0; i < 4; ++i) {
+		magicCircle_[i]->Draw(worldTransformMagicCircle_[i], camera, true);
+	}
 
-	magicCircle_->Draw(worldTransformMagicCircle_, camera, true);
+	
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
@@ -380,16 +394,45 @@ void Healer::UniqueInitialize(){
 		healAmount_ = 10;
 	}
 	particle_->SetEmitter(emitter_);
-	coolTime = 50;
-	t_ = 0.8f;
+	coolTime = 60;
+	for (int i = 0; i < 4; ++i) {
+		t_[i] = 0.8f;
+	}
+	
 }
 void Healer::UniqueUpdate(){
-	if (t_ > 0) {
-		t_ -= 0.02f;
+
+	if (allHeal_) {
+		if (t_[0] > 0) {
+			for (int i = 0; i < 4; ++i) {
+				t_[i] -= 0.02f;
+			}
+		}
+		else {
+			for (int i = 0; i < 4; ++i) {
+				t_[i] -= 0.0f;
+			}
+		}
 	}
 	else {
-		t_ = 0;
+		if (t_[0] > 0) {
+			t_[0] -= 0.02f;
+			if (playerHp_ <= 20) {
+				t_[1] -= 0.02f;
+			}
+			if (renjuHp_ <= 20) {
+				t_[2] -= 0.02f;
+			}
+			if (tankHp_ <= 20) {
+				t_[3] -= 0.02f;
+			}
+
+		}
+		else {
+			t_[0] = 0;
+		}
 	}
+	
 	
 
 
@@ -402,7 +445,9 @@ void Healer::UniqueUpdate(){
 		heal_ = true;
 		state_ = CharacterState::Moveing;
 		coolTime = 60;
-		t_ = 0.8f;
+		for (int i = 0; i < 4; ++i) {
+			t_[i] = 0.8f;
+		}
 	}
 }
 
@@ -620,8 +665,16 @@ void Healer::Relationship() {
 			worldTransformCane_.translate),
 		worldTransformBase_.matWorld_);
 
-	worldTransformMagicCircle_.translate.x = worldTransformBase_.translate.x;
-	worldTransformMagicCircle_.translate.z = worldTransformBase_.translate.z;
+	worldTransformMagicCircle_[0].translate.x = worldTransformBase_.translate.x;
+	worldTransformMagicCircle_[0].translate.z = worldTransformBase_.translate.z;
+
+	worldTransformMagicCircle_[1].translate.x = pos[0].x;
+	worldTransformMagicCircle_[1].translate.z = pos[0].z;
+	worldTransformMagicCircle_[2].translate.x = pos[1].x;
+	worldTransformMagicCircle_[2].translate.z = pos[1].z;
+	worldTransformMagicCircle_[3].translate.x = pos[2].x;
+	worldTransformMagicCircle_[3].translate.z = pos[2].z;
+
 
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection_.matView);

@@ -67,7 +67,6 @@ void GameScene::Initialize() {
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 
-	PostEffect::GetInstance()->isBloom(true);
 }
 
 void GameScene::Update() {
@@ -124,6 +123,8 @@ void GameScene::Update() {
 		tankManager_->Update();
 	}
 
+	//魔法陣に使う座標の受け取り
+	healerManager_->GetHealer()->SetPos(playerManager_->GetPlayer()->GetWorldPosition(), renjuManager_->GetRenju()->GetWorldPosition(), tankManager_->GetTank()->GetWorldPosition());
 
 	if (healerManager_->GetHealer()->GetHeal()) {
 		//全体回復
