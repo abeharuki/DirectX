@@ -15,6 +15,9 @@ void Healer::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
+	magicCircle_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/mahoujin.png"));
+
+
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = 4.0f;
@@ -33,6 +36,10 @@ void Healer::Initialize() {
 	worldTransformCollision_.scale = { 0.27f, 0.27f, 1.0f };
 	worldTransformCollision_.translate.z = 1.5f;
 
+	worldTransformMagicCircle_.Initialize();
+	worldTransformMagicCircle_.translate.y = 0.1f;
+	worldTransformMagicCircle_.rotate.x = 4.7f;
+	worldTransformMagicCircle_.scale = { 2.0f,2.0f,2.0f };
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -63,6 +70,8 @@ void Healer::Initialize() {
 	// ビヘイビアツリーの初期化
 	behaviorTree_ = new BehaviorTree<Healer>(this);
 	behaviorTree_->Initialize();
+
+	t_ = 0.8f;
 };
 
 /// <summary>
@@ -96,7 +105,7 @@ void Healer::Update() {
 	}
 
 	Relationship();
-
+	magicCircle_->SetThreshold(t_);
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimHealer()) {
 		if (enemy_->isAttack()) {
@@ -114,6 +123,7 @@ void Healer::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformCane_.TransferMatrix();
+	worldTransformMagicCircle_.UpdateMatrix();
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
@@ -122,16 +132,25 @@ void Healer::Update() {
 		animation_->SetLoop(false);
 		animation_->Update(0);
 	}
-
+	
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("HealerHp", &hp_, 1.0f);
 	ImGui::End();
 
+	ImGui::Begin("Healer");
+	ImGui::Text("%f", t_);
+	ImGui::DragFloat3("translat", &worldTransformMagicCircle_.translate.x, 0.1f);
+	ImGui::DragFloat3("rotate", &worldTransformMagicCircle_.rotate.x, 0.1f);
+	ImGui::DragFloat3("scale", &worldTransformMagicCircle_.scale.x, 0.1f);
+	ImGui::DragFloat("magicCirecle", &t_, 0.01f);
+	ImGui::End();
 };
 
 void Healer::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera,true);
 	particle_->Draw(camera);
+
+	magicCircle_->Draw(worldTransformMagicCircle_, camera, true);
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
@@ -361,10 +380,20 @@ void Healer::UniqueInitialize(){
 		healAmount_ = 10;
 	}
 	particle_->SetEmitter(emitter_);
-	coolTime = 60;
+	coolTime = 50;
+	t_ = 0.8f;
 }
 void Healer::UniqueUpdate(){
+	if (t_ > 0) {
+		t_ -= 0.02f;
+	}
+	else {
+		t_ = 0;
+	}
 	
+
+
+
 	--coolTime;
 	particle_->SetTranslate(worldTransformBase_.translate);
 	particle_->Update();
@@ -373,6 +402,7 @@ void Healer::UniqueUpdate(){
 		heal_ = true;
 		state_ = CharacterState::Moveing;
 		coolTime = 60;
+		t_ = 0.8f;
 	}
 }
 
@@ -589,6 +619,9 @@ void Healer::Relationship() {
 			worldTransformCane_.scale, worldTransformCane_.rotate,
 			worldTransformCane_.translate),
 		worldTransformBase_.matWorld_);
+
+	worldTransformMagicCircle_.translate.x = worldTransformBase_.translate.x;
+	worldTransformMagicCircle_.translate.z = worldTransformBase_.translate.z;
 
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection_.matView);

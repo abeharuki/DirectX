@@ -70,7 +70,13 @@ public: // メンバ関数
 	//逃げる方向
 	void RunAway();
 
-	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
+	void SetLight(DirectionLight directionLight) { 
+		animation_->DirectionalLightDraw(directionLight);
+		DirectionLight light;
+		light = directionLight;
+		light.direction *= -1.0f;
+		magicCircle_->DirectionalLightDraw(light);
+	}
 
 	void SetOperation(bool flag) { operation_ = flag; }
 
@@ -133,11 +139,15 @@ private: // メンバ変数
 	WorldTransform worldTransformHp_[3];
 	WorldTransform worldTransformCane_;
 	WorldTransform worldTransformCollision_;
+	WorldTransform worldTransformMagicCircle_;
 	ViewProjection viewProjection_;
 
 	std::unique_ptr<Animations>animation_;
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
+	//魔法陣
+	std::unique_ptr<Model> magicCircle_;
+	float t_;
 
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;

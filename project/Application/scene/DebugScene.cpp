@@ -54,12 +54,12 @@ void DebugScene::Initialize() {
 	worldTransformModel_.translate.y = 3.5f;
 	worldTransformSter_[0].Initialize();
 	worldTransformSter_[1].Initialize();
-	sprite_.reset(Sprite::Create("resources/H.png"));
+	sprite_.reset(Sprite::Create("resources/mahoujin.png"));
 	
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
+	model_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/mahoujin.png"));
 	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -138,9 +138,9 @@ void DebugScene::Update() {
 	
 	
 
-	Math::UpdateCircularMotion3D(worldTransformAnimation_.translate.x, worldTransformAnimation_.translate.z, 0, 0, 2.0f, angle_[0], 0.05f);
-	Math::UpdateCircularMotion3D(worldTransformSter_[0].translate.x, worldTransformSter_[0].translate.z, 0, 0, 2.0f, angle_[1], 0.05f);
-	Math::UpdateCircularMotion3D(worldTransformSter_[1].translate.x, worldTransformSter_[1].translate.z, 0, 0, 2.0f, angle_[2], 0.05f);
+	//Math::UpdateCircularMotion3D(worldTransformAnimation_.translate.x, worldTransformAnimation_.translate.z, 0, 0, 2.0f, angle_[0], 0.05f);
+	//Math::UpdateCircularMotion3D(worldTransformSter_[0].translate.x, worldTransformSter_[0].translate.z, 0, 0, 2.0f, angle_[1], 0.05f);
+	//Math::UpdateCircularMotion3D(worldTransformSter_[1].translate.x, worldTransformSter_[1].translate.z, 0, 0, 2.0f, angle_[2], 0.05f);
 	
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
@@ -354,9 +354,9 @@ void DebugScene::Draw() {
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
 	model_->Draw(worldTransformAnimation_, viewProjection_, true);
-	ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
-	ster_[1]->Draw(worldTransformSter_[1], viewProjection_, true);
-	sprite_->Draw();
+	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
+	ster_[1]->Draw(worldTransformSter_[1], viewProjection_, true);*/
+	//sprite_->Draw();
 
 	/*debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
