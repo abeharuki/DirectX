@@ -118,6 +118,78 @@
     <Filter Include="ソース ファイル\Application\Game">
       <UniqueIdentifier>{1534bb5b-8595-40c8-ac3c-4bbd0a6ba973}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Application\BehaviorTree">
+      <UniqueIdentifier>{d99b7569-be09-464e-aa6f-183b049ac326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\BehaviorTree">
+      <UniqueIdentifier>{75b625c5-29e9-466b-8002-8a0dc0841207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\BehaviorTree\ActionNodes">
+      <UniqueIdentifier>{47189b2b-6c9d-4709-943c-2603c4b9df6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\objects\Enemy">
+      <UniqueIdentifier>{56269e4d-43b6-465b-bce4-1ac4e8b4eb51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\objects\Player">
+      <UniqueIdentifier>{b88d9b6d-4a0e-40e5-b867-d612a1fc99ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\objects\Tank">
+      <UniqueIdentifier>{162cef92-ac62-4355-850a-ffa120a583b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\objects\Healer">
+      <UniqueIdentifier>{d26f9bc5-9cfb-433f-bfa3-20907e6522ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\objects\Renju">
+      <UniqueIdentifier>{1d13b3a7-2c87-4e91-8060-cdf2845d7cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\Animation">
+      <UniqueIdentifier>{54a3d788-9e2f-4f96-aac1-c5b7ac152ff6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\PostEffects">
+      <UniqueIdentifier>{ad36aafa-d570-4f11-8ab2-7529581ca77d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\CollisionManager">
+      <UniqueIdentifier>{ba669095-8930-4a76-89a1-9ffc13a724a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Engine\Utilities">
+      <UniqueIdentifier>{1b522cc8-54b1-4a3b-9a9d-8318c6e66594}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\Animation">
+      <UniqueIdentifier>{1f6532fc-0ce3-4352-97e7-db8b9d70b187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\PostEffects">
+      <UniqueIdentifier>{142e0a33-ade2-4c5b-8693-f98f9cd876ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\CollisionManager">
+      <UniqueIdentifier>{12ca9637-c241-476b-8444-13eec8736f05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Engine\Utilities">
+      <UniqueIdentifier>{1ce641cd-cfe6-402b-baca-f7aa1692fe97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\objects\Enemy">
+      <UniqueIdentifier>{1f311c47-45b3-4c1d-bbb3-821af1f9bc4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\objects\Player">
+      <UniqueIdentifier>{e35ace1f-6dc4-4e47-b9e1-90b52abd58af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\objects\Tank">
+      <UniqueIdentifier>{ff5a6424-59d7-47aa-b23b-26758d3ff07e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\objects\Renju">
+      <UniqueIdentifier>{bc873ef8-958c-4830-9edd-9eb0d0e42d7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Application\objects\Healer">
+      <UniqueIdentifier>{b100dac7-8e8f-4983-a2e1-a1681d15be36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\VS">
+      <UniqueIdentifier>{78cfc631-7ccc-4aa8-b336-f3a133a8c079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\PS">
+      <UniqueIdentifier>{0e31597b-f216-4661-9a21-ef56d9260502}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\CS">
+      <UniqueIdentifier>{4e837183-7f4d-4ec2-b177-fb1ecb8786e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -155,9 +227,6 @@
     </ClCompile>
     <ClCompile Include="Engine\Manager\Input\Input.cpp">
       <Filter>ソース ファイル\Engine\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Player\Player.cpp">
-      <Filter>ソース ファイル\Application\objects</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\StringUtility.cpp">
       <Filter>ソース ファイル\Engine\base</Filter>
@@ -234,169 +303,200 @@
     <ClCompile Include="Application\Game\game.cpp">
       <Filter>ソース ファイル\Application\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\CollisionManager\CollisionManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\scene\LoadScene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Application\base\Ground.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Utilities\RandomGenerator.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Player\PlayerManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Enemy\Enemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Enemy\EnemyManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Healer\HealerManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Healer\Healer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Tank\Tank.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Tank\TankManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Renju\Renju.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Renju\RenjuBullet.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Renju\RenjuParticle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Renju\RenjuManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\scene\TutorialScene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Manager\ModelManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Animation\Animation.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\base\DescriptorHeap.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\PostEffects\PostEffect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Animation\Skeleton.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Animation\Skinning.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3d\Line.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3d\ModelLoader.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\scene\DebugScene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3d\Skybox.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\PostEffects\OutLine.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Player\DebugPlayer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3d\Material.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\base\ColorBuffer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\PostEffects\Dissolve.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\3d\LineBox.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\PostEffects\GasianBlur.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\PostEffects\Bloom.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\CollisionManager\ColliderManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Command\Command.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\base\RWStructuredBuffer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\base\StructuredBuffer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\BehaviorTree\CompositeNode.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Application\base</Filter>
     </ClCompile>
     <ClCompile Include="Application\BehaviorTree\ConditionNode.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Application\BehaviorTree</Filter>
     </ClCompile>
-    <ClCompile Include="Application\BehaviorTree\SelectorNode.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Application\BehaviorTree\CompositeNode.cpp">
+      <Filter>ソース ファイル\Application\BehaviorTree</Filter>
     </ClCompile>
     <ClCompile Include="Application\BehaviorTree\SequenceNode.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Application\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\BehaviorTree\SelectorNode.cpp">
+      <Filter>ソース ファイル\Application\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Command\Command.cpp">
+      <Filter>ソース ファイル\Application\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\scene\DebugScene.cpp">
+      <Filter>ソース ファイル\Application\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\scene\LoadScene.cpp">
+      <Filter>ソース ファイル\Application\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\scene\TutorialScene.cpp">
+      <Filter>ソース ファイル\Application\scene</Filter>
     </ClCompile>
     <ClCompile Include="Application\objectos\Enemy\DebugEnemy.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Application\objects\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Player\DebugPlayer.cpp">
+      <Filter>ソース ファイル\Application\objects\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Healer\Healer.cpp">
+      <Filter>ソース ファイル\Application\objects\Healer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Enemy\EnemyManager.cpp">
+      <Filter>ソース ファイル\Application\objects\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Enemy\Enemy.cpp">
+      <Filter>ソース ファイル\Application\objects\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Renju\Renju.cpp">
+      <Filter>ソース ファイル\Application\objects\Renju</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Healer\HealerManager.cpp">
+      <Filter>ソース ファイル\Application\objects\Healer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Renju\RenjuBullet.cpp">
+      <Filter>ソース ファイル\Application\objects\Renju</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Renju\RenjuManager.cpp">
+      <Filter>ソース ファイル\Application\objects\Renju</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Player\PlayerManager.cpp">
+      <Filter>ソース ファイル\Application\objects\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Renju\RenjuParticle.cpp">
+      <Filter>ソース ファイル\Application\objects\Renju</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Tank\TankManager.cpp">
+      <Filter>ソース ファイル\Application\objects\Tank</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Tank\Tank.cpp">
+      <Filter>ソース ファイル\Application\objects\Tank</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\objectos\Player\Player.cpp">
+      <Filter>ソース ファイル\Application\objects\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Animation\Animation.cpp">
+      <Filter>ソース ファイル\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\CollisionManager\ColliderManager.cpp">
+      <Filter>ソース ファイル\Engine\CollisionManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\CollisionManager\CollisionManager.cpp">
+      <Filter>ソース ファイル\Engine\CollisionManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffects\Bloom.cpp">
+      <Filter>ソース ファイル\Engine\PostEffects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\ColorBuffer.cpp">
+      <Filter>ソース ファイル\Engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffects\Dissolve.cpp">
+      <Filter>ソース ファイル\Engine\PostEffects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\DescriptorHeap.cpp">
+      <Filter>ソース ファイル\Engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffects\GasianBlur.cpp">
+      <Filter>ソース ファイル\Engine\PostEffects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\Line.cpp">
+      <Filter>ソース ファイル\Engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\LineBox.cpp">
+      <Filter>ソース ファイル\Engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\Material.cpp">
+      <Filter>ソース ファイル\Engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\ModelLoader.cpp">
+      <Filter>ソース ファイル\Engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Manager\ModelManager.cpp">
+      <Filter>ソース ファイル\Engine\Maneger</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffects\OutLine.cpp">
+      <Filter>ソース ファイル\Engine\PostEffects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffects\PostEffect.cpp">
+      <Filter>ソース ファイル\Engine\PostEffects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Utilities\RandomGenerator.cpp">
+      <Filter>ソース ファイル\Engine\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\RWStructuredBuffer.cpp">
+      <Filter>ソース ファイル\Engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Animation\Skeleton.cpp">
+      <Filter>ソース ファイル\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Animation\Skinning.cpp">
+      <Filter>ソース ファイル\Engine\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\StructuredBuffer.cpp">
+      <Filter>ソース ファイル\Engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\3d\Skybox.cpp">
+      <Filter>ソース ファイル\Engine\3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="resources\hlsl\Particle.VS.hlsl">
-      <Filter>リソース ファイル</Filter>
+    <FxCompile Include="resources\hlsl\Bloom.PS.hlsl">
+      <Filter>リソース ファイル\PS</Filter>
     </FxCompile>
-    <FxCompile Include="resources\hlsl\Particle.PS.hlsl">
-      <Filter>リソース ファイル</Filter>
+    <FxCompile Include="resources\hlsl\Dissolve.PS.hlsl">
+      <Filter>リソース ファイル\PS</Filter>
     </FxCompile>
-    <FxCompile Include="resources\hlsl\Object3d.VS.hlsl">
-      <Filter>リソース ファイル</Filter>
+    <FxCompile Include="resources\hlsl\Fullscreen.VS.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\GasianBlur.PS.hlsl">
+      <Filter>リソース ファイル\PS</Filter>
     </FxCompile>
     <FxCompile Include="resources\hlsl\Object3d.PS.hlsl">
-      <Filter>リソース ファイル</Filter>
+      <Filter>リソース ファイル\PS</Filter>
     </FxCompile>
-    <FxCompile Include="resources\hlsl\SpritePS.hlsl">
-      <Filter>リソース ファイル</Filter>
+    <FxCompile Include="resources\hlsl\Object3d.VS.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\Particle.PS.hlsl">
+      <Filter>リソース ファイル\PS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\Line.PS.hlsl">
+      <Filter>リソース ファイル\PS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\PostEffect.PS.hlsl">
+      <Filter>リソース ファイル\PS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\Particle.VS.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\SkinningObject3d.VS.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\Skybox.PS.hlsl">
+      <Filter>リソース ファイル\PS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\Skybox.VS.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
     <FxCompile Include="resources\hlsl\SpriteVS.hlsl">
-      <Filter>リソース ファイル</Filter>
+      <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
-    <FxCompile Include="resources\hlsl\Fullscreen.VS.hlsl" />
-    <FxCompile Include="resources\hlsl\PostEffect.PS.hlsl" />
-    <FxCompile Include="resources\hlsl\SkinningObject3d.VS.hlsl" />
-    <FxCompile Include="resources\hlsl\Line.PS.hlsl" />
-    <FxCompile Include="resources\hlsl\Skybox.VS.hlsl" />
-    <FxCompile Include="resources\hlsl\Skybox.PS.hlsl" />
-    <FxCompile Include="resources\hlsl\OutLine.PS.hlsl" />
-    <FxCompile Include="resources\hlsl\Skinning.CS.hlsl" />
-    <FxCompile Include="resources\hlsl\Dissolve.PS.hlsl" />
-    <FxCompile Include="resources\hlsl\GasianBlur.PS.hlsl" />
-    <FxCompile Include="resources\hlsl\Bloom.PS.hlsl" />
-    <FxCompile Include="resources\hlsl\InitializeParticle.CS.hlsl" />
-    <FxCompile Include="resources\hlsl\EmiteParticle.CS.hlsl" />
-    <FxCompile Include="resources\hlsl\UpdateParticle.CS.hlsl" />
+    <FxCompile Include="resources\hlsl\SpritePS.hlsl">
+      <Filter>リソース ファイル\PS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\EmiteParticle.CS.hlsl">
+      <Filter>リソース ファイル\CS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\InitializeParticle.CS.hlsl">
+      <Filter>リソース ファイル\CS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\Skinning.CS.hlsl">
+      <Filter>リソース ファイル\CS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\OutLine.PS.hlsl">
+      <Filter>リソース ファイル\PS</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\hlsl\UpdateParticle.CS.hlsl">
+      <Filter>リソース ファイル\CS</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -477,9 +577,6 @@
     <ClInclude Include="Application\base\GlobalVariables\GlobalVariables.h">
       <Filter>ヘッダー ファイル\Application\base\GlobalVariables</Filter>
     </ClInclude>
-    <ClInclude Include="Application\objectos\Player\Player.h">
-      <Filter>ヘッダー ファイル\Application\objects</Filter>
-    </ClInclude>
     <ClInclude Include="Application\base\camera\followCamera.h">
       <Filter>ヘッダー ファイル\Application\base</Filter>
     </ClInclude>
@@ -519,173 +616,176 @@
     <ClInclude Include="Application\Game\game.h">
       <Filter>ヘッダー ファイル\Application\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\CollisionManager\CollisionManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\CollisionManager\CollisionConfig.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\CollisionManager\Collider.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\scene\LoadScene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\base\Ground.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Utilities\RandomGenerator.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Player\PlayerManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Enemy\Enemy.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Enemy\EnemyManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Healer\Healer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Healer\HealerManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Tank\Tank.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Tank\TankManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Renju\RenjuManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Renju\RenjuParticle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Renju\RenjuBullet.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Renju\Renju.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\scene\TutorialScene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Math\Quaternion.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Manager\ModelManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\ActionNode.h">
+      <Filter>ヘッダー ファイル\Application\BehaviorTree\ActionNodes</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Animation\Animation.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\base\DescriptorHandle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\base\DescriptorHeap.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\PostEffects\PostEffect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Animation\Skinning.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Animation\Skeleton.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Line.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\ModelLoader.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\scene\DebugScene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Skybox.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\PostEffects\OutLine.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Player\DebugPlayer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\Material.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\base\GpuResource.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\base\ColorBuffer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\PostEffects\Dissolve.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\3d\LineBox.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\PostEffects\GasianBlur.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\PostEffects\Bloom.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\CollisionManager\ColliderManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Command\Command.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\base\RWStructuredBuffer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\base\StructuredBuffer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\BehaviorTreeNode.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\CompositeNode.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\SelectorNode.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\SequenceNode.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\ActionNodes\ActionNode.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\ConditionNode.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\BehaviorTree.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\ActionNodes\JumpActionNode.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\BehaviorTree\ActionNodes\MoveActionNode.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Application\BehaviorTree\ActionNodes\AttackActionNode.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\BehaviorTree\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\BehaviorTree.h">
+      <Filter>ヘッダー ファイル\Application\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\BehaviorTreeNode.h">
+      <Filter>ヘッダー ファイル\Application\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffects\Bloom.h">
+      <Filter>ヘッダー ファイル\Engine\PostEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionManager\Collider.h">
+      <Filter>ヘッダー ファイル\Engine\CollisionManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionManager\ColliderManager.h">
+      <Filter>ヘッダー ファイル\Engine\CollisionManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionManager\CollisionConfig.h">
+      <Filter>ヘッダー ファイル\Engine\CollisionManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionManager\CollisionManager.h">
+      <Filter>ヘッダー ファイル\Engine\CollisionManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\ColorBuffer.h">
+      <Filter>ヘッダー ファイル\Engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Command\Command.h">
+      <Filter>ヘッダー ファイル\Application\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\CompositeNode.h">
+      <Filter>ヘッダー ファイル\Application\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\ConditionNode.h">
+      <Filter>ヘッダー ファイル\Application\BehaviorTree</Filter>
     </ClInclude>
     <ClInclude Include="Application\BehaviorTree\ActionNodes\DeadActionNode.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\BehaviorTree\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\scene\DebugScene.h">
+      <Filter>ヘッダー ファイル\Application\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DescriptorHandle.h">
+      <Filter>ヘッダー ファイル\Engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\DescriptorHeap.h">
+      <Filter>ヘッダー ファイル\Engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffects\Dissolve.h">
+      <Filter>ヘッダー ファイル\Engine\PostEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffects\GasianBlur.h">
+      <Filter>ヘッダー ファイル\Engine\PostEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\base\Ground.h">
+      <Filter>ヘッダー ファイル\Application\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\GpuResource.h">
+      <Filter>ヘッダー ファイル\Engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\JumpActionNode.h">
+      <Filter>ヘッダー ファイル\Application\BehaviorTree\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\Line.h">
+      <Filter>ヘッダー ファイル\Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\LineBox.h">
+      <Filter>ヘッダー ファイル\Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\scene\LoadScene.h">
+      <Filter>ヘッダー ファイル\Application\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\Material.h">
+      <Filter>ヘッダー ファイル\Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\ModelLoader.h">
+      <Filter>ヘッダー ファイル\Engine\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Manager\ModelManager.h">
+      <Filter>ヘッダー ファイル\Engine\Maneger</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\MoveActionNode.h">
+      <Filter>ヘッダー ファイル\Application\BehaviorTree\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffects\OutLine.h">
+      <Filter>ヘッダー ファイル\Engine\PostEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffects\PostEffect.h">
+      <Filter>ヘッダー ファイル\Engine\PostEffects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\Quaternion.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\SelectorNode.h">
+      <Filter>ヘッダー ファイル\Application\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\BehaviorTree\SequenceNode.h">
+      <Filter>ヘッダー ファイル\Application\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\scene\TutorialScene.h">
+      <Filter>ヘッダー ファイル\Application\scene</Filter>
     </ClInclude>
     <ClInclude Include="Application\BehaviorTree\ActionNodes\UniqueActionNode.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\BehaviorTree\ActionNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\StructuredBuffer.h">
+      <Filter>ヘッダー ファイル\Engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\base\RWStructuredBuffer.h">
+      <Filter>ヘッダー ファイル\Engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Animation\Skeleton.h">
+      <Filter>ヘッダー ファイル\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Animation\Skinning.h">
+      <Filter>ヘッダー ファイル\Engine\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Utilities\RandomGenerator.h">
+      <Filter>ヘッダー ファイル\Engine\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\3d\Skybox.h">
+      <Filter>ヘッダー ファイル\Engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="Application\objectos\Enemy\DebugEnemy.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\objects\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Player\DebugPlayer.h">
+      <Filter>ヘッダー ファイル\Application\objects\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Enemy\Enemy.h">
+      <Filter>ヘッダー ファイル\Application\objects\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Enemy\EnemyManager.h">
+      <Filter>ヘッダー ファイル\Application\objects\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Healer\Healer.h">
+      <Filter>ヘッダー ファイル\Application\objects\Healer</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Player\Player.h">
+      <Filter>ヘッダー ファイル\Application\objects\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Healer\HealerManager.h">
+      <Filter>ヘッダー ファイル\Application\objects\Healer</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Player\PlayerManager.h">
+      <Filter>ヘッダー ファイル\Application\objects\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Renju\Renju.h">
+      <Filter>ヘッダー ファイル\Application\objects\Renju</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Renju\RenjuBullet.h">
+      <Filter>ヘッダー ファイル\Application\objects\Renju</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Renju\RenjuManager.h">
+      <Filter>ヘッダー ファイル\Application\objects\Renju</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Renju\RenjuParticle.h">
+      <Filter>ヘッダー ファイル\Application\objects\Renju</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Tank\Tank.h">
+      <Filter>ヘッダー ファイル\Application\objects\Tank</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\objectos\Tank\TankManager.h">
+      <Filter>ヘッダー ファイル\Application\objects\Tank</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -703,7 +803,11 @@
     <None Include="resources\hlsl\Sprite.hlsli">
       <Filter>リソース ファイル</Filter>
     </None>
-    <None Include="resources\hlsl\Fullscreen.hlsli" />
-    <None Include="resources\hlsl\Skybox.hlsli" />
+    <None Include="resources\hlsl\Fullscreen.hlsli">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="resources\hlsl\Skybox.hlsli">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>

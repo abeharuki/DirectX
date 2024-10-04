@@ -12,7 +12,7 @@ void DebugEnemy::Initialize() {
 	worldTransformSphere_.Initialize();
 	worldTransformSphere_.translate.y = 1.0f;
 	sphere_ = std::make_unique<Sphere>();
-	sphere_.reset(Sphere::CreateSphere("resources/monsterBall.png"));
+	sphere_.reset(Sphere::CreateSphere("resources/mahoujin.png"));
 	velocity_.x = 0.3f;
 
 	animation_ = std::make_unique<Animations>();
