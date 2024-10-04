@@ -30,7 +30,19 @@ void Tank::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 
-	
+	emitter_ = {
+	.translate{0,0,0},
+	.count{50},
+	.frequency{0.02f},
+	.frequencyTime{0.0f},
+	.scaleRange{.min{0.1f,0.1f,0.1f},.max{0.1f,0.1f,0.1f}},
+	.translateRange{.min{-0.5f,0.0f,-0.5f},.max{0.5f,1.0f,0.5f}},
+	.colorRange{.min{1.f,0,0.0f},.max{1.f,0.5f,0.0f}},
+	.lifeTimeRange{.min{0.5f},.max{0.5f}},
+	.velocityRange{.min{0.f,0.0f,0.f},.max{0.f,0.01f,0.0f}},
+	};
+	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
+	particle_->SetEmitter(emitter_);
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
@@ -97,6 +109,9 @@ void Tank::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformShield_.TransferMatrix();
+	particle_->SetTranslate(worldTransformBase_.translate);
+	
+
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
@@ -126,6 +141,7 @@ void Tank::Draw(const ViewProjection& camera) {
 	if (state_ == CharacterState::Unique) {
 		shield_->Draw(worldTransformShield_, camera, true);
 	}
+	particle_->Draw(camera);
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
@@ -154,7 +170,7 @@ void Tank::MoveUpdate() {
 	}
 
 	if (enemy_->GetBehavior() != Behavior::kStan && !operation_) {
-		if (enemy_->IsBehaberAttack() && enemy_->GetBehaviorAttack() != BehaviorAttack::kGround && mp_ >= 20) {
+		if (enemy_->IsBehaberAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && mp_ >= 20) {
 			state_ = CharacterState::Unique;
 		}
 	}
@@ -361,7 +377,7 @@ void Tank::UniqueInitialize(){
 }
 void Tank::UniqueUpdate(){
 	--fireTimer_;
-
+	particle_->Update();
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = enemyPos_ - GetWorldPosition();
 
@@ -381,6 +397,9 @@ void Tank::UniqueUpdate(){
 
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
+	if (length <= 4) {
+		stanAttack_ = true;
+	}
 	if (fireTimer_ > 10) {
 		velocity_ = { 0.0f,0.0f,-0.01f };
 		const float kCharacterSpeed = 0.1f;
@@ -391,7 +410,7 @@ void Tank::UniqueUpdate(){
 		worldTransformBase_.translate += velocity_;
 	}
 	else if (fireTimer_ <= 5 && fireTimer_ > 0) {
-		stanAttack_ = true;
+		
 		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos_, 0.2f);
 	}
 	else if (fireTimer_ <= 0) {

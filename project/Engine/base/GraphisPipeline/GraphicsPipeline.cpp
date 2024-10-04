@@ -151,6 +151,146 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateGraphicsPipel
 	}
 }
 
+Microsoft::WRL::ComPtr<ID3D12PipelineState> GraphicsPipeline::CreateNoDepthGraphicsPipeline(BlendMode blendMode_)
+{
+
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState;
+
+	sPipelineState = nullptr;
+
+#pragma region InputLayout
+
+	// InputLayoutの設定
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
+	inputElementDescs[0].SemanticName = "POSITION";
+	inputElementDescs[0].SemanticIndex = 0;
+	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputElementDescs[1].SemanticName = "TEXCOORD";
+	inputElementDescs[1].SemanticIndex = 0;
+	inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputElementDescs[2].SemanticName = "NORMAL";
+	inputElementDescs[2].SemanticIndex = 0;
+	inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
+	inputLayoutDesc.pInputElementDescs = inputElementDescs;
+	inputLayoutDesc.NumElements = _countof(inputElementDescs);
+
+#pragma endregion
+
+#pragma region BlendState
+	// BlendStateの設定
+	D3D12_BLEND_DESC blendDesc{};
+	// すべての色要素を書き込む
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.AlphaToCoverageEnable = FALSE; // アンチエイリアシング有無
+	blendDesc.IndependentBlendEnable = FALSE; // ブレンドステートを個別化するか有無
+
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+
+
+
+	// ブレンディング係数の設定
+	switch (blendMode_) {
+	case BlendMode::kNone:
+		blendDesc.RenderTarget[0].BlendEnable = FALSE;
+		break;
+	case BlendMode::kNormal:
+		blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		break;
+	case BlendMode::kAdd:
+		blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+		break;
+	case BlendMode::kSubtract:
+		blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+		break;
+	case BlendMode::kMultily:
+		blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンディング有無
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
+		break;
+	}
+
+
+#pragma endregion
+
+#pragma region RasiterzerState
+
+	// RasiterzerStateの設定
+	D3D12_RASTERIZER_DESC rasterizerDesc{};
+	// 裏面(時計回り)を表示しない
+	rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
+	// 三角形の中を塗りつぶす
+	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+
+#pragma endregion
+
+#pragma region PSO
+
+	// PSO生成
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
+	graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get(); // RootSignature
+
+	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;         // InputLayout
+
+	graphicsPipelineStateDesc.VS = {
+		vertexShaderBlob_->GetBufferPointer(),
+		vertexShaderBlob_->GetBufferSize() }; // VertexShader
+	graphicsPipelineStateDesc.PS = {
+		pixelShaderBlob_->GetBufferPointer(),
+		pixelShaderBlob_->GetBufferSize() }; // PixelShader
+
+	graphicsPipelineStateDesc.BlendState = blendDesc;           // BrendState
+	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc; // RasterizerState
+
+	// 書き込むRTVの情報
+	graphicsPipelineStateDesc.NumRenderTargets = 1;
+	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	// 利用するトロポジ（形状）のタイプ。三角形
+	graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	// どのように画面に色を打ち込むの設定
+	graphicsPipelineStateDesc.SampleDesc.Count = 1;
+	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+
+	// DepthStencilStateの設定
+	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+	// Depthの機能を有効化する
+	depthStencilDesc.DepthEnable = false;
+	// 書き込みします
+	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	// 比較関数はLessEqual。つまり、近ければ描画される
+	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+
+	// DepthStencilの設定
+	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
+	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+#pragma endregion
+
+	// 実際に生成
+	HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		&graphicsPipelineStateDesc, IID_PPV_ARGS(&sPipelineState));
+	assert(SUCCEEDED(hr_));
+
+	return sPipelineState;
+
+}
+
 Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateSkyboxGraphicsPipeline(BlendMode blendMode_) {
 	if (skyboxPipelineState_) {
 		return skyboxPipelineState_;
@@ -814,7 +954,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateAnimationGrap
 		inputElementDescs[2].SemanticIndex = 0;
 		inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 		inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-		
+
 
 		D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 		inputLayoutDesc.pInputElementDescs = inputElementDescs;
@@ -949,7 +1089,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateAnimationCSGr
 		// PSO生成
 		D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc{};
 
-		computePipelineStateDesc.CS= {
+		computePipelineStateDesc.CS = {
 			.pShaderBytecode = animationComputeShaderBlob_->GetBufferPointer(),
 			.BytecodeLength = animationComputeShaderBlob_->GetBufferSize() };
 #pragma endregion
@@ -1080,7 +1220,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateOutLineGraphi
 
 #pragma region InputLayout
 
-		
+
 		D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 		inputLayoutDesc.pInputElementDescs = nullptr;
 		inputLayoutDesc.NumElements = 0;
@@ -1249,7 +1389,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateDissolveGraph
 		// DepthStencilの設定
 		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		
+
 #pragma endregion
 
 		// 実際に生成
@@ -1285,7 +1425,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateRootSignatur
 	descriptorRange[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
 	descriptorRange[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
-	
+
 
 
 	// RootSignature作成. 複数設定できるので配列。
@@ -2076,7 +2216,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateAnimationRoo
 	//rootParameters[9].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
 	//rootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	//rootParameters[9].Descriptor.ShaderRegister = 3; // レジスタ番号3を使う
-	
+
 
 
 	// RootSignature作成
@@ -2341,7 +2481,7 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateOutLineRootS
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorDepth; // Tableの中身の配列を指定
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
-	
+
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
@@ -2732,7 +2872,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateParticleCSShader()
 	return GraphicsPipeline::GetInstance()->particleComputeShaderBlob_;
 }
 
-Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateEmiteCSShader(){
+Microsoft::WRL::ComPtr<IDxcBlob> GraphicsPipeline::CreateEmiteCSShader() {
 	HRESULT hr_ = S_FALSE;
 
 	// dxcCompilerを初期化

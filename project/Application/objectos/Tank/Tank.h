@@ -9,6 +9,7 @@
 #include <Animation/Animation.h>
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
+#include <ParticleSystem.h>
 
 /// <summary>
 /// ゲームシーン
@@ -131,6 +132,9 @@ private: // メンバ変数
 	CharacterState state_;
 	CharacterState previousState_;
 	std::unique_ptr<Model>shield_;
+
+	std::unique_ptr<ParticleSystem> particle_;
+	EmitterSphere emitter_{};
 
 	// 速度
 	Vector3 velocity_ = {};

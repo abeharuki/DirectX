@@ -159,8 +159,8 @@ private: // メンバ変数
 	Vector3 pos[3];
 
 	//パーティクル
-	std::unique_ptr<ParticleSystem> particle_;
-	EmitterSphere emitter_{};
+	std::vector<std::unique_ptr<ParticleSystem>> particle_;
+	std::vector<EmitterSphere> emitter_{};
 
 	//ビヘイビアツリー
 	BehaviorTree<Healer>* behaviorTree_;

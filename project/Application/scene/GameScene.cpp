@@ -182,10 +182,10 @@ void GameScene::Update() {
 		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
 	}
 
-
-
-
-	
+	//tankのスタン攻撃の受け取り
+	if (tankManager_->GetTank()->GetStanAttack()) {
+		enemyManager_->GetEnemy()->StanBehavior();
+	}
 
 	//攻撃の受け取り
 	if (healerManager_->IsAttack()) {enemyManager_->OnHealerCollision();}
@@ -209,6 +209,9 @@ void GameScene::Update() {
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
+
+	enemyManager_->SetCamera(viewProjection_);
+
 	skydome_->Update();
 	loader_->Update();
 

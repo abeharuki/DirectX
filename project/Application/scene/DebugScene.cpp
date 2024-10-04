@@ -59,7 +59,7 @@ void DebugScene::Initialize() {
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/mahoujin.png"));
+	model_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/name.png"));
 	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -142,6 +142,8 @@ void DebugScene::Update() {
 	//Math::UpdateCircularMotion3D(worldTransformSter_[0].translate.x, worldTransformSter_[0].translate.z, 0, 0, 2.0f, angle_[1], 0.05f);
 	//Math::UpdateCircularMotion3D(worldTransformSter_[1].translate.x, worldTransformSter_[1].translate.z, 0, 0, 2.0f, angle_[2], 0.05f);
 	
+
+
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
 	worldTransformCollider1_.UpdateMatrix();
@@ -353,7 +355,7 @@ void DebugScene::Draw() {
 	skybox_->Draw(worldTransformSkybox_,viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
-	model_->Draw(worldTransformAnimation_, viewProjection_, true);
+	model_->Draw(worldTransformAnimation_, viewProjection_, false);
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
 	ster_[1]->Draw(worldTransformSter_[1], viewProjection_, true);*/
 	//sprite_->Draw();

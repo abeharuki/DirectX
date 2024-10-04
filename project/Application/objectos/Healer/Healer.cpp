@@ -53,18 +53,36 @@ void Healer::Initialize() {
 		animation_->Update(0);
 	}
 	
-	emitter_ = {
+	emitter_.resize(5);
+	particle_.resize(5);
+
+	
+	for (int i = 0; i < 5;++i) {
+		emitter_[i] = {
 		.translate{0,0,0},
-		.count{10},
-		.frequency{0.02f},
+		.count{50},
+		.frequency{1.0f},
 		.frequencyTime{0.0f},
-		.scaleRange{.min{0.05f,0.2f,0.2f},.max{0.05f,0.5f,0.2f}},
-		.translateRange{.min{-0.5f,-0.5f,-0.5f},.max{0.5f,0.5f,0.5f}},
-		.colorRange{.min{0.4f,1,0.3f},.max{0.4f,1,0.5f}},
-		.lifeTimeRange{.min{0.1f},.max{0.5f}},
-		.velocityRange{.min{0.f,0.1f,0.f},.max{0.f,0.4f,0.0f}},
+		.scaleRange{.min{0.2f,0.2f,0.0f},.max{0.2f,0.2f,0.0f}},
+		.translateRange{.min{-0.1f,-0.1f,0.f},.max{0.1f,0.1f,0.f}},
+		.colorRange{.min{0.5f,1,1.0f},.max{0.5f,1,1.0f}},
+		.lifeTimeRange{.min{0.1f},.max{0.2f}},
+		.velocityRange{.min{-0.4f,0.1f,-0.4f},.max{0.4f,0.4f,0.4f}},
+		};
+		particle_[i].reset(ParticleSystem::Create("resources/particle/circle.png"));
+	}
+	
+	emitter_[0] = {
+	.translate{0,0,0},
+	.count{10},
+	.frequency{0.02f},
+	.frequencyTime{0.0f},
+	.scaleRange{.min{0.05f,0.2f,0.2f},.max{0.05f,0.5f,0.2f}},
+	.translateRange{.min{-0.5f,-0.5f,-0.5f},.max{0.5f,0.5f,0.5f}},
+	.colorRange{.min{0.5f,1,1.0f},.max{0.5f,1,1.0f}},
+	.lifeTimeRange{.min{0.1f},.max{0.5f}},
+	.velocityRange{.min{0.f,0.1f,0.f},.max{0.f,0.4f,0.0f}},
 	};
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 
 	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
 	SetAABB(aabbSize);
@@ -149,6 +167,7 @@ void Healer::Update() {
 	ImGui::End();
 
 	ImGui::Begin("Healer");
+	particle_[3]->DebugParameter();
 	ImGui::Text("%f", t_);
 	ImGui::DragFloat3("translat", &worldTransformMagicCircle_[0].translate.x, 0.1f);
 	ImGui::DragFloat3("rotate", &worldTransformMagicCircle_[0].rotate.x, 0.1f);
@@ -159,7 +178,10 @@ void Healer::Update() {
 
 void Healer::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera,true);
-	particle_->Draw(camera);
+	for (int i = 0; i < 5; ++i) {
+		particle_[i]->Draw(camera);
+	}
+	
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i]->Draw(worldTransformMagicCircle_[i], camera, true);
 	}
@@ -383,17 +405,22 @@ void Healer::AttackUpdate() {
 }
 
 void Healer::UniqueInitialize(){
-	//20回復
+	//40回復
 	if (oneHeal_) {
 		mp_ -= 10;
-		healAmount_ = 20;
+		healAmount_ = 40;
 	}
-	//全員10回復
+	//全員20回復
 	if (allHeal_) {
 		mp_ -= 20;
-		healAmount_ = 10;
+		healAmount_ = 20;
 	}
-	particle_->SetEmitter(emitter_);
+	for (int i = 0; i < 5; ++i) {
+		particle_[i]->SetFrequencyTime(0.0f);
+		particle_[i]->SetEmitter(emitter_[i]);
+	}
+	
+
 	coolTime = 60;
 	for (int i = 0; i < 4; ++i) {
 		t_[i] = 0.8f;
@@ -432,14 +459,35 @@ void Healer::UniqueUpdate(){
 			t_[0] = 0;
 		}
 	}
-	
-	
-
-
-
 	--coolTime;
-	particle_->SetTranslate(worldTransformBase_.translate);
-	particle_->Update();
+	particle_[0]->SetTranslate(worldTransformBase_.translate);
+	particle_[0]->Update();
+	particle_[1]->SetTranslate(pos[0]);//player
+	particle_[2]->SetTranslate(pos[1]);//renju
+	particle_[3]->SetTranslate(pos[2]);//tank
+	particle_[4]->SetTranslate(worldTransformBase_.translate);//healer
+
+	if (coolTime <= 1) {
+		if (allHeal_) {
+			for (int i = 0; i < 5; ++i) {
+				particle_[i]->Update();
+			}
+		}
+		else {
+			if (playerHp_ <= 20) {
+				particle_[1]->Update();
+			}
+			if (hp_ <= 20) {
+				particle_[4]->Update();
+			}
+			if (renjuHp_ <= 20) {
+				particle_[2]->Update();
+			}
+			if (tankHp_ <= 20) {
+				particle_[3]->Update();
+			}
+		}
+	}
 
 	if (coolTime <= 0) {
 		heal_ = true;
@@ -448,6 +496,7 @@ void Healer::UniqueUpdate(){
 		for (int i = 0; i < 4; ++i) {
 			t_[i] = 0.8f;
 		}
+		
 	}
 }
 

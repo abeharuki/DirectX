@@ -19,6 +19,10 @@ public:
 	void SetHealerPos(Vector3 pos) { enemy_->SetHealerPos(pos); };
 	void SetRenjuPos(Vector3 pos) { enemy_->SetRenjuPos(pos); };
 	void SetTankPos(Vector3 pos) { enemy_->SetTankPos(pos); };
+	void SetCamera(const ViewProjection& camera) { 
+		camera_ = camera; 
+	
+	}
 
 	const WorldTransform& GetWorldTransform();
 	Vector3 GetRockWorldPos();
@@ -28,17 +32,21 @@ public:
 	void OnTankCollision();
 	void OnRenjuCollision();
 
+	void Billboard();
+
 private:
+	WorldTransform worldTransformName_;
+	ViewProjection camera_;
+
 	//std::unique_ptr<Model> rockModel_;
 	std::unique_ptr<Sphere> rockModel_;
 	std::unique_ptr<Model> bulletModel_;
 	std::unique_ptr<Enemy> enemy_;
 
-
-	std::unique_ptr<Sprite> spriteHP_;
-	std::unique_ptr<Sprite> spriteHPG_;
-	std::unique_ptr<Sprite> spriteBoss_;
+	std::unique_ptr<Model> nameModel_;
 	Transform HpTransform_;
+
+	Vector4 color_;
 
 	bool isDead_ = false;
 

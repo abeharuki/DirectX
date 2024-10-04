@@ -37,6 +37,13 @@ void Model::Initialize(const std::string& filename) {
 
 }
 
+void Model::NoDepthInitialize(const std::string& filename, const std::string& texturePath){
+	modelData = ModelManager::LoadObjFile(filename);
+	LoadTexture(texturePath);
+	CreateVertexResource();
+	sNoDepthPipeline();
+}
+
 
 void Model::sPipeline() {
 	
@@ -47,11 +54,14 @@ void Model::sPipeline() {
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateGraphicsPipeline(blendMode_);
 
-	
+}
+void Model::sNoDepthPipeline(){
+	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateVSShader();
+	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreatePSShader();
 
 
-
-	
+	rootSignature_ = GraphicsPipeline::GetInstance()->CreateRootSignature();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateNoDepthGraphicsPipeline(blendMode_);
 };
 
 
@@ -157,6 +167,13 @@ Model* Model::CreateModelFromObj(const std::string& filename, const std::string&
 Model* Model::CreateFromObj(const std::string& filename) {
 	Model* model = new Model;
 	model->Initialize(filename);
+	return model;
+}
+
+Model* Model::CreateFromNoDepthObj(const std::string& filename, const std::string& texturePath)
+{
+	Model* model = new Model;
+	model->NoDepthInitialize(filename, texturePath);
 	return model;
 }
 

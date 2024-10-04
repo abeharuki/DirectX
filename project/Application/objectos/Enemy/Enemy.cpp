@@ -68,6 +68,8 @@ void Enemy::Initialize() {
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
 	
+	
+
 }
 
 void Enemy::Update() {
@@ -175,6 +177,8 @@ void Enemy::Draw(const ViewProjection& camera) {
 	}
 	
 	RenderCollisionBounds(worldTransformBody_, camera);
+
+	
 }
 
 //移動
@@ -191,8 +195,9 @@ void Enemy::MoveInitialize() {
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 };
 void Enemy::MoveUpdata() {
-	if (--time_ <= 0) {
-		behaviorRequest_ = Behavior::kAttack;
+	// --time_
+	if (time_ <= 0) {
+		//behaviorRequest_ = Behavior::kAttack;
 	}
 	else {
 
@@ -232,6 +237,25 @@ void Enemy::MoveUpdata() {
 
 		
 	}
+
+
+	if (Input::PressKey(DIK_7)) {
+		behaviorRequest_ = Behavior::kAttack;
+		attackRequest_ = BehaviorAttack::kNomal;
+	}
+	else if (Input::PressKey(DIK_8)) {
+		behaviorRequest_ = Behavior::kAttack;
+		attackRequest_ = BehaviorAttack::kDash;
+	}
+	else if (Input::PressKey(DIK_9)) {
+		behaviorRequest_ = Behavior::kAttack;
+		attackRequest_ = BehaviorAttack::kThrowing;
+	}
+	else if (Input::PressKey(DIK_0)) {
+		behaviorRequest_ = Behavior::kAttack;
+		attackRequest_ = BehaviorAttack::kGround;
+	}
+
 };
 
 void Enemy::AttackInitialize() {
@@ -252,19 +276,6 @@ void Enemy::AttackInitialize() {
 	behaviorAttack_ = true;
 }
 void Enemy::AttackUpdata() {
-
-	if (Input::PressKey(DIK_7)) {
-		attackRequest_ = BehaviorAttack::kNomal;
-	}
-	else if (Input::PressKey(DIK_8)) {
-		attackRequest_ = BehaviorAttack::kDash;
-	}
-	else if (Input::PressKey(DIK_9)) {
-		attackRequest_ = BehaviorAttack::kThrowing;
-	}
-	else if (Input::PressKey(DIK_0)) {
-		attackRequest_ = BehaviorAttack::kGround;
-	}
 
 	if (attackRequest_) {
 		// 振る舞い変更

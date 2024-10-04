@@ -59,11 +59,13 @@ public:
 	static void StaticInitialize();
 	void Initialize(const std::string& filename, const std::string& texturePath);
 	void Initialize(const std::string& filename);
-	
+	void NoDepthInitialize(const std::string& filename, const std::string& texturePath);
+
 	/// <summary>
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
 	void sPipeline();
+	void sNoDepthPipeline();
 
 	/// <summary>
 	/// 3Dモデル生成
@@ -95,6 +97,7 @@ public:
 	
 	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
 	static Model* CreateFromObj(const std::string& filename);
+	static Model* CreateFromNoDepthObj(const std::string& filename, const std::string& texturePath);
 
 	//static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 

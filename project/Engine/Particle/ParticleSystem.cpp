@@ -102,7 +102,7 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 	worldTransform_.UpdateMatrix();
 #endif // DEBUG
 
-
+	//ビルボードの計算
 	UpdatePerViewResource(viewProjection);
 
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要

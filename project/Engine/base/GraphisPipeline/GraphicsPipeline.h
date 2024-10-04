@@ -88,6 +88,7 @@ public:
 public:
 	//	GraphicsPipelineの生成
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateGraphicsPipeline(BlendMode blendMode_);
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateNoDepthGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateSkyboxGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateLineGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateSpritePipeline(BlendMode blendMode_);
