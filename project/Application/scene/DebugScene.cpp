@@ -67,12 +67,6 @@ void DebugScene::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
 	
-	debugPlayer_ = std::make_unique<DebugPlayer>();
-	debugPlayer_->Initialize();
-
-	debugEnemy_ = std::make_unique<DebugEnemy>();
-	debugEnemy_->Initialize();
-
 	emitter_ = {
 		.translate = {0,3,0},
 		.count{50},
@@ -127,9 +121,7 @@ void DebugScene::Update() {
 
 	loader_->Update();
 
-	debugPlayer_->Update();
-	debugEnemy_->SetDebugPlayer(debugPlayer_.get());
-	debugEnemy_->Update();
+	
 	
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;

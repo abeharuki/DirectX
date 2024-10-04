@@ -107,6 +107,7 @@ public: // メンバ関数
 	//状態
 	Behavior GetBehavior() {return behavior_;}
 
+	/*--ゲッター--*/
 	//こうげきフラグ
 	bool SetAttack(bool flag,int i) { return attackType_[i] = flag; }
 	bool IsRoot() { return root_; }
@@ -116,7 +117,20 @@ public: // メンバ関数
 	bool IsOver() { return isOver_; }
 	bool IsOuto() { return outo_; }
 	float GetHp() { return hp_; }
-	
+	int GetRevival() { return revivalCount_; }
+
+	bool GetIsDead() {
+		if (tankDead_ || renjuDead_ || healerDead_) {
+			if (preNoAttack_) {
+				return true;
+			}
+
+		}
+
+		return false;
+	}
+
+	/*--セッター--*/
 	void SetHeal(float heal) { hp_ += heal; }
 	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
 	//敵の情報の受け取り
@@ -135,18 +149,7 @@ public: // メンバ関数
 	void SetRenjuDead(bool dead) { renjuDead_ = dead; }
 	void SetHealerDead(bool dead) { healerDead_ = dead; }
 
-	int GetRevival() { return revivalCount_; }
-
-	bool GetIsDead() {
-		if(tankDead_ || renjuDead_ || healerDead_){
-			if (preNoAttack_) {
-				return true;
-			}
-			
-		}
-		
-		return false; 
-	}
+	
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
@@ -154,6 +157,7 @@ private: // メンバ変数
 	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformCollision_;
 	std::unique_ptr<Animations>animation_;
+	std::unique_ptr<Model> model_;
 	const ViewProjection* viewProjection_;
 	std::unique_ptr<LineBox> linebox_;
 
