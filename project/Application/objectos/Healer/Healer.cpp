@@ -15,7 +15,7 @@ void Healer::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 
-	
+	model_.reset(Model::CreateModelFromObj("./resources/Healer/healer.obj", "./resources/Atlas.png"));
 
 
 	// 初期化
@@ -28,6 +28,7 @@ void Healer::Initialize() {
 		worldTransformHp_[i].scale = { 0.5f,0.5f,0.5f };
 	}
 	worldTransformHead_.Initialize();
+	worldTransformHead_.rotate.y = 3.14f;
 	worldTransformCane_.Initialize();
 	worldTransformCane_.translate = { -0.63f, 0.54f, 0.0f };
 	worldTransformCane_.rotate.x = -1.56f;
@@ -177,7 +178,8 @@ void Healer::Update() {
 };
 
 void Healer::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformHead_, camera,true);
+	//animation_->Draw(worldTransformHead_, camera,true);
+	model_->Draw(worldTransformHead_, camera, true);
 	for (int i = 0; i < 5; ++i) {
 		particle_[i]->Draw(camera);
 	}

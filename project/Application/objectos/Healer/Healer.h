@@ -150,6 +150,7 @@ private: // メンバ変数
 	WorldTransform worldTransformMagicCircle_[4];
 	ViewProjection viewProjection_;
 
+	std::unique_ptr<Model> model_;
 	std::unique_ptr<Animations>animation_;
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;

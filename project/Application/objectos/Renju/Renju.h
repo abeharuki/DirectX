@@ -122,6 +122,7 @@ private: // メンバ変数
 	WorldTransform worldTransformHead_;
 	ViewProjection viewProjection_;
 
+	std::unique_ptr<Model> model_;
 	std::unique_ptr<Model> bulletModel_;
 	std::unique_ptr<Animations>animation_;
 

@@ -11,10 +11,12 @@ void Tank::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 	shield_.reset(Model::CreateModelFromObj("resources/Tank/shield.obj", "resources/white.png"));
+	model_.reset(Model::CreateModelFromObj("./resources/Tank/tank.obj", "./resources/Atlas.png"));
 
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformHead_.Initialize();
+	worldTransformHead_.rotate.y = 3.14f;
 	worldTransformShield_.Initialize();
 	worldTransformShield_.translate = { 0.0f,1.f,0.45f };
 	worldTransformShield_.rotate.y = 3.1415f;
@@ -137,7 +139,8 @@ void Tank::Update() {
 };
 
 void Tank::Draw(const ViewProjection& camera) {
-	animation_->Draw(worldTransformHead_, camera,true);
+	//animation_->Draw(worldTransformHead_, camera,true);
+	model_->Draw(worldTransformHead_, camera, true);
 	if (state_ == CharacterState::Unique) {
 		shield_->Draw(worldTransformShield_, camera, true);
 	}

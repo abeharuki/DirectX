@@ -14,11 +14,12 @@ Renju::~Renju() {
 void Renju::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
-
+	model_.reset(Model::CreateModelFromObj("./resources/Renju/renju.obj", "./resources/Atlas.png"));
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = -2.0f;
 	worldTransformHead_.Initialize();
+	worldTransformHead_.rotate.y = 3.14f;
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
 
 	for (int i = 0; i < 3; i++) {
@@ -121,16 +122,17 @@ void Renju::Update() {
 	ImGui::End();
 };
 
-void Renju::Draw(const ViewProjection& view) {
+void Renju::Draw(const ViewProjection& camera) {
 
 	// 弾の描画
 	for (RenjuBullet* bullet : bullets_) {
-		bullet->Draw(view);
+		bullet->Draw(camera);
 	}
 
 	
-	animation_->Draw(worldTransformHead_, view,true);
-	RenderCollisionBounds(worldTransformHead_, view);
+	//animation_->Draw(worldTransformHead_, view,true);
+	model_->Draw(worldTransformHead_,camera , true);
+	RenderCollisionBounds(worldTransformHead_, camera);
 	
 }
 
