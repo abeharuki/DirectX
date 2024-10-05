@@ -22,6 +22,6 @@ public:
     }
 
     void AddChild(BehaviorTreeNode* child) override {
-        // MoveActionNode では子ノードを持たないので、このメソッドは空実装
+        // ActionNode では子ノードを持たないので、このメソッドは空実装
     }
 };
