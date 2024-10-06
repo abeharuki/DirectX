@@ -12,7 +12,7 @@ void Tank::Initialize() {
 	shield_.reset(Model::CreateModelFromObj("resources/Tank/shield.obj", "resources/white.png"));
 	animation_.reset(Animations::Create("./resources/Tank", "Atlas.png", "tank.gltf"));
 	animationNumber_ = standby;
-	flameTime_ = 20.0f;
+	flameTime_ = 30.0f;
 
 	// 初期化
 	worldTransformBase_.Initialize();
@@ -154,7 +154,7 @@ void Tank::MoveInitialize() {
 	stanAttack_ = false;
 	animation_->SetpreAnimationTimer(0);
 	animation_->SetLoop(true);
-	flameTime_ = 20.0f;
+	flameTime_ = 30.0f;
 	animationNumber_ = standby;
 };
 void Tank::MoveUpdate() {

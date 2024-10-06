@@ -15,7 +15,7 @@ void Healer::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/Healer", "Atlas.png", "healer.gltf"));
 	animationNumber_ = standby;
-	flameTime_ = 20.0f;
+	flameTime_ = 30.0f;
 
 	// 初期化
 	worldTransformBase_.Initialize();
@@ -198,7 +198,7 @@ void Healer::MoveInitialize() {
 	heal_ = false;
 	animation_->SetLoop(true);
 	animation_->SetpreAnimationTimer(0);
-	flameTime_ = 20.0f;
+	flameTime_ = 30.0f;
 	animationNumber_ = standby;
 };
 void Healer::MoveUpdate() {

@@ -27,7 +27,7 @@ void Player::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/Player", "Atlas.png", "player.gltf"));
 	animationNumber_ = standby;
-	flameTime_ = 20.0f;
+	flameTime_ = 30.0f;
 	attackType_.resize(AttackType::kAttackMax);
 	for (int i = 0; i < AttackType::kAttackMax; ++i) {
 		attackType_[i] = false;
@@ -172,7 +172,7 @@ void Player::MoveInitialize() {
 	combo_ = false;
 	outo_ = false;
 	animation_->SetpreAnimationTimer(0);
-	flameTime_ = 20.0f;
+	flameTime_ = 30.0f;
 	animation_->SetLoop(true);
 };
 void Player::MoveUpdata() {

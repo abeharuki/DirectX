@@ -247,11 +247,11 @@ void GameScene::Draw() {
 	//敵
 	enemyManager_->Draw(viewProjection_);
 	// タンク
-	tankManager_->Draw(viewProjection_);
+	//tankManager_->Draw(viewProjection_);
 	// ヒーラー
-	healerManager_->Draw(viewProjection_);
+	//healerManager_->Draw(viewProjection_);
 	// レンジャー
-	renjuManager_->Draw(viewProjection_);
+	//renjuManager_->Draw(viewProjection_);
 	//コマンド
 	command_->Draw(viewProjection_);
 	

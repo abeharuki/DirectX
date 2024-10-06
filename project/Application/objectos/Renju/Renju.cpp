@@ -15,7 +15,7 @@ void Renju::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));
 	animationNumber_ = standby;
-	flameTime_ = 20.0f;
+	flameTime_ = 30.0f;
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = -3.0f;
@@ -143,7 +143,7 @@ void Renju::MoveInitialize() {
 	searchTarget_ = false;
 	animation_->SetpreAnimationTimer(0);
 	animation_->SetLoop(true);
-	flameTime_ = 20.0f;
+	flameTime_ = 30.0f;
 	animationNumber_ = standby;
 };
 void Renju::MoveUpdate() {
