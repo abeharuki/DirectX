@@ -13,11 +13,6 @@ void TitleScene::Initialize() {
 	viewProjection_.Initialize();
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 	
-
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/human", "white.png", "walk.gltf"));
-
-
 	audio_ = Audio::GetInstance();
 	audioData_[0] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
 	audio_->SoundPlayMP3(audioData_[1], true, 3.0f);

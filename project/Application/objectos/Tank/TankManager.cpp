@@ -13,7 +13,6 @@ void TankManager::Initialize() {
 		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
 	};
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
-	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 	isParticle_ = false;
 	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
 	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));

@@ -122,10 +122,18 @@ private: // メンバ変数
 	WorldTransform worldTransformHead_;
 	ViewProjection viewProjection_;
 
-	std::unique_ptr<Model> model_;
+	
 	std::unique_ptr<Model> bulletModel_;
 	std::unique_ptr<Animations>animation_;
+	int animationNumber_;
+	enum AnimationNumber {
+		//animeAttack,//攻撃
+		jump,//ジャンプ
+		run,//移動
+		standby,//待機
+	};
 
+	float flameTime_;
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 

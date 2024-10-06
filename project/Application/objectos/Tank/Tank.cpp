@@ -9,14 +9,14 @@ Tank::~Tank() {
 
 void Tank::Initialize() {
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 	shield_.reset(Model::CreateModelFromObj("resources/Tank/shield.obj", "resources/white.png"));
-	model_.reset(Model::CreateModelFromObj("./resources/Tank/tank.obj", "./resources/Atlas.png"));
+	animation_.reset(Animations::Create("./resources/Tank", "Atlas.png", "tank.gltf"));
+	animationNumber_ = standby;
+	flameTime_ = 20.0f;
 
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformHead_.Initialize();
-	worldTransformHead_.rotate.y = 3.14f;
 	worldTransformShield_.Initialize();
 	worldTransformShield_.translate = { 0.0f,1.f,0.45f };
 	worldTransformShield_.rotate.y = 3.1415f;
@@ -46,7 +46,7 @@ void Tank::Initialize() {
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 	particle_->SetEmitter(emitter_);
 
-	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
+	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);
 	
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
@@ -107,7 +107,8 @@ void Tank::Update() {
 	// 回転
 	worldTransformBase_.rotate.y =
 		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-
+	animation_->SetFlameTimer(flameTime_);
+	animation_->Update(animationNumber_);
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformShield_.TransferMatrix();
@@ -117,11 +118,7 @@ void Tank::Update() {
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
-	if (nockBack_) {
-		animation_->SetLoop(false);
-		animation_->Update(0);
-	}
-
+	
 
 	ImGui::Begin("Tank");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
@@ -139,8 +136,8 @@ void Tank::Update() {
 };
 
 void Tank::Draw(const ViewProjection& camera) {
-	//animation_->Draw(worldTransformHead_, camera,true);
-	model_->Draw(worldTransformHead_, camera, true);
+	animation_->Draw(worldTransformHead_, camera,true);
+	
 	if (state_ == CharacterState::Unique) {
 		shield_->Draw(worldTransformShield_, camera, true);
 	}
@@ -155,6 +152,10 @@ void Tank::MoveInitialize() {
 	searchTarget_ = false; 
 	attack_ = false;
 	stanAttack_ = false;
+	animation_->SetpreAnimationTimer(0);
+	animation_->SetLoop(true);
+	flameTime_ = 20.0f;
+	animationNumber_ = standby;
 };
 void Tank::MoveUpdate() {
 	--coolTime;
@@ -191,6 +192,7 @@ void Tank::MoveUpdate() {
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		worldTransformBase_.translate += velocity_;
+		animationNumber_ = run;
 	}
 	IsVisibleToEnemy();
 	
@@ -233,6 +235,10 @@ void Tank::JumpInitialize() {
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
+	animationNumber_ = jump;
+	flameTime_ = 30.0f;
+	animation_->SetAnimationTimer(0.5f, flameTime_);
+	animation_->SetLoop(false);
 };
 void Tank::JumpUpdate() {
 	// 移動
@@ -503,14 +509,15 @@ void Tank::followPlayer(Vector3 playerPos) {
 
 		// 距離条件チェック
 		if (minDistance_ <= length) {
-			worldTransformBase_.translate =
-				Math::Lerp(worldTransformBase_.translate, playerPos, 0.02f);
+			worldTransformBase_.translate =Math::Lerp(worldTransformBase_.translate, playerPos, 0.02f);
+			animationNumber_ = run;
 			if (velocity_.y == 0.0f) {
 				worldTransformBase_.translate.y = 0.0f;
 			}
 		}
 		else {
 			followPlayer_ = false;
+			animationNumber_ = standby;
 		}
 	}
 };
@@ -543,6 +550,7 @@ void Tank::searchTarget(Vector3 enemyPos) {
 		if (minDistance_ <= enemylength_) {
 			if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash||!enemy_->IsBehaberAttack()) {
 				worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
+				animationNumber_ = run;
 			}
 			
 			
@@ -552,6 +560,7 @@ void Tank::searchTarget(Vector3 enemyPos) {
 			
 		}
 		else {
+			animationNumber_ = standby;
 			if (coolTime <= 0 && !isArea_) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
 					state_ = CharacterState::Attacking;
@@ -611,6 +620,7 @@ void Tank::IsVisibleToEnemy(){
 }
 
 void Tank::RunAway(){
+	animationNumber_ = run;
 	if (enemyPos_.z > worldTransformBase_.translate.z) {
 		if (enemyPos_.x > worldTransformBase_.translate.x) {
 			velocity_ = { -1.0f,0.0f,-1.2f };

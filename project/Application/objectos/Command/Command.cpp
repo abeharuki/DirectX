@@ -62,7 +62,7 @@ void Command::Initialize() {
 	arrowPos_ = { 31.0f,469.0f,0.0f };
 	arrow->SetSize({ 50.0f,50.0 });
 
-	
+	backgroundTask[kTask1]->SetSize({200.0f,200.0f} );
 
 	pos.resize(3);
 	size.resize(3);

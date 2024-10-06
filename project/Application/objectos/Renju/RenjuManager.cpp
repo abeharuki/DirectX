@@ -2,7 +2,6 @@
 
 void RenjuManager::Initialize() {
 
-	Model_.reset(Model::CreateModelFromObj("resources/Player/float_Head.obj", "resources/Player/tex.png"));
 	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
 	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
 	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));

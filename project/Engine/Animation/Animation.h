@@ -139,6 +139,9 @@ public:
 
 	void SetTexture(const std::string& texturePath);
 	void SetMaskTexture(const std::string& texturePath);
+
+
+	const WorldTransform& GetJointWorldTransform(const std::string& name)const;
 private:
 	// ルートシグネチャ
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
@@ -196,6 +199,9 @@ private:
 	float blendTime_;
 	float blendDuration_= 0.2f;//何秒かけて補間するか
 
+	//ジョイントのワールドトランスフォーム
+	std::vector<WorldTransform> jointWorldTransforms_{};
+
 	//デバック表示
 	std::vector<std::unique_ptr<Line>> line_;
 	std::vector<Vector3> boonPos;
@@ -211,7 +217,7 @@ private:
 	void LoadTexture(const std::string& filename);
 	void ApplyAnimation(const std::string& name,const uint32_t animationNumber);
 
-	void SkeletonUpdate();
+	void SkeletonUpdate(const WorldTransform& worldTransform);
 	void SkinningUpdate();
 
 	void BoonRecursive(Skeleton& skeleton, int32_t child);
@@ -219,7 +225,8 @@ private:
 	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
 
-	
+	void CreateJointWorldTransforms();
+
 };
 
 	

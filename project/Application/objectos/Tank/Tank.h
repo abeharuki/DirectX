@@ -124,8 +124,18 @@ private: // メンバ変数
 	WorldTransform worldTransformHp_[3];
 	WorldTransform worldTransformHead_;
 	ViewProjection viewProjection_;
-	std::unique_ptr<Model> model_;
+
 	std::unique_ptr<Animations>animation_;
+	int animationNumber_;
+	enum AnimationNumber {
+		//animeAttack,//攻撃
+		jump,//ジャンプ
+		run,//移動
+		standby,//待機
+	};
+
+	float flameTime_;
+
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
 	//ビヘイビアツリー
@@ -143,7 +153,7 @@ private: // メンバ変数
 	Vector3 allyVelocity;
 
 	// プレイヤー座標
-	float minDistance_ = 5.0f;
+	float minDistance_ = 8.0f;
 	bool followPlayer_ = false;
 	
 

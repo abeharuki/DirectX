@@ -15,20 +15,19 @@ void Player::Initialize() {
 
 	// 初期化
 	worldTransformBase_.Initialize();
-	worldTransformBase_.translate.x = 2.0f;
+	worldTransformBase_.translate.x = 3.0f;
 	worldTransformHammer_.Initialize();
-	worldTransformHammer_.rotate.y = 3.14f;
+	worldTransformHammer_.rotate = {-0.7f,0.0f,1.7f};
 	worldTransformHead_.Initialize();
-	worldTransformHead_.rotate.y = 3.14f;
 	worldTransformCollision_.Initialize();
 	worldTransformCollision_.scale = { 0.1f, 1.0f, 0.1f };
 	worldTransformCollision_.translate.y = 2.0f;
 	a = 0.0f;
 	isOver_ = false;
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
-	model_.reset(Model::CreateModelFromObj("./resources/Player/player.obj", "./resources/Atlas.png"));
-
+	animation_.reset(Animations::Create("resources/Player", "Atlas.png", "player.gltf"));
+	animationNumber_ = standby;
+	flameTime_ = 20.0f;
 	attackType_.resize(AttackType::kAttackMax);
 	for (int i = 0; i < AttackType::kAttackMax; ++i) {
 		attackType_[i] = false;
@@ -40,7 +39,7 @@ void Player::Initialize() {
 
 
 
-	AABB aabbSize{ .min{-0.5f,-0.4f,-0.4f},.max{0.5f,0.4f,0.4f} };
+	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributePlayer);
@@ -114,8 +113,7 @@ void Player::Update() {
 
 		break;
 	}
-
-	Relationship();
+	
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimPlayer()) {
 		if (enemy_->isAttack()) {
@@ -136,25 +134,24 @@ void Player::Update() {
 
 	// 回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-
+	animation_->SetFlameTimer(flameTime_);
+	animation_->Update(animationNumber_);
+	Relationship();
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
-	if (nockBack_) {
-		animation_->SetLoop(false);
-		animation_->Update(0);
-	}
 
 	animation_->SetThreshold(threshold_);
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("pos", &worldTransformHead_.translate.x, -10.0f, 10.0f);
-	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
+	ImGui::SliderFloat3("swordPos", &worldTransformHammer_.translate.x, -10.0f, 10.0f);
+	ImGui::DragFloat3("rotate", &worldTransformHammer_.rotate.x,0.1f);
 	ImGui::Text("EnemyLength%f", length_);
-	ImGui::Text("%d", noAttack_);
+	ImGui::Text("%dAnimationNumber", animationNumber_);
 	ImGui::Text("%f", hp_);
 	ImGui::SliderFloat("Thres", &threshold_, 0.0f, 1.0f);
-	ImGui::Text("%d", root_);
+	ImGui::Text("%f", animation_->GetAnimationTimer());
+	ImGui::SliderFloat("flameTime", &flameTime_, 0.0f, 60.0f);
 	ImGui::End();
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("PlayerHp", &hp_, 1.0f);
@@ -162,8 +159,7 @@ void Player::Update() {
 }
 
 void Player::Draw(const ViewProjection& camera) {
-	//animation_->Draw(worldTransformHead_, camera, true);
-	model_->Draw(worldTransformHead_, camera, true);
+	animation_->Draw(worldTransformHead_, camera, true);
 	RenderCollisionBounds(worldTransformHead_, camera);
 
 }
@@ -175,13 +171,16 @@ void Player::MoveInitialize() {
 	dash_ = false;
 	combo_ = false;
 	outo_ = false;
+	animation_->SetpreAnimationTimer(0);
+	flameTime_ = 20.0f;
+	animation_->SetLoop(true);
 };
 void Player::MoveUpdata() {
 	root_ = true;
 
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
-
+	animationNumber_ = standby;
 	//noAttack_ = false;
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 
@@ -202,6 +201,7 @@ void Player::MoveUpdata() {
 		}
 
 		if (isMove) {
+			animationNumber_ = run;
 			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_->rotation_.y);
 			velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 			// 現在の位置から移動する位置へのベクトル
@@ -224,6 +224,7 @@ void Player::MoveUpdata() {
 		}
 
 		if (outo_) {
+			animationNumber_ = run;
 			// 敵の座標までの距離
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 			// 追従対象からロックオン対象へのベクトル
@@ -252,6 +253,7 @@ void Player::MoveUpdata() {
 			}
 
 		}
+		
 
 		// ジャンプ
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
@@ -331,6 +333,7 @@ void Player::MoveUpdata() {
 		}
 
 		if (isMove_) {
+			animationNumber_ = run;
 			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_->rotation_.y);
 			velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 			// 現在の位置から移動する位置へのベクトル
@@ -352,8 +355,10 @@ void Player::MoveUpdata() {
 			}
 		}
 		
+		
 
 		if (outo_) {
+			animationNumber_ = run;
 			// 敵の座標までの距離
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 			// 追従対象からロックオン対象へのベクトル
@@ -415,6 +420,10 @@ void Player::JumpInitialize() {
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
+	animationNumber_ = jump;
+	flameTime_ = 30.0f;
+	animation_->SetAnimationTimer(0.5f, flameTime_);
+	animation_->SetLoop(false);
 };
 void Player::JumpUpdata() {
 	// 移動
@@ -490,155 +499,22 @@ void Player::knockUpdata() {
 
 // 攻撃
 void Player::AttackInitialize() {
-	worldTransformHammer_.rotate = { 0.0f, 3.14f, 0.0f };
 	worldTransformHammer_.translate.x = 0.0f;
 	workAttack_.attackParameter_ = 0;
 	workAttack_.comboIndex = 0;
 	workAttack_.inComboPhase = 0;
 	workAttack_.comboNext = false;
-	//workAttack_.isAttack = false;
+	workAttack_.isAttack = true;
 	workAttack_.isFinalAttack = false;
+	animationNumber_ = animeAttack;
+
+	animation_->SetpreAnimationTimer(0);
 }
 void Player::AttackUpdata() {
-	float speed = 1.0f;
-	if (workAttack_.comboIndex >= 1) {
-		combo_ = true;
-	}
-
-	// コンボ上限に達していない
-	if (workAttack_.comboIndex < ComboNum - 1) {
-		// ジョイスティックの状態取得
-		if (Input::GetInstance()->GetPadConnect()) {
-			// 攻撃ボタンをトリガーしたら
-			if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_B)) {
-				workAttack_.comboNext = true;
-			}
-
-
-		}
-		else {
-			if (Input::PushKey(DIK_E)) {
-				// コンボ有効
-				workAttack_.comboNext = true;
-			}
-		}
-
-	}
-
-	// 攻撃の合計時間
-	uint32_t totalTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime +
-		kConstAttacks_[workAttack_.comboIndex].chargeTime +
-		kConstAttacks_[workAttack_.comboIndex].swingTime +
-		kConstAttacks_[workAttack_.comboIndex].recoveryTime;
-
-	// 既定の時間経過で通常行動に戻る
-	if (++workAttack_.attackParameter_ >= totalTime) {
-		// コンボ継続なら次のコンボに進む
-		if (workAttack_.comboNext) {
-			// コンボ継続フラグをリセット
-			workAttack_.comboNext = false;
-			workAttack_.attackParameter_ = 0;
-			workAttack_.comboIndex++;
-
-			switch (workAttack_.comboIndex) {
-			case 0:
-				worldTransformHammer_.translate = { 0.0f, -1.6f, 0.0f };
-				worldTransformHammer_.rotate = { 0.0f, 3.14f, 0.0f };
-
-				break;
-			case 1:
-				worldTransformHammer_.translate = { 0.0f, 0.5f, 0.0f };
-				worldTransformHammer_.rotate = { 0.0f, 3.14f, 1.5f };
-				break;
-			case 2:
-				worldTransformHammer_.translate = { 0.0f, 0.5f, 0.0f };
-				worldTransformHammer_.rotate = { worldTransformHammer_.rotate.x, 3.14f, 1.5f };
-				break;
-			}
-		}
-		// コンボ継続でないなら攻撃を終了してルートビヘイビアに戻る
-		else {
-			behaviorRequest_ = Behavior::kRoot;
-			workAttack_.isAttack = false;
-			workAttack_.isFinalAttack = true;
-		}
-	}
-
-	uint32_t anticipationTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime;
-	uint32_t chargeTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime +
-		kConstAttacks_[workAttack_.comboIndex].chargeTime;
-	uint32_t swingTime = kConstAttacks_[workAttack_.comboIndex].anticipationTime +
-		kConstAttacks_[workAttack_.comboIndex].chargeTime +
-		kConstAttacks_[workAttack_.comboIndex].swingTime;
-
-	// コンボ攻撃によってモーションを分岐
-	switch (workAttack_.comboIndex) {
-	case 0:
-		if (workAttack_.attackParameter_ < anticipationTime) {
-			worldTransformHammer_.rotate.x -=
-				kConstAttacks_[workAttack_.comboIndex].anticipationSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= anticipationTime &&
-			workAttack_.attackParameter_ < chargeTime) {
-			worldTransformHammer_.rotate.x -= kConstAttacks_[workAttack_.comboIndex].chargeSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= chargeTime &&
-			workAttack_.attackParameter_ < swingTime) {
-			worldTransformHammer_.rotate.x -= kConstAttacks_[workAttack_.comboIndex].swingSpeed;
-			workAttack_.isAttack = true;
-		}
-
-		if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
-			workAttack_.isAttack = false;
-		}
-
-		break;
-	case 1:
-		if (workAttack_.attackParameter_ < anticipationTime) {
-			worldTransformHammer_.rotate.x -=
-				kConstAttacks_[workAttack_.comboIndex].anticipationSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= anticipationTime &&
-			workAttack_.attackParameter_ < chargeTime) {
-			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].chargeSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= chargeTime &&
-			workAttack_.attackParameter_ < swingTime) {
-			worldTransformHammer_.rotate.x -= kConstAttacks_[workAttack_.comboIndex].swingSpeed;
-			workAttack_.isAttack = true;
-		}
-
-		if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
-			workAttack_.isAttack = false;
-		}
-
-		break;
-	case 2:
-		if (workAttack_.attackParameter_ < anticipationTime) {
-			worldTransformHammer_.rotate.x +=
-				kConstAttacks_[workAttack_.comboIndex].anticipationSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= anticipationTime &&
-			workAttack_.attackParameter_ < chargeTime) {
-			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].chargeSpeed;
-		}
-
-		if (workAttack_.attackParameter_ >= chargeTime &&
-			workAttack_.attackParameter_ < swingTime) {
-			worldTransformHammer_.rotate.x += kConstAttacks_[workAttack_.comboIndex].swingSpeed;
-			workAttack_.isAttack = true;
-		}
-
-		if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
-			workAttack_.isAttack = false;
-		}
-
-		break;
+	
+	if (animation_->GetAnimationTimer() >= 1.6f) {
+		animationNumber_ = standby;
+		behaviorRequest_ = Behavior::kRoot;
 	}
 
 	// ダッシュボタンを押したら
@@ -666,7 +542,6 @@ void Player::DeadUpdata() {
 };
 
 
-
 // 衝突を検出したら呼び出されるコールバック関数
 void Player::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
@@ -683,7 +558,6 @@ void Player::OnCollision(const WorldTransform& worldTransform) {
 	}
 
 };
-
 
 
 void Player::OnCollision(Collider* collider) {
@@ -791,11 +665,12 @@ void Player::Relationship() {
 			worldTransformHead_.scale, worldTransformHead_.rotate, worldTransformHead_.translate),
 		worldTransformBase_.matWorld_);
 
+
 	worldTransformHammer_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(
 			worldTransformHammer_.scale, worldTransformHammer_.rotate,
 			worldTransformHammer_.translate),
-		worldTransformBase_.matWorld_);
+		animation_->GetJointWorldTransform("mixamorig:RightHand").matWorld_);
 
 	worldTransformCollision_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(

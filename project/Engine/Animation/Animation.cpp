@@ -99,6 +99,7 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(), skeleton, modelData, Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 	CreateResource();
 	sPipeline();
+	CreateJointWorldTransforms();
 	jointsNum_ = int(skeleton.joints.size());
 	line_.resize(jointsNum_);
 	localMatrix = Math::MakeIdentity4x4();
@@ -212,7 +213,7 @@ void Animations::BoonRecursive(Skeleton& skeleton, int32_t child) {
 	}
 }
 
-void Animations::SkeletonUpdate() {
+void Animations::SkeletonUpdate(const WorldTransform& worldTransform) {
 	//全てのJointを更新
 	for (Joint& joint : skeleton.joints) {
 		joint.locaalMatrix = Math::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
@@ -222,7 +223,29 @@ void Animations::SkeletonUpdate() {
 		else {
 			joint.skeletonSpaceMatrix = joint.locaalMatrix;
 		}
+
+
+
+
+		//Scale成分を取り除く
+		Matrix4x4 jointWorldTransform = joint.skeletonSpaceMatrix;
+		for (int i = 0; i < 3; ++i)
+		{
+			float scale = std::sqrt(jointWorldTransform.m[i][0] * jointWorldTransform.m[i][0] +
+				jointWorldTransform.m[i][1] * jointWorldTransform.m[i][1] +
+				jointWorldTransform.m[i][2] * jointWorldTransform.m[i][2]);
+			for (int j = 0; j < 3; ++j)
+			{
+				jointWorldTransform.m[i][j] /= scale;
+			}
+		}
+		//ワールド行列を掛ける
+		jointWorldTransforms_[joint.index].matWorld_ = jointWorldTransform *worldTransform.matWorld_;
+
 	}
+
+	
+
 	//デバック表示用処理
 	BoonRecursive(skeleton, skeleton.root);
 
@@ -301,7 +324,7 @@ void Animations::ComputeParameter() {
 
 void Animations::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag) {
 	ApplyAnimation(modelData.rootNode.name, animationNumber_);
-	SkeletonUpdate();
+	SkeletonUpdate(worldTransform);
 	SkinningUpdate();
 	ComputeParameter();
 
@@ -491,3 +514,22 @@ void Animations::AnimationDebug() {
 	ImGui::End();
 }
 
+void Animations::CreateJointWorldTransforms()
+{
+	//JointのWorldTransformを作成
+	jointWorldTransforms_.resize(skeleton.joints.size());
+}
+
+
+const WorldTransform& Animations::GetJointWorldTransform(const std::string& name) const
+{
+	for (const Joint& joint : skeleton.joints)
+	{
+		if (joint.name == name)
+		{
+			return jointWorldTransforms_[joint.index];
+		}
+	}
+	static WorldTransform emptyWorldTransform{};
+	return emptyWorldTransform;
+}

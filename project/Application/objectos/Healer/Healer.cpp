@@ -13,14 +13,13 @@ Healer::~Healer() {
 /// </summary>
 void Healer::Initialize() {
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
-
-	model_.reset(Model::CreateModelFromObj("./resources/Healer/healer.obj", "./resources/Atlas.png"));
-
+	animation_.reset(Animations::Create("./resources/Healer", "Atlas.png", "healer.gltf"));
+	animationNumber_ = standby;
+	flameTime_ = 20.0f;
 
 	// 初期化
 	worldTransformBase_.Initialize();
-	worldTransformBase_.translate.x = 4.0f;
+	worldTransformBase_.translate.x = 6.0f;
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].Initialize();
 		worldTransformHp_[i].translate.y = 1.5f;
@@ -28,7 +27,6 @@ void Healer::Initialize() {
 		worldTransformHp_[i].scale = { 0.5f,0.5f,0.5f };
 	}
 	worldTransformHead_.Initialize();
-	worldTransformHead_.rotate.y = 3.14f;
 	worldTransformCane_.Initialize();
 	worldTransformCane_.translate = { -0.63f, 0.54f, 0.0f };
 	worldTransformCane_.rotate.x = -1.56f;
@@ -50,9 +48,7 @@ void Healer::Initialize() {
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformHead_.TransferMatrix();
-	if (nockBack_) {
-		animation_->Update(0);
-	}
+
 	
 	emitter_.resize(5);
 	particle_.resize(5);
@@ -85,7 +81,7 @@ void Healer::Initialize() {
 	.velocityRange{.min{0.f,0.1f,0.f},.max{0.f,0.4f,0.0f}},
 	};
 
-	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
+	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeHealer);
@@ -146,7 +142,8 @@ void Healer::Update() {
 	// 回転
 	worldTransformBase_.rotate.y =
 		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-
+	animation_->SetFlameTimer(flameTime_);
+	animation_->Update(animationNumber_);
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformCane_.TransferMatrix();
@@ -178,8 +175,7 @@ void Healer::Update() {
 };
 
 void Healer::Draw(const ViewProjection& camera) {
-	//animation_->Draw(worldTransformHead_, camera,true);
-	model_->Draw(worldTransformHead_, camera, true);
+	animation_->Draw(worldTransformHead_, camera,true);
 	for (int i = 0; i < 5; ++i) {
 		particle_[i]->Draw(camera);
 	}
@@ -200,6 +196,10 @@ void Healer::MoveInitialize() {
 	allHeal_ = false;
 	oneHeal_ = false;
 	heal_ = false;
+	animation_->SetLoop(true);
+	animation_->SetpreAnimationTimer(0);
+	flameTime_ = 20.0f;
+	animationNumber_ = standby;
 };
 void Healer::MoveUpdate() {
 	--coolTime;
@@ -223,6 +223,7 @@ void Healer::MoveUpdate() {
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		worldTransformBase_.translate += velocity_;
+		animationNumber_ = run;
 	}
 	IsVisibleToEnemy();
 
@@ -281,6 +282,10 @@ void Healer::JumpInitialize() {
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
+	animationNumber_ = jump;
+	flameTime_ = 30.0f;
+	animation_->SetAnimationTimer(0.5f, flameTime_);
+	animation_->SetLoop(false);
 };
 void Healer::JumpUpdate() {
 	// 移動
@@ -580,12 +585,14 @@ void Healer::followPlayer(Vector3 playerPos) {
 		if (minDistance_ <= length) {
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, playerPos, 0.02f);
+			animationNumber_ = run;
 			if (velocity_.y == 0.0f) {
 				worldTransformBase_.translate.y = 0.0f;
 			}
 		}
 		else {
 			followPlayer_ = false;
+			animationNumber_ = standby;
 		}
 	}
 
@@ -620,6 +627,7 @@ void Healer::searchTarget(Vector3 enemyPos) {
 			if (state_ != CharacterState::Jumping) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash || !enemy_->IsBehaberAttack()) {
 					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
+					animationNumber_ = run;
 				}
 				if (velocity_.y == 0.0f) {
 					worldTransformBase_.translate.y = 0.0f;
@@ -628,6 +636,7 @@ void Healer::searchTarget(Vector3 enemyPos) {
 			
 		}
 		else {
+			animationNumber_ = standby;
 			if (coolTime <= 0 && !isArea_) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
 					state_ = CharacterState::Attacking;
@@ -684,6 +693,7 @@ void Healer::IsVisibleToEnemy(){
 }
 
 void Healer::RunAway(){
+	animationNumber_ = run;
 	if (enemyPos_.z > worldTransformBase_.translate.z) {
 		if (enemyPos_.x > worldTransformBase_.translate.x) {
 			velocity_ = { -1.0f,0.0f,-1.5f };

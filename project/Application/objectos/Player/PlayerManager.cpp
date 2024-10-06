@@ -6,7 +6,7 @@ void PlayerManager::Initialize() {
 	
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
-	HammerModel_.reset(Model::CreateModelFromObj("resources/katana/katana.obj", "resources/katana/kata.png"));
+	HammerModel_.reset(Model::CreateModelFromObj("resources/player/sword.obj", "resources/player/sword.png"));
 
 	spriteRevival_.reset(Sprite::Create("resources/enemy/HP.png"));
 	spriteRevivalG_.reset(Sprite::Create("resources/HPG.png"));
@@ -129,6 +129,7 @@ void PlayerManager::Draw(const ViewProjection& camera) {
 	
 	player_->Draw(camera);
 	particle_->Draw(camera);
+
 	if (player_->GetBehavior() == Player::Behavior::kAttack) {
 		HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);
 	}

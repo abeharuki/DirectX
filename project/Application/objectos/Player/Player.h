@@ -157,7 +157,16 @@ private: // メンバ変数
 	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformCollision_;
 	std::unique_ptr<Animations>animation_;
-	std::unique_ptr<Model> model_;
+	int animationNumber_;
+	enum AnimationNumber {
+		animeAttack,//攻撃
+		jump,//ジャンプ
+		run,//移動
+		standby,//待機
+	};
+
+	float flameTime_;
+
 	const ViewProjection* viewProjection_;
 	std::unique_ptr<LineBox> linebox_;
 

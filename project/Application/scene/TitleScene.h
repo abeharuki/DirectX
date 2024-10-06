@@ -71,8 +71,6 @@ private:
 	// レンジャー
 	std::unique_ptr<RenjuManager> renjuManager_;
 
-	std::unique_ptr<Animations>animation_;
-
 	Vector2 pos_;
 	bool rule_;
 

@@ -13,13 +13,13 @@ Renju::~Renju() {
 /// </summary>
 void Renju::Initialize() {
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
-	model_.reset(Model::CreateModelFromObj("./resources/Renju/renju.obj", "./resources/Atlas.png"));
+	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));
+	animationNumber_ = standby;
+	flameTime_ = 20.0f;
 	// 初期化
 	worldTransformBase_.Initialize();
-	worldTransformBase_.translate.x = -2.0f;
+	worldTransformBase_.translate.x = -3.0f;
 	worldTransformHead_.Initialize();
-	worldTransformHead_.rotate.y = 3.14f;
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
 
 	for (int i = 0; i < 3; i++) {
@@ -35,7 +35,7 @@ void Renju::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 	
-	AABB aabbSize{ .min{-0.5f,-0.2f,-0.25f},.max{0.5f,0.2f,0.25f} };
+	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeRenju);
@@ -102,23 +102,23 @@ void Renju::Update() {
 			}
 		}
 	}
-
+	
 	// 回転
 	worldTransformBase_.rotate.y =
 		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-
+	animation_->SetFlameTimer(flameTime_);
+	animation_->Update(animationNumber_);
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
-	if (nockBack_) {
-		animation_->SetLoop(false);
-		animation_->Update(0);
-	}
 
-	ImGui::Begin("Sprite");
+
+	ImGui::Begin("Renju");
 	ImGui::DragFloat("RenjuHp", &hp_, 1.0f);
+	ImGui::Text("animeNunber%d", animationNumber_);
+	ImGui::Text("animeTime%f", animation_->GetAnimationTimer());
 	ImGui::End();
 };
 
@@ -130,8 +130,7 @@ void Renju::Draw(const ViewProjection& camera) {
 	}
 
 	
-	//animation_->Draw(worldTransformHead_, view,true);
-	model_->Draw(worldTransformHead_,camera , true);
+	animation_->Draw(worldTransformHead_, camera,true);
 	RenderCollisionBounds(worldTransformHead_, camera);
 	
 }
@@ -142,6 +141,10 @@ void Renju::MoveInitialize() {
 	worldTransformBase_.translate.y = 0.0f;
 	velocity_ = { 0.0f,0.0f,0.0f };
 	searchTarget_ = false;
+	animation_->SetpreAnimationTimer(0);
+	animation_->SetLoop(true);
+	flameTime_ = 20.0f;
+	animationNumber_ = standby;
 };
 void Renju::MoveUpdate() {
 	--coolTime;
@@ -164,6 +167,7 @@ void Renju::MoveUpdate() {
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		worldTransformBase_.translate += velocity_;
+		animationNumber_ = run;
 	}
 	IsVisibleToEnemy();
 
@@ -205,6 +209,12 @@ void Renju::JumpInitialize() {
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
+	
+	animationNumber_ = jump;
+	flameTime_ = 30.0f;
+	animation_->SetAnimationTimer(0.5f, flameTime_);
+	animation_->SetLoop(false);
+
 };
 void Renju::JumpUpdate() {
 	// 移動
@@ -220,6 +230,7 @@ void Renju::JumpUpdate() {
 		// ジャンプ終了
 		state_ = CharacterState::Moveing;
 		velocity_.y = 0.0f;
+		
 	}
 };
 
@@ -402,14 +413,16 @@ void Renju::followPlayer(Vector3 playerPos) {
 
 		// 距離条件チェック
 		if (minDistance_ <= length) {
-			worldTransformBase_.translate =
-				Math::Lerp(worldTransformBase_.translate, playerPos, 0.02f);
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, playerPos, 0.02f);
+			animationNumber_ = run;
 			if (velocity_.y == 0.0f) {
 				worldTransformBase_.translate.y = 0.0f;
 			}
+			
 		}
 		else {
 			followPlayer_ = false;
+			animationNumber_ = standby;
 		}
 	}
 }
@@ -443,13 +456,14 @@ void Renju::searchTarget(Vector3 enemyPos) {
 		if (minDistance_ * 2 <= enemylength_) {
 			if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash || !enemy_->IsBehaberAttack()) {
 				worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
+				animationNumber_ = run;
 			}
 			if (velocity_.y == 0.0f) {
 				worldTransformBase_.translate.y = 0.0f;
 			}
 		}
 		else {
-			//searchTarget_ = false;
+			animationNumber_ = standby;
 			if (coolTime <= 0 && !isArea_) {
 				state_ = CharacterState::Attacking;
 			}
@@ -496,6 +510,7 @@ void Renju::IsVisibleToEnemy(){
 }
 
 void Renju::RunAway(){
+	animationNumber_ = run;
 	if (enemyPos_.z > worldTransformBase_.translate.z) {
 		if (enemyPos_.x > worldTransformBase_.translate.x) {
 			velocity_ = { -1.0f,0.0f,-1.0f };
