@@ -101,6 +101,6 @@ private:
 
 	float env_;
 
-	
+	Vector4 modelColor_;
 
 };

@@ -199,6 +199,13 @@ private: // メンバ変数
 	int time_;
 	int num_;
 
+	enum TragetNum {
+		player,
+		healer,
+		renju,
+		tank,
+	};
+
 	bool clear_;
 	float threshold_ = 0.0f;
 

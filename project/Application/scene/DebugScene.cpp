@@ -43,6 +43,8 @@ void DebugScene::Initialize() {
 	worldTransform_.translate.z = -5.0f;
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
+	worldTransformAnimation_.rotate.y = 3.14f;
+	worldTransformAnimation_.scale = { 3.f,3.f,3.f };
 	worldTransformCollider1_.Initialize();
 	worldTransformCollider1_.rotate = { 0.0f,0.2f,0.0f };
 	worldTransformCollider1_.translate = { 0.0f,0.0f,0.3f };
@@ -59,7 +61,7 @@ void DebugScene::Initialize() {
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/name.png"));
+	model_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/name.png"));
 	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -112,7 +114,7 @@ void DebugScene::Update() {
 	animation_->Update(AnimationNum_);
 	animation_->SetFlameTimer(animaflame_);
 	model_->DirectionalLightDraw(directionLight_);
-	//model_->SetColor({ 1.0f,1.0f,1.0f,a_});
+	model_->SetColor({ 1.0f,1.0f,1.0f,a_});
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {
@@ -120,6 +122,7 @@ void DebugScene::Update() {
 	}
 
 	loader_->Update();
+
 
 	
 	
@@ -134,7 +137,15 @@ void DebugScene::Update() {
 	//Math::UpdateCircularMotion3D(worldTransformSter_[0].translate.x, worldTransformSter_[0].translate.z, 0, 0, 2.0f, angle_[1], 0.05f);
 	//Math::UpdateCircularMotion3D(worldTransformSter_[1].translate.x, worldTransformSter_[1].translate.z, 0, 0, 2.0f, angle_[2], 0.05f);
 	
+	if (a_ <= 0.0f) {
+		worldTransformAnimation_.translate = { 0,0,0 };
+		a_ = 1.0f;
+	}
+	else {
+		a_ -= 0.02f;
+	}
 
+	worldTransformAnimation_.translate = Math::Lerp(worldTransformAnimation_.translate, { 0,2,0 },0.05f);
 
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();

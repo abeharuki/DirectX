@@ -193,9 +193,10 @@ void Enemy::MoveInitialize() {
 	animationNumber_ = nomal;
 	animation_->SetLoop(true);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
+	num_ = RandomGenerator::GetRandomInt(1, 4);
 };
 void Enemy::MoveUpdata() {
-	// --time_
+	//--time_;
 	if (time_ <= 0) {
 		//behaviorRequest_ = Behavior::kAttack;
 	}
@@ -203,8 +204,28 @@ void Enemy::MoveUpdata() {
 
 		
 		// 敵の座標までの距離
-		float length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
-		sub = playerPos_ - GetWorldPosition();
+		float length;
+		if (num_ == 1) {
+			length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
+			sub = playerPos_ - GetWorldPosition();
+		}
+		else if (num_ == 2) {
+			length = Math::Length(Math::Subract(healerPos_, worldTransformBase_.translate));
+			sub = healerPos_ - GetWorldPosition();
+		}
+		else if (num_ == 3) {
+			length = Math::Length(Math::Subract(renjuPos_, worldTransformBase_.translate));
+			sub = renjuPos_ - GetWorldPosition();
+		}
+		else if (num_ == 4) {
+			length = Math::Length(Math::Subract(tankPos_, worldTransformBase_.translate));
+			sub = tankPos_ - GetWorldPosition();
+		}
+		else {
+			length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
+			sub = playerPos_ - GetWorldPosition();
+		}
+		
 		if (length > 10) {
 			++moveTime_;
 			if (moveTime_ > 30) {
@@ -226,7 +247,19 @@ void Enemy::MoveUpdata() {
 
 
 				worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-				worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, playerPos_, 0.03f);
+				if (num_ == player) {
+					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, playerPos_, 0.03f);
+				}
+				else if (num_ == healer) {
+					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, healerPos_, 0.03f);
+				}
+				else if (num_ == renju) {
+					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, renjuPos_, 0.03f);
+				}
+				else if (num_ == tank) {
+					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_, 0.03f);
+				}
+				
 			}
 			
 		}
@@ -238,7 +271,7 @@ void Enemy::MoveUpdata() {
 		
 	}
 
-
+	/*------------------デバック用---------------------*/
 	if (Input::PressKey(DIK_7)) {
 		behaviorRequest_ = Behavior::kAttack;
 		attackRequest_ = BehaviorAttack::kNomal;
@@ -255,7 +288,7 @@ void Enemy::MoveUpdata() {
 		behaviorRequest_ = Behavior::kAttack;
 		attackRequest_ = BehaviorAttack::kGround;
 	}
-
+	/*------------------------------------------------*/
 };
 
 void Enemy::AttackInitialize() {
