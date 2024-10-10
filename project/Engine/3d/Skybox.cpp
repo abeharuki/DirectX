@@ -32,6 +32,7 @@ void Skybox::sPipeline() {
 };
 
 void Skybox::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection) {
+	worldTransform;
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	Engine::GetList()->SetGraphicsRootSignature(rootSignature_.Get());
 	Engine::GetList()->SetPipelineState(sPipelineState_.Get());

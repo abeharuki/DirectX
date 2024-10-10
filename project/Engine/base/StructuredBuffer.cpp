@@ -31,7 +31,7 @@ void StructuredBuffer::Create(uint32_t numElements, uint32_t elementSize)
 		&resourceDesc, currentState_, nullptr,
 		IID_PPV_ARGS(&resource_));
 	assert(SUCCEEDED(hr));
-
+	hr;
 	CreateDerivedViews(device, numElements, elementSize);
 }
 

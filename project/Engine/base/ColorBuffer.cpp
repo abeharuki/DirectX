@@ -50,7 +50,7 @@ void ColorBuffer::Create(uint32_t width, uint32_t height, DXGI_FORMAT format)
 		&resourceDesc, currentState_, &clearValue,
 		IID_PPV_ARGS(&resource_));
 	assert(SUCCEEDED(hr));
-
+	hr;
 	CreateDerivedViews(device, format);
 }
 
@@ -89,7 +89,7 @@ void ColorBuffer::Create(uint32_t width, uint32_t height, DXGI_FORMAT format, fl
 		&resourceDesc, currentState_, &clearValue,
 		IID_PPV_ARGS(&resource_));
 	assert(SUCCEEDED(hr));
-
+	hr;
 	CreateDerivedViews(device, format);
 }
 

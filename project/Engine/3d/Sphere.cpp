@@ -71,7 +71,7 @@ void Sphere::Draw(
 
 // 頂点データの設定
 void Sphere::CreateVertexResource() {
-	vertexIndex = (kSubdivision * kSubdivision) * 6;
+	vertexIndex = (kSubdivision_ * kSubdivision_) * 6;
 
 
 	// モデルの読み込み
@@ -86,20 +86,20 @@ void Sphere::CreateVertexResource() {
 
 	//const uint32_t kSubdivision = kSubdivision_; // 分割数
 	const float pi = (float)std::numbers::pi;                 // π
-	const float kLonEvery = 2.0f * pi / kSubdivision; // 経度分割1つ分の角度(φd)
-	const float kLatEvery = pi / kSubdivision;        // 緯度分割1つ分の角度(θd)
+	const float kLonEvery = 2.0f * pi / kSubdivision_; // 経度分割1つ分の角度(φd)
+	const float kLatEvery = pi / kSubdivision_;        // 緯度分割1つ分の角度(θd)
 	float u;
 	float v;
 	// 緯度の方向に分割-π/2~π/2
-	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+	for (uint32_t latIndex = 0; latIndex < kSubdivision_; ++latIndex) {
 		float lat = -pi / 2.0f + kLatEvery * latIndex; // 現在の緯度(θ)
 		// 経度の方向に分割
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
-			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision_; ++lonIndex) {
+			uint32_t start = (latIndex * kSubdivision_ + lonIndex) * 6;
 			float lon = lonIndex * kLonEvery; // 現在の経度(φ)
-			u = float(lonIndex) / float(kSubdivision);
-			v = 1.0f - float(latIndex) / float(kSubdivision);
-			float uv = 1.0f / float(kSubdivision);
+			u = float(lonIndex) / float(kSubdivision_);
+			v = 1.0f - float(latIndex) / float(kSubdivision_);
+			float uv = 1.0f / float(kSubdivision_);
 			// a 左下
 			vertexData[start].position.x = cos(lat) * cos(lon);
 			vertexData[start].position.y = sin(lat);
@@ -217,8 +217,7 @@ void Sphere::LoadTexture(const std::string& texturePath) {
 }
 
 
-void Sphere::DrawSphere(VertexData* vertexData, const uint32_t kSubdivision_) {
-	const uint32_t kSubdivision = kSubdivision_; // 分割数
+void Sphere::DrawSphere(VertexData* vertexData_, const uint32_t kSubdivision) {
 	const float pi = (float)std::numbers::pi;                 // π
 	const float kLonEvery = 2.0f * pi / kSubdivision; // 経度分割1つ分の角度(φd)
 	const float kLatEvery = pi / kSubdivision;        // 緯度分割1つ分の角度(θd)
@@ -235,66 +234,66 @@ void Sphere::DrawSphere(VertexData* vertexData, const uint32_t kSubdivision_) {
 			v = 1.0f - float(latIndex) / float(kSubdivision);
 			float uv = 1.0f / float(kSubdivision);
 			// a 左下
-			vertexData[start].position.x = cos(lat) * cos(lon);
-			vertexData[start].position.y = sin(lat);
-			vertexData[start].position.z = cos(lat) * sin(lon);
-			vertexData[start].position.w = 1.0f;
-			vertexData[start].texcoord = { u, v };
+			vertexData_[start].position.x = cos(lat) * cos(lon);
+			vertexData_[start].position.y = sin(lat);
+			vertexData_[start].position.z = cos(lat) * sin(lon);
+			vertexData_[start].position.w = 1.0f;
+			vertexData_[start].texcoord = { u, v };
 			// b 左上
-			vertexData[start + 1].position.x = cos(lat + kLatEvery) * cos(lon);
-			vertexData[start + 1].position.y = sin(lat + kLatEvery);
-			vertexData[start + 1].position.z = cos(lat + kLatEvery) * sin(lon);
-			vertexData[start + 1].position.w = 1.0f;
-			vertexData[start + 1].texcoord = { u, v - uv };
+			vertexData_[start + 1].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData_[start + 1].position.y = sin(lat + kLatEvery);
+			vertexData_[start + 1].position.z = cos(lat + kLatEvery) * sin(lon);
+			vertexData_[start + 1].position.w = 1.0f;
+			vertexData_[start + 1].texcoord = { u, v - uv };
 			// c 右下
-			vertexData[start + 2].position.x = cos(lat) * cos(lon + kLonEvery);
-			vertexData[start + 2].position.y = sin(lat);
-			vertexData[start + 2].position.z = cos(lat) * sin(lon + kLonEvery);
-			vertexData[start + 2].position.w = 1.0f;
-			vertexData[start + 2].texcoord = { u + uv, v };
+			vertexData_[start + 2].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData_[start + 2].position.y = sin(lat);
+			vertexData_[start + 2].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData_[start + 2].position.w = 1.0f;
+			vertexData_[start + 2].texcoord = { u + uv, v };
 
 			// b 左上
-			vertexData[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
-			vertexData[start + 3].position.y = sin(lat + kLatEvery);
-			vertexData[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
-			vertexData[start + 3].position.w = 1.0f;
-			vertexData[start + 3].texcoord = { u + uv, v - uv };
+			vertexData_[start + 3].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
+			vertexData_[start + 3].position.y = sin(lat + kLatEvery);
+			vertexData_[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
+			vertexData_[start + 3].position.w = 1.0f;
+			vertexData_[start + 3].texcoord = { u + uv, v - uv };
 			// d 右上
-			vertexData[start + 4].position.x = cos(lat) * cos(lon + kLonEvery);
-			vertexData[start + 4].position.y = sin(lat);
-			vertexData[start + 4].position.z = cos(lat) * sin(lon + kLonEvery);
-			vertexData[start + 4].position.w = 1.0f;
-			vertexData[start + 4].texcoord = { u + uv, v };
+			vertexData_[start + 4].position.x = cos(lat) * cos(lon + kLonEvery);
+			vertexData_[start + 4].position.y = sin(lat);
+			vertexData_[start + 4].position.z = cos(lat) * sin(lon + kLonEvery);
+			vertexData_[start + 4].position.w = 1.0f;
+			vertexData_[start + 4].texcoord = { u + uv, v };
 			// c 右下
-			vertexData[start + 5].position.x = cos(lat + kLatEvery) * cos(lon);
-			vertexData[start + 5].position.y = sin(lat + kLatEvery);
-			vertexData[start + 5].position.z = cos(lat + kLatEvery) * sin(lon);
-			vertexData[start + 5].position.w = 1.0f;
-			vertexData[start + 5].texcoord = { u, v - uv };
+			vertexData_[start + 5].position.x = cos(lat + kLatEvery) * cos(lon);
+			vertexData_[start + 5].position.y = sin(lat + kLatEvery);
+			vertexData_[start + 5].position.z = cos(lat + kLatEvery) * sin(lon);
+			vertexData_[start + 5].position.w = 1.0f;
+			vertexData_[start + 5].texcoord = { u, v - uv };
 
-			vertexData[start].normal.x = vertexData[start].position.x;
-			vertexData[start].normal.y = vertexData[start].position.y;
-			vertexData[start].normal.z = vertexData[start].position.z;
+			vertexData_[start].normal.x = vertexData_[start].position.x;
+			vertexData_[start].normal.y = vertexData_[start].position.y;
+			vertexData_[start].normal.z = vertexData_[start].position.z;
 
-			vertexData[start + 1].normal.x = vertexData[start + 1].position.x;
-			vertexData[start + 1].normal.y = vertexData[start + 1].position.y;
-			vertexData[start + 1].normal.z = vertexData[start + 1].position.z;
+			vertexData_[start + 1].normal.x = vertexData_[start + 1].position.x;
+			vertexData_[start + 1].normal.y = vertexData_[start + 1].position.y;
+			vertexData_[start + 1].normal.z = vertexData_[start + 1].position.z;
 
-			vertexData[start + 2].normal.x = vertexData[start + 2].position.x;
-			vertexData[start + 2].normal.y = vertexData[start + 2].position.y;
-			vertexData[start + 2].normal.z = vertexData[start + 2].position.z;
+			vertexData_[start + 2].normal.x = vertexData_[start + 2].position.x;
+			vertexData_[start + 2].normal.y = vertexData_[start + 2].position.y;
+			vertexData_[start + 2].normal.z = vertexData_[start + 2].position.z;
 
-			vertexData[start + 3].normal.x = vertexData[start + 3].position.x;
-			vertexData[start + 3].normal.y = vertexData[start + 3].position.y;
-			vertexData[start + 3].normal.z = vertexData[start + 3].position.z;
+			vertexData_[start + 3].normal.x = vertexData_[start + 3].position.x;
+			vertexData_[start + 3].normal.y = vertexData_[start + 3].position.y;
+			vertexData_[start + 3].normal.z = vertexData_[start + 3].position.z;
 
-			vertexData[start + 4].normal.x = vertexData[start + 4].position.x;
-			vertexData[start + 4].normal.y = vertexData[start + 4].position.y;
-			vertexData[start + 4].normal.z = vertexData[start + 4].position.z;
+			vertexData_[start + 4].normal.x = vertexData_[start + 4].position.x;
+			vertexData_[start + 4].normal.y = vertexData_[start + 4].position.y;
+			vertexData_[start + 4].normal.z = vertexData_[start + 4].position.z;
 
-			vertexData[start + 5].normal.x = vertexData[start + 5].position.x;
-			vertexData[start + 5].normal.y = vertexData[start + 5].position.y;
-			vertexData[start + 5].normal.z = vertexData[start + 5].position.z;
+			vertexData_[start + 5].normal.x = vertexData_[start + 5].position.x;
+			vertexData_[start + 5].normal.y = vertexData_[start + 5].position.y;
+			vertexData_[start + 5].normal.z = vertexData_[start + 5].position.z;
 		}
 	}
 }

@@ -760,6 +760,7 @@ Vector3 Math::PushOutAABB(const Vector3& subjectTranslate, const AABB& subjectAA
 //AABBの押し戻し
 Vector3 Math::PushOutAABBOBB(const Vector3& aabbTranslate, const AABB& aabb, const Vector3& obbTranslate, const OBB& obb)
 {
+	obbTranslate;
 	// AABBの中心と半サイズを計算
 	Vector3 aabbCenter = aabbTranslate + (aabb.min + aabb.max) * 0.5f;
 	float aabbHalfSize[3] = {
@@ -835,6 +836,7 @@ Vector3 Math::PushOutAABBOBB(const Vector3& aabbTranslate, const AABB& aabb, con
 
 Vector3 Math::PushOutOBBAABB(const Vector3& aabbTranslate, const AABB& aabb, const Vector3& obbTranslate, const OBB& obb)
 {
+	obbTranslate;
 	// AABBの中心と半サイズを計算
 	Vector3 aabbCenter = aabbTranslate + (aabb.min + aabb.max) * 0.5f;
 	float aabbHalfSize[3] = {

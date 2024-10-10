@@ -66,11 +66,11 @@ void Sprite::Draw(Transform& uvTransform ) {
     };
 	
 	// Sprite用のworldViewProjectionMatrixを作る
-	Matrix4x4 matWorld_ = Math::MakeAffineMatrix(Vector3{size_.x,size_.y, 1.0f}, Vector3{0.0f, 0.0f,rotation_},Vector3{position_.x, position_.y, 0.5f});
+	Matrix4x4 matWorld = Math::MakeAffineMatrix(Vector3{size_.x,size_.y, 1.0f}, Vector3{0.0f, 0.0f,rotation_},Vector3{position_.x, position_.y, 0.5f});
 	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
 	Matrix4x4 projectionMatrixSprite = Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
-	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
-	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite,matWorld_);
+	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(matWorld, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
+	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite,matWorld);
 
 	
 
@@ -124,11 +124,11 @@ void Sprite::Draw() {
 	};
 
 	// Sprite用のworldViewProjectionMatrixを作る
-	Matrix4x4 matWorld_ = Math::MakeAffineMatrix(Vector3{ size_.x,size_.y, 1.0f }, Vector3{ 0.0f, 0.0f,rotation_ }, Vector3{ position_.x, position_.y, 0.5f });
+	Matrix4x4 matWorld = Math::MakeAffineMatrix(Vector3{ size_.x,size_.y, 1.0f }, Vector3{ 0.0f, 0.0f,rotation_ }, Vector3{ position_.x, position_.y, 0.5f });
 	Matrix4x4 viewMatrixSprite = Math::MakeIdentity4x4();
 	Matrix4x4 projectionMatrixSprite = Math::MakeOrthographicMatrix(0.0f, 0.0f, float(1280), float(720), 0.0f, 100.0f);
-	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(matWorld_, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
-	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, matWorld_);
+	Matrix4x4 worldViewProjectionMatrixSprite = Math::Multiply(matWorld, Math::Multiply(viewMatrixSprite, projectionMatrixSprite));
+	*wvpData = TransformationMatrix(worldViewProjectionMatrixSprite, matWorld);
 
 
 

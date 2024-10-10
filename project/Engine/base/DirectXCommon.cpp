@@ -26,7 +26,7 @@ ID3D12DescriptorHeap* CreateDescriptorHeap(
 	HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
 	// ディスクリプタヒープが作れなかったので起動できない
 	assert(SUCCEEDED(hr));
-
+	hr;
 	return descriptorHeap;
 };
 
@@ -47,6 +47,8 @@ void DirectXCommon::Finalize() {
 void DirectXCommon::Initialize(WinApp* winApp, int32_t backBufferWidth, int32_t backBufferHeight) {
 	// nullptrチェック
 	assert(winApp);
+	backBufferWidth;
+	backBufferHeight;
 	assert(4 <= backBufferWidth && backBufferWidth <= 4096);
 	assert(4 <= backBufferHeight && backBufferHeight <= 4096);
 
@@ -188,6 +190,7 @@ void DirectXCommon::PostDraw() {
 //指定した色で画面全体をクリア
 void DirectXCommon::ClearRenderTargetSWAP() {
 	HRESULT hr_ = S_FALSE;
+	hr_;
 	// これから書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
@@ -427,6 +430,7 @@ CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t h
 		&depthClearValue,                 // Clear最適値
 		IID_PPV_ARGS(&resource));         // 作成するResourceポインタへのポインタ
 	assert(SUCCEEDED(hr));
+	hr;
 	return resource;
 }
 
@@ -547,6 +551,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateRenderTextureResourc
 		&clearValue,                 // Clear最適値
 		IID_PPV_ARGS(&resource));         // 作成するResourceポインタへのポインタ
 	assert(SUCCEEDED(hr));
+	hr;
 	return resource;
 }
 
@@ -555,7 +560,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateRenderTextureResourc
 void DirectXCommon::ClearRenderTarget() {
 	HRESULT hr_ = S_FALSE;
 
-
+	hr_;
 	// 指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
 	commandList_->ClearRenderTargetView(rtvHandle_, clearColor, 0, nullptr);
@@ -615,7 +620,7 @@ void DirectXCommon::RenderPreDraw() {
 
 }
 void DirectXCommon::RenderPostDraw() {
-	HRESULT hr_ = S_FALSE;
+	//HRESULT hr_ = S_FALSE;
 
 	// 今回はRenderTargetからPresentにする
 	renderBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -676,7 +681,7 @@ void DirectXCommon::DepthPreDraw() {
 
 }
 void DirectXCommon::DepthPostDraw() {
-	HRESULT hr_ = S_FALSE;
+	//HRESULT hr_ = S_FALSE;
 
 	// 今回はRenderTargetからPresentにする
 	depthBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;

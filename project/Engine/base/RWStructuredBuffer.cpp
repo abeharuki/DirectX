@@ -30,7 +30,7 @@ void RWStructuredBuffer::Create(uint32_t numElements, uint32_t elementSize){
 		&resourceDesc, currentState_, nullptr,
 		IID_PPV_ARGS(&resource_));
 	assert(SUCCEEDED(hr));
-
+	hr;
 	//GpuVirtualAddressの初期化
 	gpuVirtualAddress_ = resource_->GetGPUVirtualAddress();
 

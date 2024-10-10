@@ -110,8 +110,8 @@ private:
 	// ライティング
 	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
 	WritingStyle* lightData;
-	const uint32_t kSubdivision = 128;
-	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
+	const uint32_t kSubdivision_ = 128;
+	uint32_t vertexIndex = (kSubdivision_ * kSubdivision_) * 6;
 
 private:
 	// DirectX::ScratchImage LoadTexture(const std::string& filePath);

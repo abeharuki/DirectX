@@ -143,7 +143,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateGraphicsPipel
 #pragma endregion
 
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
 			&graphicsPipelineStateDesc, IID_PPV_ARGS(&sPipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -283,7 +284,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState> GraphicsPipeline::CreateNoDepthGraph
 #pragma endregion
 
 	// 実際に生成
-	HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+	HRESULT hr_;
+	hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
 		&graphicsPipelineStateDesc, IID_PPV_ARGS(&sPipelineState));
 	assert(SUCCEEDED(hr_));
 
@@ -423,7 +425,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateSkyboxGraphic
 #pragma endregion
 
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		HRESULT hr_;
+		hr_= Engine::GetDevice()->CreateGraphicsPipelineState(
 			&graphicsPipelineStateDesc, IID_PPV_ARGS(&skyboxPipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -564,7 +567,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateLineGraphicsP
 #pragma endregion
 
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
 			&graphicsPipelineStateDesc, IID_PPV_ARGS(&linePipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -701,7 +705,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateSpritePipelin
 #pragma endregion
 
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
 			&graphicsPipelineStateDesc, IID_PPV_ARGS(&spritePipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -841,7 +846,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateParticleGraph
 #pragma endregion
 
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
 			&graphicsPipelineStateDesc, IID_PPV_ARGS(&particlesPipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -868,7 +874,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState> GraphicsPipeline::CreateParticleCSGr
 #pragma endregion
 		computePipelineStateDesc.pRootSignature = particleCSRootSignature_.Get();
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateComputePipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateComputePipelineState(
 			&computePipelineStateDesc, IID_PPV_ARGS(&particleCSPipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -895,7 +902,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState> GraphicsPipeline::CreateEmiteCSGraph
 #pragma endregion
 		computePipelineStateDesc.pRootSignature = emiteCSRootSignature_.Get();
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateComputePipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateComputePipelineState(
 			&computePipelineStateDesc, IID_PPV_ARGS(&emiteCSPipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -922,7 +930,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState> GraphicsPipeline::CreateUpdatePartic
 #pragma endregion
 		computePipelineStateDesc.pRootSignature = updateParticleCSRootSignature_.Get();
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateComputePipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateComputePipelineState(
 			&computePipelineStateDesc, IID_PPV_ARGS(&updateParticleCSPipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -1069,7 +1078,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateAnimationGrap
 #pragma endregion
 
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
 			&graphicsPipelineStateDesc, IID_PPV_ARGS(&animationPipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -1095,7 +1105,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateAnimationCSGr
 #pragma endregion
 		computePipelineStateDesc.pRootSignature = animationCSRootSignature_.Get();
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateComputePipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateComputePipelineState(
 			&computePipelineStateDesc, IID_PPV_ARGS(&animationCSPipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -1203,7 +1214,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreatePostEffectGra
 #pragma endregion
 
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
 			&graphicsPipelineStateDesc, IID_PPV_ARGS(&postEffectPipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -1298,7 +1310,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateOutLineGraphi
 #pragma endregion
 
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
 			&graphicsPipelineStateDesc, IID_PPV_ARGS(&outLinePipelineState_));
 		assert(SUCCEEDED(hr_));
 
@@ -1393,7 +1406,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateDissolveGraph
 #pragma endregion
 
 		// 実際に生成
-		HRESULT hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
+		HRESULT hr_;
+		hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
 			&graphicsPipelineStateDesc, IID_PPV_ARGS(&dissolvePipelineState_));
 		assert(SUCCEEDED(hr_));
 

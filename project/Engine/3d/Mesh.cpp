@@ -105,7 +105,7 @@ ID3D12Resource* Mesh::CreateBufferResoure(ID3D12Device* device, size_t sizeInByt
 	    &uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc,
 	    D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertexResource));
 	assert(SUCCEEDED(hr));
-
+	hr;
 	return vertexResource;
 };
 

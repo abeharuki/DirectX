@@ -33,6 +33,7 @@ void Input::Initialize() {
 	ZeroMemory(&xInputState, sizeof(XINPUT_STATE));
 	//	DWORDは32bitのuint型 XInputと型を合わせている
 	DWORD dr = XInputGetState(0, &xInputState);
+	dr;
 	//	接続があればのフラグ
 	result == ERROR_SUCCESS ? isConnectPad = true : isConnectPad = false;
 }
@@ -133,25 +134,26 @@ bool Input::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const {
 }
 
 void Input::SetJoyStickDeadZone(int32_t stickNo, XINPUT_STATE& out) const {
+	stickNo;
 	int LstickX = static_cast<int>(out.Gamepad.sThumbLX);
 	int LstickY = static_cast<int>(out.Gamepad.sThumbLY);
 	int RstickX = static_cast<int>(out.Gamepad.sThumbRX);
 	int RstickY = static_cast<int>(out.Gamepad.sThumbRY);
 	if (abs(LstickX) < DEADZONE) {
 		LstickX = 0;
-		out.Gamepad.sThumbLX = LstickX;
+		out.Gamepad.sThumbLX = SHORT(LstickX);
 	}
 	if (abs(LstickY) < DEADZONE) {
 		LstickY = 0;
-		out.Gamepad.sThumbLY = LstickY;
+		out.Gamepad.sThumbLY = SHORT(LstickY);
 	}
 	if (abs(RstickX) < DEADZONE) {
 		RstickX = 0;
-		out.Gamepad.sThumbRX = RstickX;
+		out.Gamepad.sThumbRX = SHORT(RstickX);
 	}
 	if (abs(RstickY) < DEADZONE) {
 		RstickY = 0;
-		out.Gamepad.sThumbRY = RstickY;
+		out.Gamepad.sThumbRY = SHORT(RstickY);
 	}
 
 }

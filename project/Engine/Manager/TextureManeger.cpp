@@ -208,6 +208,7 @@ ID3D12Resource* TextureManager::CreateTextureResource(
 	    nullptr,
 	    IID_PPV_ARGS(&resource)); // 作成するResourceポインタへのポインタ
 	assert(SUCCEEDED(hr));
+	hr;
 	return resource;
 }
 
@@ -229,13 +230,15 @@ void TextureManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> te
 					static_cast<UINT>(img->slicePitch)
 				);
 				assert(SUCCEEDED(hr));
+				hr;
 			}
 		}
 	}
 }
 const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
 {
-	
+
+	textureIndex;
 	assert(textureIndex < DirectXCommon::kMaxSRVCount);
 	TextureData& textureData = textureDatas.back();
 	return textureData.metadata;

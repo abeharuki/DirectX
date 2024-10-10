@@ -15,7 +15,7 @@ void DescriptorHeap::Initialize(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescrip
 
     HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap_));
     assert(SUCCEEDED(hr));
-
+    hr;
     //ディスクリプタサイズの取得
     descriptorSize_ = device->GetDescriptorHandleIncrementSize(type);
 

@@ -193,7 +193,7 @@ void LineBox::Updata() {
 }
 
 void LineBox::Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag) {
-
+	flag;
 	for (int i = 0; i < 12; ++i) {
 		lines_[i]->Draw(worldTransform, viewProjection, false);
 	}
