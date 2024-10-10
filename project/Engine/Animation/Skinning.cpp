@@ -4,7 +4,7 @@
 
 namespace SkinningPace {
 
-	SkinCluster CreateSkinCuster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize) {
+	SkinCluster CreateSkinCuster(const Skeleton& skeleton, const ModelData& modelData) {
 		SkinCluster skinCluster;
 		//palette用のResourceを確保
 		skinCluster.paletteResource = std::make_unique<StructuredBuffer>();

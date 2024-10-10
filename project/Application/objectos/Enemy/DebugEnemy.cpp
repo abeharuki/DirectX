@@ -159,8 +159,6 @@ void DebugEnemy::JumpUpdata() {
 	Vector3 accelerationVector = { 0, -kGravity, 0 };
 	// 加速
 	velocity_ += accelerationVector;
-	// 移動速度
-	const float kCharacterSpeed = 0.2f;
 
 
 	if (worldTransformBase_.translate.y <= 5.0f) {

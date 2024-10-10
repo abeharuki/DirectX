@@ -111,7 +111,7 @@ void HealerManager::DrawUI(){
 };
 
 void HealerManager::RenderDirect(const ViewProjection& camera) {
-	
+	camera;
 };
 
 void HealerManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }

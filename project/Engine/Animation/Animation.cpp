@@ -4,7 +4,7 @@
 //WritingStyle* Animations::lightData;
 
 std::vector<Animation> Animations::LoadAnimationFile(const std::string& directorPath, const std::string& filename) {
-	std::vector<Animation> animation{};//今回作るアニメーション
+	std::vector<Animation> animations{};//今回作るアニメーション
 	Assimp::Importer importer;
 	std::string filePath = directorPath + "/" + filename;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), 0);
@@ -50,12 +50,12 @@ std::vector<Animation> Animations::LoadAnimationFile(const std::string& director
 
 		}
 
-		animation.push_back(currentAnimationData);
+		animations.push_back(currentAnimationData);
 	}
 
 	
 
-	return animation;
+	return animations;
 }
 
 Vector3 Animations::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time) {
@@ -96,7 +96,7 @@ void Animations::Initialize(const std::string& directorPath, const std::string& 
 	LoadAnimation(directorPath, motionPath);
 	LoadTexture(directorPath + "/" + filename);
 	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
-	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(), skeleton, modelData, Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	skinCluster = SkinningPace::CreateSkinCuster( skeleton, modelData);
 	CreateResource();
 	sPipeline();
 	CreateJointWorldTransforms();
@@ -113,7 +113,7 @@ void Animations::Initialize(const std::string& directorPath,const std::string& m
 	LoadAnimation(directorPath, motionPath);
 	LoadTexture(modelData.material.textureFilePath);
 	skeleton = SkeletonPace::CreateSkeleton(modelData.rootNode);
-	skinCluster = SkinningPace::CreateSkinCuster(Engine::GetDevice(), skeleton, modelData, Engine::GetSRV(), Engine::GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+	skinCluster = SkinningPace::CreateSkinCuster( skeleton, modelData);
 	CreateResource();
 	LoadTexture(modelData.material.textureFilePath);
 	sPipeline();
@@ -123,7 +123,6 @@ void Animations::Initialize(const std::string& directorPath,const std::string& m
 	for (int i = 0; i < jointsNum_; i++) {
 		line_[i].reset(Line::CreateLine({ 0,0,0 }, { 0,0,0 }));
 	}
-
 }
 
 
@@ -200,16 +199,16 @@ void Animations::ApplyAnimation(const std::string& name,const uint32_t animation
 	
 }
 
-void Animations::BoonRecursive(Skeleton& skeleton, int32_t child) {
-	Joint& root = skeleton.joints[child];
+void Animations::BoonRecursive(Skeleton& skeletons, int32_t child) {
+	Joint& root = skeletons.joints[child];
 	for (uint32_t childIndex : root.children) {
 		root.locaalMatrix = Math::MakeAffineMatrix(root.transform.scale, root.transform.rotate, root.transform.translate);
 
 		boonPos.push_back({ root.skeletonSpaceMatrix.m[3][0],root.skeletonSpaceMatrix.m[3][1],root.skeletonSpaceMatrix.m[3][2] });
-		boonPos2.push_back({ skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][0],  skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][1],  skeleton.joints[childIndex].skeletonSpaceMatrix.m[3][2] });
+		boonPos2.push_back({ skeletons.joints[childIndex].skeletonSpaceMatrix.m[3][0],  skeletons.joints[childIndex].skeletonSpaceMatrix.m[3][1],  skeletons.joints[childIndex].skeletonSpaceMatrix.m[3][2] });
 
 
-		BoonRecursive(skeleton, childIndex);
+		BoonRecursive(skeletons, childIndex);
 	}
 }
 

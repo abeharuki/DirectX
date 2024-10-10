@@ -318,7 +318,7 @@ void Player::MoveUpdata() {
 	}
 	else {
 
-		const float value = 0.7f;
+		//const float value = 0.7f;
 		bool isMove_ = false;
 		/*----------移動処理----------*/
 		float kCharacterSpeed = 0.3f;
@@ -627,7 +627,7 @@ void Player::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
 		if (isEnemyAttack_) {
-			const float kSpeed = 3.0f;
+			//const float kSpeed = 3.0f;
 			//velocity_ = { 0.0f, 0.0f, -kSpeed };
 			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
 			if (hp_ > 0) {

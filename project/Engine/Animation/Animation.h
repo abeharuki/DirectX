@@ -120,8 +120,8 @@ public:
 	
 
 	//補間するアニメーションナンバーの設定
-	void SetAnimatioNumber(uint32_t nextAnimation,uint32_t animation) { 
-		preAnimationNumber_ = animation;
+	void SetAnimatioNumber(uint32_t nextAnimation,uint32_t animationNum) { 
+		preAnimationNumber_ = animationNum;
 		animationNumber_ = nextAnimation;
 	}
 

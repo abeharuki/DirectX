@@ -102,7 +102,7 @@ void DebugPlayer::MoveInitialize() {
 };
 void DebugPlayer::MoveUpdata() {
 	
-	const float value = 0.7f;
+	//const float value = 0.7f;
 	bool isMove_ = false;
 	/*----------移動処理----------*/
 	float kCharacterSpeed = 0.3f;

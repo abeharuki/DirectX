@@ -22,6 +22,7 @@ public:
     }
 
     void AddChild(BehaviorTreeNode* child) override {
+        child;
         // ActionNode では子ノードを持たないので、このメソッドは空実装
     }
 };

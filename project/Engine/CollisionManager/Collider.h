@@ -61,6 +61,8 @@ public:
 
 	//WorldTrnsformのScaleが全て1じゃないとおかしくなる
 	void RenderCollisionBounds(WorldTransform& world, const ViewProjection& camera) {
+		camera;
+		world;
 #ifdef _DEBUG
 		lineBox_->Draw(world, camera, false);
 		

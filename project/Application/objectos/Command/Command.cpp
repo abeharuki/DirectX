@@ -137,7 +137,7 @@ void Command::Update() {
 }
 
 void Command::Draw(const ViewProjection& camera) {
-	
+	camera;
 }
 
 void Command::DrawUI() {

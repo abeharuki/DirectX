@@ -31,5 +31,5 @@ struct SkinCluster {
 
 namespace SkinningPace {
 
-	SkinCluster CreateSkinCuster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skelteon, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize);
+	SkinCluster CreateSkinCuster( const Skeleton& skelteon, const ModelData& modelData);
 }

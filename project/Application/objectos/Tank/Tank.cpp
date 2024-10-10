@@ -600,7 +600,7 @@ void Tank::searchTarget(Vector3 enemyPos) {
 //敵の視野内かどうか
 void Tank::IsVisibleToEnemy(){
 	isArea_ = false;
-	float rectWidth = 6.0f; // 横幅の設定 (敵の中心から±3)
+	//float rectWidth = 6.0f; // 横幅の設定 (敵の中心から±3)
 	Vector3 toEnemy = enemyPos_- worldTransformBase_.translate;
 	// 敵の視線方向を取得 (Z軸方向が前方)
 	Vector3 enemyForward = {
@@ -678,10 +678,11 @@ void Tank::Relationship() {
 
 // 衝突を検出したら呼び出されるコールバック関数
 void Tank::OnAllyCollision(const WorldTransform& worldTransform) {
-
+	worldTransform;
 };
 void Tank::OnCollision(const WorldTransform& worldTransform) {
-	const float kSpeed = 3.0f;
+	worldTransform;
+	//const float kSpeed = 3.0f;
 	//velocity_ = { 0.0f, 0.0f, -kSpeed };
 	//velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
 	if (hp_ > 0) {
@@ -704,7 +705,7 @@ void Tank::OnCollision(Collider* collider) {
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			if (enemy_->isAttack()) {
-				const float kSpeed = 3.0f;
+				//const float kSpeed = 3.0f;
 				//velocity_ = { 0.0f, 0.0f, -kSpeed };
 				//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
 				if (hp_ > 0) {
@@ -750,7 +751,7 @@ void Tank::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
 		if (enemy_->isAttack()&& enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
-			const float kSpeed = 3.0f;
+			//const float kSpeed = 3.0f;
 			//velocity_ = { 0.0f, 0.0f, -kSpeed };
 			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
 			if (hp_ > 0) {

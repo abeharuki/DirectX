@@ -6,7 +6,7 @@ void ModelLoader::Initialize(const std::string& filename) {
 }
 
 void ModelLoader::Update() {
-	int i = 0;
+	
 	for (WorldTransform* object : worldTransforms) {
 		object->UpdateMatrix();
 	}
@@ -46,8 +46,8 @@ void ModelLoader::Draw(const ViewProjection& viewProjection, bool flag) {
 
 	}
 
-	for (int i = 0; i < particle_.size(); ++i) {
-		particle_[i]->Draw(viewProjection);
+	for (int x = 0; x < particle_.size(); ++x) {
+		particle_[x]->Draw(viewProjection);
 	}
 
 }
@@ -137,7 +137,7 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 
 	//モデルの読み込み
 	for (auto& objectData : levelData->objects) {
-		int z = 0;
+		//int z = 0;
 		//ファイル名から登録済みモデルを検索
 		decltype(models)::iterator it = models.find(objectData.filename);
 		if (it == models.end() && objectData.filename != "Camera") {

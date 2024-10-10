@@ -136,8 +136,8 @@ private:
 	std::array<SoundDataWav, kMaxSoundData> soundDatasWav_{};
 	std::set<Voice*> sourceVoices_{};
 	//IXAudio2SourceVoice* sourceVoice_ = nullptr;
-	uint32_t audioHandle_ = -1;
-	uint32_t voiceHandle_ = -1;
+	uint32_t audioHandle_ = uint32_t(-1);
+	uint32_t voiceHandle_ = uint32_t(-1);
 };
 struct AudioHelper {
 	AudioHelper() = default;
