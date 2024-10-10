@@ -142,7 +142,7 @@ void GameScene::Update() {
 		}
 		//個人回復
 		if (healerManager_->GetHealer()->GetOneHeal()) {
-			if (playerManager_->GetPlayer()->GetHp() <= 20) {
+			if (playerManager_->GetPlayer()->GetHp() <= 20 && playerManager_->GetPlayer()->GetHp() >= 1) {
 				playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
 			else if (healerManager_->GetHealer()->GetHp() <= 20 && !healerManager_->GetHealer()->IsDead()) {
@@ -210,14 +210,15 @@ void GameScene::Update() {
 	viewProjection_.TransferMatrix();
 
 	enemyManager_->SetCamera(viewProjection_);
-
-	skydome_->Update();
-	loader_->Update();
-
+	playerManager_->GetPlayer()->SetCamera(viewProjection_);
 	healerManager_->SetViewProjection(viewProjection_);
 	renjuManager_->SetViewProjection(viewProjection_);
 	tankManager_->SetViewProjection(viewProjection_);
 
+	skydome_->Update();
+	loader_->Update();
+
+	
 	//ライティングの設定
 	playerManager_->GetPlayer()->SetLight(directionLight_);
 	enemyManager_->GetEnemy()->SetLight(directionLight_);
@@ -239,10 +240,6 @@ void GameScene::Draw() {
 	//地面
 	loader_->Draw(viewProjection_, true);
 	
-	//プレイヤー
-	if (!playerManager_->GetPlayer()->IsDash()) {
-		playerManager_->Draw(viewProjection_);
-	}
 	//敵
 	enemyManager_->Draw(viewProjection_);
 	// タンク
@@ -251,6 +248,11 @@ void GameScene::Draw() {
 	healerManager_->Draw(viewProjection_);
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
+	//プレイヤー
+	if (!playerManager_->GetPlayer()->IsDash()) {
+		playerManager_->Draw(viewProjection_);
+	}
+
 	//コマンド
 	command_->Draw(viewProjection_);
 	
@@ -359,7 +361,7 @@ void GameScene::CheckAllCollision() {
 
 		if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.0f }, posB, { 0.3f, 0.3f, 0.3f })) {
 			bullet->OnCollision();
-			enemyManager_->OnCollision();
+			enemyManager_->OnRenjuCollision();
 			renjuManager_->SetParticlePos(posB);
 		}
 	}
@@ -374,7 +376,7 @@ void GameScene::CheckAllCollision() {
 	posA = enemyManager_->GetRockWorldPos();
 	posB = playerManager_->GetPlayer()->GetWorldPosition();
 
-	if (Math::IsAABBCollision(posA, { 1.0f, 1.0f, 1.0f }, posB, { 0.6f, 0.4f, 0.2f })) {
+	if (Math::IsAABBCollision(posA, { 1.0f, 1.0f, 1.0f }, posB, { 1.f, 1.5f, 0.8f })) {
 		if (enemyManager_->IsAttack()) {
 			playerManager_->GetPlayer()->OnCollision(enemyManager_->GetWorldTransform());
 		}
@@ -385,7 +387,7 @@ void GameScene::CheckAllCollision() {
 	posA = enemyManager_->GetRockWorldPos();
 	posB = healerManager_->GetHealer()->GetWorldPosition();
 
-	if (Math::IsAABBCollision(posA, { 1.0f,1.0f, 1.0f }, posB, { 0.6f, 0.4f, 0.2f })) {
+	if (Math::IsAABBCollision(posA, { 1.0f,1.0f, 1.0f }, posB, { 1.f, 1.5f, 0.8f })) {
 		if (enemyManager_->IsAttack()) {
 			healerManager_->GetHealer()->OnCollision(enemyManager_->GetWorldTransform());
 			playerManager_->OnHCollision();
@@ -397,9 +399,9 @@ void GameScene::CheckAllCollision() {
 	posA = enemyManager_->GetRockWorldPos();
 	posB = renjuManager_->GetRenju()->GetWorldPosition();
 
-	if (Math::IsAABBCollision(posA, { 1.0f, 1.0f, 1.0f }, posB, { 0.6f, 0.4f, 0.2f })) {
+	if (Math::IsAABBCollision(posA, { 1.0f, 1.0f, 1.0f }, posB, { 1.f, 1.5f, 0.8f })) {
 		if (enemyManager_->IsAttack()) {
-			renjuManager_->OnCollision(enemyManager_->GetWorldTransform());
+			renjuManager_->GetRenju()->OnCollision(enemyManager_->GetWorldTransform());
 			playerManager_->OnRCollision();
 		}
 	}
@@ -409,9 +411,9 @@ void GameScene::CheckAllCollision() {
 	posA = enemyManager_->GetRockWorldPos();
 	posB = tankManager_->GetTank()->GetWorldPosition();
 
-	if (Math::IsAABBCollision(posA, { 1.0f, 1.0f, 1.0f }, posB, { 0.6f, 0.4f, 0.2f })) {
+	if (Math::IsAABBCollision(posA, { 1.0f, 1.0f, 1.0f }, posB, { 1.f, 1.5f, 0.8f })) {
 		if (enemyManager_->IsAttack()) {
-			tankManager_->OnCollision(enemyManager_->GetWorldTransform());
+			tankManager_->GetTank()->OnCollision(enemyManager_->GetWorldTransform());
 			playerManager_->OnTCollision();
 		}
 	}

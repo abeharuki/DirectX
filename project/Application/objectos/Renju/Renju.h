@@ -122,6 +122,11 @@ private: // メンバ変数
 	WorldTransform worldTransformHead_;
 	ViewProjection viewProjection_;
 
+	//ダメージ表示
+	WorldTransform worldTransformNum_;
+	std::unique_ptr<Model> damageModel_;
+	float alpha_;
+	Vector3 numMove_;
 	
 	std::unique_ptr<Model> bulletModel_;
 	std::unique_ptr<Animations>animation_;

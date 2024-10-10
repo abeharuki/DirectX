@@ -44,7 +44,7 @@ void DebugScene::Initialize() {
 	worldTransformSkybox_.Initialize();
 	worldTransformAnimation_.Initialize();
 	worldTransformAnimation_.rotate.y = 3.14f;
-	worldTransformAnimation_.scale = { 3.f,3.f,3.f };
+	worldTransformAnimation_.scale = { 1.f,1.f,1.f };
 	worldTransformCollider1_.Initialize();
 	worldTransformCollider1_.rotate = { 0.0f,0.2f,0.0f };
 	worldTransformCollider1_.translate = { 0.0f,0.0f,0.3f };
@@ -52,8 +52,8 @@ void DebugScene::Initialize() {
 	worldTransformCollider2_.Initialize();
 	worldTransformCollider3_.Initialize();
 	worldTransformModel_.Initialize();
-	worldTransformModel_.scale = { 15.0f,0.5f,0.0f };
-	worldTransformModel_.translate.y = 3.5f;
+	worldTransformModel_.rotate.y = 3.14f;
+	worldTransformModel_.scale = { 1.f,1.f,1.f };
 	worldTransformSter_[0].Initialize();
 	worldTransformSter_[1].Initialize();
 	sprite_.reset(Sprite::Create("resources/mahoujin.png"));
@@ -61,7 +61,8 @@ void DebugScene::Initialize() {
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/name.png"));
+	model_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/0.png"));
+	model_2.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/0.png"));
 	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -138,14 +139,16 @@ void DebugScene::Update() {
 	//Math::UpdateCircularMotion3D(worldTransformSter_[1].translate.x, worldTransformSter_[1].translate.z, 0, 0, 2.0f, angle_[2], 0.05f);
 	
 	if (a_ <= 0.0f) {
-		worldTransformAnimation_.translate = { 0,0,0 };
-		a_ = 1.0f;
+		worldTransformAnimation_.translate.y = 0;
+		worldTransformModel_.translate.y = 0;
+		a_ = 2.0f;
 	}
 	else {
 		a_ -= 0.02f;
 	}
 
 	worldTransformAnimation_.translate = Math::Lerp(worldTransformAnimation_.translate, { 0,2,0 },0.05f);
+	worldTransformModel_.translate = Math::Lerp(worldTransformModel_.translate, { worldTransformAnimation_.translate.x + 0.8f,2,0 }, 0.05f);
 
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
@@ -359,6 +362,7 @@ void DebugScene::Draw() {
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
 	model_->Draw(worldTransformAnimation_, viewProjection_, false);
+	model_2->Draw(worldTransformModel_, viewProjection_, false);
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
 	ster_[1]->Draw(worldTransformSter_[1], viewProjection_, true);*/
 	//sprite_->Draw();

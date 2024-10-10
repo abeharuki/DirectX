@@ -36,7 +36,7 @@ public:
 
 private:
 
-	//std::unique_ptr<Model> CaneModel_;
+	std::unique_ptr<Model> StaffModel_;
 	std::unique_ptr<Healer> healer_;
 
 	std::unique_ptr<Sprite> spriteHP_;

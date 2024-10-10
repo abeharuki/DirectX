@@ -11,7 +11,7 @@ void HealerManager::Initialize() {
 	spriteH_.reset(Sprite::Create("resources/H.png"));
 	spriteM_.reset(Sprite::Create("resources/M.png"));
 	spriteName_.reset(Sprite::Create("resources/healer.png"));
-	//CaneModel_.reset(Model::CreateModelFromObj("resources/cane/cane.obj", "resources/cane/cane.png"));
+	StaffModel_.reset(Model::CreateModelFromObj("resources/Healer/weapon.obj", "resources/Healer/staff.png"));
 
 	healer_ = std::make_unique<Healer>();
 	healer_->Initialize();
@@ -90,8 +90,9 @@ void HealerManager::Update() {
 void HealerManager::Draw(const ViewProjection& camera) {
 	healer_->Draw(camera);
 	particle_->Draw(camera);
+	
 	if (healer_->IsAttack()) {
-		//CaneModel_->Draw(healer_->GetWorldTransformCane(), camera, false);
+		StaffModel_->Draw(healer_->GetWorldTransformCane(), camera, false);
 
 	}
 

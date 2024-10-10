@@ -51,6 +51,7 @@ private:
 	
 	std::unique_ptr<Skybox> skybox_;
 	std::unique_ptr<Model> model_;
+	std::unique_ptr<Model> model_2;
 	std::unique_ptr<Model> ster_[2];
 	std::unique_ptr<Sprite> sprite_;
 	float a_;

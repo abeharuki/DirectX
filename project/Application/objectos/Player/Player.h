@@ -133,6 +133,7 @@ public: // メンバ関数
 	/*--セッター--*/
 	void SetHeal(float heal) { hp_ += heal; }
 	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
+	void SetCamera(const ViewProjection& camera) {camera_ = camera;}
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 	//敵攻撃フラグ
@@ -156,6 +157,13 @@ private: // メンバ変数
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformCollision_;
+
+	//ダメージ表示
+	WorldTransform worldTransformNum_;
+	std::unique_ptr<Model> damageModel_;
+	float alpha_;
+	Vector3 numMove_;
+
 	std::unique_ptr<Animations>animation_;
 	int animationNumber_;
 	enum AnimationNumber {
@@ -168,12 +176,11 @@ private: // メンバ変数
 	float flameTime_;
 
 	const ViewProjection* viewProjection_;
+	ViewProjection camera_;
 	std::unique_ptr<LineBox> linebox_;
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
-
-	
 
 	Behavior behavior_ = Behavior::kRoot;
 	// 次の振る舞いリクエスト
@@ -222,8 +229,6 @@ private: // メンバ変数
 
 	bool isOver_;
 	float threshold_;
-	//アルファ値
-	float a;
 
 	//体力
 	float hp_ = 100.0f;

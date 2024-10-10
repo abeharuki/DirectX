@@ -115,9 +115,7 @@ public: // メンバ関数
 	bool GetAllHeal() { return allHeal_; }
 	bool GetOneHeal() { return oneHeal_; }
 	float GetHealAmount() { return healAmount_; }
-	void SetViewProjection(const ViewProjection& viewProjection) {
-		viewProjection_ = viewProjection;
-	}
+	void SetViewProjection(const ViewProjection& viewProjection) {viewProjection_ = viewProjection;}
 	//座標の受け取り
 	void SetPos(Vector3 playerPos, Vector3 renjuPos, Vector3 tankPos) {
 		pos[0] = playerPos;
@@ -149,6 +147,12 @@ private: // メンバ変数
 	WorldTransform worldTransformCollision_;
 	WorldTransform worldTransformMagicCircle_[4];
 	ViewProjection viewProjection_;
+
+	//ダメージ表示
+	WorldTransform worldTransformNum_;
+	std::unique_ptr<Model> damageModel_;
+	float alpha_;
+	Vector3 numMove_;
 
 	std::unique_ptr<Animations>animation_;
 	int animationNumber_;

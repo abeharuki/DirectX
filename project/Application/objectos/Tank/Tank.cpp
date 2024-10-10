@@ -21,6 +21,11 @@ void Tank::Initialize() {
 	worldTransformShield_.translate = { 0.0f,1.f,0.45f };
 	worldTransformShield_.rotate.y = 3.1415f;
 
+	worldTransformNum_.Initialize();
+	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
+	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
+	alpha_ = 0.0f;
+
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].Initialize();
 		worldTransformHp_[i].translate.y = 1.5f;
@@ -63,6 +68,9 @@ void Tank::Initialize() {
 /// 毎フレーム処理
 /// </summary>
 void Tank::Update() {
+	// 前のフレームの当たり判定のフラグを取得
+	preHit_ = isHit_;
+	isHit_ = false;
 
 	// 状態が変わった場合にノードの初期化を行う
 	if (state_ != previousState_) {
@@ -73,9 +81,6 @@ void Tank::Update() {
 		previousState_ = state_;  // 現在の状態を記録しておく
 	}
 
-	// 前のフレームの当たり判定のフラグを取得
-	preHit_ = isHit_;
-	isHit_ = false;
 
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
@@ -100,8 +105,19 @@ void Tank::Update() {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
 				hp_ -= 10;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
 			}
 		}
+	}
+
+	damageModel_->SetColor({ 1.f,1.f,1.f,alpha_ });
+
+	if (alpha_ > 0.0f) {
+		alpha_ -= 0.08f;
+		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
 	}
 
 	// 回転
@@ -112,9 +128,10 @@ void Tank::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformShield_.TransferMatrix();
+	worldTransformNum_.TransferMatrix();
+
 	particle_->SetTranslate(worldTransformBase_.translate);
 	
-
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
@@ -142,6 +159,7 @@ void Tank::Draw(const ViewProjection& camera) {
 		shield_->Draw(worldTransformShield_, camera, true);
 	}
 	particle_->Draw(camera);
+	damageModel_->Draw(worldTransformNum_, camera, false);
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
@@ -651,15 +669,11 @@ void Tank::Relationship() {
 		worldTransformBase_.matWorld_);
 
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
-	billboardMatrix.m[3][0] = 0.0f;
-	billboardMatrix.m[3][1] = 0.0f;
-	billboardMatrix.m[3][2] = 0.0f;
-
-	for (int i = 0; i < 3; i++) {
-		worldTransformHp_[i].matWorld_ = Math::MakeScaleMatrix(worldTransformHp_[i].scale) * billboardMatrix * Math::MakeTranslateMatrix(Vector3(worldTransformBase_.translate.x + worldTransformHp_[i].translate.x, worldTransformBase_.translate.y + worldTransformHp_[i].translate.y, worldTransformBase_.translate.z));
-
-	}
+	Matrix4x4 billboardMatrixNum = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
+	billboardMatrixNum.m[3][0] = worldTransformNum_.translate.x;
+	billboardMatrixNum.m[3][1] = worldTransformNum_.translate.y;
+	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
+	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
 }
 
 // 衝突を検出したら呼び出されるコールバック関数
@@ -678,7 +692,10 @@ void Tank::OnCollision(const WorldTransform& worldTransform) {
 	isHit_ = true;
 	if (isHit_ != preHit_) {
 		hp_ -= 10.0f;
-
+		alpha_ = 2.0f;
+		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+		numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+		damageModel_->SetTexture("character/10.png");
 	}
 
 };
@@ -698,6 +715,10 @@ void Tank::OnCollision(Collider* collider) {
 				if (isHit_ != preHit_) {
 					if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 						hp_ -= 10.0f;
+						alpha_ = 2.0f;
+						worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+						numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+						damageModel_->SetTexture("character/10.png");
 					}
 					else {
 						hp_ -= 5.0f;
@@ -728,7 +749,7 @@ void Tank::OnCollision(Collider* collider) {
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
-		if (enemy_->isAttack()) {
+		if (enemy_->isAttack()&& enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			const float kSpeed = 3.0f;
 			//velocity_ = { 0.0f, 0.0f, -kSpeed };
 			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
@@ -739,6 +760,10 @@ void Tank::OnCollision(Collider* collider) {
 
 			if (isHit_ != preHit_) {
 				hp_ -= 20.0f;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/20.png");
 			}
 
 		}

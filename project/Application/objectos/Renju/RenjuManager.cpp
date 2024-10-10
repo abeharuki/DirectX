@@ -87,7 +87,7 @@ void RenjuManager::Update() {
 
 void RenjuManager::Draw(const ViewProjection& camera) {
 	renju_->Draw(camera);
-	particle_->Draw(camera);
+	//particle_->Draw(camera);
 }
 void RenjuManager::DrawUI(){
 	spriteHPG_->Draw();

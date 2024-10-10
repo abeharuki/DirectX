@@ -12,6 +12,9 @@ public:
 	Enemy* GetEnemy() { return enemy_.get(); };
 	void DrawUI();
 
+	void DamageNumMath();
+
+
 	bool IsAttack() { return enemy_->isAttack(); }
 	bool IsClear() { return enemy_->isClear(); }
 
@@ -36,11 +39,32 @@ public:
 
 private:
 	WorldTransform worldTransformName_;
+	std::vector<WorldTransform> worldTransformNum_;
 	ViewProjection camera_;
 
 	//std::unique_ptr<Model> rockModel_;
 	std::unique_ptr<Sphere> rockModel_;
 	std::unique_ptr<Model> bulletModel_;
+	//ダメージを食らったときのダメージ表示モデル
+	std::unique_ptr<Model> damageNumModel_[4];
+	enum damageNum_ {
+		playerNum,//プレイヤーのダメージ
+		healerNum,//ヒーラーのダメージ
+		renjuNum,//レンジャーのダメージ
+		tankNum,//タンクーののダメージ
+		kdamageNumMax,
+	};
+
+	float playerNumAlpha_;
+	float healerNumAlpha_;
+	float renjuNumAlpha_;
+	float tankNumAlpha_;
+
+	Vector3 playerNumMove_;
+	Vector3 healerNumMove_;
+	Vector3 renjuNumMove_;
+	Vector3 tankNumMove_;
+
 	std::unique_ptr<Enemy> enemy_;
 
 	std::unique_ptr<Model> nameModel_;

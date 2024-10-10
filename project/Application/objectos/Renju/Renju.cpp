@@ -22,6 +22,11 @@ void Renju::Initialize() {
 	worldTransformHead_.Initialize();
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
 
+	worldTransformNum_.Initialize();
+	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
+	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
+	alpha_ = 0.0f;
+
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].Initialize();
 		worldTransformHp_[i].translate.y = 1.5f;
@@ -99,10 +104,21 @@ void Renju::Update() {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
 				hp_ -= 10;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
 			}
 		}
 	}
 	
+	damageModel_->SetColor({ 1.f,1.f,1.f,alpha_ });
+
+	if (alpha_ > 0.0f) {
+		alpha_ -= 0.08f;
+		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
+	}
+
 	// 回転
 	worldTransformBase_.rotate.y =
 		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -110,6 +126,7 @@ void Renju::Update() {
 	animation_->Update(animationNumber_);
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
+	worldTransformNum_.TransferMatrix();
 	for (int i = 0; i < 3; i++) {
 		worldTransformHp_[i].TransferMatrix();
 	}
@@ -131,6 +148,7 @@ void Renju::Draw(const ViewProjection& camera) {
 
 	
 	animation_->Draw(worldTransformHead_, camera,true);
+	damageModel_->Draw(worldTransformNum_, camera, false);
 	RenderCollisionBounds(worldTransformHead_, camera);
 	
 }
@@ -536,15 +554,11 @@ void Renju::Relationship() {
 		worldTransformBase_.matWorld_);
 
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
-	billboardMatrix.m[3][0] = 0.0f;
-	billboardMatrix.m[3][1] = 0.0f;
-	billboardMatrix.m[3][2] = 0.0f;
-
-	for (int i = 0; i < 3; i++) {
-		worldTransformHp_[i].matWorld_ = Math::MakeScaleMatrix(worldTransformHp_[i].scale) * billboardMatrix * Math::MakeTranslateMatrix(Vector3(worldTransformBase_.translate.x + worldTransformHp_[i].translate.x, worldTransformBase_.translate.y + worldTransformHp_[i].translate.y, worldTransformBase_.translate.z));
-		//worldTransformHp_[i].matWorld_ = Math::Multiply(Math::MakeAffineMatrix(worldTransformHp_[i].scale, worldTransformHp_[i].rotate, worldTransformHp_[i].translate),worldTransformBase_.matWorld_);
-	}
+	Matrix4x4 billboardMatrixNum = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
+	billboardMatrixNum.m[3][0] = worldTransformNum_.translate.x;
+	billboardMatrixNum.m[3][1] = worldTransformNum_.translate.y;
+	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
+	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
 }
 
 // 衝突を検出したら呼び出されるコールバック関数
@@ -562,7 +576,10 @@ void Renju::OnCollision(const WorldTransform& worldTransform) {
 
 	if (isHit_ != preHit_) {
 		hp_ -= 10;
-
+		alpha_ = 2.0f;
+		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+		numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+		damageModel_->SetTexture("character/10.png");
 	}
 
 };
@@ -584,6 +601,10 @@ void Renju::OnCollision(Collider* collider) {
 				if (isHit_ != preHit_) {
 					if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 						hp_ -= 10.0f;
+						alpha_ = 2.0f;
+						worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+						numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+						damageModel_->SetTexture("character/10.png");
 					}
 					else {
 						hp_ -= 5.0f;
@@ -621,7 +642,10 @@ void Renju::OnCollision(Collider* collider) {
 
 			if (isHit_ != preHit_) {
 				hp_ -= 20;
-
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/20.png");
 			}
 
 		}

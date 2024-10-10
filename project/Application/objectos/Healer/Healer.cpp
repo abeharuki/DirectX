@@ -29,11 +29,15 @@ void Healer::Initialize() {
 	worldTransformHead_.Initialize();
 	worldTransformCane_.Initialize();
 	worldTransformCane_.translate = { -0.63f, 0.54f, 0.0f };
-	worldTransformCane_.rotate.x = -1.56f;
-	worldTransformCane_.scale = { 0.5f, 0.5f, 0.5f };
+	worldTransformCane_.scale = { 1.f, 1.f, 1.f };
 	worldTransformCollision_.Initialize();
 	worldTransformCollision_.scale = { 0.27f, 0.27f, 1.0f };
 	worldTransformCollision_.translate.z = 1.5f;
+
+	worldTransformNum_.Initialize();
+	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
+	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
+	alpha_ = 0.0f;
 
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/mahoujin.png"));
@@ -135,8 +139,19 @@ void Healer::Update() {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
 				hp_ -= 10;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
 			}
 		}
+	}
+
+	damageModel_->SetColor({ 1.f,1.f,1.f,alpha_ });
+
+	if (alpha_ > 0.0f) {
+		alpha_ -= 0.08f;
+		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
 	}
 
 	// 回転
@@ -147,6 +162,7 @@ void Healer::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformCane_.TransferMatrix();
+	worldTransformNum_.TransferMatrix();
 	for (int i = 0; i < 4; ++i) {
 		worldTransformMagicCircle_[i].UpdateMatrix();
 	}
@@ -183,7 +199,7 @@ void Healer::Draw(const ViewProjection& camera) {
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i]->Draw(worldTransformMagicCircle_[i], camera, true);
 	}
-
+	damageModel_->Draw(worldTransformNum_, camera, false);
 	
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
@@ -234,23 +250,21 @@ void Healer::MoveUpdate() {
 
 	//地面をたたきつける攻撃が来たらジャンプする
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+		enemylength_ = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
 		//ジャンプは敵の攻撃一回に対して一回まで
 		if (jumpCount_ == 1 && enemylength_ <= 36) {
 			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
 
-			if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
-				state_ = CharacterState::Jumping;
-			}
-
-			if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
-				state_ = CharacterState::Jumping;
-			}
-
-			if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
-				state_ = CharacterState::Jumping;
-			}
-
 			if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+			else if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+			else if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+			else if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
 				state_ = CharacterState::Jumping;
 			}
 		}
@@ -331,7 +345,7 @@ void Healer::knockUpdate() {
 
 //アタック
 void Healer::AttackInitialize() {
-	worldTransformCane_.rotate = { -1.56f,0.0f,0.0f };
+	
 	searchTarget_ = false;
 };
 void Healer::AttackUpdate() {
@@ -351,16 +365,16 @@ void Healer::AttackUpdate() {
 	uint32_t swingTime = anticipationTime + chargeTime + 5;
 
 	if (workAttack_.attackParameter_ < anticipationTime) {
-		worldTransformCane_.rotate.x -= 0.04f;
+		//worldTransformCane_.rotate.x -= 0.04f;
 	}
 
 	if (workAttack_.attackParameter_ >= anticipationTime &&
 		workAttack_.attackParameter_ < chargeTime) {
-		worldTransformCane_.rotate.x -= 0.0f;
+		//worldTransformCane_.rotate.x -= 0.0f;
 	}
 
 	if (workAttack_.attackParameter_ >= chargeTime && workAttack_.attackParameter_ < swingTime) {
-		worldTransformCane_.rotate.x += 0.15f;
+		//worldTransformCane_.rotate.x += 0.15f;
 		workAttack_.isAttack = true;
 	}
 
@@ -724,7 +738,7 @@ void Healer::Relationship() {
 		Math::MakeAffineMatrix(
 			worldTransformCane_.scale, worldTransformCane_.rotate,
 			worldTransformCane_.translate),
-		worldTransformBase_.matWorld_);
+		animation_->GetJointWorldTransform("mixamorig:RightHand").matWorld_);
 
 	worldTransformMagicCircle_[0].translate.x = worldTransformBase_.translate.x;
 	worldTransformMagicCircle_[0].translate.z = worldTransformBase_.translate.z;
@@ -736,17 +750,12 @@ void Healer::Relationship() {
 	worldTransformMagicCircle_[3].translate.x = pos[2].x;
 	worldTransformMagicCircle_[3].translate.z = pos[2].z;
 
-
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
-	billboardMatrix.m[3][0] = 0.0f;
-	billboardMatrix.m[3][1] = 0.0f;
-	billboardMatrix.m[3][2] = 0.0f;
-
-	for (int i = 0; i < 3; i++) {
-		worldTransformHp_[i].matWorld_ = Math::MakeScaleMatrix(worldTransformHp_[i].scale) * billboardMatrix * Math::MakeTranslateMatrix(Vector3(worldTransformBase_.translate.x + worldTransformHp_[i].translate.x, worldTransformBase_.translate.y + worldTransformHp_[i].translate.y, worldTransformBase_.translate.z));
-
-	}
+	Matrix4x4 billboardMatrixNum = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
+	billboardMatrixNum.m[3][0] = worldTransformNum_.translate.x;
+	billboardMatrixNum.m[3][1] = worldTransformNum_.translate.y;
+	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
+	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
 
 
 	worldTransformCollision_.matWorld_ = Math::Multiply(
@@ -771,7 +780,10 @@ void Healer::OnCollision(const WorldTransform& worldTransform) {
 
 	if (isHit_ != preHit_) {
 		hp_ -= 10;
-
+		alpha_ = 2.0f;
+		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+		numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+		damageModel_->SetTexture("character/10.png");
 	}
 
 };
@@ -798,11 +810,14 @@ void Healer::OnCollision(Collider* collider) {
 				if (isHit_ != preHit_) {
 					if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 						hp_ -= 10.0f;
+						alpha_ = 2.0f;
+						worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+						numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+						damageModel_->SetTexture("character/10.png");
 					}
 					else {
 						hp_ -= 5.0f;
 					}
-
 				}
 
 			}
@@ -834,7 +849,10 @@ void Healer::OnCollision(Collider* collider) {
 
 			if (isHit_ != preHit_) {
 				hp_ -= 20;
-
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/20.png");
 			}
 
 		}

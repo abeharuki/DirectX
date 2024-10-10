@@ -22,7 +22,11 @@ void Player::Initialize() {
 	worldTransformCollision_.Initialize();
 	worldTransformCollision_.scale = { 0.1f, 1.0f, 0.1f };
 	worldTransformCollision_.translate.y = 2.0f;
-	a = 0.0f;
+	worldTransformNum_.Initialize();
+	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
+	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
+	alpha_ = 0.0f;
+
 	isOver_ = false;
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/Player", "Atlas.png", "player.gltf"));
@@ -33,10 +37,13 @@ void Player::Initialize() {
 		attackType_[i] = false;
 	}
 
+
+	
+
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformHead_.TransferMatrix();
-
+	
 
 
 	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
@@ -120,6 +127,10 @@ void Player::Update() {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
 				hp_ -= 10;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
 			}
 		}
 	}
@@ -132,6 +143,13 @@ void Player::Update() {
 		behaviorRequest_ = Behavior::kDead;
 	}
 
+	damageModel_->SetColor({ 1.f,1.f,1.f,alpha_ });
+
+	if (alpha_ > 0.0f) {
+		alpha_ -= 0.08f;
+		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
+	}
+
 	// 回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 	animation_->SetFlameTimer(flameTime_);
@@ -140,12 +158,14 @@ void Player::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
+	worldTransformNum_.TransferMatrix();
 
 	animation_->SetThreshold(threshold_);
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("swordPos", &worldTransformHammer_.translate.x, -10.0f, 10.0f);
-	ImGui::DragFloat3("rotate", &worldTransformHammer_.rotate.x,0.1f);
+	ImGui::SliderFloat3("NumPos", &worldTransformNum_.translate.x, -10.0f, 10.0f);
+	ImGui::DragFloat3("rotate", &worldTransformNum_.rotate.x,0.1f);
+	ImGui::DragFloat3("scale", &worldTransformNum_.scale.x, 0.1f);
 	ImGui::Text("EnemyLength%f", length_);
 	ImGui::Text("%dAnimationNumber", animationNumber_);
 	ImGui::Text("%f", hp_);
@@ -160,8 +180,9 @@ void Player::Update() {
 
 void Player::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera, true);
+	damageModel_->Draw(worldTransformNum_, camera, false);
 	RenderCollisionBounds(worldTransformHead_, camera);
-
+	
 }
 
 // 移動
@@ -504,7 +525,6 @@ void Player::AttackInitialize() {
 	workAttack_.comboIndex = 0;
 	workAttack_.inComboPhase = 0;
 	workAttack_.comboNext = false;
-	workAttack_.isAttack = true;
 	workAttack_.isFinalAttack = false;
 	animationNumber_ = animeAttack;
 
@@ -512,6 +532,10 @@ void Player::AttackInitialize() {
 }
 void Player::AttackUpdata() {
 	
+	if (animation_->GetAnimationTimer() > 0.8f) {
+		workAttack_.isAttack = true;
+	}
+
 	if (animation_->GetAnimationTimer() >= 1.6f) {
 		animationNumber_ = standby;
 		behaviorRequest_ = Behavior::kRoot;
@@ -555,6 +579,10 @@ void Player::OnCollision(const WorldTransform& worldTransform) {
 	isHit_ = true;
 	if (isHit_ != preHit_) {
 		hp_ -= 10;
+		alpha_ = 2.0f;
+		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+		numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+		damageModel_->SetTexture("character/10.png");
 	}
 
 };
@@ -574,7 +602,10 @@ void Player::OnCollision(Collider* collider) {
 
 			if (isHit_ != preHit_) {
 				hp_ -= 10;
-
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
 			}
 
 		}
@@ -606,7 +637,10 @@ void Player::OnCollision(Collider* collider) {
 
 			if (isHit_ != preHit_) {
 				hp_ -= 20;
-
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/20.png");
 			}
 
 		}
@@ -677,6 +711,13 @@ void Player::Relationship() {
 			worldTransformCollision_.scale, worldTransformCollision_.rotate,
 			worldTransformCollision_.translate),
 		worldTransformHammer_.matWorld_);
+
+	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrixNum = backToFrontMatrix * Math::Inverse(camera_.matView);
+	billboardMatrixNum.m[3][0] = worldTransformNum_.translate.x;
+	billboardMatrixNum.m[3][1] = worldTransformNum_.translate.y;
+	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
+	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
 }
 
 const Vector3 Player::GetWorldPosition() const {
