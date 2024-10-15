@@ -178,6 +178,9 @@ void Tank::MoveInitialize() {
 void Tank::MoveUpdate() {
 	--coolTime;
 
+	// 敵の座標までの距離
+	enemylength_ = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+
 	// プレイヤーに集合
 	if (operation_) {
 		followPlayer_ = true;
@@ -543,8 +546,7 @@ void Tank::followPlayer(Vector3 playerPos) {
 // 敵を探す
 void Tank::searchTarget(Vector3 enemyPos) {
 	enemyPos_ = enemyPos;
-	// 敵の座標までの距離
-	enemylength_ = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
+	
 	if (!followPlayer_ && searchTarget_) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemyPos - GetWorldPosition();

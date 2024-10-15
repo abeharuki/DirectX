@@ -219,6 +219,10 @@ void Healer::MoveInitialize() {
 };
 void Healer::MoveUpdate() {
 	--coolTime;
+	// 敵の座標までの距離
+	enemylength_ = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+
+
 	// プレイヤーに集合
 	if (operation_ || !searchTarget_) {
 		followPlayer_ = true;
@@ -614,9 +618,7 @@ void Healer::followPlayer(Vector3 playerPos) {
 // 敵を探す
 void Healer::searchTarget(Vector3 enemyPos) {
 	enemyPos_ = enemyPos;
-	// の座標までの距離
-	enemylength_ = Math::Length(Math::Subract(enemyPos, worldTransformBase_.translate));
-
+	
 	if (!followPlayer_ && searchTarget_) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemyPos - GetWorldPosition();
