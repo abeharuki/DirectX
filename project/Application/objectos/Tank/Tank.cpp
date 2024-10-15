@@ -159,8 +159,12 @@ void Tank::Draw(const ViewProjection& camera) {
 		shield_->Draw(worldTransformShield_, camera, true);
 	}
 	particle_->Draw(camera);
-	damageModel_->Draw(worldTransformNum_, camera, false);
+	
 	RenderCollisionBounds(worldTransformHead_, camera);
+}
+
+void Tank::NotDepthDraw(const ViewProjection& camera){
+	damageModel_->Draw(worldTransformNum_, camera, false);
 }
 
 // 移動

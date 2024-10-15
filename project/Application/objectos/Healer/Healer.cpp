@@ -41,10 +41,13 @@ void Healer::Initialize() {
 
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/mahoujin.png"));
+		healModel_[i].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/H20.png"));
 		worldTransformMagicCircle_[i].Initialize();
+		worldTransformHeal_[i].Initialize();
 		worldTransformMagicCircle_[i].translate.y = 0.1f;
 		worldTransformMagicCircle_[i].rotate.x = 4.7f;
 		worldTransformMagicCircle_[i].scale = { 2.0f,2.0f,2.0f };
+		worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
 		t_[i] = 0.8f;
 	}
 
@@ -147,12 +150,23 @@ void Healer::Update() {
 		}
 	}
 
+	//ダメージの表示
 	damageModel_->SetColor({ 1.f,1.f,1.f,alpha_ });
-
 	if (alpha_ > 0.0f) {
 		alpha_ -= 0.08f;
 		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
 	}
+
+	//回復の表示
+	for (int i = 0; i < 4; ++i) {
+		healModel_[i]->SetColor({ 1.f,1.f,1.f,healAlph_[i]});
+		if (healAlph_[i] > 0.0f) {
+			healAlph_[i] -= 0.08f;
+			worldTransformHeal_[i].translate = Math::Lerp(worldTransformHeal_[i].translate, {healNumMove_[i]}, 0.05f);
+		}
+	}
+	
+
 
 	// 回転
 	worldTransformBase_.rotate.y =
@@ -165,6 +179,7 @@ void Healer::Update() {
 	worldTransformNum_.TransferMatrix();
 	for (int i = 0; i < 4; ++i) {
 		worldTransformMagicCircle_[i].UpdateMatrix();
+		worldTransformHeal_[i].TransferMatrix();
 	}
 	
 	for (int i = 0; i < 3; i++) {
@@ -198,11 +213,20 @@ void Healer::Draw(const ViewProjection& camera) {
 	
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i]->Draw(worldTransformMagicCircle_[i], camera, true);
+		
 	}
-	damageModel_->Draw(worldTransformNum_, camera, false);
 	
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
+
+void Healer::NotDepthDraw(const ViewProjection& camera){
+	for (int i = 0; i < 4; ++i) {
+		healModel_[i]->Draw(worldTransformHeal_[i], camera, false);
+	}
+	damageModel_->Draw(worldTransformNum_, camera, false);
+
+};
+
 
 // 移動
 void Healer::MoveInitialize() { 
@@ -434,11 +458,19 @@ void Healer::UniqueInitialize(){
 	if (oneHeal_) {
 		mp_ -= 10;
 		healAmount_ = 40;
+		for (int i = 0; i < 4; ++i) {
+			healModel_[i]->SetTexture("character/H40.png");
+		}
+		
 	}
 	//全員20回復
 	if (allHeal_) {
 		mp_ -= 20;
 		healAmount_ = 20;
+		for (int i = 0; i < 4; ++i) {
+			healModel_[i]->SetTexture("character/H20.png");
+		}
+
 	}
 	for (int i = 0; i < 5; ++i) {
 		particle_[i]->SetFrequencyTime(0.0f);
@@ -451,13 +483,19 @@ void Healer::UniqueInitialize(){
 		t_[i] = 0.8f;
 	}
 	
+	for (int i = 0; i < 4; ++i) {
+		worldTransformMagicCircle_[i].scale = { 2.f,2.f,2.f };
+		worldTransformHeal_[i].scale = { 0.f,0.f,0.f };
+	}
+
 }
 void Healer::UniqueUpdate(){
 
 	if (allHeal_) {
-		if (t_[0] > 0) {
+		if (t_[healer] > 0) {
 			for (int i = 0; i < 4; ++i) {
 				t_[i] -= 0.02f;
+				worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
 			}
 		}
 		else {
@@ -467,21 +505,28 @@ void Healer::UniqueUpdate(){
 		}
 	}
 	else {
-		if (t_[0] > 0) {
-			t_[0] -= 0.02f;
+		if (t_[healer] > 0) {
+			t_[healer] -= 0.02f;
+			if (hp_ <= 20) {
+				worldTransformHeal_[healer].scale = { 0.5f,0.5f,0.5f };
+			}
+			
 			if (playerHp_ <= 20) {
-				t_[1] -= 0.02f;
+				t_[player] -= 0.02f;
+				worldTransformHeal_[player].scale = { 0.5f,0.5f,0.5f };
 			}
 			if (renjuHp_ <= 20) {
-				t_[2] -= 0.02f;
+				t_[renju] -= 0.02f;
+				worldTransformHeal_[renju].scale = { 0.5f,0.5f,0.5f };
 			}
 			if (tankHp_ <= 20) {
-				t_[3] -= 0.02f;
+				t_[tank] -= 0.02f;
+				worldTransformHeal_[tank].scale = { 0.5f,0.5f,0.5f };
 			}
 
 		}
 		else {
-			t_[0] = 0;
+			t_[healer] = 0;
 		}
 	}
 	--coolTime;
@@ -491,6 +536,33 @@ void Healer::UniqueUpdate(){
 	particle_[2]->SetTranslate(pos[1]);//renju
 	particle_[3]->SetTranslate(pos[2]);//tank
 	particle_[4]->SetTranslate(worldTransformBase_.translate);//healer
+
+	//回復数値の設定
+	worldTransformHeal_[player].translate = {pos[0].x,pos[0].y + 2.0f,pos[0].z};
+	healNumMove_[player] = { worldTransformHeal_[player].translate.x ,worldTransformHeal_[player].translate.y + 2.0f,worldTransformHeal_[player].translate.z };
+
+	worldTransformHeal_[renju].translate = { pos[1].x,pos[1].y + 2.0f,pos[1].z };
+	healNumMove_[renju] = { worldTransformHeal_[renju].translate.x ,worldTransformHeal_[renju].translate.y + 2.0f,worldTransformHeal_[renju].translate.z };
+
+	worldTransformHeal_[tank].translate = { pos[2].x,pos[2].y + 2.0f,pos[2].z };
+	healNumMove_[tank] = { worldTransformHeal_[tank].translate.x ,worldTransformHeal_[tank].translate.y + 2.0f,worldTransformHeal_[tank].translate.z };
+
+	worldTransformHeal_[healer].translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+	healNumMove_[healer] = {worldTransformHeal_[healer].translate.x ,worldTransformHeal_[healer].translate.y + 2.0f,worldTransformHeal_[healer].translate.z};
+
+
+
+
+	if (coolTime < 5) {
+		for (int i = 0; i < 4; ++i) {
+			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale - 1.0f;
+		}
+	}else if (coolTime < 10) {
+		for (int i = 0; i < 4; ++i) {
+			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale + 0.5f;
+		}
+	}
+
 
 	if (coolTime <= 1) {
 		if (allHeal_) {
@@ -518,8 +590,10 @@ void Healer::UniqueUpdate(){
 		heal_ = true;
 		state_ = CharacterState::Moveing;
 		coolTime = 60;
+		
 		for (int i = 0; i < 4; ++i) {
 			t_[i] = 0.8f;
+			healAlph_[i] = 2.0f;
 		}
 		
 	}
@@ -759,6 +833,14 @@ void Healer::Relationship() {
 	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
 	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
 
+	for (int i = 0; i < 4; ++i) {
+		Matrix4x4 billboardMatrixHealNum = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
+		billboardMatrixHealNum.m[3][0] = worldTransformHeal_[i].translate.x;
+		billboardMatrixHealNum.m[3][1] = worldTransformHeal_[i].translate.y;
+		billboardMatrixHealNum.m[3][2] = worldTransformHeal_[i].translate.z;
+		worldTransformHeal_[i].matWorld_ = Math::MakeScaleMatrix(worldTransformHeal_[i].scale) * billboardMatrixHealNum;
+
+	}
 
 	worldTransformCollision_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(

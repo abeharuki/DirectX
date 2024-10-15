@@ -131,9 +131,11 @@ void Renju::Update() {
 		worldTransformHp_[i].TransferMatrix();
 	}
 
+	ImGui::Begin("Sprite");
+	ImGui::DragFloat("RenjuHp", &hp_, 1.0f);
+	ImGui::End();
 
 	ImGui::Begin("Renju");
-	ImGui::DragFloat("RenjuHp", &hp_, 1.0f);
 	ImGui::Text("animeNunber%d", animationNumber_);
 	ImGui::Text("animeTime%f", animation_->GetAnimationTimer());
 	ImGui::End();
@@ -148,9 +150,13 @@ void Renju::Draw(const ViewProjection& camera) {
 
 	
 	animation_->Draw(worldTransformHead_, camera,true);
-	damageModel_->Draw(worldTransformNum_, camera, false);
+	
 	RenderCollisionBounds(worldTransformHead_, camera);
 	
+}
+
+void Renju::NotDepthDraw(const ViewProjection& camera){
+	damageModel_->Draw(worldTransformNum_, camera, false);
 }
 
 

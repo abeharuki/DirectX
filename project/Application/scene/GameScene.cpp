@@ -161,8 +161,6 @@ void GameScene::Update() {
 	//hp情報の取得
 	healerManager_->GetHealer()->SetHp({ playerManager_->GetPlayer()->GetHp(),renjuManager_->GetRenju()->GetHp(),tankManager_->GetTank()->GetHp() });
 
-	
-
 	//プレイヤーに追従
 	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
@@ -256,6 +254,13 @@ void GameScene::Draw() {
 	//コマンド
 	command_->Draw(viewProjection_);
 	
+
+	//デプスのないオブジェクト
+	playerManager_->GetPlayer()->NotDepthDraw(viewProjection_);
+	healerManager_->GetHealer()->NotDepthDraw(viewProjection_);
+	renjuManager_->GetRenju()->NotDepthDraw(viewProjection_);
+	tankManager_->GetTank()->NotDepthDraw(viewProjection_);
+	enemyManager_->NotDepthDraw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

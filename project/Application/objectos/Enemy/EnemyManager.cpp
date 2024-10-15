@@ -77,13 +77,16 @@ void EnemyManager::Update() {
 void EnemyManager::Draw(const ViewProjection& camera) {
 	enemy_->Draw(camera);
 	rockModel_->Draw(enemy_->GetWorldTransformRock(), camera, false);
+	
+
+}
+void EnemyManager::NotDepthDraw(const ViewProjection& camera){
 	nameModel_->Draw(worldTransformName_, camera, false);
 
-	
+
 	for (int i = 0; i < kdamageNumMax; ++i) {
 		damageNumModel_[i]->Draw(worldTransformNum_[i], camera, false);
 	}
-
 };
 
 void EnemyManager::DrawUI() {

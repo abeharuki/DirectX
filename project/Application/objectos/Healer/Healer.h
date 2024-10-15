@@ -32,6 +32,7 @@ public: // メンバ関数
 	void Update();
 
 	void Draw(const ViewProjection& camera);
+	void NotDepthDraw(const ViewProjection& camera);
 
 	// 移動
 	void MoveInitialize();
@@ -146,6 +147,7 @@ private: // メンバ変数
 	WorldTransform worldTransformCane_;
 	WorldTransform worldTransformCollision_;
 	WorldTransform worldTransformMagicCircle_[4];
+	WorldTransform worldTransformHeal_[4];
 	ViewProjection viewProjection_;
 
 	//ダメージ表示
@@ -167,10 +169,21 @@ private: // メンバ変数
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
+
+
+	enum Character {
+		healer,
+		player,
+		renju,
+		tank,
+	};
 	//魔法陣
 	std::unique_ptr<Model> magicCircle_[4];
-	float t_[4];
+	std::unique_ptr<Model> healModel_[4];
+	float t_[4];//ディゾルブ
 	Vector3 pos[3];
+	float healAlph_[4];
+	Vector3 healNumMove_[4];
 
 	//パーティクル
 	std::vector<std::unique_ptr<ParticleSystem>> particle_;

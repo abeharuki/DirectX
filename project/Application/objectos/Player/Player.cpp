@@ -180,9 +180,13 @@ void Player::Update() {
 
 void Player::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera, true);
-	damageModel_->Draw(worldTransformNum_, camera, false);
+	
 	RenderCollisionBounds(worldTransformHead_, camera);
 	
+}
+
+void Player::NotDepthDraw(const ViewProjection& camera){
+	damageModel_->Draw(worldTransformNum_, camera, false);
 }
 
 // 移動

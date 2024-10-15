@@ -181,6 +181,7 @@ void Enemy::Draw(const ViewProjection& camera) {
 	
 }
 
+
 //移動
 void Enemy::MoveInitialize() {
 	time_ = 60 * 2;

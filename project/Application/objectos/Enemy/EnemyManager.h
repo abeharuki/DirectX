@@ -9,12 +9,13 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& camera);
-	Enemy* GetEnemy() { return enemy_.get(); };
+	void NotDepthDraw(const ViewProjection& camera);
+	
 	void DrawUI();
 
 	void DamageNumMath();
 
-
+	Enemy* GetEnemy() { return enemy_.get(); };
 	bool IsAttack() { return enemy_->isAttack(); }
 	bool IsClear() { return enemy_->isClear(); }
 
