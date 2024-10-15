@@ -58,6 +58,7 @@ void TitleScene::Initialize() {
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Black.png"));
 	spriteTitle_.reset(Sprite::Create("resources/Title/DRAPONQUEST.png"));
+	spriteTitle_->SetSize({ 1280.0f,905.0f });
 	spriteTitle_->SetPosition({ 0.0f,-250.0f });
 	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));
 	spritePushA_->SetPosition(Vector2{ 50.0f,0.0f });
