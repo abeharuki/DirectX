@@ -155,7 +155,7 @@ void Renju::Draw(const ViewProjection& camera) {
 	
 }
 
-void Renju::NotDepthDraw(const ViewProjection& camera){
+void Renju::NoDepthDraw(const ViewProjection& camera){
 	damageModel_->Draw(worldTransformNum_, camera, false);
 }
 

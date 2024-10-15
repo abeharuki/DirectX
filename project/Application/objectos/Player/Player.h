@@ -67,7 +67,7 @@ public: // メンバ関数
 	void Update();
 
 	void Draw(const ViewProjection& camera);
-	void NotDepthDraw(const ViewProjection& camera);
+	void NoDepthDraw(const ViewProjection& camera);
 
 	// 移動
 	void MoveInitialize();

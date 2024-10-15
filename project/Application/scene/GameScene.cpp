@@ -256,11 +256,11 @@ void GameScene::Draw() {
 	
 
 	//デプスのないオブジェクト
-	playerManager_->GetPlayer()->NotDepthDraw(viewProjection_);
-	healerManager_->GetHealer()->NotDepthDraw(viewProjection_);
-	renjuManager_->GetRenju()->NotDepthDraw(viewProjection_);
-	tankManager_->GetTank()->NotDepthDraw(viewProjection_);
-	enemyManager_->NotDepthDraw(viewProjection_);
+	playerManager_->GetPlayer()->NoDepthDraw(viewProjection_);
+	healerManager_->GetHealer()->NoDepthDraw(viewProjection_);
+	renjuManager_->GetRenju()->NoDepthDraw(viewProjection_);
+	tankManager_->GetTank()->NoDepthDraw(viewProjection_);
+	enemyManager_->NoDepthDraw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

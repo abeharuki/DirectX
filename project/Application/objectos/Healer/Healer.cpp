@@ -219,7 +219,7 @@ void Healer::Draw(const ViewProjection& camera) {
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
-void Healer::NotDepthDraw(const ViewProjection& camera){
+void Healer::NoDepthDraw(const ViewProjection& camera){
 	for (int i = 0; i < 4; ++i) {
 		healModel_[i]->Draw(worldTransformHeal_[i], camera, false);
 	}

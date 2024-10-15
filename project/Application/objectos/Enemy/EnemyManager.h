@@ -9,7 +9,7 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& camera);
-	void NotDepthDraw(const ViewProjection& camera);
+	void NoDepthDraw(const ViewProjection& camera);
 	
 	void DrawUI();
 

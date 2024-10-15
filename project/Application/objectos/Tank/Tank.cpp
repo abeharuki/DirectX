@@ -163,7 +163,7 @@ void Tank::Draw(const ViewProjection& camera) {
 	RenderCollisionBounds(worldTransformHead_, camera);
 }
 
-void Tank::NotDepthDraw(const ViewProjection& camera){
+void Tank::NoDepthDraw(const ViewProjection& camera){
 	damageModel_->Draw(worldTransformNum_, camera, false);
 }
 

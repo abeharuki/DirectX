@@ -185,7 +185,7 @@ void Player::Draw(const ViewProjection& camera) {
 	
 }
 
-void Player::NotDepthDraw(const ViewProjection& camera){
+void Player::NoDepthDraw(const ViewProjection& camera){
 	damageModel_->Draw(worldTransformNum_, camera, false);
 }
 

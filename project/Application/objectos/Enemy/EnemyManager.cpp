@@ -80,7 +80,7 @@ void EnemyManager::Draw(const ViewProjection& camera) {
 	
 
 }
-void EnemyManager::NotDepthDraw(const ViewProjection& camera){
+void EnemyManager::NoDepthDraw(const ViewProjection& camera){
 	nameModel_->Draw(worldTransformName_, camera, false);
 
 
