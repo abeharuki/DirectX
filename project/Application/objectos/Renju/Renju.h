@@ -100,7 +100,7 @@ public: // メンバ関数
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
 	float GetHp() { return hp_; }
-
+	float GetMp() { return mp_; }
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
@@ -172,6 +172,9 @@ private: // メンバ変数
 	bool nockBack_;
 	//体力
 	float hp_ = 100.0f;
+	//マジックポイント
+	float mp_ = 100.0f;
+
 	//復活時間
 	int revivalCount_ = 0;
 

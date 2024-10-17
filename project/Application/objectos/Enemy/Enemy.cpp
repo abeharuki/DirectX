@@ -60,7 +60,7 @@ void Enemy::Initialize() {
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
 	}
 
-	AABB aabbSize{ .min{-3.0f,-4.0f,-2.0f},.max{3.0f,4.0f,2.0f} };
+	AABB aabbSize{ .min{-3.0f,-4.0f,-2.0f},.max{3.0f,8.0f,2.0f} };
 	OBB obb = Math::ConvertAABBToOBB(aabbSize);
 	obb.center = { 0.0f,0.0f,0.0f };
 	SetOBB(obb);

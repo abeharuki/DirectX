@@ -33,6 +33,7 @@ private:
 	
 	std::unique_ptr<Renju> renju_;
 
+	/*---------------UI---------------*/
 	std::unique_ptr<Sprite> spriteHP_;
 	std::unique_ptr<Sprite> spriteHPG_;
 	std::unique_ptr<Sprite> spriteMP_;
@@ -41,6 +42,9 @@ private:
 	std::unique_ptr<Sprite> spriteM_;
 	std::unique_ptr<Sprite> sprite3P_;
 	std::unique_ptr<Sprite> spriteName_;
+	std::unique_ptr<Sprite> HPnum_[3];
+	std::unique_ptr<Sprite> MPnum_[3];
+
 
 	std::unique_ptr<ParticleSystem> particle_;
 	EmitterSphere emitter_;

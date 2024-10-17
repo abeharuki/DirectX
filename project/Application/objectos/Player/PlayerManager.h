@@ -75,11 +75,11 @@ private:
 	WorldTransform worldTransformHammer_;
 	std::unique_ptr<Animations>animation_;
 
-
 	std::unique_ptr<Model> HammerModel_;
 	std::unique_ptr<Player> player_;
 	std::unique_ptr<Model> bulletModel_;
 
+	/*---------------UI--------------*/
 	std::unique_ptr<Sprite> spriteHP_;
 	std::unique_ptr<Sprite> spriteHPG_;
 	std::unique_ptr<Sprite> spriteMP_;
@@ -89,11 +89,16 @@ private:
 	std::unique_ptr<Sprite> sprite1P_;
 	std::unique_ptr<Sprite> spriteName_;
 
+	std::unique_ptr<Sprite> HPnum_[3];
+	std::unique_ptr<Sprite> MPnum_[3];
+
 	std::unique_ptr<Sprite> spriteRevival_;
 	std::unique_ptr<Sprite> spriteRevivalG_;
 	
 	Transform revivalTransform_;
 	
+	
+
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;
 	EmitterSphere emitter_{};

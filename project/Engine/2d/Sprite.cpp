@@ -291,3 +291,8 @@ void Sprite::SetColor(Vector4 color) {
 }
 
 void Sprite::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+
+void Sprite::SetTexture(const std::string& filename){
+	TextureManager::GetInstance()->Load(filename);
+	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
+}

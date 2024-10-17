@@ -14,6 +14,8 @@ void TankManager::Initialize() {
 	};
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 	isParticle_ = false;
+
+
 	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
 	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
 	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
@@ -23,9 +25,19 @@ void TankManager::Initialize() {
 	spriteM_.reset(Sprite::Create("resources/M.png"));
 	spriteName_.reset(Sprite::Create("resources/tank.png"));
 
-	tank_ = std::make_unique<Tank>();
-	tank_->Initialize();
+	for (int i = 0; i < 3; ++i) {
+		HPnum_[i].reset(Sprite::Create("resources/character/0.png"));
+		MPnum_[i].reset(Sprite::Create("resources/character/0.png"));
+		HPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
+		MPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
+		HPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,455.0f });
+		MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,480.0f });
+	}
 
+	HPnum_[2]->SetTexture("resources/character/1.png");
+	MPnum_[2]->SetTexture("resources/character/1.png");
+
+	
 	spriteHP_->SetPosition(Vector2{ 1106.0f,475.0f });
 	spriteHPG_->SetPosition(Vector2{ 1106.0f,475.0f });
 	spriteMP_->SetPosition(Vector2{ 1106.0f,500.0f });
@@ -44,6 +56,10 @@ void TankManager::Initialize() {
 	
 	spriteHpSize_ = { 100.0f,10.0f };
 	spriteMpSize_ = { 100.0f,10.0f };
+
+
+	tank_ = std::make_unique<Tank>();
+	tank_->Initialize();
 
 }
 
@@ -64,13 +80,39 @@ void TankManager::Update() {
 		}
 	}
 	
+	//キャラクターの更新
 	tank_->Update();
 	tank_->followPlayer(playerPos_);
 	
+
 	spriteHpSize_.x = tank_->GetHp();
 	spriteMpSize_.x = tank_->GetMp();
 	spriteHP_->SetSize(spriteHpSize_);
 	spriteMP_->SetSize(spriteMpSize_);
+
+	//HP,MP表示の計算
+	if (spriteHpSize_.x < 100.0f) {
+		int HPnum = int(spriteHpSize_.x);
+		HPnum %= 10;
+		HPnum_[0]->SetTexture("resources/character/" + std::to_string(HPnum) + ".png");
+		HPnum_[1]->SetTexture("resources/character/" + std::to_string(int(spriteHpSize_.x / 10)) + ".png");
+	}
+	else {
+		HPnum_[0]->SetTexture("resources/character/0.png");
+		HPnum_[1]->SetTexture("resources/character/0.png");
+	}
+
+	if (spriteMpSize_.x < 100.0f) {
+		int MPnum = int(spriteMpSize_.x);
+		MPnum %= 10;
+		MPnum_[0]->SetTexture("resources/character/" + std::to_string(MPnum) + ".png");
+		MPnum_[1]->SetTexture("resources/character/" + std::to_string(int(spriteMpSize_.x / 10)) + ".png");
+	}
+	else {
+		MPnum_[0]->SetTexture("resources/character/0.png");
+		MPnum_[1]->SetTexture("resources/character/0.png");
+	}
+
 
 	spriteHP_->SetColor(hpColor_);
 	if (spriteHpSize_.x < 20) {
@@ -96,6 +138,18 @@ void TankManager::DrawUI(){
 	spriteH_->Draw();
 	spriteM_->Draw();
 	spriteName_->Draw();
+
+	for (int i = 0; i < 2; ++i) {
+		HPnum_[i]->Draw();
+		MPnum_[i]->Draw();
+	}
+
+	if (tank_->GetHp() >= 100) {
+		HPnum_[2]->Draw();
+	}
+	if (tank_->GetMp() >= 100) {
+		MPnum_[2]->Draw();
+	}
 };
 
 void TankManager::RenderDirect(const ViewProjection& camera) {

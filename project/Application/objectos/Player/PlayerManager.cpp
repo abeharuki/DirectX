@@ -18,7 +18,18 @@ void PlayerManager::Initialize() {
 	sprite1P_.reset(Sprite::Create("resources/1P.png"));
 	spriteH_.reset(Sprite::Create("resources/H.png"));
 	spriteM_.reset(Sprite::Create("resources/M.png"));
-	spriteName_.reset(Sprite::Create("resources/player.png"));
+	spriteName_.reset (Sprite::Create("resources/player.png"));
+	for (int i = 0; i < 3; ++i) {
+		HPnum_[i].reset(Sprite::Create("resources/character/0.png"));
+		MPnum_[i].reset(Sprite::Create("resources/character/0.png"));
+		HPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
+		MPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
+		HPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,385.0f });
+		MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,410.0f });
+	}
+
+	HPnum_[2]->SetTexture("resources/character/1.png");
+	MPnum_[2]->SetTexture("resources/character/1.png");
 
 	spriteHP_->SetPosition(Vector2{1106.0f,405.0f});
 	spriteHPG_->SetPosition(Vector2{ 1106.0f,405.0f });
@@ -94,12 +105,41 @@ void PlayerManager::Update() {
 		}
 	}
 
-
-
+	//キャラクターの更新
 	player_->Update();
 
 	spriteHpSize_.x = player_->GetHp();
+	spriteMpSize_.x = player_->GetMp();
+	spriteHP_->SetSize(spriteHpSize_);
+	spriteMP_->SetSize(spriteMpSize_);
+
+	//HP,MP表示の計算
+	if (spriteHpSize_.x < 100.0f) {
+		int HPnum = int(spriteHpSize_.x);
+		HPnum %= 10;
+		HPnum_[0]->SetTexture("resources/character/" + std::to_string(HPnum) + ".png");
+		HPnum_[1]->SetTexture("resources/character/" + std::to_string(int(spriteHpSize_.x / 10)) + ".png");
+	}
+	else {
+		HPnum_[0]->SetTexture("resources/character/0.png");
+		HPnum_[1]->SetTexture("resources/character/0.png");
+	}
+
+	if (spriteMpSize_.x < 100.0f) {
+		int MPnum = int(spriteMpSize_.x);
+		MPnum %= 10;
+		MPnum_[0]->SetTexture("resources/character/" + std::to_string(MPnum) + ".png");
+		MPnum_[1]->SetTexture("resources/character/" + std::to_string(int(spriteMpSize_.x / 10)) + ".png");
+	}
+	else {
+		MPnum_[0]->SetTexture("resources/character/0.png");
+		MPnum_[1]->SetTexture("resources/character/0.png");
+	}
+	
+
+
 	spriteHP_->SetColor(hpColor_);
+	//体力低下で色の変化
 	if (spriteHpSize_.x < 20) {
 		hpColor_ = { 5.0f,0.0f,0.0f,1.0f };
 	}
@@ -107,15 +147,12 @@ void PlayerManager::Update() {
 		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
 
+	//復活させる時の(今は使ってない)
 	Revival();
 	if (revivalTransform_.scale.x >= 120.0f) {
 		revivalTransform_.scale.x = 120.0f;
 	}
 	spriteRevival_->SetSize(Vector2(revivalTransform_.scale.x, revivalTransform_.scale.y));
-
-	
-	spriteHP_->SetSize(spriteHpSize_);
-	spriteMP_->SetSize(spriteMpSize_);
 
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat2("Hpsize", &spriteHpSize_.x, 1.0f);
@@ -151,6 +188,19 @@ void PlayerManager::DrawUI() {
 		spriteRevivalG_->Draw();
 		spriteRevival_->Draw();
 
+	}
+
+	
+	for (int i = 0; i < 2; ++i) {
+		HPnum_[i]->Draw();
+		MPnum_[i]->Draw();
+	}
+
+	if (player_->GetHp() >= 100) {
+		HPnum_[2]->Draw();
+	}
+	if (player_->GetMp() >= 100) {
+		MPnum_[2]->Draw();
 	}
 
 }

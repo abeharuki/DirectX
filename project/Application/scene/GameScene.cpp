@@ -255,12 +255,7 @@ void GameScene::Draw() {
 	command_->Draw(viewProjection_);
 	
 
-	//デプスのないオブジェクト
-	playerManager_->GetPlayer()->NoDepthDraw(viewProjection_);
-	healerManager_->GetHealer()->NoDepthDraw(viewProjection_);
-	renjuManager_->GetRenju()->NoDepthDraw(viewProjection_);
-	tankManager_->GetTank()->NoDepthDraw(viewProjection_);
-	enemyManager_->NoDepthDraw(viewProjection_);
+	
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -294,6 +289,14 @@ void GameScene::RenderDirect() {
 	}
 	
 	spriteBack_->Draw();
+
+
+	//デプスのないオブジェクト
+	playerManager_->GetPlayer()->NoDepthDraw(viewProjection_);
+	healerManager_->GetHealer()->NoDepthDraw(viewProjection_);
+	renjuManager_->GetRenju()->NoDepthDraw(viewProjection_);
+	tankManager_->GetTank()->NoDepthDraw(viewProjection_);
+	enemyManager_->NoDepthDraw(viewProjection_);
 
 }
 

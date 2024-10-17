@@ -35,7 +35,7 @@ public:
 	}
 
 private:
-
+	
 	std::unique_ptr<Model> StaffModel_;
 	std::unique_ptr<Healer> healer_;
 
@@ -47,6 +47,9 @@ private:
 	std::unique_ptr<Sprite> spriteM_;
 	std::unique_ptr<Sprite> sprite4P_;
 	std::unique_ptr<Sprite> spriteName_;
+
+	std::unique_ptr<Sprite> HPnum_[3];
+	std::unique_ptr<Sprite> MPnum_[3];
 
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;

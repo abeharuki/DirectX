@@ -107,6 +107,12 @@ public: // メンバ関数
 	/// <returns>成否</returns>
 	void Initialize(const std::string& fileName);
 
+	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw(Transform& uvTransform);
+	void Draw();
+
 	void  UpdateVertexBuffer();
 	/// <summary>
 	/// 座標の設定
@@ -143,17 +149,15 @@ public: // メンバ関数
 	void SetFlipY(const bool& flipY) { this->isFlipY_ = flipY; }
 
 
-	/// <summary>
-	/// 描画
-	/// </summary>
-	void Draw(Transform& uvTransform);
-	void Draw();
+	
 
 	void SetColor(Vector4 color);
 
 	// ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
 
+	//テクスチャ
+	void SetTexture(const std::string& filename);
 
 private: // メンバ変数
 	//TextureManager* textureManager_;

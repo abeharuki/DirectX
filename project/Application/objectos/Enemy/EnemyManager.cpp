@@ -190,7 +190,7 @@ void EnemyManager::Billboard(){
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrix = backToFrontMatrix * Math::Inverse(camera_.matView);
 	billboardMatrix.m[3][0] = enemy_->GetWorldPosition().x;
-	billboardMatrix.m[3][1] = 5.0f;
+	billboardMatrix.m[3][1] = 9.5f;
 	billboardMatrix.m[3][2] = enemy_->GetWorldPosition().z;
 
 	

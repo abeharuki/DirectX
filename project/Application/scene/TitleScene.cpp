@@ -70,9 +70,10 @@ void TitleScene::Initialize() {
 	isFadeOut_ = false;
 	isFede_ = false;
 
+	a_ = 0.005f;
 
 	PostEffect::GetInstance()->isGrayscale(false);
-	PostEffect::GetInstance()->isOutLine(true);
+	//PostEffect::GetInstance()->isOutLine(true);
 	//PostEffect::GetInstance()->isBloom(true);
 	
 }
@@ -145,7 +146,7 @@ void TitleScene::Update() {
 	ImGui::Begin("Setting");
 	ImGui::DragFloat3("DirectionLight", &directionLight_.direction.x, 1.0f);
 	ImGui::DragFloat("Light", &directionLight_.intensity, 1.0f);
-	ImGui::DragFloat("outline", &a_, 0.1f);
+	ImGui::DragFloat("outline", &a_, 0.01f);
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 }

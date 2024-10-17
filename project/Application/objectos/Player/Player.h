@@ -118,6 +118,7 @@ public: // メンバ関数
 	bool IsOver() { return isOver_; }
 	bool IsOuto() { return outo_; }
 	float GetHp() { return hp_; }
+	float GetMp() { return mp_; }
 	int GetRevival() { return revivalCount_; }
 
 	bool GetIsDead() {
@@ -233,6 +234,8 @@ private: // メンバ変数
 
 	//体力
 	float hp_ = 100.0f;
+	//マジックポイント
+	float mp_ = 100.0f;
 
 	bool preHit_;
 	bool isHit_;
