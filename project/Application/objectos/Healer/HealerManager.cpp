@@ -93,13 +93,21 @@ void HealerManager::Update() {
 	if (spriteHpSize_.x < 100.0f) {
 		int HPnum = int(spriteHpSize_.x);
 		HPnum %= 10;
-		HPnum_[0]->SetTexture("resources/character/" + std::to_string(HPnum) + ".png");
-		HPnum_[1]->SetTexture("resources/character/" + std::to_string(int(spriteHpSize_.x / 10)) + ".png");
+		if (spriteHpSize_.x >= 0) {
+			HPnum_[0]->SetTexture("resources/character/" + std::to_string(HPnum) + ".png");
+			HPnum_[1]->SetTexture("resources/character/" + std::to_string(int(spriteHpSize_.x / 10)) + ".png");
+		}
+		else {
+			HPnum_[0]->SetTexture("resources/character/0.png");
+			HPnum_[1]->SetTexture("resources/character/0.png");
+		}
+		
 	}
 	else {
 		HPnum_[0]->SetTexture("resources/character/0.png");
 		HPnum_[1]->SetTexture("resources/character/0.png");
 	}
+
 
 	if (spriteMpSize_.x < 100.0f) {
 		int MPnum = int(spriteMpSize_.x);
@@ -113,12 +121,23 @@ void HealerManager::Update() {
 	}
 
 	spriteHP_->SetColor(hpColor_);
-	//体力低下で色の変化
+	for (int i = 0; i < 3; ++i) {
+		HPnum_[i]->SetColor(hpNumColor_);
+		MPnum_[i]->SetColor(hpNumColor_);
+	}
+
+
 	if (spriteHpSize_.x < 20) {
 		hpColor_ = { 5.0f,0.0f,0.0f,1.0f };
+		hpNumColor_ = { 5.0f,0.0f,0.0f,1.0f };
+
+	}
+	else if (spriteHpSize_.x <= 50) {
+		hpNumColor_ = { 1.0f,0.2f,0.0f,1.0f };
 	}
 	else {
 		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
+		hpNumColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
 
 };

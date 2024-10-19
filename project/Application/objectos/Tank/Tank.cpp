@@ -462,6 +462,8 @@ void Tank::DeadInitialize() {
 	revivalCount_ = 0;
 	isDead_ = true;
 	attack_ = false;
+	animationNumber_ = death;
+	animation_->SetLoop(false);
 }
 void Tank::DeadUpdate() {
 	if (isHitPlayer_ != preHitPlayer_) {

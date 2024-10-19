@@ -372,7 +372,8 @@ void Renju::DeadInitialize() {
 	//復活時間
 	revivalCount_ = 0;
 	isDead_ = true;
-
+	animationNumber_ = death;
+	animation_->SetLoop(false);
 }
 void Renju::DeadUpdate() {
 	if (isHitPlayer_ != preHitPlayer_) {

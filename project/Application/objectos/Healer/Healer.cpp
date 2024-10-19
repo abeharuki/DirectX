@@ -301,7 +301,7 @@ void Healer::MoveUpdate() {
 
 	//味方の体力全員が50以下なら全体回復
 	//味方の体力が誰か20以下なら回復
-	if (playerHp_ <= 20 || renjuHp_ <= 20 || tankHp_ <= 20 || hp_ <= 20) {
+	if ((playerHp_ <= 20 && playerHp_ > 0)|| (renjuHp_ <= 20 && renjuHp_ > 0)|| (tankHp_ <= 20 && tankHp_ > 0)|| (hp_ <= 20 && hp_ > 0)) {
 		if(mp_ >= 10){
 			oneHeal_ = true;
 			state_ = CharacterState::Unique;
@@ -607,6 +607,8 @@ void Healer::DeadInitialize() {
 	revivalCount_ = 0;
 	isDead_ = true;
 	workAttack_.isAttack = false;
+	animationNumber_ = death;
+	animation_->SetLoop(false);
 }
 void Healer::DeadUpdate(){
 	if (isHitPlayer_ != preHitPlayer_) {

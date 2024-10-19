@@ -57,6 +57,7 @@ private:
 	Vector2 spriteMpSize_;
 
 	Vector4 hpColor_;
+	Vector4 hpNumColor_;
 
 	// 味方の判定
 	bool preHit_;
