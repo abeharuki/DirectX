@@ -102,7 +102,11 @@ public: // メンバ関数
 	}
 	float GetHp() { return hp_; }
 	float GetMp() { return mp_; }
-	void SetHeal(float heal) { hp_ += heal; }
+	void SetHeal(float heal) { 
+		if (!isDead_) {
+			hp_ += heal;
+		}
+	}
 	bool GetAttack() { return attack_; }
 	bool GetStanAttack() { return stanAttack_; }
 
@@ -136,6 +140,7 @@ private: // メンバ変数
 	int animationNumber_;
 	enum AnimationNumber {
 		//animeAttack,//攻撃
+		death,
 		jump,//ジャンプ
 		run,//移動
 		standby,//待機

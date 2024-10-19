@@ -107,7 +107,11 @@ public: // メンバ関数
 
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
-	void SetHeal(float heal) { hp_ += heal; }
+	void SetHeal(float heal) {
+		if (!isDead_) {
+			hp_ += heal;
+		}
+	}
 	bool IsDead() { return isDead_; }
 
 	void Dissolve() {
@@ -134,6 +138,7 @@ private: // メンバ変数
 	int animationNumber_;
 	enum AnimationNumber {
 		//animeAttack,//攻撃
+		death,
 		jump,//ジャンプ
 		run,//移動
 		standby,//待機

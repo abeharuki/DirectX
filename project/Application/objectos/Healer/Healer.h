@@ -131,7 +131,12 @@ public: // メンバ関数
 		renjuHp_ = hp.y;
 		tankHp_ = hp.z;
 	}
-	void SetHeal(float heal) { hp_ += heal; }
+	void SetHeal(float heal) {
+		if (!isDead_) {
+			hp_ += heal;
+		}
+		
+	}
 	bool IsDead() { return isDead_; }
 
 	void Dissolve() {
@@ -159,10 +164,11 @@ private: // メンバ変数
 	std::unique_ptr<Animations>animation_;
 	int animationNumber_;
 	enum AnimationNumber {
-		//animeAttack,//攻撃
+		animeAttack,//攻撃
+		death,//死亡
 		jump,//ジャンプ
-		run,//移動
 		standby,//待機
+		run,//移動
 	};
 
 	float flameTime_;

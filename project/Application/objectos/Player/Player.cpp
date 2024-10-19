@@ -557,7 +557,7 @@ void Player::AttackUpdata() {
 
 void Player::DeadInitilize() {
 	threshold_ = 0.0f;
-
+	isDead_ = true;
 };
 void Player::DeadUpdata() {
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });

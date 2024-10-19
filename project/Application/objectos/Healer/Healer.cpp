@@ -375,6 +375,8 @@ void Healer::knockUpdate() {
 void Healer::AttackInitialize() {
 	
 	searchTarget_ = false;
+	animationNumber_ = animeAttack;
+	animation_->SetLoop(false);
 };
 void Healer::AttackUpdate() {
 	// プレイヤーの座標までの距離
@@ -450,6 +452,7 @@ void Healer::AttackUpdate() {
 		workAttack_.isAttack = false;
 		followPlayer_ = true;
 		searchTarget_ = false;
+		animation_->SetLoop(true);
 	}
 }
 

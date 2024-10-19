@@ -133,7 +133,11 @@ public: // メンバ関数
 	}
 
 	/*--セッター--*/
-	void SetHeal(float heal) { hp_ += heal; }
+	void SetHeal(float heal) { 
+		if (!isDead_) {
+			hp_ += heal;
+		}
+	}
 	void SetViewProjection(const ViewProjection* viewProjection) {viewProjection_ = viewProjection;}
 	void SetCamera(const ViewProjection& camera) {camera_ = camera;}
 	//敵の情報の受け取り
@@ -229,6 +233,8 @@ private: // メンバ変数
 	// 速度
 	Vector3 velocity_ = {};
 
+	//死亡時のフラグ
+	bool isDead_ = false;
 	bool isOver_;
 	float threshold_;
 
