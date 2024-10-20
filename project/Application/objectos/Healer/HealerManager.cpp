@@ -148,9 +148,8 @@ void HealerManager::Draw(const ViewProjection& camera) {
 	
 	if (healer_->IsAttack()) {
 		StaffModel_->Draw(healer_->GetWorldTransformCane(), camera, false);
-
 	}
-
+	
 }
 
 

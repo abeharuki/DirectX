@@ -28,7 +28,8 @@ void Healer::Initialize() {
 	}
 	worldTransformHead_.Initialize();
 	worldTransformCane_.Initialize();
-	worldTransformCane_.translate = { -0.63f, 0.54f, 0.0f };
+	worldTransformCane_.translate = { -0.03f, 0.04f, 0.1f };
+	worldTransformCane_.rotate = { 1.3f, 0.f, 0.f };
 	worldTransformCane_.scale = { 1.f, 1.f, 1.f };
 	worldTransformCollision_.Initialize();
 	worldTransformCollision_.scale = { 0.27f, 0.27f, 1.0f };
@@ -198,9 +199,9 @@ void Healer::Update() {
 	ImGui::Begin("Healer");
 	particle_[3]->DebugParameter();
 	ImGui::Text("%f", t_);
-	ImGui::DragFloat3("translat", &worldTransformMagicCircle_[0].translate.x, 0.1f);
-	ImGui::DragFloat3("rotate", &worldTransformMagicCircle_[0].rotate.x, 0.1f);
-	ImGui::DragFloat3("scale", &worldTransformMagicCircle_[0].scale.x, 0.1f);
+	ImGui::DragFloat3("translat", &worldTransformCane_.translate.x, 0.1f);
+	ImGui::DragFloat3("rotate", &worldTransformCane_.rotate.x, 0.1f);
+	ImGui::DragFloat3("scale", &worldTransformCane_.scale.x, 0.1f);
 	ImGui::DragFloat("magicCirecle", &t_[0], 0.01f);
 	ImGui::End();
 };
@@ -393,15 +394,6 @@ void Healer::AttackUpdate() {
 	uint32_t anticipationTime = 15;
 	uint32_t chargeTime = anticipationTime + 10;
 	uint32_t swingTime = anticipationTime + chargeTime + 5;
-
-	if (workAttack_.attackParameter_ < anticipationTime) {
-		//worldTransformCane_.rotate.x -= 0.04f;
-	}
-
-	if (workAttack_.attackParameter_ >= anticipationTime &&
-		workAttack_.attackParameter_ < chargeTime) {
-		//worldTransformCane_.rotate.x -= 0.0f;
-	}
 
 	if (workAttack_.attackParameter_ >= chargeTime && workAttack_.attackParameter_ < swingTime) {
 		//worldTransformCane_.rotate.x += 0.15f;
