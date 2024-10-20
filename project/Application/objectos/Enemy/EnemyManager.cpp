@@ -16,7 +16,7 @@ void EnemyManager::Initialize() {
 	enemy_->Initialize();
 
 	worldTransformName_.Initialize();
-	worldTransformName_.scale = { 2.5f,2.5f,1.f };
+
 
 	worldTransformNum_.resize(kdamageNumMax);
 	for (int i = 0; i < kdamageNumMax; ++i) {
@@ -28,6 +28,7 @@ void EnemyManager::Initialize() {
 	HpTransform_.translate = { 270.0f, 20.0f, 1.0f };
 
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
+	
 }
 
 void EnemyManager::Update() {
@@ -47,6 +48,15 @@ void EnemyManager::Update() {
 	enemy_->isDead(isDead_);
 	enemy_->Update();
 
+	//プレイヤーとの距離の計算
+	playerLength_ = Math::Length(Math::Subract(playerPos_, enemy_->GetWorldPosition()));
+	//プレイヤーとの距離に応じて名前のサイズの変更
+	if (playerLength_ > 20) {
+		//
+	}
+	nameScale_ = (playerLength_ / 17.0f) + (14.0f / 17.0f);
+	worldTransformName_.scale = { nameScale_ ,nameScale_ , 1.f};
+
 	//体力によって名前の色を変更
 	if (HpTransform_.scale.x <= 200.0f) {
 		color_ = { 1.0f,0.0f,0.0f,1.0f };
@@ -64,7 +74,7 @@ void EnemyManager::Update() {
 	}
 
 	ImGui::Begin("EnemyManager");
-	ImGui::Text("HP%f", HpTransform_.translate.x / 8.0f);
+	ImGui::Text("Length%f", playerLength_);
 	ImGui::DragFloat("HpParameter", &HpTransform_.scale.x,1.f,0.0f);
 	ImGui::DragFloat3("translat", &worldTransformName_.translate.x, 0.1f);
 	ImGui::DragFloat3("rotate", &worldTransformName_.rotate.x, 0.1f);

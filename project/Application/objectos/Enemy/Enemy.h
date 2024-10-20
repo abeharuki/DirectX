@@ -172,6 +172,8 @@ private: // メンバ変数
 	bool isDeadRenju_ = false;
 	bool isDeadTank_ = false;
 
+	
+
 	bool isAttack_ = false;
 	bool behaviorAttack_ = false;
 

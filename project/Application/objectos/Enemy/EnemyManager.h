@@ -19,7 +19,12 @@ public:
 	bool IsAttack() { return enemy_->isAttack(); }
 	bool IsClear() { return enemy_->isClear(); }
 
-	void SetPlayerPos(Vector3 pos) { enemy_->SetPlayerPos(pos); };
+	void SetPlayerPos(Vector3 pos) { 
+		if (!enemy_->IsBehaberAttack()){
+			enemy_->SetPlayerPos(pos);
+		}
+		playerPos_ = pos;
+	};
 	void SetHealerPos(Vector3 pos) { enemy_->SetHealerPos(pos); };
 	void SetRenjuPos(Vector3 pos) { enemy_->SetRenjuPos(pos); };
 	void SetTankPos(Vector3 pos) { enemy_->SetTankPos(pos); };
@@ -56,11 +61,13 @@ private:
 		kdamageNumMax,
 	};
 
+	//ダメージのアルファ値
 	float playerNumAlpha_;
 	float healerNumAlpha_;
 	float renjuNumAlpha_;
 	float tankNumAlpha_;
 
+	//ダメージの移動数値
 	Vector3 playerNumMove_;
 	Vector3 healerNumMove_;
 	Vector3 renjuNumMove_;
@@ -71,11 +78,15 @@ private:
 	std::unique_ptr<Model> nameModel_;
 	Transform HpTransform_;
 
-	Vector4 color_;
+	Vector4 color_;//名前の色
+
+	Vector3 playerPos_;
+	float playerLength_;//プレイヤーとの距離
+	float nameScale_;
 
 	bool isDead_ = false;
 
-
+	//各キャラのヒット確認
 	bool preHit_;
 	bool isHit_;
 

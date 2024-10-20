@@ -125,6 +125,7 @@ void GameScene::Update() {
 	//魔法陣に使う座標の受け取り
 	healerManager_->GetHealer()->SetPos(playerManager_->GetPlayer()->GetWorldPosition(), renjuManager_->GetRenju()->GetWorldPosition(), tankManager_->GetTank()->GetWorldPosition());
 
+	//回復
 	if (healerManager_->GetHealer()->GetHeal()) {
 		//全体回復
 		if (healerManager_->GetHealer()->GetAllHeal()) {
@@ -172,8 +173,8 @@ void GameScene::Update() {
 	enemyManager_->GetEnemy()->SetIsDeadTank(tankManager_->GetTank()->IsDead());
 
 	//プレイヤーと味方座標の取得
+	enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
 	if (!enemyManager_->GetEnemy()->IsBehaberAttack()) {
-		enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
 		enemyManager_->SetHealerPos(healerManager_->GetHealer()->GetWorldPosition());
 		enemyManager_->SetRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
 		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
@@ -189,7 +190,6 @@ void GameScene::Update() {
 	if (tankManager_->GetAttack()) {enemyManager_->OnTankCollision();}
 	if (playerManager_->IsAttack()) {enemyManager_->OnCollision();}
 
-	
 
 	//倒された時のディゾルブ
 	if (playerManager_->GetPlayer()->GetHp() <= 0) {
