@@ -103,7 +103,7 @@ void Enemy::Update() {
 	case Behavior::kRoot:
 	default:
 		// 通常行動
-		//MoveUpdata();
+		MoveUpdata();
 		break;
 	case Behavior::kAttack:
 		AttackUpdata();
@@ -195,9 +195,9 @@ void Enemy::MoveInitialize() {
 	num_ = RandomGenerator::GetRandomInt(1, 4);
 };
 void Enemy::MoveUpdata() {
-	//--time_;
+	--time_;
 	if (time_ <= 0) {
-		//behaviorRequest_ = Behavior::kAttack;
+		behaviorRequest_ = Behavior::kAttack;
 	}
 	else {
 
@@ -292,7 +292,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 
-	/*int num = RandomGenerator::GetRandomInt(1, 4);
+	int num = RandomGenerator::GetRandomInt(1, 4);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -304,7 +304,7 @@ void Enemy::AttackInitialize() {
 	}
 	else if (num == 4) {
 		attackRequest_ = BehaviorAttack::kGround;
-	}*/
+	}
 	behaviorAttack_ = true;
 }
 void Enemy::AttackUpdata() {

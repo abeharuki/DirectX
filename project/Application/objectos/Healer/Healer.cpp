@@ -302,7 +302,7 @@ void Healer::MoveUpdate() {
 
 	//味方の体力全員が50以下なら全体回復
 	//味方の体力が誰か20以下なら回復
-	if ((playerHp_ <= 20 && playerHp_ > 0)|| (renjuHp_ <= 20 && renjuHp_ > 0)|| (tankHp_ <= 20 && tankHp_ > 0)|| (hp_ <= 20 && hp_ > 0)) {
+	if ((playerHp_ <= 20 && playerHp_ > 0)|| (renjuHp_ <= 20 && renjuHp_ > 0)|| (tankHp_ <= 20 && tankHp_ > 0) || (hp_ <= 20 && hp_ > 0)) {
 		if(mp_ >= 10){
 			oneHeal_ = true;
 			state_ = CharacterState::Unique;
@@ -648,7 +648,7 @@ void Healer::DeadUpdate(){
 
 //追従
 void Healer::followPlayer(Vector3 playerPos) {
-	if (followPlayer_) {
+	if (followPlayer_ && state_ != CharacterState::Unique) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = playerPos - GetWorldPosition();
 

@@ -58,7 +58,7 @@ class TankManager {
 		Vector2 spriteHpSize_;
 		Vector2 spriteMpSize_;
 
-		Vector4 hpColor_;
+		Vector4 hpColor_= { 1.0f,1.0f,1.0f,1.0f };
 		Vector4 hpNumColor_;
 
 		// 味方の判定

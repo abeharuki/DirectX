@@ -158,6 +158,7 @@ void PlayerManager::Update() {
 	}
 	else if (spriteHpSize_.x <= 50) {
 		hpNumColor_ = { 1.0f,0.2f,0.0f,1.0f };
+		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
 	else {
 		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
