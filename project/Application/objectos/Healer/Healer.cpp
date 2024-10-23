@@ -486,51 +486,97 @@ void Healer::UniqueInitialize(){
 }
 void Healer::UniqueUpdate(){
 
-	if (allHeal_) {
-		if (t_[healer] > 0) {
-			for (int i = 0; i < 4; ++i) {
-				t_[i] -= 0.02f;
-				worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
-			}
-		}
-		else {
-			for (int i = 0; i < 4; ++i) {
-				t_[i] -= 0.0f;
-			}
-		}
+	// 敵の座標までの距離
+	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
+
+	// 距離条件チェック
+	if (minDistance_ * 2 <= length && !followPlayer_) {
+		state_ = CharacterState::Moveing;
+		searchTarget_ = true;
+	}
+
+	if (length >= minDistance_ * 1.5f) {
+		healAnimation_ = true;
+		animationNumber_ = standby;//攻撃モーションをいれたら変える
 	}
 	else {
-		if (t_[healer] > 0) {
-			t_[healer] -= 0.02f;
-			if (hp_ <= 20) {
-				worldTransformHeal_[healer].scale = { 0.5f,0.5f,0.5f };
-			}
-			
-			if (playerHp_ <= 20) {
-				t_[player] -= 0.02f;
-				worldTransformHeal_[player].scale = { 0.5f,0.5f,0.5f };
-			}
-			if (renjuHp_ <= 20) {
-				t_[renju] -= 0.02f;
-				worldTransformHeal_[renju].scale = { 0.5f,0.5f,0.5f };
-			}
-			if (tankHp_ <= 20) {
-				t_[tank] -= 0.02f;
-				worldTransformHeal_[tank].scale = { 0.5f,0.5f,0.5f };
-			}
+		healAnimation_ = false;
+		animationNumber_ = run;
+	}
 
+	if (healAnimation_) {
+		if (allHeal_) {
+			if (t_[healer] > 0) {
+				for (int i = 0; i < 4; ++i) {
+					t_[i] -= 0.02f;
+					worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
+				}
+			}
+			else {
+				for (int i = 0; i < 4; ++i) {
+					t_[i] -= 0.0f;
+				}
+			}
 		}
 		else {
-			t_[healer] = 0;
+			if (t_[healer] > 0) {
+				t_[healer] -= 0.02f;
+				if (hp_ <= 20) {
+					worldTransformHeal_[healer].scale = { 0.5f,0.5f,0.5f };
+				}
+
+				if (playerHp_ <= 20) {
+					t_[player] -= 0.02f;
+					worldTransformHeal_[player].scale = { 0.5f,0.5f,0.5f };
+				}
+				if (renjuHp_ <= 20) {
+					t_[renju] -= 0.02f;
+					worldTransformHeal_[renju].scale = { 0.5f,0.5f,0.5f };
+				}
+				if (tankHp_ <= 20) {
+					t_[tank] -= 0.02f;
+					worldTransformHeal_[tank].scale = { 0.5f,0.5f,0.5f };
+				}
+
+			}
+			else {
+				t_[healer] = 0;
+			}
 		}
+		--coolTime;
+		particle_[0]->SetTranslate(worldTransformBase_.translate);
+		particle_[0]->Update();
+		particle_[1]->SetTranslate(pos[0]);//player
+		particle_[2]->SetTranslate(pos[1]);//renju
+		particle_[3]->SetTranslate(pos[2]);//tank
+		particle_[4]->SetTranslate(worldTransformBase_.translate);//healer
 	}
-	--coolTime;
-	particle_[0]->SetTranslate(worldTransformBase_.translate);
-	particle_[0]->Update();
-	particle_[1]->SetTranslate(pos[0]);//player
-	particle_[2]->SetTranslate(pos[1]);//renju
-	particle_[3]->SetTranslate(pos[2]);//tank
-	particle_[4]->SetTranslate(worldTransformBase_.translate);//healer
+	else {
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
+
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+					? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				: -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		const float kSpeed = 0.4f;
+		velocity_ = { 0.0f, 0.0f, -kSpeed };
+		velocity_ = Math::TransformNormal(velocity_, enemy_->GetWorldTransform().matWorld_);
+		worldTransformBase_.translate -= velocity_;
+		worldTransformBase_.translate.y = 0;
+	}
+	
 
 	//回復数値の設定
 	worldTransformHeal_[player].translate = {pos[0].x,pos[0].y + 2.0f,pos[0].z};

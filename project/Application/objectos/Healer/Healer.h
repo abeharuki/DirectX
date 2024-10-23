@@ -240,9 +240,11 @@ private: // メンバ変数
 	//マジックポイント
 	float mp_ = 100.0f;
 	//回復フラグ
-	bool allHeal_;
-	bool oneHeal_;
-	bool heal_;
+	bool allHeal_;//全体回復
+	bool oneHeal_;//個人回復
+	bool heal_;//ヒールする瞬間
+	bool healAnimation_;//ヒールの演出
+
 	//回復量
 	float healAmount_;
 	//復活時間
