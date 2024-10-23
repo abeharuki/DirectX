@@ -151,12 +151,9 @@ void Model::SetColor(Vector4 color) {
 
 void Model::SetBlendMode(BlendMode blendMode) { 
 	blendMode_ = blendMode; 
-	
-
 }
 
 void Model::SetShininess(float i) { materialData_->SetShininess(i); }
-
 
 Model* Model::CreateModelFromObj(const std::string& filename, const std::string& texturePath) {
 	Model* model = new Model;
@@ -195,7 +192,6 @@ void Model::LoadTexture(const std::string& texturePath) {
 
 }
 
-
 void Model::DirectionalLightDraw(DirectionLight directionLight) {
 	lightData->directionLight_.color = directionLight.color;
 	lightData->directionLight_.direction = Math::Normalize(directionLight.direction);
@@ -203,11 +199,13 @@ void Model::DirectionalLightDraw(DirectionLight directionLight) {
 	lightData->directionLight_.isEnable_ = directionLight.isEnable_;
 	
 }
+
 void Model::PointLightDraw(PointLight pointLight, Vector3 direction) {
 	lightData->pointLight_ = pointLight;
 	lightData->directionLight_.direction = Math::Normalize(direction);
 
 }
+
 void Model::SpotLightDraw(SpotLight spotLight) {
 	lightData->spotLight_ = spotLight;
 	lightData->spotLight_.direction_ = Math::Normalize(spotLight.direction_);

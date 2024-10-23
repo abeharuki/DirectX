@@ -158,6 +158,8 @@ private: // メンバ変数
 	// 味方の押し出し処理
 	Vector3 allyVelocity;
 
+	bool attack_;
+
 	// プレイヤー座標
 	float minDistance_ = 10.0f;
 	bool followPlayer_ = false;
@@ -183,6 +185,7 @@ private: // メンバ変数
 	//復活時間
 	int revivalCount_ = 0;
 
+	//ヒット確認
 	bool preHit_;
 	bool isHit_;
 	bool isHitPlayer_ = false;

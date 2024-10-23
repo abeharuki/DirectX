@@ -51,9 +51,6 @@ void EnemyManager::Update() {
 	//プレイヤーとの距離の計算
 	playerLength_ = Math::Length(Math::Subract(playerPos_, enemy_->GetWorldPosition()));
 	//プレイヤーとの距離に応じて名前のサイズの変更
-	if (playerLength_ > 20) {
-		//
-	}
 	nameScale_ = (playerLength_ / 17.0f) + (14.0f / 17.0f);
 	worldTransformName_.scale = { nameScale_ ,nameScale_ , 1.f};
 

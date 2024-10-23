@@ -635,7 +635,7 @@ void Tank::IsVisibleToEnemy(){
 
 		//角度条件チェック
 		if (std::abs(angle) <= angleRange_) {
-			if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+			if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash && enemy_->IsAreaDraw()) {
 				RunAway();
 				isArea_ = true;
 			}
