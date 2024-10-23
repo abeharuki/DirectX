@@ -599,7 +599,10 @@ void Player::Relationship() {
 }
 
 void Player::InitPos() {
+	behaviorRequest_ = Behavior::kRoot;
 	worldTransformBase_.translate = { 3.0f,0.0f,-35.0f };
+	worldTransformBase_.rotate = {0.0f,0.0f,0.0f};
+	destinationAngleY_ = 0.0f;
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

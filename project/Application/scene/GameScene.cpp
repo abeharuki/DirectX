@@ -346,8 +346,6 @@ void GameScene::BattlBegin(){
 	if (playerManager_->GetPlayer()->GameStart() && !battle_) {
 		posteffect->isRadialBlur(true);
 		radialBlur_.blurWidth += 0.05f;
-
-
 	}
 
 	if (radialBlur_.blurWidth >= 1.0f && !battle_) {
@@ -361,10 +359,14 @@ void GameScene::BattlBegin(){
 		healerManager_->GetHealer()->InitPos();
 		renjuManager_->GetRenju()->InitPos();
 		tankManager_->GetTank()->InitPos();
+		//カメラの初期化
+		followCamera_->InitAngle();
 	}
 
 	posteffect->RadialBlurWidth(radialBlur_.blurWidth);
 	posteffect->RadialBlurRotation(radialBlur_.rotation);
+
+	enemyManager_->GetEnemy()->SetBattleStart(battle_);
 }
 
 void GameScene::CheckAllCollision() {

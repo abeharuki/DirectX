@@ -35,6 +35,11 @@ public:
 	// 調整項目の適用
 	void ApplyGlobalVariables();
 
+	void InitAngle(){
+		destinationAngleY_ = 0.0f;
+		destinationAngleX_ = 0.0f;
+	}
+
 private:
 	ViewProjection viewProjection_;
 	const WorldTransform* target_ = nullptr;

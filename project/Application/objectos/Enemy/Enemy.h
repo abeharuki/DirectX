@@ -122,7 +122,7 @@ public: // メンバ関数
 	void SetIsDeadHealer(bool flag) { isDeadHealer_ = flag; }
 	void SetIsDeadRenju(bool flag) { isDeadRenju_ = flag; }
 	void SetIsDeadTank(bool flag) { isDeadTank_ = flag; }
-
+	void SetBattleStart(bool flag) { battleStart_ = flag; }
 
 	// パーツ親子関係
 	void Relationship();
@@ -219,4 +219,7 @@ private: // メンバ変数
 
 	//動き始めるまでの時間
 	int moveTime_ = 0;
+
+	//ゲームが始まったかどうかのフラグ
+	bool battleStart_ = false;
 };

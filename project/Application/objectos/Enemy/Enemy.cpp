@@ -103,7 +103,9 @@ void Enemy::Update() {
 	case Behavior::kRoot:
 	default:
 		// 通常行動
-		//MoveUpdata();
+		if (battleStart_) {
+			MoveUpdata();
+		}
 		break;
 	case Behavior::kAttack:
 		AttackUpdata();
