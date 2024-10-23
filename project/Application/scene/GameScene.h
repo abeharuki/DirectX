@@ -37,7 +37,11 @@ public: // メンバ関数
 	//static GameScene* GetInstance();
 	void CheckAllCollision();
 
+	//シーン遷移
 	void Fade();
+
+	//バトル開始の演出
+	void BattlBegin();
 
 private://基本変数
 	// 光の数値
@@ -83,8 +87,13 @@ private: // メンバ変数
 	//コマンド
 	std::unique_ptr<Command> command_;
 
+	//フェーズイン・フェードアウト
 	bool isFadeOut_;
 	bool isFadeIn_;
 	float alpha_;
 
+	//ラジアルブラー
+	RadialBlur radialBlur_;
+	//戦闘移行演出
+	bool battle_ = false;
 };

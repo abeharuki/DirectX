@@ -42,7 +42,9 @@ struct Gaussian
 struct RadialBlur {
 	Vector2 center;
 	float blurWidth;
+	float rotation;
 	int32_t isEnble;
+	float padding[3];
 };
 
 struct Random {
@@ -102,6 +104,7 @@ public:
 	void isRadialBlur(bool flag) { postEffectData->radialBlur.isEnble = flag; }
 	void RadialBlurCenter(Vector2 num) { postEffectData->radialBlur.center = { num.x,num.y };}
 	void RadialBlurWidth(float num) { postEffectData->radialBlur.blurWidth = num; }
+	void RadialBlurRotation(float num) { postEffectData->radialBlur.rotation = num; }
 	//ディゾルブ
 	void isDissolve(bool flag) { dissolve_->isDissolve(flag); }
 	void dissolveThreshold(float num) { dissolve_->Threshold(num); }

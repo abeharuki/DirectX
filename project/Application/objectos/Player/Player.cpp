@@ -570,6 +570,38 @@ void Player::DeadUpdata() {
 };
 
 
+// 親子関係
+void Player::Relationship() {
+	worldTransformHead_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformHead_.scale, worldTransformHead_.rotate, worldTransformHead_.translate),
+		worldTransformBase_.matWorld_);
+
+
+	worldTransformHammer_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformHammer_.scale, worldTransformHammer_.rotate,
+			worldTransformHammer_.translate),
+		animation_->GetJointWorldTransform("mixamorig:RightHand").matWorld_);
+
+	worldTransformCollision_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformCollision_.scale, worldTransformCollision_.rotate,
+			worldTransformCollision_.translate),
+		worldTransformHammer_.matWorld_);
+
+	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrixNum = backToFrontMatrix * Math::Inverse(camera_.matView);
+	billboardMatrixNum.m[3][0] = worldTransformNum_.translate.x;
+	billboardMatrixNum.m[3][1] = worldTransformNum_.translate.y;
+	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
+	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
+}
+
+void Player::InitPos() {
+	worldTransformBase_.translate = { 3.0f,0.0f,-35.0f };
+}
+
 // 衝突を検出したら呼び出されるコールバック関数
 void Player::OnCollision(const WorldTransform& worldTransform) {
 	const float kSpeed = 3.0f;
@@ -596,7 +628,13 @@ void Player::OnCollision(Collider* collider) {
 
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (isEnemyAttack_&& enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+		//敵に当たったらゲームスタート
+		if (!gameStart_) {
+			gameStart_ = true;
+		}
+
+
+		if (isEnemyAttack_ && enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
@@ -696,34 +734,6 @@ void Player::OnCollision(Collider* collider) {
 
 }
 
-// 親子関係
-void Player::Relationship() {
-	worldTransformHead_.matWorld_ = Math::Multiply(
-		Math::MakeAffineMatrix(
-			worldTransformHead_.scale, worldTransformHead_.rotate, worldTransformHead_.translate),
-		worldTransformBase_.matWorld_);
-
-
-	worldTransformHammer_.matWorld_ = Math::Multiply(
-		Math::MakeAffineMatrix(
-			worldTransformHammer_.scale, worldTransformHammer_.rotate,
-			worldTransformHammer_.translate),
-		animation_->GetJointWorldTransform("mixamorig:RightHand").matWorld_);
-
-	worldTransformCollision_.matWorld_ = Math::Multiply(
-		Math::MakeAffineMatrix(
-			worldTransformCollision_.scale, worldTransformCollision_.rotate,
-			worldTransformCollision_.translate),
-		worldTransformHammer_.matWorld_);
-
-	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrixNum = backToFrontMatrix * Math::Inverse(camera_.matView);
-	billboardMatrixNum.m[3][0] = worldTransformNum_.translate.x;
-	billboardMatrixNum.m[3][1] = worldTransformNum_.translate.y;
-	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
-	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
-}
-
 const Vector3 Player::GetWorldPosition() const {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;
@@ -742,6 +752,7 @@ Vector3 Player::GetLocalPosition() {
 	worldPos.z = worldTransformBase_.translate.z;
 	return worldPos;
 }
+
 Player::~Player() {
 
 }

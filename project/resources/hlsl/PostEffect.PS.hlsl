@@ -22,6 +22,7 @@ struct RadialBlur
 {
     float32_t2 center;
     float32_t blurWidth;
+    float32_t rotation;
     int32_t isEnble;
 };
 
@@ -247,14 +248,24 @@ PixelShaderOutput main(VertexShaderOutput input)
         const float32_t2 kCenter = gPostEffectStyle.radialBlur.center;
         const int32_t kNumSamples = 10;
         const float32_t kBlurWidth = gPostEffectStyle.radialBlur.blurWidth;
+        const float32_t kRotationStrength = gPostEffectStyle.radialBlur.rotation; // 渦巻きの回転強度
+        
         //中心から現在のuvに対して方向を計算
         float32_t2 direction = input.texcoord - kCenter;
         float32_t3 outputColor = float32_t3(0.0f, 0.0f, 0.0f);
 
         for (int32_t sampleIndex = 0; sampleIndex < kNumSamples; ++sampleIndex)
         {
+            // サンプルごとの回転角度を計算
+            float32_t angle = kRotationStrength * float32_t(sampleIndex); // サンプルごとの回転角度
+            // 回転行列を使って方向ベクトルを回転させる
+            float32_t2 rotatedDirection = float32_t2(
+                direction.x * cos(angle) - direction.y * sin(angle),
+                direction.x * sin(angle) + direction.y * cos(angle)
+            );
+            
             //現愛のuvから先ほどの計算した方向にサンプリング点を進めながらサンプリングしていく
-            float32_t2 texcoord = input.texcoord + direction * kBlurWidth * float32_t(sampleIndex);
+            float32_t2 texcoord = input.texcoord + rotatedDirection * kBlurWidth * float32_t(sampleIndex);
             outputColor.rgb += gTexture.Sample(gSampler, texcoord).rgb;
         }
 

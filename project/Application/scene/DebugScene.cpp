@@ -178,28 +178,32 @@ void DebugScene::Update() {
 	animation_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
 	animation_->SetEnvironment(env_,true);
-	PostEffect::GetInstance()->isGrayscale(grayscale_.isEnable);
-	PostEffect::GetInstance()->Vignette(vignetting_);
-	PostEffect::GetInstance()->isGaussian(smoothing_.isEnable);
-	PostEffect::GetInstance()->GaussianKernelSize(smoothing_.kernelSize);
-	PostEffect::GetInstance()->isOutLine(outLine_.isEnable);
-	PostEffect::GetInstance()->ValueOutLine(outLine_.differenceValue);
-	PostEffect::GetInstance()->isRadialBlur(radialBlur_.isEnble);
-	PostEffect::GetInstance()->RadialBlurCenter(radialBlur_.center);
-	PostEffect::GetInstance()->RadialBlurWidth(radialBlur_.blurWidth);
-	PostEffect::GetInstance()->isDissolve(dissolve_.isEnble);
-	PostEffect::GetInstance()->dissolveThreshold(dissolve_.threshold);
-	PostEffect::GetInstance()->EdgeColor(dissolve_.edgeColor);
-	PostEffect::GetInstance()->isRandom(random_.isEnble);
-	PostEffect::GetInstance()->SetBlurWidth(gasianBlur_.x);
-	PostEffect::GetInstance()->SetBlurSigma(gasianBlur_.y);
-	PostEffect::GetInstance()->isGasianBlur(isBlur_);
-	PostEffect::GetInstance()->SetBloomSigma(bloom_.sigma);
-	PostEffect::GetInstance()->SetBloomWidth(bloom_.stepWidth);
-	PostEffect::GetInstance()->BloomLightStrength(bloom_.lightStrength);
-	PostEffect::GetInstance()->BloomTreshold(bloom_.bloomThreshold);
-	PostEffect::GetInstance()->isBloom(bloom_.isEnble);
-	PostEffect::GetInstance()->SetHsv(hsv_);
+
+	PostEffect* const posteffect = PostEffect::GetInstance();
+
+	posteffect->isGrayscale(grayscale_.isEnable);
+	posteffect->Vignette(vignetting_);
+	posteffect->isGaussian(smoothing_.isEnable);
+	posteffect->GaussianKernelSize(smoothing_.kernelSize);
+	posteffect->isOutLine(outLine_.isEnable);
+	posteffect->ValueOutLine(outLine_.differenceValue);
+	posteffect->isRadialBlur(radialBlur_.isEnble);
+	posteffect->RadialBlurCenter(radialBlur_.center);
+	posteffect->RadialBlurWidth(radialBlur_.blurWidth);
+	posteffect->RadialBlurRotation(radialBlur_.rotation);
+	posteffect->isDissolve(dissolve_.isEnble);
+	posteffect->dissolveThreshold(dissolve_.threshold);
+	posteffect->EdgeColor(dissolve_.edgeColor);
+	posteffect->isRandom(random_.isEnble);
+	posteffect->SetBlurWidth(gasianBlur_.x);
+	posteffect->SetBlurSigma(gasianBlur_.y);
+	posteffect->isGasianBlur(isBlur_);
+	posteffect->SetBloomSigma(bloom_.sigma);
+	posteffect->SetBloomWidth(bloom_.stepWidth);
+	posteffect->BloomLightStrength(bloom_.lightStrength);
+	posteffect->BloomTreshold(bloom_.bloomThreshold);
+	posteffect->isBloom(bloom_.isEnble);
+	posteffect->SetHsv(hsv_);
 	CheckAllCollision();
 
 	particle_->DebugParameter();
@@ -310,6 +314,7 @@ void DebugScene::Update() {
 			ImGui::Checkbox("isRadialBlur", &postEffects[4]);
 			ImGui::DragFloat2("Center", &radialBlur_.center.x);
 			ImGui::SliderFloat("Width", &radialBlur_.blurWidth, 0.01f, 1.0f);
+			ImGui::SliderFloat("Rotation", &radialBlur_.rotation, 0.01f, 1.0f);
 			ImGui::TreePop();
 		}
 

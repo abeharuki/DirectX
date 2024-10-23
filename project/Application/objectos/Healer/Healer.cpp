@@ -845,6 +845,10 @@ void Healer::RunAway(){
 	}
 }
 
+void Healer::InitPos(){
+	worldTransformBase_.translate = { 6.0f,0.0f,-35.0f };
+}
+
 // 親子関係
 void Healer::Relationship() {
 

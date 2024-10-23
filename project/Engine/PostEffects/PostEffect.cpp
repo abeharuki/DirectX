@@ -85,6 +85,7 @@ void PostEffect::CreateResource() {
 	postEffectData->radialBlur.isEnble = false;
 	postEffectData->radialBlur.center = { 0.5f,0.5f };
 	postEffectData->radialBlur.blurWidth = 0.01f;
+	postEffectData->radialBlur.rotation = 0.0f;
 
 
 

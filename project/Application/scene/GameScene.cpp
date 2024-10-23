@@ -63,14 +63,24 @@ void GameScene::Initialize() {
 	command_ = std::make_unique<Command>();
 	command_->Initialize();
 
+	//フェード
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 
+	//ラジアルブラー
+	radialBlur_.isEnble = false;
+	radialBlur_.blurWidth = 0.01f;
+	radialBlur_.rotation = 0.1f;
+	
 }
 
 void GameScene::Update() {
 
+	//シーン遷移
 	Fade();
+	BattlBegin();
+	
+
 	if (Input::PushKey(DIK_P)) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
 	}
@@ -100,7 +110,10 @@ void GameScene::Update() {
 
 	//playerの更新
 	playerManager_->GetPlayer()->SetEnemyLength(enemyManager_->GetWorldTransform().translate);
-	playerManager_->Update();
+	if (radialBlur_.blurWidth == 0.01f) {
+		playerManager_->Update();
+	}
+	
 
 	//コマンドの更新
 	if (!playerManager_->GetPlayer()->IsOuto()) {
@@ -326,6 +339,32 @@ void GameScene::Fade() {
 	}
 
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
+}
+
+void GameScene::BattlBegin(){
+	PostEffect* const posteffect = PostEffect::GetInstance();
+	if (playerManager_->GetPlayer()->GameStart() && !battle_) {
+		posteffect->isRadialBlur(true);
+		radialBlur_.blurWidth += 0.05f;
+
+
+	}
+
+	if (radialBlur_.blurWidth >= 1.0f && !battle_) {
+		posteffect->isRadialBlur(false);
+		radialBlur_.blurWidth = 0.01f;
+		radialBlur_.rotation = 0.f;
+		battle_ = true;
+		
+		//位置の初期化
+		playerManager_->GetPlayer()->InitPos();
+		healerManager_->GetHealer()->InitPos();
+		renjuManager_->GetRenju()->InitPos();
+		tankManager_->GetTank()->InitPos();
+	}
+
+	posteffect->RadialBlurWidth(radialBlur_.blurWidth);
+	posteffect->RadialBlurRotation(radialBlur_.rotation);
 }
 
 void GameScene::CheckAllCollision() {

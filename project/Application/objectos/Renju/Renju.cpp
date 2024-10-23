@@ -590,6 +590,10 @@ void Renju::Relationship() {
 	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
 }
 
+void Renju::InitPos(){
+	worldTransformBase_.translate = { -3.0f,0.0f,-35.0f };
+}
+
 // 衝突を検出したら呼び出されるコールバック関数
 void Renju::OnAllyCollision(const WorldTransform& worldTransform) {
 	worldTransform;

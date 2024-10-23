@@ -95,6 +95,9 @@ public: // メンバ関数
 	// パーツ親子関係
 	void Relationship();
 
+	//位置の初期化
+	void InitPos();
+
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
 	void OnCollision(const WorldTransform& worldTransform);
@@ -108,9 +111,11 @@ public: // メンバ関数
 	//状態
 	Behavior GetBehavior() {return behavior_;}
 
+
+
 	/*--ゲッター--*/
+	bool GameStart() { return gameStart_; }
 	//こうげきフラグ
-	bool SetAttack(bool flag,int i) { return attackType_[i] = flag; }
 	bool IsRoot() { return root_; }
 	bool IsAttack() { return workAttack_.isAttack; }
 	bool IsCombo() { return combo_; }
@@ -133,6 +138,7 @@ public: // メンバ関数
 	}
 
 	/*--セッター--*/
+	bool SetAttack(bool flag, int i) { return attackType_[i] = flag; }
 	void SetHeal(float heal) { 
 		if (!isDead_) {
 			hp_ += heal;
@@ -263,4 +269,7 @@ private: // メンバ変数
 
 	//敵の情報
 	Enemy* enemy_;
+
+	//ゲームスタートフラグ
+	bool gameStart_;
 };

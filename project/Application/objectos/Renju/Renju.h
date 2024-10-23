@@ -72,8 +72,14 @@ public: // メンバ関数
 	// パーツ親子関係
 	void Relationship();
 
-	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
+	//位置の初期化
+	void InitPos();
 
+	void Dissolve() {
+		animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+		threshold_ += 0.004f;
+		animation_->SetThreshold(threshold_);
+	}
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
@@ -101,6 +107,7 @@ public: // メンバ関数
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
 	float GetHp() { return hp_; }
 	float GetMp() { return mp_; }
+	bool IsDead() { return isDead_; }
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
@@ -112,14 +119,8 @@ public: // メンバ関数
 			hp_ += heal;
 		}
 	}
-	bool IsDead() { return isDead_; }
 
-	void Dissolve() {
-		animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-		threshold_ += 0.004f;
-		animation_->SetThreshold(threshold_);
-	}
-
+	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
 	void SetOperation(bool flag) { operation_ = flag; }
 private: // メンバ変数
 	WorldTransform worldTransformBase_;

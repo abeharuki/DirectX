@@ -71,18 +71,14 @@ public: // メンバ関数
 	//逃げる方向
 	void RunAway();
 
-	void SetLight(DirectionLight directionLight) { 
-		animation_->DirectionalLightDraw(directionLight);
-		DirectionLight light;
-		light = directionLight;
-		light.direction *= -1.0f;
-		for (int i = 0; i < 4; ++i) {
-			magicCircle_[i]->DirectionalLightDraw(light);
-		}
-		
-	}
+	//位置の初期化
+	void InitPos();
 
-	void SetOperation(bool flag) { operation_ = flag; }
+	void Dissolve() {
+		animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+		threshold_ += 0.004f;
+		animation_->SetThreshold(threshold_);
+	}
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
@@ -116,6 +112,22 @@ public: // メンバ関数
 	bool GetAllHeal() { return allHeal_; }
 	bool GetOneHeal() { return oneHeal_; }
 	float GetHealAmount() { return healAmount_; }
+	bool IsDead() { return isDead_; }
+
+
+
+	void SetLight(DirectionLight directionLight) {
+		animation_->DirectionalLightDraw(directionLight);
+		DirectionLight light;
+		light = directionLight;
+		light.direction *= -1.0f;
+		for (int i = 0; i < 4; ++i) {
+			magicCircle_[i]->DirectionalLightDraw(light);
+		}
+
+	}
+
+	void SetOperation(bool flag) { operation_ = flag; }
 	void SetViewProjection(const ViewProjection& viewProjection) {viewProjection_ = viewProjection;}
 	//座標の受け取り
 	void SetPos(Vector3 playerPos, Vector3 renjuPos, Vector3 tankPos) {
@@ -137,13 +149,9 @@ public: // メンバ関数
 		}
 		
 	}
-	bool IsDead() { return isDead_; }
+	
 
-	void Dissolve() {
-		animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-		threshold_ += 0.004f;
-		animation_->SetThreshold(threshold_);
-	}
+	
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;

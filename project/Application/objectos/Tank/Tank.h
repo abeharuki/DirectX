@@ -67,12 +67,15 @@ public: // メンバ関数
 	//逃げる方向
 	void RunAway();
 
-
 	void Relationship();
 
-	void SetLight(DirectionLight directionLight) { 
-		animation_->DirectionalLightDraw(directionLight); 
-		shield_->DirectionalLightDraw(directionLight);
+	//位置の初期化
+	void InitPos();
+
+	void Dissolve() {
+		animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+		threshold_ += 0.004f;
+		animation_->SetThreshold(threshold_);
 	}
 
 	// 衝突を検出したら呼び出されるコールバック関数
@@ -97,11 +100,10 @@ public: // メンバ関数
 		return worldTransformHp_[0];
 	}
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
-	void SetViewProjection(const ViewProjection& viewProjection) {
-		viewProjection_ = viewProjection;
-	}
+
 	float GetHp() { return hp_; }
 	float GetMp() { return mp_; }
+	bool IsDead() { return isDead_; }
 	void SetHeal(float heal) { 
 		if (!isDead_) {
 			hp_ += heal;
@@ -113,12 +115,13 @@ public: // メンバ関数
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 
-	bool IsDead() { return isDead_; }
+	void SetViewProjection(const ViewProjection& viewProjection) {
+		viewProjection_ = viewProjection;
+	}
 
-	void Dissolve() {
-		animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-		threshold_ += 0.004f;
-		animation_->SetThreshold(threshold_);
+	void SetLight(DirectionLight directionLight) {
+		animation_->DirectionalLightDraw(directionLight);
+		shield_->DirectionalLightDraw(directionLight);
 	}
 
 	void SetOperation(bool flag) { operation_ = flag; }
