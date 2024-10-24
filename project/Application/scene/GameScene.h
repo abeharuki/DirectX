@@ -96,4 +96,7 @@ private: // メンバ変数
 	RadialBlur radialBlur_;
 	//戦闘移行演出
 	bool battle_ = false;
+	//バトル開始時のカメラ演出
+	bool cameraDirection_ = false;
+	int cameraDirectionTime_;
 };

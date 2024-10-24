@@ -215,7 +215,9 @@ void GameScene::Update() {
 	}
 
 	// 追従カメラの更新
-	followCamera_->Update();
+	if (!cameraDirection_||battle_) {
+		followCamera_->Update();
+	}
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
@@ -238,6 +240,9 @@ void GameScene::Update() {
 	tankManager_->GetTank()->SetLight(directionLight_);
 
 	loader_->SetLight(directionLight_);
+
+	followCamera_->Debug();
+	
 }
 
 
@@ -343,30 +348,48 @@ void GameScene::Fade() {
 
 void GameScene::BattlBegin(){
 	PostEffect* const posteffect = PostEffect::GetInstance();
-	if (playerManager_->GetPlayer()->GameStart() && !battle_) {
+	//ラジアルブラーの演出
+	if (playerManager_->GetPlayer()->GameStart() && !cameraDirection_ && radialBlur_.blurWidth < 0.9f) {
 		posteffect->isRadialBlur(true);
-		radialBlur_.blurWidth += 0.05f;
+
+		radialBlur_.blurWidth = Math::LerpShortAngle(radialBlur_.blurWidth,1.0f,0.15f);
+		cameraDirectionTime_ = 10;
 	}
 
-	if (radialBlur_.blurWidth >= 1.0f && !battle_) {
-		posteffect->isRadialBlur(false);
-		radialBlur_.blurWidth = 0.01f;
-		radialBlur_.rotation = 0.f;
-		battle_ = true;
-		
-		//位置の初期化
-		playerManager_->GetPlayer()->InitPos();
-		healerManager_->GetHealer()->InitPos();
-		renjuManager_->GetRenju()->InitPos();
-		tankManager_->GetTank()->InitPos();
-		//カメラの初期化
-		followCamera_->InitAngle();
+	//カメラの演出に移行
+	if (radialBlur_.blurWidth >= 0.9f && !cameraDirection_) {
+		--cameraDirectionTime_;
+		if (cameraDirectionTime_ <= 0) {
+			posteffect->isRadialBlur(false);
+			radialBlur_.blurWidth = 0.01f;
+			radialBlur_.rotation = 0.f;
+			cameraDirection_ = true;
+			//位置の初期化
+			playerManager_->GetPlayer()->InitPos();
+			healerManager_->GetHealer()->InitPos();
+			renjuManager_->GetRenju()->InitPos();
+			tankManager_->GetTank()->InitPos();
+			//カメラの初期化
+			followCamera_->InitAngle();
+			followCamera_->SetinterTargetPos({ 3.0f,0.0f,-35.0f });
+		}
 	}
 
 	posteffect->RadialBlurWidth(radialBlur_.blurWidth);
 	posteffect->RadialBlurRotation(radialBlur_.rotation);
 
+	//カメラが一定の位置に来たらバトル開始
+	if (cameraDirection_ && !battle_) {
+		followCamera_->CameraDirection();
+		if (followCamera_->GetViewProjection().translation_.z <= -49.9f) {
+			battle_ = true;
+		}
+	}
+	
+	playerManager_->GetPlayer()->SetBattleStart(battle_);
 	enemyManager_->GetEnemy()->SetBattleStart(battle_);
+	
+	
 }
 
 void GameScene::CheckAllCollision() {

@@ -38,6 +38,26 @@ public:
 	void InitAngle(){
 		destinationAngleY_ = 0.0f;
 		destinationAngleX_ = 0.0f;
+		viewProjection_.translation_ = {-30.0f,6.0f,-15.0f};
+		viewProjection_.rotation_ = { 0.0f,0.0f,0.0f };
+		moveToEnemy_ = true;
+		moveToPlayer_ = false;
+		moveTime_ = 20;
+		// ビュー行列の更新
+		viewProjection_.UpdateMatrix();
+	}
+
+	//バトル開始時のカメラの演出
+	void CameraDirection();
+
+	void SetinterTargetPos(Vector3 pos) {
+		interTarget_ = pos;
+	}
+
+	void Debug() {
+		ImGui::Begin("Camera");
+		ImGui::DragFloat3("translat", &viewProjection_.translation_.x);
+		ImGui::End();
 	}
 
 private:
@@ -53,4 +73,10 @@ private:
 	float destinationAngleX_ = 0.0f;
 	// 遅延量
 	float delayAmount_ = 0.5f;
+
+	//どこに移動するか
+	bool moveToEnemy_ = false;
+	bool moveToPlayer_ = false;
+	//次の目的地までの時間
+	int moveTime_;
 };

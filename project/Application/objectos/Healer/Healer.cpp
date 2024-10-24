@@ -279,21 +279,23 @@ void Healer::MoveUpdate() {
 
 	//地面をたたきつける攻撃が来たらジャンプする
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
-		enemylength_ = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
 		//ジャンプは敵の攻撃一回に対して一回まで
-		if (jumpCount_ == 1 && enemylength_ <= 36) {
+		if (jumpCount_ == 1 && enemylength_ <= 35) {
 			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
 
+			if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
+				state_ = CharacterState::Jumping;
+			}
+
+			if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+
+			if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
+				state_ = CharacterState::Jumping;
+			}
+
 			if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
-				state_ = CharacterState::Jumping;
-			}
-			else if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
-				state_ = CharacterState::Jumping;
-			}
-			else if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
-				state_ = CharacterState::Jumping;
-			}
-			else if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
 				state_ = CharacterState::Jumping;
 			}
 		}

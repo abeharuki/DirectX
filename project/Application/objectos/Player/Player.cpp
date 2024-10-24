@@ -98,7 +98,10 @@ void Player::Update() {
 	case Behavior::kRoot:
 	default:
 		// 通常行動
-		MoveUpdata();
+		if (battleStart_ || !gameStart_) {
+			MoveUpdata();
+		}
+		
 		break;
 	case Behavior::kJump:
 		//ジャンプ
@@ -600,6 +603,7 @@ void Player::Relationship() {
 
 void Player::InitPos() {
 	behaviorRequest_ = Behavior::kRoot;
+	animationNumber_ = standby;
 	worldTransformBase_.translate = { 3.0f,0.0f,-35.0f };
 	worldTransformBase_.rotate = {0.0f,0.0f,0.0f};
 	destinationAngleY_ = 0.0f;

@@ -4,6 +4,7 @@
 void FollowCamera::Initialize() {
 
 	viewProjection_.Initialize();
+
 #ifdef _DEBUG
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "FollowCamera";
@@ -167,4 +168,28 @@ void FollowCamera::ApplyGlobalVariables() {
 	delayAmount_ = globalVaribles->GetFloatValue(groupName, "delayAmount");
 
 #endif
+}
+
+void FollowCamera::CameraDirection(){
+
+	if (viewProjection_.translation_.x >= -0.1f&& moveTime_ > 0) {
+		--moveTime_;
+		moveToEnemy_ = false;
+		
+	}
+	if (moveTime_ <= 0) {
+		moveTime_ = 0;
+		moveToPlayer_ = true;
+	}
+
+	if (moveToEnemy_) {
+		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 0.0f,6.0f,-15.0f }, 0.2f);
+	}
+	if (moveToPlayer_) {
+		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 3.f,4.f,-50.0f }, 0.2f);
+	}
+
+	// ビュー行列の更新
+	viewProjection_.UpdateMatrix();
+
 }

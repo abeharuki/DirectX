@@ -97,6 +97,12 @@ public: // メンバ関数
 
 	//位置の初期化
 	void InitPos();
+	void UpdatePos() {
+		worldTransformBase_.UpdateMatrix();
+		worldTransformHead_.TransferMatrix();
+		worldTransformHammer_.TransferMatrix();
+		worldTransformNum_.TransferMatrix();
+	}
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
@@ -161,7 +167,7 @@ public: // メンバ関数
 	void SetTankDead(bool dead) { tankDead_ = dead; }
 	void SetRenjuDead(bool dead) { renjuDead_ = dead; }
 	void SetHealerDead(bool dead) { healerDead_ = dead; }
-
+	void SetBattleStart(bool flag) { battleStart_ = flag; }
 	
 
 private: // メンバ変数
@@ -272,4 +278,6 @@ private: // メンバ変数
 
 	//ゲームスタートフラグ
 	bool gameStart_;
+	//バトルが始まったかどうかのフラグ
+	bool battleStart_ = false;
 };
