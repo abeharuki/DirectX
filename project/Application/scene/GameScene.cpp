@@ -116,7 +116,7 @@ void GameScene::Update() {
 	
 
 	//コマンドの更新
-	if (!playerManager_->GetPlayer()->IsOuto()) {
+	if (!playerManager_->GetPlayer()->IsOuto() && battle_) {
 		command_->SetBehavior(playerManager_->GetPlayer()->IsRoot());
 		command_->Update();
 	}
@@ -215,7 +215,7 @@ void GameScene::Update() {
 	}
 
 	// 追従カメラの更新
-	if (!cameraDirection_||battle_) {
+	if ((!cameraDirection_||battle_) && radialBlur_.blurWidth == 0.01f) {
 		followCamera_->Update();
 	}
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -270,11 +270,10 @@ void GameScene::Draw() {
 	}
 
 	//コマンド
-	command_->Draw(viewProjection_);
+	if (battle_) {
+		command_->Draw(viewProjection_);
+	}
 	
-
-	
-
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -290,7 +289,9 @@ void GameScene::Draw() {
 	tankManager_->DrawUI();
 
 	//コマンド
-	command_->DrawUI();
+	if (battle_) {
+		command_->DrawUI();
+	}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -388,6 +389,7 @@ void GameScene::BattlBegin(){
 		//カメラがプレイヤーのとこまで来たらスタート
 		if (followCamera_->GetViewProjection().translation_.z <= -49.9f) {
 			battle_ = true;
+			command_->SetTaskType(TaskType::kInitial);
 		}
 	}
 	

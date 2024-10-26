@@ -55,6 +55,8 @@ public:
 	//プレイヤーの状態
 	void  SetBehavior(bool flag) { behaviorRoot_ = flag; }
 
+	//状態の設定
+	void SetTaskType(TaskType num) { behaviorRequest_ = num; taskAnimation_ = true; }
 private:
 	//初期タスク
 	void InitialInitialize();
