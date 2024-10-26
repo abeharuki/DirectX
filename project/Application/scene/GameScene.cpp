@@ -241,7 +241,7 @@ void GameScene::Update() {
 
 	loader_->SetLight(directionLight_);
 
-	followCamera_->Debug();
+	
 	
 }
 
@@ -381,6 +381,11 @@ void GameScene::BattlBegin(){
 	//カメラが一定の位置に来たらバトル開始
 	if (cameraDirection_ && !battle_) {
 		followCamera_->CameraDirection();
+		if (!followCamera_->GetMoveToEnemy()) {
+			enemyManager_->GetEnemy()->SetAnimationNumber(threat, 25.f,false);
+		}
+
+		//カメラがプレイヤーのとこまで来たらスタート
 		if (followCamera_->GetViewProjection().translation_.z <= -49.9f) {
 			battle_ = true;
 		}

@@ -49,6 +49,13 @@ void FollowCamera::Update() {
 		}
 	}
 
+	//X軸視点の限界値
+	if (destinationAngleX_ >= 1.0f) {
+		destinationAngleX_ = 1.0f;
+	}
+	else if (destinationAngleX_ <= -1.0f) {
+		destinationAngleX_ = -1.0f;
+	}
 
 
 	viewProjection_.rotation_.y =
@@ -70,6 +77,11 @@ void FollowCamera::Update() {
 	// ビュー行列の更新
 	viewProjection_.UpdateMatrix();
 	ApplyGlobalVariables();
+
+	ImGui::Begin("camera");
+	ImGui::Text("Angle%f", destinationAngleX_);
+	ImGui::End();
+
 }
 void FollowCamera::TitleUpdate() {
 

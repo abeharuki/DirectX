@@ -119,7 +119,7 @@ public: // メンバ関数
 
 
 
-	/*--ゲッター--*/
+	/*-----ゲッター-----*/
 	bool GameStart() { return gameStart_; }
 	//こうげきフラグ
 	bool IsRoot() { return root_; }
@@ -143,7 +143,7 @@ public: // メンバ関数
 		return false;
 	}
 
-	/*--セッター--*/
+	/*-----セッター-----*/
 	bool SetAttack(bool flag, int i) { return attackType_[i] = flag; }
 	void SetHeal(float heal) { 
 		if (!isDead_) {

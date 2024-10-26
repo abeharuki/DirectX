@@ -6,7 +6,7 @@
 void Enemy::Initialize() {
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
+	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf"));
 	impactModel_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj", "resources/white.png"));
 	areaModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/red_.png"));
 	circleAreaModel_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj", "resources/Enemy/red_.png"));
@@ -17,7 +17,7 @@ void Enemy::Initialize() {
 	}
 	areaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	//circleAreaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
-	animationNumber_ = nomal;
+	animationNumber_ = standby;
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.z = 10.0f;
@@ -118,8 +118,13 @@ void Enemy::Update() {
 		break;
 	}
 
+	
+
+	//アニメーションの更新
 	animation_->Update(animationNumber_);
+	//親子関係
 	Relationship();
+	//行列の更新
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
@@ -151,6 +156,7 @@ void Enemy::Update() {
 	ImGui::Text("time%d", time_);
 	ImGui::Text("Attack%d", isAttack_);
 	ImGui::Text("ImpactSize%f", worldTransformImpact_.scale.z);
+	ImGui::Text("AnimationTime%f", animation_->GetAnimationTimer());
 	ImGui::End();
 }
 
@@ -191,12 +197,19 @@ void Enemy::MoveInitialize() {
 	aimRenju_ = false;
 	aimTank_  = false;
 	behaviorAttack_ = false;
-	animationNumber_ = nomal;
+	animationNumber_ = standby;
 	animation_->SetLoop(true);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
-	num_ = RandomGenerator::GetRandomInt(1, 4);
+	num_ = RandomGenerator::GetRandomInt(player, tank);
 };
 void Enemy::MoveUpdata() {
+	if (animationNumber_ == threat) {
+		if (animation_->GetAnimationTimer() >= 3.0f) {
+			behaviorRequest_ = Behavior::kRoot;
+			animation_->SetpreAnimationTimer(0.0f);
+		}
+	}
+
 	--time_;
 	if (time_ <= 0) {
 		behaviorRequest_ = Behavior::kAttack;
@@ -206,19 +219,19 @@ void Enemy::MoveUpdata() {
 		
 		// 敵の座標までの距離
 		float length;
-		if (num_ == 1) {
+		if (num_ == player) {
 			length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
 			sub = playerPos_ - GetWorldPosition();
 		}
-		else if (num_ == 2) {
+		else if (num_ == healer) {
 			length = Math::Length(Math::Subract(healerPos_, worldTransformBase_.translate));
 			sub = healerPos_ - GetWorldPosition();
 		}
-		else if (num_ == 3) {
+		else if (num_ == renju) {
 			length = Math::Length(Math::Subract(renjuPos_, worldTransformBase_.translate));
 			sub = renjuPos_ - GetWorldPosition();
 		}
-		else if (num_ == 4) {
+		else if (num_ == tank) {
 			length = Math::Length(Math::Subract(tankPos_, worldTransformBase_.translate));
 			sub = tankPos_ - GetWorldPosition();
 		}
@@ -266,7 +279,7 @@ void Enemy::MoveUpdata() {
 		}
 		else {
 			moveTime_ = 0;
-			animationNumber_ = nomal;
+			animationNumber_ = standby;
 		}
 
 		
@@ -737,7 +750,7 @@ void Enemy::ThrowingAttackUpdata() {
 
 }
 
-
+//地面を殴る攻撃の衝撃波
 void Enemy::InitializeImpact() {
 
 
@@ -779,13 +792,12 @@ void Enemy::UpdataImpact() {
 
 }
 
-
-
+//スタン
 void Enemy::StanInitalize(){
 	sterAngle_[0] = 0.0f;
 	sterAngle_[1] = 2.0f;
 	sterAngle_[2] = 4.0f;
-	animationNumber_ = nomal;
+	animationNumber_ = standby;
 
 	time_ = 60 * 3;
 }
@@ -802,6 +814,7 @@ void Enemy::StanUpdata(){
 }
 void Enemy::StanBehavior(){ behaviorRequest_ = Behavior::kStan; };
 
+//地面を殴る攻撃
 void Enemy::GroundAttackInitialize() {
 	worldTransformImpact_.translate = worldTransformBase_.translate;
 	isAttack_ = false;
@@ -846,17 +859,20 @@ void Enemy::OnCollision(Collider* collider) {
 }
 
 void Enemy::DeadInitilize() {
-
+	animationNumber_ = death;
+	animation_->SetLoop(false);
 }
 void Enemy::DeadUpdata() {
-	worldTransformBase_.rotate.z -= 0.01f;
+	
 
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
 	threshold_ += 0.004f;
 	animation_->SetThreshold(threshold_);
-	if (worldTransformBase_.rotate.z < -1.0f) {
+	if (animation_->GetAnimationTimer() >= 9.0f) {
 		clear_ = true;
 	}
+
+
 
 };
 

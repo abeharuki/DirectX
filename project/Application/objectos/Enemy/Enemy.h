@@ -11,14 +11,15 @@
 #include <CollisionManager/ColliderManager.h>
 
 enum AnimationNumber {
-	dashAttack,
-	groundAttack,
-	jumpAttack,
-	nomal,
-	nomalAttack,
-	run,
-	runUp,
-	swing,
+	dashAttack,//ダッシュ攻撃
+	death,//死亡
+	groundAttack,//地面を殴る攻撃
+	nomalAttack,//通常j攻撃
+	run,//走る
+	runUp,//ダッシュ攻撃の走り出し
+	standby,//通常状態
+	swing,//投擲攻撃
+	threat,//威嚇
 };
 
 // 振る舞い
@@ -87,15 +88,17 @@ public: // メンバ関数
 	void StanUpdata();
 	void StanBehavior();
 	
+	// パーツ親子関係
+	void Relationship();
 
-	BehaviorAttack GetBehaviorAttack() { return attack_; }
-	Behavior GetBehavior() { return behavior_; }
-
-	Collider* GetCollider(int i) { return colliderManager_[i].get(); }
-
+	//当たりは判定
 	void OnCollision(Collider* collider) override;
+	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
+	BehaviorAttack GetBehaviorAttack() { return attack_; }
+	Behavior GetBehavior() { return behavior_; }
+	Collider* GetCollider(int i) { return colliderManager_[i].get(); }
 	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }
 	WorldTransform& GetWorldTransformRock() { return worldTransformRock_; }
 	WorldTransform& GetWorldTransformArea() { return worldTransformArea_; }
@@ -104,7 +107,19 @@ public: // メンバ関数
 	bool GetAimHealer() { return aimHealer_; }
 	bool GetAimRenju() { return aimRenju_; }
 	bool GetAimTank() { return aimTank_; }
+	bool GetBattle() { return battleStart_; }
 
+	float GetImpactSize() { return worldTransformImpact_.scale.z; }
+
+	bool isAttack() { return isAttack_; };
+	bool isClear() { return clear_; };
+	bool IsAreaDraw() { return areaDraw_; }
+
+	bool IsBehaberAttack() {
+		return  behaviorAttack_;
+	}
+
+	/*-----セッター-----*/
 	void SetLight(DirectionLight directionLight) { 
 		animation_->DirectionalLightDraw(directionLight);
 		impactModel_->DirectionalLightDraw(directionLight);
@@ -113,7 +128,8 @@ public: // メンバ関数
 		}
 	}
 
-
+	//アニメーションナンバー、フレームタイム、ループ
+	void SetAnimationNumber(int num, float flame,bool flag) { animationNumber_ = num; animation_->SetFlameTimer(flame); animation_->SetLoop(flag); }
 	void SetPlayerPos(Vector3 pos) { playerPos_ = pos; };
 	void SetHealerPos(Vector3 pos) { healerPos_ = pos; };
 	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; };
@@ -122,25 +138,19 @@ public: // メンバ関数
 	void SetIsDeadHealer(bool flag) { isDeadHealer_ = flag; }
 	void SetIsDeadRenju(bool flag) { isDeadRenju_ = flag; }
 	void SetIsDeadTank(bool flag) { isDeadTank_ = flag; }
-	void SetBattleStart(bool flag) { battleStart_ = flag; }
+	void SetBattleStart(bool flag) { battleStart_ = flag;}
 
-	// パーツ親子関係
-	void Relationship();
+	
 
-	bool IsBehaberAttack() {
-		return  behaviorAttack_;
-	}
-	bool isAttack() { return isAttack_; };
-	bool isClear() { return clear_; };
-	bool IsAreaDraw() { return areaDraw_; }
+
+	
 	void isDead(bool dead) {
 		if (dead) {
-			behavior_ = Behavior::kDead;
+			behaviorRequest_ = Behavior::kDead;
 		};
 	}
 
-	float GetImpactSize() { return worldTransformImpact_.scale.z; }
-
+	
 	
 
 private: // メンバ変数

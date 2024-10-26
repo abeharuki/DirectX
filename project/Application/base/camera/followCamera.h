@@ -50,15 +50,13 @@ public:
 	//バトル開始時のカメラの演出
 	void CameraDirection();
 
+	//ターゲットの位置
 	void SetinterTargetPos(Vector3 pos) {
 		interTarget_ = pos;
 	}
 
-	void Debug() {
-		ImGui::Begin("Camera");
-		ImGui::DragFloat3("translat", &viewProjection_.translation_.x);
-		ImGui::End();
-	}
+	bool GetMoveToEnemy() { return moveToEnemy_; }
+	
 
 private:
 	ViewProjection viewProjection_;

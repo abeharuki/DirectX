@@ -48,7 +48,7 @@ void EnemyManager::Update() {
 	enemy_->isDead(isDead_);
 	enemy_->Update();
 
-	//プレイヤーとの距離の計算
+	//カメラとの距離の計算
 	playerLength_ = Math::Length(Math::Subract(playerPos_, enemy_->GetWorldPosition()));
 	//プレイヤーとの距離に応じて名前のサイズの変更
 	nameScale_ = (playerLength_ / 17.0f) + (14.0f / 17.0f);
@@ -84,13 +84,12 @@ void EnemyManager::Update() {
 void EnemyManager::Draw(const ViewProjection& camera) {
 	enemy_->Draw(camera);
 	rockModel_->Draw(enemy_->GetWorldTransformRock(), camera, false);
-	
-
 }
 void EnemyManager::NoDepthDraw(const ViewProjection& camera){
-	nameModel_->Draw(worldTransformName_, camera, false);
-
-
+	if (enemy_->GetBattle()) {
+		nameModel_->Draw(worldTransformName_, camera, false);
+	}
+	
 	for (int i = 0; i < kdamageNumMax; ++i) {
 		damageNumModel_[i]->Draw(worldTransformNum_[i], camera, false);
 	}
