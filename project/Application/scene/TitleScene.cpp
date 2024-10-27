@@ -57,7 +57,7 @@ void TitleScene::Initialize() {
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Black.png"));
-	spriteTitle_.reset(Sprite::Create("resources/Title/DRAPONQUEST.png"));
+	spriteTitle_.reset(Sprite::Create("resources/Title/DRAPONQUEST1.png"));
 	spriteTitle_->SetSize({ 1280.0f,905.0f });
 	spriteTitle_->SetPosition({ 0.0f,-250.0f });
 	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));
@@ -154,7 +154,8 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	
-	
+	// 地面
+	loader_->Draw(viewProjection_, true);
 
 	// プレイヤー
 	playerManager_->Draw(viewProjection_);
@@ -171,8 +172,7 @@ void TitleScene::Draw() {
 	spritePushA_->Draw();
 	// 天球
 	skydome_->Draw(viewProjection_, false);
-	// 地面
-	loader_->Draw(viewProjection_, true);
+	
 }
 
 void TitleScene::RenderDirect() {

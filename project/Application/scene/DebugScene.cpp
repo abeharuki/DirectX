@@ -21,7 +21,7 @@ void DebugScene::Initialize() {
 	colliderManager_[0]->SetCollisionAttribute(kCollisionAttributeEnemy);
 	colliderManager_[0]->SetCollisionPrimitive(kCollisionPrimitiveOBB);
 
-	
+
 
 	colliderManager_[1] = std::make_unique<ColliderManager>();
 	colliderManager_[1]->SetAABB(aabb2);
@@ -48,7 +48,7 @@ void DebugScene::Initialize() {
 	worldTransformCollider1_.Initialize();
 	worldTransformCollider1_.rotate = { 0.0f,0.2f,0.0f };
 	worldTransformCollider1_.translate = { 0.0f,0.0f,0.3f };
-	
+
 	worldTransformCollider2_.Initialize();
 	worldTransformCollider3_.Initialize();
 	worldTransformModel_.Initialize();
@@ -57,19 +57,19 @@ void DebugScene::Initialize() {
 	worldTransformSter_[0].Initialize();
 	worldTransformSter_[1].Initialize();
 	sprite_.reset(Sprite::Create("resources/mahoujin.png"));
-	
+
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
 	model_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/0.png"));
-	model_2.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/0.png"));
+	model_2.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
 	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
-	
+
 	emitter_ = {
 		.translate = {0,3,0},
 		.count{50},
@@ -115,7 +115,7 @@ void DebugScene::Update() {
 	animation_->Update(AnimationNum_);
 	animation_->SetFlameTimer(animaflame_);
 	model_->DirectionalLightDraw(directionLight_);
-	model_->SetColor({ 1.0f,1.0f,1.0f,a_});
+	model_->SetColor({ 1.0f,1.0f,1.0f,a_ });
 	emitter_.count = particleCount_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {
@@ -124,31 +124,33 @@ void DebugScene::Update() {
 
 	loader_->Update();
 
+	if (blendNum_ == 0) {
+		blendMode_ = BlendMode::kNone;
+	}
+	else if (blendNum_ == 1) {
+		blendMode_ = BlendMode::kNormal;
+	}else if (blendNum_ == 2) {
+		blendMode_ = BlendMode::kAdd;
+	}
+	else if (blendNum_ == 3) {
+		blendMode_ = BlendMode::kSubtract;
+	}
+	else if (blendNum_ == 4) {
+		blendMode_ = BlendMode::kMultily;
+	}
 
-	
-	
+
+
+	model_2->SetBlendMode(blendMode_);
+	model_2->SetColor(modelColor_);
+
+
+
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
-	
-	
 
-	//Math::UpdateCircularMotion3D(worldTransformAnimation_.translate.x, worldTransformAnimation_.translate.z, 0, 0, 2.0f, angle_[0], 0.05f);
-	//Math::UpdateCircularMotion3D(worldTransformSter_[0].translate.x, worldTransformSter_[0].translate.z, 0, 0, 2.0f, angle_[1], 0.05f);
-	//Math::UpdateCircularMotion3D(worldTransformSter_[1].translate.x, worldTransformSter_[1].translate.z, 0, 0, 2.0f, angle_[2], 0.05f);
-	
-	if (a_ <= 0.0f) {
-		worldTransformAnimation_.translate.y = 0;
-		worldTransformModel_.translate.y = 0;
-		a_ = 2.0f;
-	}
-	else {
-		a_ -= 0.02f;
-	}
-
-	worldTransformAnimation_.translate = Math::Lerp(worldTransformAnimation_.translate, { 0,2,0 },0.05f);
-	worldTransformModel_.translate = Math::Lerp(worldTransformModel_.translate, { worldTransformAnimation_.translate.x + 0.8f,2,0 }, 0.05f);
 
 	worldTransformSkybox_.UpdateMatrix();
 	worldTransformAnimation_.UpdateMatrix();
@@ -161,7 +163,7 @@ void DebugScene::Update() {
 	colliderManager_[0]->SetWorldTransform(worldTransformCollider1_);
 	colliderManager_[1]->SetWorldTransform(worldTransformCollider2_);
 	colliderManager_[2]->SetWorldTransform(worldTransformCollider3_);
-	
+
 
 
 	grayscale_.isEnable = postEffects[0];
@@ -177,7 +179,7 @@ void DebugScene::Update() {
 	model_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
-	animation_->SetEnvironment(env_,true);
+	animation_->SetEnvironment(env_, true);
 
 	PostEffect* const posteffect = PostEffect::GetInstance();
 
@@ -218,13 +220,13 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("ScaleRangeMax", &emitter_.scaleRange.max.x, 0.1f);
 		ImGui::DragFloat3("PosRangeMin", &emitter_.translateRange.min.x, 0.1f);
 		ImGui::DragFloat3("PosRangeMax", &emitter_.translateRange.max.x, 0.1f);
-		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f,1.0f);
-		ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f,1.0f);
+		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f, 1.0f);
+		ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("lifeTimeMin", &emitter_.lifeTimeRange.min, 0.0f, 1.0f);
 		ImGui::SliderFloat("lifeTimeMax", &emitter_.lifeTimeRange.max, 0.0f, 1.0f);
 		ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
 		ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
-	
+
 		ImGui::TreePop();
 	}
 
@@ -234,7 +236,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat("Intensity", &directionLight_.intensity, 0.1f);
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::TreePop();
-		
+
 	}
 	if (ImGui::TreeNode("Model")) {
 		ImGui::Checkbox("scale", &impactScale_);
@@ -242,6 +244,8 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("Rotate", &worldTransformModel_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Size", &worldTransformModel_.scale.x, 0.1f);
 		ImGui::SliderFloat("Color", &a_, -1.0f, 1.0f);
+		ImGui::SliderFloat4("modelColor", &modelColor_.x, -1.0f, 1.0f);
+		ImGui::DragInt("Blend", &blendNum_, 1,0,4);
 		ImGui::TreePop();
 	}
 	//ローダーオブジェクト
@@ -258,7 +262,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("Velocity", &impactVelocity_.x, 0.01f);
 		ImGui::TreePop();
 	}
-	
+
 	if (ImGui::TreeNode("ColldierAABBPlayer")) {
 
 		ImGui::DragFloat3("Pos", &worldTransformCollider2_.translate.x, 0.1f);
@@ -270,7 +274,7 @@ void DebugScene::Update() {
 
 	//アニメーション
 	if (ImGui::TreeNode("Animation")) {
-		ImGui::SliderInt("AnimationNum", &AnimationNum_, 0,7);
+		ImGui::SliderInt("AnimationNum", &AnimationNum_, 0, 7);
 		ImGui::SliderFloat("AnimationFlame", &animaflame_, 0, 60);
 		ImGui::DragFloat3("AnimationPos", &worldTransformAnimation_.translate.x, 0.1f);
 		ImGui::DragFloat3("AnimationRotate", &worldTransformAnimation_.rotate.x, 0.01f);
@@ -357,13 +361,13 @@ void DebugScene::Update() {
 }
 
 void DebugScene::Draw() {
-	
-	
+
+
 	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	colliderManager_[0]->Draw(viewProjection_);
 	colliderManager_[1]->Draw(viewProjection_);
-	
-	skybox_->Draw(worldTransformSkybox_,viewProjection_);
+
+	skybox_->Draw(worldTransformSkybox_, viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
 	model_->Draw(worldTransformAnimation_, viewProjection_, false);

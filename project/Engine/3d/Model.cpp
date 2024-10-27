@@ -150,7 +150,13 @@ void Model::SetColor(Vector4 color) {
 }
 
 void Model::SetBlendMode(BlendMode blendMode) { 
-	blendMode_ = blendMode; 
+
+	if (blendMode_ != blendMode) {
+		blendMode_ = blendMode;
+		sPipeline();
+	}
+
+	
 }
 
 void Model::SetShininess(float i) { materialData_->SetShininess(i); }

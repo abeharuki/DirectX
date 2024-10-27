@@ -46,7 +46,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> outLineRootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> dissolveRootSignature_ = nullptr;
 	// パイプラインステートオブジェクト
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_ = nullptr;
+	
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> skyboxPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> linePipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> spritePipelineState_ = nullptr;

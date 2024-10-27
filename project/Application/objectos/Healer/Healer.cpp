@@ -46,7 +46,7 @@ void Healer::Initialize() {
 		worldTransformMagicCircle_[i].Initialize();
 		worldTransformHeal_[i].Initialize();
 		worldTransformMagicCircle_[i].translate.y = 0.1f;
-		worldTransformMagicCircle_[i].rotate.x = 4.7f;
+		worldTransformMagicCircle_[i].rotate.x = -1.571f;
 		worldTransformMagicCircle_[i].scale = { 2.0f,2.0f,2.0f };
 		worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
 		t_[i] = 0.8f;

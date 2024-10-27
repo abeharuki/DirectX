@@ -102,6 +102,7 @@ private:
 
 	float env_;
 
-	Vector4 modelColor_;
-
+	Vector4 modelColor_ = { 1.f,1.f,1.f,1.f };
+	BlendMode blendMode_ = BlendMode::kNormal;
+	int blendNum_;
 };

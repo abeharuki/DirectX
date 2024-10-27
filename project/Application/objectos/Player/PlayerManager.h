@@ -73,9 +73,11 @@ private:
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformHammer_;
+	WorldTransform worldTransformShadow_;
 	std::unique_ptr<Animations>animation_;
 
-	std::unique_ptr<Model> HammerModel_;
+	std::unique_ptr<Model> HammerModel_;//武器
+	std::unique_ptr<Model> shadowModel_;
 	std::unique_ptr<Player> player_;
 	std::unique_ptr<Model> bulletModel_;
 
@@ -97,7 +99,7 @@ private:
 	
 	Transform revivalTransform_;
 	
-	
+	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;

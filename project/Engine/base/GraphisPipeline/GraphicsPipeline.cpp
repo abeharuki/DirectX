@@ -12,11 +12,11 @@ GraphicsPipeline* GraphicsPipeline::GetInstance() {
 
 
 Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateGraphicsPipeline(BlendMode blendMode_) {
-	if (sPipelineState_) {
+	/*if (sPipelineState_) {
 		return sPipelineState_;
 	}
-	else {
-		sPipelineState_ = nullptr;
+	else {*/
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_ = nullptr;
 
 #pragma region InputLayout
 
@@ -149,7 +149,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateGraphicsPipel
 		assert(SUCCEEDED(hr_));
 
 		return sPipelineState_;
-	}
+	//}
 }
 
 Microsoft::WRL::ComPtr<ID3D12PipelineState> GraphicsPipeline::CreateNoDepthGraphicsPipeline(BlendMode blendMode_)

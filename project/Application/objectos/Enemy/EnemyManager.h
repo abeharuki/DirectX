@@ -45,9 +45,11 @@ public:
 
 private:
 	WorldTransform worldTransformName_;
+	WorldTransform worldTransformShadow_;
 	std::vector<WorldTransform> worldTransformNum_;
 	ViewProjection camera_;
 
+	std::unique_ptr<Model> shadowModel_;
 	//std::unique_ptr<Model> rockModel_;
 	std::unique_ptr<Sphere> rockModel_;
 	std::unique_ptr<Model> bulletModel_;
@@ -79,6 +81,7 @@ private:
 	Transform HpTransform_;
 
 	Vector4 color_;//名前の色
+	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 
 	Vector3 playerPos_;
 	float playerLength_;//プレイヤーとの距離

@@ -12,11 +12,19 @@ void EnemyManager::Initialize() {
 	damageNumModel_[renjuNum].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/20.png"));
 	damageNumModel_[tankNum].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/20.png"));
 	
+	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
+	shadowModel_->SetBlendMode(BlendMode::kSubtract);
+
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize();
 
 	worldTransformName_.Initialize();
+	worldTransformShadow_.Initialize();
+	worldTransformShadow_.rotate = { -1.571f,0.0f,0.0f };
+	worldTransformShadow_.scale = { 6.f,6.f,1.0f };
 
+	worldTransformShadow_.translate = { enemy_->GetWorldPosition().x,0.1f,enemy_->GetWorldPosition().z };
+	worldTransformShadow_.UpdateMatrix();
 
 	worldTransformNum_.resize(kdamageNumMax);
 	for (int i = 0; i < kdamageNumMax; ++i) {
@@ -45,6 +53,14 @@ void EnemyManager::Update() {
 	if (HpTransform_.scale.x <= 0) {
 		isDead_ = true;
 	}
+
+	//影の計算
+	shadowColor_.w = 1 - (enemy_->GetWorldPosition().y / 3.9f);
+
+	shadowModel_->SetColor(shadowColor_);
+	worldTransformShadow_.translate = { enemy_->GetWorldPosition().x,0.09f,enemy_->GetWorldPosition().z };
+	worldTransformShadow_.UpdateMatrix();
+
 	enemy_->isDead(isDead_);
 	enemy_->Update();
 
@@ -84,6 +100,7 @@ void EnemyManager::Update() {
 void EnemyManager::Draw(const ViewProjection& camera) {
 	enemy_->Draw(camera);
 	rockModel_->Draw(enemy_->GetWorldTransformRock(), camera, false);
+	shadowModel_->Draw(worldTransformShadow_, camera, false);
 }
 void EnemyManager::NoDepthDraw(const ViewProjection& camera){
 	if (enemy_->GetBattle()) {

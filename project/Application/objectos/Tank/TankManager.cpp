@@ -1,20 +1,10 @@
 #include "TankManager.h"
 
 void TankManager::Initialize() {
-	emitter_ = {
-		.translate{0,0,0},
-		.count{10},
-		.frequency{0.02f},
-		.frequencyTime{0.0f},
-		.scaleRange{.min{1,1,1},.max{1,1,1}},
-		.translateRange{.min{0,0,0},.max{0,0,0}},
-		.colorRange{.min{1,1,1},.max{1,1,1}},
-		.lifeTimeRange{.min{0.5f},.max{0.5f}},
-		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
-	};
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
-	isParticle_ = false;
+	
 
+	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
+	shadowModel_->SetBlendMode(BlendMode::kSubtract);
 
 	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
 	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
@@ -57,10 +47,29 @@ void TankManager::Initialize() {
 	spriteHpSize_ = { 100.0f,10.0f };
 	spriteMpSize_ = { 100.0f,10.0f };
 
+	emitter_ = {
+		.translate{0,0,0},
+		.count{10},
+		.frequency{0.02f},
+		.frequencyTime{0.0f},
+		.scaleRange{.min{1,1,1},.max{1,1,1}},
+		.translateRange{.min{0,0,0},.max{0,0,0}},
+		.colorRange{.min{1,1,1},.max{1,1,1}},
+		.lifeTimeRange{.min{0.5f},.max{0.5f}},
+		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
+	};
+	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
+	isParticle_ = false;
+
+	worldTransformShadow_.Initialize();
+	worldTransformShadow_.rotate = { -1.571f,0.0f,0.0f };
+	worldTransformShadow_.scale = { 2.2f,2.2f,1.0f };
 
 	tank_ = std::make_unique<Tank>();
 	tank_->Initialize();
 
+	worldTransformShadow_.translate = { tank_->GetWorldPosition().x,0.1f,tank_->GetWorldPosition().z };
+	worldTransformShadow_.UpdateMatrix();
 }
 
 void TankManager::Update() {
@@ -80,6 +89,13 @@ void TankManager::Update() {
 		}
 	}
 	
+	//影の計算
+	shadowColor_.w = 1 - (tank_->GetWorldPosition().y / 3.9f);
+
+	shadowModel_->SetColor(shadowColor_);
+	worldTransformShadow_.translate = { tank_->GetWorldPosition().x,0.1f,tank_->GetWorldPosition().z };
+	worldTransformShadow_.UpdateMatrix();
+
 	//キャラクターの更新
 	tank_->Update();
 	tank_->followPlayer(playerPos_);
@@ -146,6 +162,8 @@ void TankManager::Update() {
 void TankManager::Draw(const ViewProjection& camera) {
 	tank_->Draw(camera);
 	particle_->Draw(camera);
+
+	shadowModel_->Draw(worldTransformShadow_, camera, false);
 }
 void TankManager::DrawUI(){
 	spriteHPG_->Draw();

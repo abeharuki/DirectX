@@ -31,8 +31,11 @@ public:
 
 private:
 	
-	std::unique_ptr<Renju> renju_;
+	WorldTransform worldTransformShadow_;
+	std::unique_ptr<Model> shadowModel_;
 
+	std::unique_ptr<Renju> renju_;
+	
 	/*---------------UI---------------*/
 	std::unique_ptr<Sprite> spriteHP_;
 	std::unique_ptr<Sprite> spriteHPG_;
@@ -58,6 +61,8 @@ private:
 
 	Vector4 hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	Vector4 hpNumColor_;
+
+	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 
 	// 味方の判定
 	bool preHit_;

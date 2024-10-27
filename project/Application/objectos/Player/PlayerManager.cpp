@@ -7,6 +7,9 @@ void PlayerManager::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
 	HammerModel_.reset(Model::CreateModelFromObj("resources/player/sword.obj", "resources/player/sword.png"));
+	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
+
+	shadowModel_->SetBlendMode(BlendMode::kSubtract);
 
 	spriteRevival_.reset(Sprite::Create("resources/enemy/HP.png"));
 	spriteRevivalG_.reset(Sprite::Create("resources/HPG.png"));
@@ -55,6 +58,11 @@ void PlayerManager::Initialize() {
 
 
 	worldTransformHead_ = player_->GetWorldTransform();
+	worldTransformShadow_.Initialize();
+	worldTransformShadow_.rotate  = { -1.571f,0.0f,0.0f };
+	worldTransformShadow_.scale = { 1.8f,1.8f,1.0f };
+	worldTransformShadow_.translate = { player_->GetWorldPosition().x,0.11f,player_->GetWorldPosition().z };
+	worldTransformShadow_.UpdateMatrix();
 
 	emitter_ = {
 		.translate{0,0,0},
@@ -104,6 +112,14 @@ void PlayerManager::Update() {
 			isParticle_ = false;
 		}
 	}
+
+
+	//影の計算
+	shadowColor_.w = 1 - (player_->GetWorldPosition().y / 3.9f);
+
+	shadowModel_->SetColor(shadowColor_);
+	worldTransformShadow_.translate = { player_->GetWorldPosition().x,0.11f,player_->GetWorldPosition().z };
+	worldTransformShadow_.UpdateMatrix();
 
 	//キャラクターの更新
 	player_->Update();
@@ -172,18 +188,26 @@ void PlayerManager::Update() {
 	}
 	spriteRevival_->SetSize(Vector2(revivalTransform_.scale.x, revivalTransform_.scale.y));
 
+	
+
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat2("Hpsize", &spriteHpSize_.x, 1.0f);
 	ImGui::DragFloat2("Mpsize", &spriteMpSize_.x, 1.0f);
 	ImGui::DragFloat4("HpColor", &hpColor_.x, 0.1f);
 	ImGui::End();
 
+	ImGui::Begin("Player");
+	ImGui::DragFloat3("ShadowSize", &worldTransformShadow_.scale.x, 0.1f);
+	ImGui::SliderFloat4("ShadowColor", &shadowColor_.x, -1.0f, 1.0f);
+	ImGui::End();
 };
 
 void PlayerManager::Draw(const ViewProjection& camera) {
 	
 	player_->Draw(camera);
 	particle_->Draw(camera);
+	shadowModel_->Draw(worldTransformShadow_,camera,false);
+
 
 	if (player_->GetBehavior() == Player::Behavior::kAttack) {
 		HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);
