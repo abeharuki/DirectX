@@ -58,19 +58,10 @@ public: // メンバ関数
 	void DeadInitialize();
 	void DeadUpdate();
 
-	// パーツ親子関係
-	void Relationship();
 
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
-	// 敵を探す
-	void searchTarget(Vector3 enemyPos);
-
-	//敵の視野内にいるかどうか
-	void IsVisibleToEnemy();
-	//逃げる方向
-	void RunAway();
-
+	
 	//位置の初期化
 	void InitPos();
 
@@ -85,23 +76,12 @@ public: // メンバ関数
 	void OnCollision(const WorldTransform& worldTransform);
 	void OnCollision(Collider* collider) override;
 
+
+	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
-	WorldTransform& GetWorldTransfromHp(int i) { 
-		if (i == 0) {
-			return worldTransformHp_[0];
-		}
-		else if(i == 1){
-			return worldTransformHp_[1];
-		}
-		else if (i == 2) {
-			return worldTransformHp_[2];
-		}
-
-		return worldTransformHp_[0];
-	}
 	WorldTransform& GetWorldTransformCane() { return worldTransformCane_; }
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
 
@@ -115,7 +95,7 @@ public: // メンバ関数
 	bool IsDead() { return isDead_; }
 
 
-
+	/*-----セッター-----*/
 	void SetLight(DirectionLight directionLight) {
 		animation_->DirectionalLightDraw(directionLight);
 		DirectionLight light;
@@ -151,12 +131,19 @@ public: // メンバ関数
 	}
 	
 
-	
+private:
+	//敵を探す
+	void searchTarget(Vector3 enemyPos);
+	//敵の視野内にいるかどうか
+	void IsVisibleToEnemy();
+	//逃げる方向
+	void RunAway();
 
+	// パーツ親子関係
+	void Relationship();
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
-	WorldTransform worldTransformHp_[3];
 	WorldTransform worldTransformCane_;
 	WorldTransform worldTransformCollision_;
 	WorldTransform worldTransformMagicCircle_[4];

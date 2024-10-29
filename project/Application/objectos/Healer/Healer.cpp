@@ -20,12 +20,7 @@ void Healer::Initialize() {
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.x = 6.0f;
-	for (int i = 0; i < 3; i++) {
-		worldTransformHp_[i].Initialize();
-		worldTransformHp_[i].translate.y = 1.5f;
-		worldTransformHp_[i].translate.x = (float(i) * 0.5f)-0.5f;
-		worldTransformHp_[i].scale = { 0.5f,0.5f,0.5f };
-	}
+	
 	worldTransformHead_.Initialize();
 	worldTransformCane_.Initialize();
 	worldTransformCane_.translate = { -0.03f, 0.04f, 0.1f };
@@ -45,7 +40,7 @@ void Healer::Initialize() {
 		healModel_[i].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/H20.png"));
 		worldTransformMagicCircle_[i].Initialize();
 		worldTransformHeal_[i].Initialize();
-		worldTransformMagicCircle_[i].translate.y = 0.1f;
+		worldTransformMagicCircle_[i].translate.y = 0.11f;
 		worldTransformMagicCircle_[i].rotate.x = -1.571f;
 		worldTransformMagicCircle_[i].scale = { 2.0f,2.0f,2.0f };
 		worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
@@ -183,10 +178,6 @@ void Healer::Update() {
 		worldTransformHeal_[i].TransferMatrix();
 	}
 	
-	for (int i = 0; i < 3; i++) {
-		worldTransformHp_[i].TransferMatrix();
-	}
-
 	if (nockBack_) {
 		animation_->SetLoop(false);
 		animation_->Update(0);

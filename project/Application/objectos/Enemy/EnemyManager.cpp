@@ -61,7 +61,7 @@ void EnemyManager::Update() {
 	worldTransformShadow_.translate = { enemy_->GetWorldPosition().x,0.09f,enemy_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
 
-	enemy_->isDead(isDead_);
+	enemy_->SetDead(isDead_);
 	enemy_->Update();
 
 	//カメラとの距離の計算

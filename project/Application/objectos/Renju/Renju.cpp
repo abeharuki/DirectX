@@ -27,12 +27,6 @@ void Renju::Initialize() {
 	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
 	alpha_ = 0.0f;
 
-	for (int i = 0; i < 3; i++) {
-		worldTransformHp_[i].Initialize();
-		worldTransformHp_[i].translate.y = 1.5f;
-		worldTransformHp_[i].translate.x = (float(i) * 0.5f) - 0.5f;
-		worldTransformHp_[i].scale = { 0.5f,0.5f,0.5f };
-	}
 
 
 
@@ -127,10 +121,7 @@ void Renju::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformNum_.TransferMatrix();
-	for (int i = 0; i < 3; i++) {
-		worldTransformHp_[i].TransferMatrix();
-	}
-
+	
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("RenjuHp", &hp_, 1.0f);
 	ImGui::End();

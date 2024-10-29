@@ -11,23 +11,28 @@ public:
 	void Draw(const ViewProjection& camera);
 	void DrawUI();
 	void RenderDirect(const ViewProjection& camera);
-	Renju* GetRenju() { return renju_.get(); };
-	const WorldTransform& GetWorldTransform();
-	void SetViewProjection(const ViewProjection& viewProjection);
+
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnAllyCollision(const WorldTransform& worldTransform);
+	void OnCollision(const WorldTransform& worldTransform);
 
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
-	// 弾リストの取得
-	const std::list<RenjuBullet*>& GetBullets() const { return renju_->GetBullets(); }
 
 	void Dissolve() {
 		threshold_ += 0.004f;
 	}
 
-	// 衝突を検出したら呼び出されるコールバック関数
-	void OnAllyCollision(const WorldTransform& worldTransform);
-	void OnCollision(const WorldTransform& worldTransform);
+	/*-----ゲッター-----*/
+	Renju* GetRenju() { return renju_.get(); };
+	const WorldTransform& GetWorldTransform();
+	// 弾リストの取得
+	const std::list<RenjuBullet*>& GetBullets() const { return renju_->GetBullets(); }
+
+	/*-----セッター-----*/
 	void SetParticlePos(Vector3 pos);
+	void SetViewProjection(const ViewProjection& viewProjection);
+
 
 private:
 	

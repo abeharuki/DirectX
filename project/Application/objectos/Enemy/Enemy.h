@@ -55,44 +55,17 @@ public: // メンバ関数
 	/// </summary>
 	void Update();
 
+	//描画
 	void Draw(const ViewProjection& camera);
+	//デプスがないオブジェクトの描画
 	void NotDepthDraw(const ViewProjection& camera);
-
-	// 移動
-	void MoveInitialize();
-	void MoveUpdata();
-	//攻撃
-	void AttackInitialize();
-	void AttackUpdata();
-	//死亡
-	void DeadInitilize();
-	void DeadUpdata();
-
-	/*-----------------------攻撃レパートリー----------------------*/
-	//通常攻撃
-	void NomalAttackInitialize();
-	void NomalAttackUpdata();
-	//ダッシュ
-	void DashAttackInitialize();
-	void DashAttackUpdata();
-	//投擲
-	void ThrowingAttackInitialize();
-	void ThrowingAttackUpdata();
-	//たたきつけ
-	void GroundAttackInitialize();
-	void GroundAttackUpdata();
-	void InitializeImpact();
-	void UpdataImpact();
-	//スタン中
-	void StanInitalize();
-	void StanUpdata();
-	void StanBehavior();
-	
-	// パーツ親子関係
-	void Relationship();
 
 	//当たりは判定
 	void OnCollision(Collider* collider) override;
+
+	//強制的にスタン状態にする
+	void StanBehavior();
+
 	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
@@ -140,18 +113,46 @@ public: // メンバ関数
 	void SetIsDeadTank(bool flag) { isDeadTank_ = flag; }
 	void SetBattleStart(bool flag) { battleStart_ = flag;}
 
-	
-
-
-	
-	void isDead(bool dead) {
+	void SetDead(bool dead) {
 		if (dead) {
 			behaviorRequest_ = Behavior::kDead;
 		};
 	}
 
 	
-	
+private:
+	// 移動
+	void MoveInitialize();
+	void MoveUpdata();
+	//攻撃
+	void AttackInitialize();
+	void AttackUpdata();
+	//死亡
+	void DeadInitilize();
+	void DeadUpdata();
+
+	/*-----------------------攻撃レパートリー----------------------*/
+	//通常攻撃
+	void NomalAttackInitialize();
+	void NomalAttackUpdata();
+	//ダッシュ
+	void DashAttackInitialize();
+	void DashAttackUpdata();
+	//投擲
+	void ThrowingAttackInitialize();
+	void ThrowingAttackUpdata();
+	//たたきつけ
+	void GroundAttackInitialize();
+	void GroundAttackUpdata();
+	void InitializeImpact();
+	void UpdataImpact();
+	//スタン中
+	void StanInitalize();
+	void StanUpdata();
+
+
+	// パーツ親子関係
+	void Relationship();
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;

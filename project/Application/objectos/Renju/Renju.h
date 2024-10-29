@@ -18,13 +18,7 @@ class Renju : public Collider {
 
 public: // メンバ関数
 	~Renju();
-	void SetState(CharacterState newState) {
-		state_ = newState;
-	}
-
-	CharacterState GetState() const {
-		return state_;
-	}
+	
 	
 	void Initialize();
 	
@@ -60,17 +54,7 @@ public: // メンバ関数
 
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
-
-	//敵を探す
-	void searchTarget(Vector3 enemyPos);
-
-	//敵の視野内にいるかどうか
-	void IsVisibleToEnemy();
-	//逃げる方向
-	void RunAway();
-
-	// パーツ親子関係
-	void Relationship();
+	
 
 	//位置の初期化
 	void InitPos();
@@ -86,28 +70,22 @@ public: // メンバ関数
 	void OnCollision(const WorldTransform& worldTransform);
 	void OnCollision(Collider* collider) override;
 
+	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
 	Vector3 GetLocalPosition();
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
-	WorldTransform& GetWorldTransfromHp(int i) {
-		if (i == 0) {
-			return worldTransformHp_[0];
-		}
-		else if (i == 1) {
-			return worldTransformHp_[1];
-		}
-		else if (i == 2) {
-			return worldTransformHp_[2];
-		}
-
-		return worldTransformHp_[0];
-	}
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
 	float GetHp() { return hp_; }
 	float GetMp() { return mp_; }
 	bool IsDead() { return isDead_; }
+
+	CharacterState GetState() const {
+		return state_;
+	}
+
+	/*-----セッター-----*/
 	void SetViewProjection(const ViewProjection& viewProjection) {
 		viewProjection_ = viewProjection;
 	}
@@ -122,9 +100,25 @@ public: // メンバ関数
 
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
 	void SetOperation(bool flag) { operation_ = flag; }
+
+	void SetState(CharacterState newState) {
+		state_ = newState;
+	}
+
+
+private:
+	//敵を探す
+	void searchTarget(Vector3 enemyPos);
+	//敵の視野内にいるかどうか
+	void IsVisibleToEnemy();
+	//逃げる方向
+	void RunAway();
+
+	// パーツ親子関係
+	void Relationship();
+
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
-	WorldTransform worldTransformHp_[3];
 	WorldTransform worldTransformHead_;
 	ViewProjection viewProjection_;
 

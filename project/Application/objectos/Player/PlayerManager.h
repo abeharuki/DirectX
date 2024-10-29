@@ -10,25 +10,14 @@ public:
 	void Update();
 	void Draw(const ViewProjection& camera);
 	void DrawUI();
-	Player* GetPlayer() { return player_.get(); };
-	const WorldTransform& GetWorldTransform();
-	void SetViewProjection(const ViewProjection* viewProjection);
-
-
-	Vector3 katanaPos();
 
 	// 衝突を検出したら呼び出されるコールバック関数
-
 	void OnHCollision();
 	void OnRCollision();
 	void OnTCollision();
 	void OnCollision();
-	void SetParticlePos(Vector3 pos);
 
-	bool IsAttack() { return player_->IsAttack(); }
-	bool IsOver() { return player_->IsOver(); }
-
-
+	//復活(今は使ってない)
 	void Revival() { 
 
 		if (player_->GetIsDead()) {
@@ -68,6 +57,17 @@ public:
 		revivalTransform_.scale.x = revivalCount_*2.0f;
 	}
 
+	/*-----ゲッター-----*/
+	Player* GetPlayer() { return player_.get(); };
+	const WorldTransform& GetWorldTransform();
+	Vector3 katanaPos();
+
+	bool IsAttack() { return player_->IsAttack(); }
+	bool IsOver() { return player_->IsOver(); }
+
+	/*------セッター-----*/
+	void SetViewProjection(const ViewProjection* viewProjection);
+	void SetParticlePos(Vector3 pos);
 
 private:
 	WorldTransform worldTransformBase_;

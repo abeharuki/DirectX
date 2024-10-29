@@ -15,10 +15,24 @@ public:
 
 	void DamageNumMath();
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+	void OnHealerCollision();
+	void OnTankCollision();
+	void OnRenjuCollision();
+
+	//ビルボードの計算
+	void Billboard();
+
+	/*-----ゲッター-----*/
 	Enemy* GetEnemy() { return enemy_.get(); };
 	bool IsAttack() { return enemy_->isAttack(); }
 	bool IsClear() { return enemy_->isClear(); }
 
+	const WorldTransform& GetWorldTransform();
+	Vector3 GetRockWorldPos();
+
+	/*-----セッター-----*/
 	void SetPlayerPos(Vector3 pos) { 
 		if (!enemy_->IsBehaberAttack()){
 			enemy_->SetPlayerPos(pos);
@@ -33,15 +47,8 @@ public:
 	
 	}
 
-	const WorldTransform& GetWorldTransform();
-	Vector3 GetRockWorldPos();
-	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
-	void OnHealerCollision();
-	void OnTankCollision();
-	void OnRenjuCollision();
-
-	void Billboard();
+	
+	
 
 private:
 	WorldTransform worldTransformName_;

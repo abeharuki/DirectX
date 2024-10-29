@@ -26,13 +26,6 @@ void Tank::Initialize() {
 	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
 	alpha_ = 0.0f;
 
-	for (int i = 0; i < 3; i++) {
-		worldTransformHp_[i].Initialize();
-		worldTransformHp_[i].translate.y = 1.5f;
-		worldTransformHp_[i].translate.x = (float(i) * 0.5f) - 0.5f;
-		worldTransformHp_[i].scale = { 0.5f,0.5f,0.5f };
-	}
-
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformHead_.TransferMatrix();
@@ -131,11 +124,6 @@ void Tank::Update() {
 	worldTransformNum_.TransferMatrix();
 
 	particle_->SetTranslate(worldTransformBase_.translate);
-	
-	for (int i = 0; i < 3; i++) {
-		worldTransformHp_[i].TransferMatrix();
-	}
-	
 
 	ImGui::Begin("Tank");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);

@@ -10,15 +10,7 @@ public:
 	void Draw(const ViewProjection& camera);
 	void DrawUI();
 	void RenderDirect(const ViewProjection& camera);
-	Healer* GetHealer() { return healer_.get(); };
-	const WorldTransform& GetWorldTransform();
-	void SetViewProjection(const ViewProjection& viewProjection);
-
-
-	Vector3 GetCanePos() { return healer_->GetWorldTransformCane().GetWorldPos(); }
-
-	bool IsAttack() { return healer_->IsAttack(); }
-
+	
 	//プレイヤーに追従
 	//  プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
@@ -27,12 +19,22 @@ public:
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);
 
-	void SetParticlePos(Vector3 pos);
-
 	void Dissolve() {
 		threshold_ += 0.004f;
 		
 	}
+
+	/*-----ゲッター-----*/
+	Healer* GetHealer() { return healer_.get(); };
+	const WorldTransform& GetWorldTransform();
+	Vector3 GetCanePos() { return healer_->GetWorldTransformCane().GetWorldPos(); }
+
+	bool IsAttack() { return healer_->IsAttack(); }
+
+	/*-----セッター-----*/
+	void SetViewProjection(const ViewProjection& viewProjection);
+	//パーティクルのpos
+	void SetParticlePos(Vector3 pos);
 
 private:
 	WorldTransform worldTransformShadow_;
