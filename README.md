@@ -20,6 +20,7 @@
   - [DirextXTex](https://github.com/microsoft/DirectXTex/releases/tag/mar2023)
   - [assimp](https://github.com/assimp/assimp)
   - [imgui](https://github.com/ocornut/imgui/releases/tag/v1.89.4)
+  - [imnode](https://github.com/Nelarius/imnodes/tree/master)
   - [nlohmann](https://github.com/nlohmann/json)
   
 # アプリケーション
