@@ -39,6 +39,6 @@
 
 <img src="https://github.com/user-attachments/assets/d5f5ac05-6d9c-4e19-9da2-27de4c19e361" alt="アニメーション" width="500" />
 <br><br>
-さらに細かい進捗は下記のURLから確認できます<br>
+さらに細かい進捗は下記のURLから確認できます。<br>
 
   [作品動画はこちら](https://studio.youtube.com/video/KBiwjOsKfac/edit)<br>[ポートフォリオはこちら](https://drive.google.com/file/d/15fuHKKvBRsdOitzPX2uTvESjmbHBkNvG/view?usp=drive_link)
