@@ -4,9 +4,8 @@
 #include <d3dx12.h>
 #include <imgui_impl_dx12.h>
 #include <imgui_impl_win32.h>
+#include <imnodes.h>
 #include <thread>
-
-
 
 
 using namespace Microsoft::WRL;
@@ -39,8 +38,9 @@ DirectXCommon* DirectXCommon::GetInstance() {
 void DirectXCommon::Finalize() {
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
+	ImNodes::DestroyContext();
 	ImGui::DestroyContext();
-
+	
 }
 
 

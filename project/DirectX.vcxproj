@@ -44,12 +44,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(SolutionDir)externals\imnode;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(SolutionDir)externals\imnode;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\Generated\Outputs\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Generated\Obj\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -188,6 +188,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Manager\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Manager\Input\Input.cpp" />
     <ClCompile Include="Application\base\GlobalVariables\GlobalVariables.cpp" />
+    <ClCompile Include="externals\imnode\imnodes.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\particle\ParticleSystem.cpp" />
     <ClCompile Include="Application\objectos\Player\Player.cpp" />
@@ -420,6 +421,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\base\StringUtility.h" />
     <ClInclude Include="Engine\Manager\TextureManeger.h" />
     <ClInclude Include="Application\base\GlobalVariables\GlobalVariables.h" />
+    <ClInclude Include="externals\imnode\imnodes.h" />
+    <ClInclude Include="externals\imnode\imnodes_internal.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

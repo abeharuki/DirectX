@@ -149,6 +149,14 @@ void TitleScene::Update() {
 	ImGui::DragFloat("outline", &a_, 0.01f);
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
+
+	ImGui::Begin("nodeEditor");
+
+	ImNodes::BeginNodeEditor();
+	ImNodes::EndNodeEditor();
+
+	ImGui::End();
+
 }
 
 void TitleScene::Draw() {
@@ -172,7 +180,6 @@ void TitleScene::Draw() {
 	spritePushA_->Draw();
 	// 天球
 	skydome_->Draw(viewProjection_, false);
-	
 }
 
 void TitleScene::RenderDirect() {
