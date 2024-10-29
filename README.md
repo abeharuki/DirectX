@@ -16,7 +16,11 @@
   - ブルーム
   - ディゾルブ など
  
-
+## 外部ライブラリ
+  - [DirextXTex](https://github.com/microsoft/DirectXTex/releases/tag/mar2023)
+  - [assimp](https://github.com/assimp/assimp)
+  - [imgui](https://github.com/ocornut/imgui/releases/tag/v1.89.4)
+  - [nlohmann](https://github.com/nlohmann/json)
   
 # アプリケーション
 今の作品を作ろと思った経緯は、人と一緒にゲームをするのも好きなのですが、
