@@ -787,6 +787,9 @@
     <ClInclude Include="Application\objectos\Tank\TankManager.h">
       <Filter>ヘッダー ファイル\Application\objects\Tank</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Users\haruki\Downloads\imnodes.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">

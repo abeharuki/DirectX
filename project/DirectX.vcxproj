@@ -323,6 +323,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Users\haruki\Downloads\imnodes.h" />
     <ClInclude Include="Application\base\BaseCharacter.h" />
     <ClInclude Include="Application\base\camera\followCamera.h" />
     <ClInclude Include="Application\base\Ground.h" />
