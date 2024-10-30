@@ -4,11 +4,14 @@ DrectX12で自作しているエンジンです。2023年4月頃からエンジ�
 主な機能は次の通りです。
 <br>
 ## 機能
-<img src="https://github.com/user-attachments/assets/52fc32ec-2598-4a4d-92ae-66cc1165ea5f" alt="blender" width="250" />
-<img src="https://github.com/user-attachments/assets/0e75b7c1-f854-4eca-be66-96275f3320b8" alt="DRAPONQUEST" width="250" />
-<img src="https://github.com/user-attachments/assets/a5ace2ad-8a5a-4fb0-890c-a4c6f10bcc0f" alt="particle" width="250" />
-<img src="https://github.com/user-attachments/assets/5750b5a1-33a2-426d-b0f0-650bfc8f1e22" alt="particle" width="100" />
-<br>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+  <img src="https://github.com/user-attachments/assets/52fc32ec-2598-4a4d-92ae-66cc1165ea5f" alt="blender" width="250" style="margin: 10px;"/>
+  <img src="https://github.com/user-attachments/assets/0e75b7c1-f854-4eca-be66-96275f3320b8" alt="DRAPONQUEST" width="250" style="margin: 10px;"/>
+  <img src="https://github.com/user-attachments/assets/a5ace2ad-8a5a-4fb0-890c-a4c6f10bcc0f" alt="particle" width="250" style="margin: 10px;"/>
+  <img src="https://github.com/user-attachments/assets/5750b5a1-33a2-426d-b0f0-650bfc8f1e22" alt="particle" width="100" style="margin: 10px;"/>
+</div>
+<br><br>
+
 * スプライトの読み込み
 * 3Dオブジェクトの描画
 * 3Dアニメーションの再生
@@ -21,7 +24,7 @@ DrectX12で自作しているエンジンです。2023年4月頃からエンジ�
   - ブルーム
   - ディゾルブ
   - トゥーンシェーダー など。<br>
-    これらのシェーダーは、ドラクエ10の様なアニメ調の見た目に寄せるために実装しました。
+   これらのシェーダーは、ドラクエ10の様なアニメ調の見た目に寄せるために実装しました。
  
 ## 外部ライブラリ
   - [DirextXTex](https://github.com/microsoft/DirectXTex/releases/tag/mar2023)
