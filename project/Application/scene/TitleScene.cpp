@@ -1,12 +1,9 @@
 #include "TitleScene.h"
 #include "Framework/SceneManager.h"
-#include "editor.cpp"
+#include "Editor/editor.cpp"
 
 
 void TitleScene::Initialize() {
-	
-	
-
 	worldTransform_.Initialize();
 	worldTransform_.scale = { 10.0f,10.0f,10.0f };
 	worldTransform_.translate.z = -5;
@@ -140,7 +137,7 @@ void TitleScene::Update() {
 	}
 	PostEffect::GetInstance()->ValueOutLine(a_);
 
-	ImGui::Begin("Player");
+	ImGui::Begin("P");
 	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 10.0f);
 	ImGui::End();
@@ -152,10 +149,7 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-	if (ImGui::IsKeyReleased(ImGuiKey_L)) {
-		NodeEditor::editor.load();
-	}
-	
+	//NodeEditor::editor.load();
 	NodeEditor::editor.show();
 	//NodeEditor::editor.save();
 }

@@ -62,7 +62,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Manager;$(ProjectDir)Engine\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\objectos;$(ProjectDir)Application\scene;$(ProjectDir)Engine\Manager\Input;$(ProjectDir)Engine\base\GraphisPipeline;$(ProjectDir)Application\base\GlobalVariables;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Manager;$(ProjectDir)Engine\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\objectos;$(ProjectDir)Application\scene;$(ProjectDir)Engine\Manager\Input;$(ProjectDir)Engine\base\GraphisPipeline;$(ProjectDir)Application\base\GlobalVariables;$(ProjectDir)externals\assimp\include;$(ProjectDir)Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -91,7 +91,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Manager;$(ProjectDir)Engine\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\objectos;$(ProjectDir)Application\scene;$(ProjectDir)Engine\Manager\Input;$(ProjectDir)Engine\base\GraphisPipeline;$(ProjectDir)Application\base\GlobalVariables;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Engine;$(ProjectDir)Engine\base;$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Manager;$(ProjectDir)Engine\particle;$(ProjectDir)Application\base;$(ProjectDir)Application\objectos;$(ProjectDir)Application\scene;$(ProjectDir)Engine\Manager\Input;$(ProjectDir)Engine\base\GraphisPipeline;$(ProjectDir)Application\base\GlobalVariables;$(ProjectDir)externals\assimp\include;$(ProjectDir)Application;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -188,7 +188,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Manager\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Manager\Input\Input.cpp" />
     <ClCompile Include="Application\base\GlobalVariables\GlobalVariables.cpp" />
-    <ClCompile Include="externals\imnode\editor.cpp" />
+    <ClCompile Include="Application\Editor\editor.cpp" />
     <ClCompile Include="externals\imnode\imnodes.cpp" />
     <ClCompile Include="externals\imnode\save_load.cpp" />
     <ClCompile Include="main.cpp" />

@@ -7,6 +7,7 @@
 #include <ios> // for std::streamsize
 #include <stddef.h>
 #include <vector>
+#include <string>
 
 namespace NodeEditor
 {
@@ -73,7 +74,7 @@ namespace NodeEditor
 					ImNodes::BeginNode(node.id);
 
 					ImNodes::BeginNodeTitleBar();
-					ImGui::TextUnformatted(node.name.c_str()); // ノード名を表示
+					ImGui::TextUnformatted(node.name.c_str());
 					ImNodes::EndNodeTitleBar();
 
 					ImNodes::BeginInputAttribute(node.id << 8);
@@ -94,9 +95,38 @@ namespace NodeEditor
 
 					ImNodes::EndNode();
 
-					
-					++iter; // 次のノードに進む
+					// 右クリックで削除ポップアップを開く
+					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
+					{
+						ImGui::OpenPopup(("Node Context Menu " + std::to_string(node.id)).c_str());
+					}
 
+					// ノード削除用のコンテキストメニュー
+					if (ImGui::BeginPopup(("Node Context Menu " + std::to_string(node.id)).c_str()))
+					{
+						if (ImGui::MenuItem("Delete Node"))
+						{
+							// リンクを削除
+							links_.erase(std::remove_if(links_.begin(), links_.end(),
+								[node](const Link& link) {
+									return link.start_attr == node.id || link.end_attr == node.id;
+								}), links_.end());
+
+							// ノードの選択をクリア
+							if (ImNodes::IsNodeSelected(node.id)) {
+								ImNodes::ClearNodeSelection(node.id);
+							}
+
+							// ノードを削除
+							iter = nodes_.erase(iter); // ノード削除
+							node_deleted = true;
+							ImGui::EndPopup(); // ポップアップを閉じる
+							continue;
+						}
+						ImGui::EndPopup();
+					}
+					++iter; // 次のノードに進む
+			
 				}
 
 				for (const Link& link : links_)
@@ -107,7 +137,7 @@ namespace NodeEditor
 				ImNodes::EndNodeEditor();
 
 				// リンク作成処理
-				if (!node_deleted) // 削除が発生した場合はリンク作成をスキップ
+				if (!node_deleted)
 				{
 					Link link;
 					if (ImNodes::IsLinkCreated(&link.start_attr, &link.end_attr))
@@ -132,6 +162,7 @@ namespace NodeEditor
 
 				ImGui::End();
 			}
+
 
 			//現在のノードの位置や状態を保存
 			void save()
@@ -205,7 +236,6 @@ namespace NodeEditor
 
 
 		private:
-
 			std::vector<Node> nodes_;
 			std::vector<Link> links_;
 			int  current_id_;
