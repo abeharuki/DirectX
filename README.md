@@ -4,16 +4,19 @@ DrectX12で自作しているエンジンです。2023年4月頃からエンジ�
 主な機能は次の通りです。
 <br>
 ## 機能
-* GPUParticle<br>
-<img src="https://github.com/user-attachments/assets/cde5f767-9019-4453-a614-b16c34333524" alt="blender側" width="300" /><br>
-　 ゲームの演出として、たくさん描画するので高速化するために実装しました。ImGuiでパラメーターを調整できたり、出力される範囲を線で描画したりデバックしやすくなっています。<br>
-  
-* blenderをステージエディターとして使用<br>
-  <p float="left">
-    <img src="https://github.com/user-attachments/assets/e29e7d8a-a32a-4e8b-bee8-95beb1f6f8ec" alt="blender側" width="300" />
-    <img src="https://github.com/user-attachments/assets/a231d457-9587-4e2d-930f-18f5771c122d" alt="Engen側" width="300" />
-  </p>
-* 複数のPostEffectの実装
+<img src="https://github.com/user-attachments/assets/52fc32ec-2598-4a4d-92ae-66cc1165ea5f" alt="blender" width="250" />
+<img src="https://github.com/user-attachments/assets/0e75b7c1-f854-4eca-be66-96275f3320b8" alt="DRAPONQUEST" width="250" />
+<img src="https://github.com/user-attachments/assets/a5ace2ad-8a5a-4fb0-890c-a4c6f10bcc0f" alt="particle" width="250" />
+<img src="https://github.com/user-attachments/assets/5750b5a1-33a2-426d-b0f0-650bfc8f1e22" alt="particle" width="100" />
+<br>
+* スプライトの読み込み
+* 3Dオブジェクトの描画
+* 3Dアニメーションの再生
+* コライダーの実装
+* サウンドの再生
+* GPUParticle<br>  
+* blenderをステージエディタとして使うためのローダー
+* PostEffect
   - アウトライン
   - ブルーム
   - ディゾルブ
@@ -28,6 +31,10 @@ DrectX12で自作しているエンジンです。2023年4月頃からエンジ�
   - [nlohmann](https://github.com/nlohmann/json)
   
 # アプリケーション
+## タイトル
+「DRAPONQUEST」<br>
+<img src="https://github.com/user-attachments/assets/06c14d46-c4b2-478c-aeef-557a9d589e8c" alt="DRAPONQUEST" width="500" /><br>
+## 概要
 今の作品を作ろと思った経緯は、人と一緒にゲームをするのも好きなのですが、
 ドラゴンズドグマやドラクエ10のようなcpuと一緒に戦うゲームが、
 仲間を自分が引き連れている感じがあって好きなので、就職作品としてドラクエ10の様な作品を作ろうと思い作っています。<br>
