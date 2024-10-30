@@ -5,9 +5,9 @@ DrectX12で自作しているエンジンです。2023年4月頃からエンジ�
 <br>
 ## 機能
 <div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-  <img src="https://github.com/user-attachments/assets/52fc32ec-2598-4a4d-92ae-66cc1165ea5f" alt="blender" width="250" style="margin: 10px;"/>
-  <img src="https://github.com/user-attachments/assets/0e75b7c1-f854-4eca-be66-96275f3320b8" alt="DRAPONQUEST" width="250" style="margin: 10px;"/>
-  <img src="https://github.com/user-attachments/assets/a5ace2ad-8a5a-4fb0-890c-a4c6f10bcc0f" alt="particle" width="250" style="margin: 10px;"/>
+  <img src="https://github.com/user-attachments/assets/52fc32ec-2598-4a4d-92ae-66cc1165ea5f" alt="blender" width="150" style="margin: 10px;"/>
+  <img src="https://github.com/user-attachments/assets/0e75b7c1-f854-4eca-be66-96275f3320b8" alt="DRAPONQUEST" width="150" style="margin: 10px;"/>
+  <img src="https://github.com/user-attachments/assets/a5ace2ad-8a5a-4fb0-890c-a4c6f10bcc0f" alt="particle" width="150" style="margin: 10px;"/>
   <img src="https://github.com/user-attachments/assets/5750b5a1-33a2-426d-b0f0-650bfc8f1e22" alt="particle" width="100" style="margin: 10px;"/>
 </div>
 <br><br>
