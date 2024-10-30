@@ -1,20 +1,24 @@
 # エンジン
-2023年4月頃からエンジン部分を作り始め、今はこの自作エンジンを使用して就職作品を作っています。<br>
+DrectX12で自作しているエンジンです。2023年4月頃からエンジン部分を作り始め、今はこの自作エンジンを使用して就職作品を作っています。<br>
 <br>
 主な機能は次の通りです。
 <br>
-* GPUパーティクル<br>
+## 機能
+* GPUParticle<br>
 <img src="https://github.com/user-attachments/assets/cde5f767-9019-4453-a614-b16c34333524" alt="blender側" width="300" /><br>
-* blenderをステージエディターとして使用
-<p float="left">
-  <img src="https://github.com/user-attachments/assets/e29e7d8a-a32a-4e8b-bee8-95beb1f6f8ec" alt="blender側" width="300" />
-  <img src="https://github.com/user-attachments/assets/a231d457-9587-4e2d-930f-18f5771c122d" alt="Engen側" width="300" />
-</p>
-
+　 ゲームの演出として、たくさん描画するので高速化するために実装しました。ImGuiでパラメーターを調整できたり、出力される範囲を線で描画したりデバックしやすくなっています。<br>
+  
+* blenderをステージエディターとして使用<br>
+  <p float="left">
+    <img src="https://github.com/user-attachments/assets/e29e7d8a-a32a-4e8b-bee8-95beb1f6f8ec" alt="blender側" width="300" />
+    <img src="https://github.com/user-attachments/assets/a231d457-9587-4e2d-930f-18f5771c122d" alt="Engen側" width="300" />
+  </p>
 * 複数のPostEffectの実装
   - アウトライン
   - ブルーム
-  - ディゾルブ など
+  - ディゾルブ
+  - トゥーンシェーダー など。<br>
+    これらのシェーダーは、ドラクエ10の様なアニメ調の見た目に寄せるために実装しました。
  
 ## 外部ライブラリ
   - [DirextXTex](https://github.com/microsoft/DirectXTex/releases/tag/mar2023)
@@ -31,7 +35,7 @@
 進捗は以下の通りです。
 <br>
 
-* 味方AIの実装(ある程度自分で動いてくれる)
+* 味方AIの実装(ある程度自動で動いてくれる)
 * 敵AIの実装
 * 各味方キャラごとのスキルの実装
 * 味方AIをビヘイビアツリーを使用して管理
