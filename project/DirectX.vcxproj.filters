@@ -793,9 +793,6 @@
     <ClInclude Include="Application\objectos\Tank\TankManager.h">
       <Filter>ヘッダー ファイル\Application\objects\Tank</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Users\haruki\Downloads\imnodes.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="externals\imnode\imnodes.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
