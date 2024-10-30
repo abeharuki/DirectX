@@ -66,7 +66,7 @@ namespace NodeEditor
 					ImGui::EndPopup();
 				}
 
-				
+
 				for (auto iter = nodes_.begin(); iter != nodes_.end();)
 				{
 					Node& node = *iter;
@@ -94,32 +94,7 @@ namespace NodeEditor
 
 					ImNodes::EndNode();
 
-					// ノードを右クリックして削除
-					if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(1)) // 右クリック
-					{
-						ImGui::OpenPopup("Node Context Menu");
-					}
-
-					if (ImGui::BeginPopup("Node Context Menu"))
-					{
-						if (ImGui::MenuItem("Delete Node"))
-						{
-							// リンクを削除
-							links_.erase(std::remove_if(links_.begin(), links_.end(),
-								[node](const Link& link) {
-									return link.start_attr == node.id || link.end_attr == node.id;
-								}), links_.end());
-
-							ImNodes::ClearNodeSelection(node.id); // ノードを選択状態からクリア
-							iter = nodes_.erase(iter);//ノードの削除
-							node_deleted = true;
-							continue; // ループをスキップ
-
-						}
-						ImGui::EndPopup();
-					}
-
-
+					
 					++iter; // 次のノードに進む
 
 				}
@@ -230,6 +205,7 @@ namespace NodeEditor
 
 
 		private:
+
 			std::vector<Node> nodes_;
 			std::vector<Link> links_;
 			int  current_id_;

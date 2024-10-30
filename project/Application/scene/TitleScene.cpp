@@ -1,6 +1,6 @@
 #include "TitleScene.h"
 #include "Framework/SceneManager.h"
-#include "save_load.cpp"
+#include "editor.cpp"
 
 
 void TitleScene::Initialize() {
@@ -76,6 +76,8 @@ void TitleScene::Initialize() {
 	//PostEffect::GetInstance()->isOutLine(true);
 	//PostEffect::GetInstance()->isBloom(true);
 	
+
+	
 }
 
 void TitleScene::Update() {
@@ -150,8 +152,12 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
+	if (ImGui::IsKeyReleased(ImGuiKey_L)) {
+		NodeEditor::editor.load();
+	}
 	
-	example::editor.show();
+	NodeEditor::editor.show();
+	//NodeEditor::editor.save();
 }
 
 void TitleScene::Draw() {
