@@ -189,6 +189,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Manager\Input\Input.cpp" />
     <ClCompile Include="Application\base\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="externals\imnode\imnodes.cpp" />
+    <ClCompile Include="externals\imnode\save_load.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\particle\ParticleSystem.cpp" />
     <ClCompile Include="Application\objectos\Player\Player.cpp" />

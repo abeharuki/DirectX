@@ -1,6 +1,6 @@
 #include "TitleScene.h"
 #include "Framework/SceneManager.h"
-
+#include "save_load.cpp"
 
 
 void TitleScene::Initialize() {
@@ -150,77 +150,8 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-	ImGui::Begin("nodeEditor");
-
-	const int hardcoded_node_id = 1;       // 1つ目のノードの識別ID
-	const int output_attr_id = 2;          // 1つ目のノードのアウトプット属性ID
-
-	const int second_node_id = 3;          // 2つ目のノードの識別ID
-	const int second_input_attr_id = 4;    // 2つ目のノードのインプット属性ID
-	const int second_output_attr_id = 5;   // 2つ目のノードのアウトプット属性ID
-
-	std::vector<std::pair<int, int>> links; // リンク保存用
-
-	// ノードエディター開始
-	ImNodes::BeginNodeEditor();
-
-	//---------------------------1つ目のノードの設定---------------------------//
-	ImNodes::BeginNode(hardcoded_node_id);
-
-	// ノードのタイトルバー設定
-	ImNodes::BeginNodeTitleBar();
-	ImGui::TextUnformatted("Output Node");
-	ImNodes::EndNodeTitleBar();
-
-	// ノードのサイズの設定
-	ImGui::Dummy(ImVec2(80.0f, 45.0f));
-
-	// ノードのアウトプット属性
-	ImNodes::BeginOutputAttribute(output_attr_id);
-	ImGui::Text("Output pin");
-	ImNodes::EndOutputAttribute();
-
-	ImNodes::EndNode();
-
-	//-----------------2つ目のノードの設定-----------------//
-	ImNodes::BeginNode(second_node_id);
-
-	// タイトルバー
-	ImNodes::BeginNodeTitleBar();
-	ImGui::TextUnformatted("Second Node");
-	ImNodes::EndNodeTitleBar();
-
-	// サイズ設定
-	ImGui::Dummy(ImVec2(80.0f, 45.0f));
-
-	// インプット属性
-	ImNodes::BeginInputAttribute(second_input_attr_id);
-	ImGui::Text("Input pin");
-	ImNodes::EndInputAttribute();
-
-	// アウトプット属性
-	ImNodes::BeginOutputAttribute(second_output_attr_id);
-	ImGui::Text("Output pin");
-	ImNodes::EndOutputAttribute();
-
-	ImNodes::EndNode();
-
-	//// 新しいリンクの作成を検出
-	//int start_attr, end_attr;
-	//if (ImNodes::IsLinkCreated(&start_attr, &end_attr)) {
-	//	links.push_back(std::make_pair(start_attr, end_attr));
-	//}
-
-	//// 保存されたリンクを描画
-	//for (int i = 0; i < links.size(); ++i) {
-	//	const std::pair<int, int>& link = links[i];
-	//	ImNodes::Link(i, link.first, link.second);
-	//}
-
-	ImNodes::EndNodeEditor();
-
-	ImGui::End();
-
+	
+	example::editor.show();
 }
 
 void TitleScene::Draw() {

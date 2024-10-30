@@ -438,6 +438,9 @@
     <ClCompile Include="externals\imnode\imnodes.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="externals\imnode\save_load.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\hlsl\Bloom.PS.hlsl">
