@@ -106,11 +106,24 @@ namespace NodeEditor
 					{
 						if (ImGui::MenuItem("Delete Node"))
 						{
-							// リンクを削除
-							links_.erase(std::remove_if(links_.begin(), links_.end(),
-								[node](const Link& link) {
-									return link.start_attr == node.id || link.end_attr == node.id;
-								}), links_.end());
+							for (const Link& link : links_)
+							{
+								// リンクの始点ノードが存在するか確認
+								bool startExists = std::any_of(nodes_.begin(), nodes_.end(), [link](const Node& node) {
+									return node.id == (link.start_attr >> 24); // 出力属性用
+									});
+
+								// リンクの終点ノードが存在するか確認
+								bool endExists = std::any_of(nodes_.begin(), nodes_.end(), [link](const Node& node) {
+									return node.id == (link.end_attr >> 8); // 入力属性用
+									});
+
+								// 片方のノードが存在しない場合はリンクを描画しない
+								if (startExists && endExists) {
+									ImNodes::Link(link.id, link.start_attr, link.end_attr);
+								}
+							}
+
 
 							// ノードの選択をクリア
 							if (ImNodes::IsNodeSelected(node.id)) {
@@ -131,7 +144,20 @@ namespace NodeEditor
 
 				for (const Link& link : links_)
 				{
-					ImNodes::Link(link.id, link.start_attr, link.end_attr);
+					// リンクの始点ノードが存在するか確認
+					bool startExists = std::any_of(nodes_.begin(), nodes_.end(), [link](const Node& node) {
+						return node.id == (link.start_attr >> 24); // 出力属性用
+						});
+
+					// リンクの終点ノードが存在するか確認
+					bool endExists = std::any_of(nodes_.begin(), nodes_.end(), [link](const Node& node) {
+						return node.id == (link.end_attr >> 8); // 入力属性用
+						});
+
+					if (startExists && endExists) {
+						ImNodes::Link(link.id, link.start_attr, link.end_attr);
+					}
+					
 				}
 
 				ImNodes::EndNodeEditor();
