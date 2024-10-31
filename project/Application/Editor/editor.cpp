@@ -65,7 +65,7 @@ namespace NodeEditor
 						const int node_id = ++current_id_;
 						ImNodes::SetNodeScreenSpacePos(node_id, ImGui::GetMousePos());
 						nodes_.push_back(Node(node_id, 0.f, std::string(new_node_name))); // ノードを追加
-						//new_node_name[0] = '\0'; // 名前をリセット
+						new_node_name[0] = '\0'; // 名前をリセット
 						ImGui::CloseCurrentPopup(); // ポップアップを閉じる
 					}
 					ImGui::EndPopup();

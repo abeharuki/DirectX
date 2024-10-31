@@ -137,7 +137,7 @@ void TitleScene::Update() {
 	}
 	PostEffect::GetInstance()->ValueOutLine(a_);
 
-	ImGui::Begin("Playe");
+	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 10.0f);
 	ImGui::End();
