@@ -36,7 +36,7 @@ void Healer::Initialize() {
 	alpha_ = 0.0f;
 
 	for (int i = 0; i < 4; ++i) {
-		magicCircle_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/mahoujin.png"));
+		magicCircle_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Healer/mahoujin.png"));
 		healModel_[i].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/H20.png"));
 		worldTransformMagicCircle_[i].Initialize();
 		worldTransformHeal_[i].Initialize();

@@ -4,24 +4,23 @@
 void PlayerManager::Initialize() {
 
 	
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/AnimatedCube", "tex.png", "bound3.gltf"));
+	
 	HammerModel_.reset(Model::CreateModelFromObj("resources/player/sword.obj", "resources/player/sword.png"));
 	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
 
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
 
 	spriteRevival_.reset(Sprite::Create("resources/enemy/HP.png"));
-	spriteRevivalG_.reset(Sprite::Create("resources/HPG.png"));
+	spriteRevivalG_.reset(Sprite::Create("resources/character/HPG.png"));
 
 	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
-	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
+	spriteHPG_.reset(Sprite::Create("resources/character/HPG.png"));
 	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
-	spriteMPG_.reset(Sprite::Create("resources/HPG.png"));
-	sprite1P_.reset(Sprite::Create("resources/1P.png"));
-	spriteH_.reset(Sprite::Create("resources/H.png"));
-	spriteM_.reset(Sprite::Create("resources/M.png"));
-	spriteName_.reset (Sprite::Create("resources/player.png"));
+	spriteMPG_.reset(Sprite::Create("resources/character/HPG.png"));
+	sprite1P_.reset(Sprite::Create("resources/character/1P.png"));
+	spriteH_.reset(Sprite::Create("resources/character/H.png"));
+	spriteM_.reset(Sprite::Create("resources/character/M.png"));
+	spriteName_.reset (Sprite::Create("resources/Player/player.png"));
 	for (int i = 0; i < 3; ++i) {
 		HPnum_[i].reset(Sprite::Create("resources/character/0.png"));
 		MPnum_[i].reset(Sprite::Create("resources/character/0.png"));

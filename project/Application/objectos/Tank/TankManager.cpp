@@ -7,13 +7,13 @@ void TankManager::Initialize() {
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
 
 	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
-	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
+	spriteHPG_.reset(Sprite::Create("resources/character/HPG.png"));
 	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
-	spriteMPG_.reset(Sprite::Create("resources/HPG.png"));
-	sprite2P_.reset(Sprite::Create("resources/2P.png"));
-	spriteH_.reset(Sprite::Create("resources/H.png"));
-	spriteM_.reset(Sprite::Create("resources/M.png"));
-	spriteName_.reset(Sprite::Create("resources/tank.png"));
+	spriteMPG_.reset(Sprite::Create("resources/character/HPG.png"));
+	sprite2P_.reset(Sprite::Create("resources/character/2P.png"));
+	spriteH_.reset(Sprite::Create("resources/character/H.png"));
+	spriteM_.reset(Sprite::Create("resources/character/M.png"));
+	spriteName_.reset(Sprite::Create("resources/Tank/tank.png"));
 
 	for (int i = 0; i < 3; ++i) {
 		HPnum_[i].reset(Sprite::Create("resources/character/0.png"));

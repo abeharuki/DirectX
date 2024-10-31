@@ -6,13 +6,13 @@ void HealerManager::Initialize() {
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
 
 	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
-	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
+	spriteHPG_.reset(Sprite::Create("resources/character/HPG.png"));
 	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
-	spriteMPG_.reset(Sprite::Create("resources/HPG.png"));
-	sprite4P_.reset(Sprite::Create("resources/4P.png"));
-	spriteH_.reset(Sprite::Create("resources/H.png"));
-	spriteM_.reset(Sprite::Create("resources/M.png"));
-	spriteName_.reset(Sprite::Create("resources/healer.png"));
+	spriteMPG_.reset(Sprite::Create("resources/character/HPG.png"));
+	sprite4P_.reset(Sprite::Create("resources/character/4P.png"));
+	spriteH_.reset(Sprite::Create("resources/character/H.png"));
+	spriteM_.reset(Sprite::Create("resources/character/M.png"));
+	spriteName_.reset(Sprite::Create("resources/Healer/healer.png"));
 	StaffModel_.reset(Model::CreateModelFromObj("resources/Healer/weapon.obj", "resources/Healer/staff.png"));
 
 	for (int i = 0; i < 3; ++i) {

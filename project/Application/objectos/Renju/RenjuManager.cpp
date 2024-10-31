@@ -6,13 +6,13 @@ void RenjuManager::Initialize() {
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
 
 	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
-	spriteHPG_.reset(Sprite::Create("resources/HPG.png"));
+	spriteHPG_.reset(Sprite::Create("resources/character/HPG.png"));
 	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
-	spriteMPG_.reset(Sprite::Create("resources/HPG.png"));
-	sprite3P_.reset(Sprite::Create("resources/3P.png"));
-	spriteH_.reset(Sprite::Create("resources/H.png"));
-	spriteM_.reset(Sprite::Create("resources/M.png"));
-	spriteName_.reset(Sprite::Create("resources/renju.png"));
+	spriteMPG_.reset(Sprite::Create("resources/character/HPG.png"));
+	sprite3P_.reset(Sprite::Create("resources/character/3P.png"));
+	spriteH_.reset(Sprite::Create("resources/character/H.png"));
+	spriteM_.reset(Sprite::Create("resources/character/M.png"));
+	spriteName_.reset(Sprite::Create("resources/Renju/renju.png"));
 
 	for (int i = 0; i < 3; ++i) {
 		HPnum_[i].reset(Sprite::Create("resources/character/0.png"));

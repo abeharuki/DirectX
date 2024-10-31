@@ -56,7 +56,7 @@ void DebugScene::Initialize() {
 	worldTransformModel_.scale = { 1.f,1.f,1.f };
 	worldTransformSter_[0].Initialize();
 	worldTransformSter_[1].Initialize();
-	sprite_.reset(Sprite::Create("resources/mahoujin.png"));
+	sprite_.reset(Sprite::Create("resources/Healer/mahoujin.png"));
 
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));

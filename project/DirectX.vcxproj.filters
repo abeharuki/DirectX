@@ -438,9 +438,6 @@
     <ClCompile Include="externals\imnode\imnodes.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="externals\imnode\save_load.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Application\Editor\editor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>

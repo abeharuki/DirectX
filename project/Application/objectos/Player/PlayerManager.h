@@ -74,7 +74,7 @@ private:
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformShadow_;
-	std::unique_ptr<Animations>animation_;
+
 
 	std::unique_ptr<Model> HammerModel_;//武器
 	std::unique_ptr<Model> shadowModel_;
