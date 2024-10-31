@@ -73,7 +73,7 @@ void TitleScene::Initialize() {
 	//PostEffect::GetInstance()->isOutLine(true);
 	//PostEffect::GetInstance()->isBloom(true);
 	
-	NodeEditor::editor.load();
+	
 	
 }
 
@@ -149,7 +149,7 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-	
+	NodeEditor::editor.load();
 	NodeEditor::editor.show();
 	NodeEditor::editor.save();
 }
