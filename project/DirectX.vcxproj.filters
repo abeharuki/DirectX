@@ -330,12 +330,6 @@
     <ClCompile Include="Application\scene\TutorialScene.cpp">
       <Filter>ソース ファイル\Application\scene</Filter>
     </ClCompile>
-    <ClCompile Include="Application\objectos\Enemy\DebugEnemy.cpp">
-      <Filter>ソース ファイル\Application\objects\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Player\DebugPlayer.cpp">
-      <Filter>ソース ファイル\Application\objects\Player</Filter>
-    </ClCompile>
     <ClCompile Include="Application\objectos\Healer\Healer.cpp">
       <Filter>ソース ファイル\Application\objects\Healer</Filter>
     </ClCompile>
@@ -750,12 +744,6 @@
     </ClInclude>
     <ClInclude Include="Engine\3d\Skybox.h">
       <Filter>ヘッダー ファイル\Engine\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Enemy\DebugEnemy.h">
-      <Filter>ヘッダー ファイル\Application\objects\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Player\DebugPlayer.h">
-      <Filter>ヘッダー ファイル\Application\objects\Player</Filter>
     </ClInclude>
     <ClInclude Include="Application\objectos\Enemy\Enemy.h">
       <Filter>ヘッダー ファイル\Application\objects\Enemy</Filter>

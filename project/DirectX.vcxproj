@@ -122,12 +122,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\BehaviorTree\SequenceNode.cpp" />
     <ClCompile Include="Application\Game\game.cpp" />
     <ClCompile Include="Application\objectos\Command\Command.cpp" />
-    <ClCompile Include="Application\objectos\Enemy\DebugEnemy.cpp" />
     <ClCompile Include="Application\objectos\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\objectos\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\objectos\Healer\Healer.cpp" />
     <ClCompile Include="Application\objectos\Healer\HealerManager.cpp" />
-    <ClCompile Include="Application\objectos\Player\DebugPlayer.cpp" />
     <ClCompile Include="Application\objectos\Player\PlayerManager.cpp" />
     <ClCompile Include="Application\objectos\Renju\Renju.cpp" />
     <ClCompile Include="Application\objectos\Renju\RenjuBullet.cpp" />
@@ -343,12 +341,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\BehaviorTree\SequenceNode.h" />
     <ClInclude Include="Application\Game\game.h" />
     <ClInclude Include="Application\objectos\Command\Command.h" />
-    <ClInclude Include="Application\objectos\Enemy\DebugEnemy.h" />
     <ClInclude Include="Application\objectos\Enemy\Enemy.h" />
     <ClInclude Include="Application\objectos\Enemy\EnemyManager.h" />
     <ClInclude Include="Application\objectos\Healer\Healer.h" />
     <ClInclude Include="Application\objectos\Healer\HealerManager.h" />
-    <ClInclude Include="Application\objectos\Player\DebugPlayer.h" />
     <ClInclude Include="Application\objectos\Player\PlayerManager.h" />
     <ClInclude Include="Application\objectos\Renju\Renju.h" />
     <ClInclude Include="Application\objectos\Renju\RenjuBullet.h" />

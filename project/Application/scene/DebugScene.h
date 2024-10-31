@@ -7,7 +7,6 @@
 #include <PostEffects/PostEffect.h>
 #include <Skybox.h>
 #include <Skydome.h>
-#include "Player/DebugPlayer.h"
 #include <Ground.h>
 #include <Sphere.h>
 #include "3d/LineBox.h"
@@ -15,7 +14,6 @@
 #include <ParticleSystem.h>
 #include <Enemy/EnemyManager.h>
 #include "CollisionManager/CollisionConfig.h"
-#include <Enemy/DebugEnemy.h>
 
 
 class DebugScene: public IScene {
