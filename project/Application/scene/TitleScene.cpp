@@ -73,7 +73,7 @@ void TitleScene::Initialize() {
 	//PostEffect::GetInstance()->isOutLine(true);
 	//PostEffect::GetInstance()->isBloom(true);
 	
-
+	NodeEditor::editor.load();
 	
 }
 
@@ -137,7 +137,7 @@ void TitleScene::Update() {
 	}
 	PostEffect::GetInstance()->ValueOutLine(a_);
 
-	ImGui::Begin("P");
+	ImGui::Begin("Playe");
 	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 10.0f);
 	ImGui::End();
@@ -149,9 +149,9 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-	//NodeEditor::editor.load();
+	
 	NodeEditor::editor.show();
-	//NodeEditor::editor.save();
+	NodeEditor::editor.save();
 }
 
 void TitleScene::Draw() {

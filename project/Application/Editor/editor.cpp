@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <imnodes.h>
 #include <imgui.h>
 
@@ -8,6 +9,7 @@
 #include <stddef.h>
 #include <vector>
 #include <string>
+#include <iostream>
 
 namespace NodeEditor
 {
@@ -20,7 +22,7 @@ namespace NodeEditor
 			std::string name; // ノード名を追加
 
 			Node() = default;
-			Node(const int i, const float v, const std::string& n) : id(i), value(v), name(n) {}
+			Node(const int i, const float v,const std::string& n) : id(i), value(v), name(n) {}
 		};
 
 		struct Link
@@ -41,8 +43,10 @@ namespace NodeEditor
 
 				ImGui::Begin("Save & load");
 				ImGui::TextUnformatted("Press N to add a node.");
-
+				
 				ImNodes::BeginNodeEditor();
+
+				
 
 				// ノード追加用のポップアップを表示
 				if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
@@ -61,7 +65,7 @@ namespace NodeEditor
 						const int node_id = ++current_id_;
 						ImNodes::SetNodeScreenSpacePos(node_id, ImGui::GetMousePos());
 						nodes_.push_back(Node(node_id, 0.f, std::string(new_node_name))); // ノードを追加
-						new_node_name[0] = '\0'; // 名前をリセット
+						//new_node_name[0] = '\0'; // 名前をリセット
 						ImGui::CloseCurrentPopup(); // ポップアップを閉じる
 					}
 					ImGui::EndPopup();
@@ -190,82 +194,82 @@ namespace NodeEditor
 			}
 
 
-			//現在のノードの位置や状態を保存
-			void save()
-			{
+			
+			void save() {
 				// Save the internal imnodes state
 				ImNodes::SaveCurrentEditorStateToIniFile("Application/Editor/save_load.ini");
 
 				// Dump our editor state as bytes into a file
+				std::fstream fout("Application/Editor/save_load.bytes", std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
-				std::fstream fout(
-					"Application/Editor/save_load.bytes", std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
-
-				// copy the node vector to file
+				// Copy the node vector to file
 				const size_t num_nodes = nodes_.size();
-				fout.write(
-					reinterpret_cast<const char*>(&num_nodes),
-					static_cast<std::streamsize>(sizeof(size_t)));
-				fout.write(
-					reinterpret_cast<const char*>(nodes_.data()),
-					static_cast<std::streamsize>(sizeof(Node) * num_nodes));
+				fout.write(reinterpret_cast<const char*>(&num_nodes), static_cast<std::streamsize>(sizeof(size_t)));
+				for (const Node& node : nodes_) {
+					fout.write(reinterpret_cast<const char*>(&node.id), sizeof(int));
+					fout.write(reinterpret_cast<const char*>(&node.value), sizeof(float));
+					size_t name_size = node.name.size();
+					fout.write(reinterpret_cast<const char*>(&name_size), sizeof(size_t));
+					fout.write(node.name.c_str(), name_size);
+				}
 
-				// copy the link vector to file
+				// Copy the link vector to file
 				const size_t num_links = links_.size();
-				fout.write(
-					reinterpret_cast<const char*>(&num_links),
-					static_cast<std::streamsize>(sizeof(size_t)));
-				fout.write(
-					reinterpret_cast<const char*>(links_.data()),
-					static_cast<std::streamsize>(sizeof(Link) * num_links));
+				fout.write(reinterpret_cast<const char*>(&num_links), static_cast<std::streamsize>(sizeof(size_t)));
+				fout.write(reinterpret_cast<const char*>(links_.data()), static_cast<std::streamsize>(sizeof(Link) * num_links));
 
-				// copy the current_id to file
-				fout.write(
-					reinterpret_cast<const char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
+				// Copy the current_id to file
+				fout.write(reinterpret_cast<const char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
+				fout.close();
 			}
 
-			//前回の状態で出力
-			void load()
-			{
+			
+			void load() {
+				nodes_.clear(); // 既存ノードをクリア
+				links_.clear(); // 既存リンクをクリア
+
 				// Load the internal imnodes state
 				ImNodes::LoadCurrentEditorStateFromIniFile("Application/Editor/save_load.ini");
 
 				// Load our editor state into memory
-
 				std::fstream fin("Application/Editor/save_load.bytes", std::ios_base::in | std::ios_base::binary);
-
-				if (!fin.is_open())
-				{
+				if (!fin.is_open()) {
 					return;
 				}
 
-				// copy nodes into memory
+				// Copy nodes into memory
 				size_t num_nodes;
 				fin.read(reinterpret_cast<char*>(&num_nodes), static_cast<std::streamsize>(sizeof(size_t)));
 				nodes_.resize(num_nodes);
-				fin.read(
-					reinterpret_cast<char*>(nodes_.data()),
-					static_cast<std::streamsize>(sizeof(Node) * num_nodes));
+				for (size_t i = 0; i < num_nodes; ++i) {
+					int id;
+					float value;
+					size_t name_size;
+					fin.read(reinterpret_cast<char*>(&id), sizeof(int));
+					fin.read(reinterpret_cast<char*>(&value), sizeof(float));
+					fin.read(reinterpret_cast<char*>(&name_size), sizeof(size_t));
+					std::string name(name_size, '\0');
+					fin.read(&name[0], name_size);
+					nodes_[i] = Node(id, value, name);
+				}
 
-				// copy links into memory
+				// Copy links into memory
 				size_t num_links;
 				fin.read(reinterpret_cast<char*>(&num_links), static_cast<std::streamsize>(sizeof(size_t)));
 				links_.resize(num_links);
-				fin.read(
-					reinterpret_cast<char*>(links_.data()),
-					static_cast<std::streamsize>(sizeof(Link) * num_links));
+				fin.read(reinterpret_cast<char*>(links_.data()), static_cast<std::streamsize>(sizeof(Link) * num_links));
 
-				// copy current_id into memory
+				// Copy current_id into memory
 				fin.read(reinterpret_cast<char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
+				fin.close();
 			}
-
 
 
 		private:
 			std::vector<Node> nodes_;
 			std::vector<Link> links_;
 			int  current_id_;
-			char new_node_name[128]; // 新しいノード名の入力用
+			char new_node_name[128] = ""; // 新しいノード名の入力用
 		};
 
 		static SaveLoadEditor editor;
