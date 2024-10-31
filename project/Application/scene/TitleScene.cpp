@@ -149,9 +149,9 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-	NodeEditor::editor.load();
+	NodeEditor::editor.load("Player");
 	NodeEditor::editor.show();
-	NodeEditor::editor.save();
+	NodeEditor::editor.save("Player");
 }
 
 void TitleScene::Draw() {

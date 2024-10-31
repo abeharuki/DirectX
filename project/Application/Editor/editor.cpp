@@ -194,13 +194,18 @@ namespace NodeEditor
 			}
 
 
-			
-			void save() {
+			//セーブするファイル名
+			void save(const std::string& filename) {
+
+				// ファイルパスを作成
+				std::string ini_filepath = "Application/Editor/" + filename + ".ini";
+				std::string bytes_filepath = "Application/Editor/" + filename + ".bytes";
+
 				// Save the internal imnodes state
-				ImNodes::SaveCurrentEditorStateToIniFile("Application/Editor/save_load.ini");
+				ImNodes::SaveCurrentEditorStateToIniFile(ini_filepath.c_str());
 
 				// Dump our editor state as bytes into a file
-				std::fstream fout("Application/Editor/save_load.bytes", std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+				std::fstream fout(bytes_filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
 				// Copy the node vector to file
 				const size_t num_nodes = nodes_.size();
@@ -224,15 +229,20 @@ namespace NodeEditor
 			}
 
 			
-			void load() {
+			//ロードするファイル名
+			void load(const std::string& filename) {
 				nodes_.clear(); // 既存ノードをクリア
 				links_.clear(); // 既存リンクをクリア
 
+				// ファイルパスを作成
+				std::string ini_filepath = "Application/Editor/" + filename + ".ini";
+				std::string bytes_filepath = "Application/Editor/" + filename + ".bytes";
+
 				// Load the internal imnodes state
-				ImNodes::LoadCurrentEditorStateFromIniFile("Application/Editor/save_load.ini");
+				ImNodes::LoadCurrentEditorStateFromIniFile(ini_filepath.c_str());
 
 				// Load our editor state into memory
-				std::fstream fin("Application/Editor/save_load.bytes", std::ios_base::in | std::ios_base::binary);
+				std::fstream fin(bytes_filepath, std::ios_base::in | std::ios_base::binary);
 				if (!fin.is_open()) {
 					return;
 				}
