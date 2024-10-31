@@ -35,15 +35,9 @@ private: // 基本変数
 		true,
 	};
 	
-	
-	
-	
-	
-	
-
 private:
 	Audio* audio_ = nullptr;
-	uint32_t audioData_[10];
+	//uint32_t audioData_[10];
 	std::unique_ptr<Sprite> spriteStep1_;
 	std::unique_ptr<Sprite> spriteCombo_;
 	std::unique_ptr<Sprite> spriteStep2_;

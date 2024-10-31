@@ -7,9 +7,9 @@ void TutorialScene::Initialize() {
 	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 
 
-	audio_ = Audio::GetInstance();
+	/*audio_ = Audio::GetInstance();
 	audioData_[0] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
-	audio_->SoundPlayMP3(audioData_[1], true, 3.0f);
+	audio_->SoundPlayMP3(audioData_[1], true, 3.0f);*/
 
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
