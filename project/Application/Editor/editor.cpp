@@ -146,6 +146,7 @@ namespace NodeEditor
 			
 				}
 
+				//リンクの描画
 				for (const Link& link : links_)
 				{
 					// リンクの始点ノードが存在するか確認
@@ -225,13 +226,13 @@ namespace NodeEditor
 				std::string ini_filepath = "Application/Editor/" + filename + ".ini";
 				std::string bytes_filepath = "Application/Editor/" + filename + ".bytes";
 
-				// Save the internal imnodes state
+				//状態をセーブ
 				ImNodes::SaveCurrentEditorStateToIniFile(ini_filepath.c_str());
 
-				// Dump our editor state as bytes into a file
+				//エディタの状態をバイナリファイルに書き出す
 				std::fstream fout(bytes_filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
-				// Copy the node vector to file
+				//ノード情報をコピー
 				const size_t num_nodes = nodes_.size();
 				fout.write(reinterpret_cast<const char*>(&num_nodes), static_cast<std::streamsize>(sizeof(size_t)));
 				for (const Node& node : nodes_) {
@@ -242,12 +243,12 @@ namespace NodeEditor
 					fout.write(node.name.c_str(), name_size);
 				}
 
-				// Copy the link vector to file
+				//リンク情報をコピー
 				const size_t num_links = links_.size();
 				fout.write(reinterpret_cast<const char*>(&num_links), static_cast<std::streamsize>(sizeof(size_t)));
 				fout.write(reinterpret_cast<const char*>(links_.data()), static_cast<std::streamsize>(sizeof(Link) * num_links));
 
-				// Copy the current_id to file
+				//current_idをコピー
 				fout.write(reinterpret_cast<const char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
 				fout.close();
 			}
@@ -262,16 +263,16 @@ namespace NodeEditor
 				std::string ini_filepath = "Application/Editor/" + filename + ".ini";
 				std::string bytes_filepath = "Application/Editor/" + filename + ".bytes";
 
-				// Load the internal imnodes state
+				//状態をロード
 				ImNodes::LoadCurrentEditorStateFromIniFile(ini_filepath.c_str());
 
-				// Load our editor state into memory
+				//エディタの状態をロード
 				std::fstream fin(bytes_filepath, std::ios_base::in | std::ios_base::binary);
 				if (!fin.is_open()) {
 					return;
 				}
 
-				// Copy nodes into memory
+				//ノード情報をコピー
 				size_t num_nodes;
 				fin.read(reinterpret_cast<char*>(&num_nodes), static_cast<std::streamsize>(sizeof(size_t)));
 				nodes_.resize(num_nodes);
@@ -287,13 +288,13 @@ namespace NodeEditor
 					nodes_[i] = Node(id, value, name);
 				}
 
-				// Copy links into memory
+				//リンク情報をコピー
 				size_t num_links;
 				fin.read(reinterpret_cast<char*>(&num_links), static_cast<std::streamsize>(sizeof(size_t)));
 				links_.resize(num_links);
 				fin.read(reinterpret_cast<char*>(links_.data()), static_cast<std::streamsize>(sizeof(Link) * num_links));
 
-				// Copy current_id into memory
+				//current_idをコピー
 				fin.read(reinterpret_cast<char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
 				fin.close();
 			}
