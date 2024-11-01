@@ -139,7 +139,7 @@ private: // メンバ変数
 		run,//移動
 		standby,//待機
 	};
-
+	//アニメーションのフレームタイム
 	float flameTime_;
 
 	// 目標の角度
@@ -174,6 +174,7 @@ private: // メンバ変数
 	Vector3 enemyPos_;
 	Vector3 playerPos_;
 
+	//攻撃フラグ
 	bool attack_ = false;
 	bool stanAttack_ = false;
 	//攻撃ができるようになるまでの

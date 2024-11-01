@@ -91,8 +91,8 @@ private:
 	std::unique_ptr<Sprite> sprite1P_;
 	std::unique_ptr<Sprite> spriteName_;
 
-	std::unique_ptr<Sprite> HPnum_[3];
-	std::unique_ptr<Sprite> MPnum_[3];
+	std::unique_ptr<Sprite> HPnum_[3];//数字
+	std::unique_ptr<Sprite> MPnum_[3];//数字
 
 	std::unique_ptr<Sprite> spriteRevival_;
 	std::unique_ptr<Sprite> spriteRevivalG_;
@@ -109,11 +109,11 @@ private:
 	Vector2 spriteHpSize_ = {};
 	Vector2 spriteMpSize_ = {};
 
-	Vector4 hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
-	Vector4 hpNumColor_;
+	Vector4 hpColor_ = { 1.0f,1.0f,1.0f,1.0f };//hp文字の色
+	Vector4 hpNumColor_;//hp数字の色
 
 	bool isDead_ = false;
-	int revivalCount_;
+	int revivalCount_;//復活までの時間
 
 	bool preHitH_;
 	bool isHitH_;

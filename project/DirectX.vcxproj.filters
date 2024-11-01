@@ -354,9 +354,6 @@
     <ClCompile Include="Application\objectos\Player\PlayerManager.cpp">
       <Filter>ソース ファイル\Application\objects\Player</Filter>
     </ClCompile>
-    <ClCompile Include="Application\objectos\Renju\RenjuParticle.cpp">
-      <Filter>ソース ファイル\Application\objects\Renju</Filter>
-    </ClCompile>
     <ClCompile Include="Application\objectos\Tank\TankManager.cpp">
       <Filter>ソース ファイル\Application\objects\Tank</Filter>
     </ClCompile>
@@ -770,9 +767,6 @@
       <Filter>ヘッダー ファイル\Application\objects\Renju</Filter>
     </ClInclude>
     <ClInclude Include="Application\objectos\Renju\RenjuManager.h">
-      <Filter>ヘッダー ファイル\Application\objects\Renju</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Renju\RenjuParticle.h">
       <Filter>ヘッダー ファイル\Application\objects\Renju</Filter>
     </ClInclude>
     <ClInclude Include="Application\objectos\Tank\Tank.h">

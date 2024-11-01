@@ -164,6 +164,7 @@ private:
 	void AttackInitialize();
 	void AttackUpdata();
 
+	//死亡
 	void DeadInitilize();
 	void DeadUpdata();
 

@@ -156,6 +156,7 @@ private: // メンバ変数
 	float alpha_;
 	Vector3 numMove_;
 
+	//アニメーション
 	std::unique_ptr<Animations>animation_;
 	int animationNumber_;
 	enum AnimationNumber {
@@ -170,7 +171,6 @@ private: // メンバ変数
 
 	// 目標の角度
 	float destinationAngleY_ = 0.0f;
-
 
 	enum Character {
 		healer,

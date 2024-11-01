@@ -24,11 +24,7 @@ public:
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-	// ギミック初期化
-	void InitializeFloatingGimmick();
-
-	// ギミックの更新
-	void UpdateFloatingGimmick();
+	
 
 private:
 	WorldTransform worldTransform_;
@@ -46,13 +42,5 @@ private:
 	// デスフラグ
 	bool isDead_ = false;
 
-	// 浮遊ギミックの媒介変数
-	float floatingParameter_ = 0.0f;
-	// 浮遊移動サイクル
-	float cycle = 0;
-	// 浮遊の振幅
-	float amplitude = 0.0f;
-	float amplitudeArm = 0.4f;
-	// 円周率
-	float Pi = 0.0f;
+	
 };

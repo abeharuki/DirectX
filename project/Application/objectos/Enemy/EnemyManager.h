@@ -13,6 +13,7 @@ public:
 	
 	void DrawUI();
 
+	//ダメージ数値のアニメーション
 	void DamageNumMath();
 
 	// 衝突を検出したら呼び出されるコールバック関数

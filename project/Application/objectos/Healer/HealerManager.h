@@ -51,8 +51,8 @@ private:
 	std::unique_ptr<Sprite> sprite4P_;
 	std::unique_ptr<Sprite> spriteName_;
 
-	std::unique_ptr<Sprite> HPnum_[3];
-	std::unique_ptr<Sprite> MPnum_[3];
+	std::unique_ptr<Sprite> HPnum_[3];//hpの数字
+	std::unique_ptr<Sprite> MPnum_[3];//mpの数字
 
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;
@@ -60,15 +60,15 @@ private:
 	bool isParticle_ = false;
 
 	bool isDead_ = false;
-	float threshold_ = 0.0f;
+	float threshold_ = 0.0f;//ディゾルブ
 
 	Vector3 playerPos_;
 	
 	Vector2 spriteHpSize_;
 	Vector2 spriteMpSize_;
 
-	Vector4 hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
-	Vector4 hpNumColor_;
+	Vector4 hpColor_ = { 1.0f,1.0f,1.0f,1.0f };//hp文字の色
+	Vector4 hpNumColor_;//hpの数字の色
 
 	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 

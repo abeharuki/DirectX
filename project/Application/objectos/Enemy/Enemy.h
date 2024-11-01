@@ -161,16 +161,20 @@ private: // メンバ変数
 	WorldTransform worldTransformImpact_;
 	WorldTransform worldTransformArea_;
 	WorldTransform worldTransformCircleArea_;
-	WorldTransform worldTransformColliderImpact_[15];
+	WorldTransform worldTransformColliderImpact_[15];//衝撃波の座標
 	WorldTransform worldTransformSter_[3];
-	std::unique_ptr<ColliderManager> colliderManager_[15] = {};
+	std::unique_ptr<ColliderManager> colliderManager_[15] = {};//衝撃波用の当たり判定
+
+	//アニメーション
 	std::unique_ptr<Animations>animation_;
 	int animationNumber_;
 
-	std::unique_ptr<Model> impactModel_;
-	std::unique_ptr<Model> areaModel_;
-	std::unique_ptr<Model> circleAreaModel_;
-	std::unique_ptr<Model> sterModel_[3];
+	std::unique_ptr<Model> impactModel_;//衝撃波
+	std::unique_ptr<Model> areaModel_;//ダッシュ攻撃エリア
+	std::unique_ptr<Model> circleAreaModel_;//投擲攻撃エリア
+	std::unique_ptr<Model> sterModel_[3];//混乱時の星
+
+	//攻撃範囲の座標とフラグ
 	Vector3 areaPos_;
 	bool areaDraw_;
 
@@ -220,7 +224,9 @@ private: // メンバ変数
 		tank,
 	};
 
+	//クリアフラグ
 	bool clear_;
+	//ディゾルブ
 	float threshold_ = 0.0f;
 
 	//シェイク

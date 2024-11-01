@@ -11,31 +11,6 @@ Vector3 RenjuBullet::GetWorldPosition() {
 	return worldPos;
 }
 
-// ギミック初期化
-void RenjuBullet::InitializeFloatingGimmick() {
-	floatingParameter_ = 0.0f;
-
-	// 浮遊移動サイクル
-	cycle = 60;
-	Pi = 3.1415f;
-	// 浮遊の振幅
-	amplitude = 0.2f;
-	amplitudeArm = 0.4f;
-}
-
-// ギミック
-void RenjuBullet::UpdateFloatingGimmick() {
-	// 1フレームでのパラメータ加算値
-	const float steppe = 2.0f * Pi / cycle;
-
-	// パラメータを1分加算
-	floatingParameter_ += steppe;
-	// 2πを超えたら0に戻す
-	floatingParameter_ = std::fmod(floatingParameter_, 2.0f * Pi);
-
-	// 浮遊を座標に反映
-	worldTransform_.translate.y = std::sin(floatingParameter_) * amplitude;
-}
 
 
 /// <summary>
