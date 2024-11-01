@@ -393,6 +393,7 @@ void GameScene::BattlBegin(){
 		}
 	}
 	
+	//バトル開始のフラグ受け取り
 	playerManager_->GetPlayer()->SetBattleStart(battle_);
 	enemyManager_->GetEnemy()->SetBattleStart(battle_);
 	

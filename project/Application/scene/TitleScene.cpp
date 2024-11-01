@@ -194,6 +194,7 @@ void TitleScene::cameraMove() {
 
 
 void TitleScene::Fade() {
+	//フェードイン時
 	if (isFadeIn_) {
 		if (alpha_ > 0.0f) {
 			alpha_ -= 0.02f;
@@ -204,6 +205,7 @@ void TitleScene::Fade() {
 		}
 	}
 
+	//フェードアウト時
 	if (isFadeOut_) {
 		if (alpha_ < 1) {
 			alpha_ += 0.02f;

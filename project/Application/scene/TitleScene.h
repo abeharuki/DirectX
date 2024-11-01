@@ -24,8 +24,11 @@ public:
 	void Update() override;
 	void Draw() override;
 	void RenderDirect() override;
+
+	//フェードイン・フェードアウト
 	void Fade();
 
+	//カメラの動き
 	void cameraMove();
 
 private: // 基本変数
