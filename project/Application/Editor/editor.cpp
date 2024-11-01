@@ -160,6 +160,30 @@ namespace NodeEditor
 
 					if (startExists && endExists) {
 						ImNodes::Link(link.id, link.start_attr, link.end_attr);
+
+						// 始点のノード情報の受け取り
+						int startNodeId = (link.start_attr >> 24);
+						auto startNode = std::find_if(nodes_.begin(), nodes_.end(), [startNodeId](const Node& node) {
+							return node.id == startNodeId;
+							});
+
+						if (startNode != nodes_.end()) {
+							std::string startNodeName = startNode->name;
+							
+						}
+
+						// 終点のノード情報の受け取り
+						int endNodeId = (link.end_attr >> 8);
+						auto endNode = std::find_if(nodes_.begin(), nodes_.end(), [endNodeId](const Node& node) {
+							return node.id == endNodeId;
+							});
+
+						if (endNode != nodes_.end()) {
+							std::string endNodeName = endNode->name;
+							
+						}
+
+
 					}
 					
 				}
