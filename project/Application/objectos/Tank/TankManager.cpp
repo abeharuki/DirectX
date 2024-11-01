@@ -188,9 +188,6 @@ void TankManager::DrawUI(){
 	}
 };
 
-void TankManager::RenderDirect(const ViewProjection& camera) {
-	camera;
-}
 
 // 衝突を検出したら呼び出されるコールバック関数
 void TankManager::OnAllyCollision(const WorldTransform& worldTransform) {

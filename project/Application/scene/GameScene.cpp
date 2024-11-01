@@ -78,7 +78,7 @@ void GameScene::Update() {
 
 	//シーン遷移
 	Fade();
-	BattlBegin();
+	BattleBegin();
 	
 
 	if (Input::PushKey(DIK_P)) {
@@ -299,10 +299,7 @@ void GameScene::Draw() {
 }
 
 void GameScene::RenderDirect() {
-	healerManager_->RenderDirect(viewProjection_);
-	renjuManager_->RenderDirect(viewProjection_);
-	tankManager_->RenderDirect(viewProjection_);
-
+	
 	if (playerManager_->GetPlayer()->IsDash()) {
 		playerManager_->Draw(viewProjection_);
 	}
@@ -347,7 +344,7 @@ void GameScene::Fade() {
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
 }
 
-void GameScene::BattlBegin(){
+void GameScene::BattleBegin(){
 	PostEffect* const posteffect = PostEffect::GetInstance();
 	//ラジアルブラーの演出
 	if (playerManager_->GetPlayer()->GameStart() && !cameraDirection_ && radialBlur_.blurWidth < 0.9f) {

@@ -187,9 +187,7 @@ void RenjuManager::DrawUI(){
 	}
 };
 
-void RenjuManager::RenderDirect(const ViewProjection& camera) {
-	camera;
-}
+
 
 void RenjuManager::SetParticlePos(Vector3 pos) {
 	emitter_.translate = pos;

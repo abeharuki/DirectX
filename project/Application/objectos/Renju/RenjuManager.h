@@ -10,7 +10,6 @@ public:
 	void Update();
 	void Draw(const ViewProjection& camera);
 	void DrawUI();
-	void RenderDirect(const ViewProjection& camera);
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnAllyCollision(const WorldTransform& worldTransform);

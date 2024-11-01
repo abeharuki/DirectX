@@ -9,7 +9,7 @@ public:
 	void Update();
 	void Draw(const ViewProjection& camera);
 	void DrawUI();
-	void RenderDirect(const ViewProjection& camera);
+	
 	
 	//プレイヤーに追従
 	//  プレイヤーに追従

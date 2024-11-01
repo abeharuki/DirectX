@@ -41,7 +41,7 @@ public: // メンバ関数
 	void Fade();
 
 	//バトル開始の演出
-	void BattlBegin();
+	void BattleBegin();
 
 private://基本変数
 	// 光の数値

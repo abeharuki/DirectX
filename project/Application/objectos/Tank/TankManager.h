@@ -9,7 +9,7 @@ class TankManager {
 		void Update();
 		void Draw(const ViewProjection& camera);
 		void DrawUI();
-		void RenderDirect(const ViewProjection& camera);
+		
 
 		//ディゾルブ
 		void Dissolve() {threshold_ += 0.004f;}
