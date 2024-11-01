@@ -3,7 +3,7 @@
 「DRAPONQUEST」<br>
 <img src="https://github.com/user-attachments/assets/06c14d46-c4b2-478c-aeef-557a9d589e8c" alt="DRAPONQUEST" width="500" /><br>
 ## 概要
-今の作品を作ろと思った経緯は、人と一緒にゲームをするのも好きなのですが、
+今の作品を作ろうと思った経緯は、人と一緒にゲームをするのも好きなのですが、
 ドラゴンズドグマやドラクエ10のようなcpuと一緒に戦うゲームが、
 仲間を自分が引き連れている感じがあって好きなので、就職作品としてドラクエ10の様な作品を作ろうと思い作っています。<br>
 <br>
@@ -21,7 +21,7 @@
 <br><br>
 さらに細かい進捗は下記のURLから確認できます。<br>
 
-  [作品動画はこちら](https://studio.youtube.com/video/KBiwjOsKfac/edit)<br>[ポートフォリオはこちら](https://drive.google.com/file/d/15fuHKKvBRsdOitzPX2uTvESjmbHBkNvG/view?usp=drive_link)
+  [作品動画はこちら](https://youtu.be/KBiwjOsKfac)<br>[ポートフォリオはこちら](https://drive.google.com/file/d/15fuHKKvBRsdOitzPX2uTvESjmbHBkNvG/view?usp=drive_link)
 
 
 # エンジン
