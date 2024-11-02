@@ -10,6 +10,8 @@ void Framework::Initialize() {
 
 void Framework::Update() {
 	Engine::BeginFrame();
+	sceneManager_->DebugSceneChange();
+
 	if (sceneManager_->ChangeScene()) {
 		nowLoading = true;
 	}

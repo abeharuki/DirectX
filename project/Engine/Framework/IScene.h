@@ -13,7 +13,7 @@ public:
 
 	virtual void SetSceneManager(SceneManager* sceneManager) { sceneManager_ = sceneManager; };
 
-
+	
 protected:
 	SceneManager* sceneManager_ = nullptr;
 	

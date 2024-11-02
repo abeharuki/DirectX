@@ -1,6 +1,7 @@
 #pragma once
 #include "IScene.h"
 #include "AbstractSceneFactory.h"
+#include <imgui.h>
 
 class SceneManager {
 public:
@@ -27,6 +28,22 @@ public:
 
 	bool ChangeScene() { return load_; }
 
+	//デバック用
+	void DebugSceneChange() {
+		const char* items[] = { "TitleScene", "GameScene", "ClearScene", "OverScene", "DebugScene" };
+		if (!load_) {
+			if (currentItem != preCurrentItem) {
+				preCurrentItem = currentItem;
+				ChangeScene(items[currentItem]);  // 配列からシーン名を取得
+			}
+
+			ImGui::Begin("Scene");
+			ImGui::Combo("##combo", &currentItem, items, IM_ARRAYSIZE(items));
+			ImGui::End();
+		}
+		
+	}
+
 private:
 	static SceneManager* instance_;
 
@@ -37,8 +54,6 @@ private:
 	bool load_ = false;
 
 	AbstractSceneFactory* sceneFactory_ = nullptr;
-
-
 	int currentItem = 0; // 初期選択アイテムのインデックス
 	int preCurrentItem = 0;
 };

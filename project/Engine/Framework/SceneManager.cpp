@@ -1,6 +1,5 @@
 #include "SceneManager.h"
 #include <cassert>
-#include <imgui.h>
 
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -29,41 +28,8 @@ void SceneManager::Update() {
 		loadScene_->Update();
 	}
 	else {
-		const char* items[] = { "TitleScene", "PlayScene", "ClearScene","OverScene","DebugScene" };
-		
-		if (currentItem == 0 && currentItem != preCurrentItem) {
-			preCurrentItem = currentItem;
-			ChangeScene("TitleScene");
-			
-		}
-		else if (currentItem ==1 && currentItem != preCurrentItem) {
-			preCurrentItem = currentItem;
-			ChangeScene("GameScene");
-			
-		}
-		else if (currentItem == 2 && currentItem != preCurrentItem) {
-			preCurrentItem = currentItem;
-			ChangeScene("ClearScene");
-			
-		}
-		else if (currentItem == 3 && currentItem != preCurrentItem) {
-			preCurrentItem = currentItem;
-			ChangeScene("OverScene");
-			
-		}
-		else if (currentItem == 4 && currentItem != preCurrentItem) {
-			preCurrentItem = currentItem;
-			ChangeScene("DebugScene");
-			
-		}
-
-		ImGui::Begin("Scene");
-		ImGui::Combo("##combo", &currentItem, items, IM_ARRAYSIZE(items));
-		ImGui::End();
 		currentScene_->Update();
 	}
-#
-
 }
 
 void SceneManager::Draw() { 

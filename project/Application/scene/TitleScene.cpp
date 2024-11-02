@@ -152,6 +152,7 @@ void TitleScene::Update() {
 	NodeEditor::editor.load("Player");
 	NodeEditor::editor.show();
 	NodeEditor::editor.save("Player");
+
 }
 
 void TitleScene::Draw() {
