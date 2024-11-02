@@ -21,17 +21,7 @@ void OverScene::Initialize() {
 void OverScene::Update() {
 	
 	Fade();
-	if (Input::GetInstance()->GetPadConnect()) {
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
-			//sceneManager_->ChangeScene("TitleScene");
-			isFadeOut_ = true;
-		}
-	}
-
-	if (Input::PushKey(DIK_P)) {
-		
-		isFadeOut_ = true;
-	}
+	
 
 	if (isFede_) {
 		SceneManager::GetInstance()->ChangeScene("TitleScene");
@@ -53,6 +43,17 @@ void OverScene::RenderDirect() {
 }
 
 void OverScene::Fade() {
+	if (Input::GetInstance()->GetPadConnect()) {
+		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
+			isFadeOut_ = true;
+		}
+	}
+
+	if (Input::PushKey(DIK_P)) {
+
+		isFadeOut_ = true;
+	}
+
 	if (isFadeIn_) {
 		if (alpha_ > 0.001f) {
 			alpha_ -= 0.02f;

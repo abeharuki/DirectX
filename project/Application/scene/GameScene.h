@@ -31,14 +31,18 @@ public: // メンバ関数
 	~GameScene();
 
 	//static GameScene* GetInstance();
-	void CheckAllCollision();
+	
 
+	
+private:
 	//シーン遷移
 	void Fade();
 
 	//バトル開始の演出
 	void BattleBegin();
 
+	//当たり判定
+	void CheckAllCollision();
 private://基本変数
 	// 光の数値
 	DirectionLight directionLight_{

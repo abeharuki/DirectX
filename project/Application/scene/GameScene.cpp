@@ -87,14 +87,7 @@ void GameScene::Update() {
 	BattleBegin();
 	
 
-	if (enemyManager_->IsClear() && isFadeOut_) {
-		SceneManager::GetInstance()->ChangeScene("ClearScene");
-	}
-
-	if (playerManager_->IsOver() && isFadeOut_) {
-		SceneManager::GetInstance()->ChangeScene("OverScene");
-	}
-
+	
 	//当たり判定
 	CheckAllCollision();
 
@@ -343,6 +336,15 @@ void GameScene::Fade() {
 	}
 
 	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
+
+	if (enemyManager_->IsClear() && isFadeOut_) {
+		SceneManager::GetInstance()->ChangeScene("ClearScene");
+	}
+
+	if (playerManager_->IsOver() && isFadeOut_) {
+		SceneManager::GetInstance()->ChangeScene("OverScene");
+	}
+
 }
 
 void GameScene::BattleBegin(){

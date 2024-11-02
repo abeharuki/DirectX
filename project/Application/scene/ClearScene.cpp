@@ -17,16 +17,7 @@ void ClearScene::Initialize() {
 void ClearScene::Update() {
 
 	Fade();
-	if (Input::GetInstance()->GetPadConnect()) {
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
-			isFadeOut_ = true;
-		}
-	}
 
-	if (Input::PushKey(DIK_P) && !isFadeIn_) {
-		isFadeOut_ = true;
-
-	}
 
 	if (isFede_) {
 		SceneManager::GetInstance()->ChangeScene("TitleScene");
@@ -48,6 +39,17 @@ void ClearScene::RenderDirect() {
 }
 
 void ClearScene::Fade() {
+	if (Input::GetInstance()->GetPadConnect()) {
+		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
+			isFadeOut_ = true;
+		}
+	}
+
+	if (Input::PushKey(DIK_P) && !isFadeIn_) {
+		isFadeOut_ = true;
+
+	}
+
 	if (isFadeIn_) {
 		if (alpha_ > 0.001f) {
 			alpha_ -= 0.02f;

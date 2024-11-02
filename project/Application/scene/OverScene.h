@@ -9,8 +9,9 @@ public:
 	void Update() override;
 	void Draw() override;
 	void RenderDirect() override;
-	void Fade();
 
+private:
+	void Fade();
 private:
 	std::unique_ptr<Sprite> spriteOver_;
 	std::unique_ptr<Sprite> spritePushA_;

@@ -25,6 +25,8 @@ public:
 	void Draw() override;
 	void RenderDirect() override;
 
+
+private:
 	//フェードイン・フェードアウト
 	void Fade();
 
