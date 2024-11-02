@@ -72,6 +72,7 @@ public: // メンバ関数
 	BehaviorAttack GetBehaviorAttack() { return attack_; }
 	Behavior GetBehavior() { return behavior_; }
 	Collider* GetCollider(int i) { return colliderManager_[i].get(); }
+	Collider* GetRockCollider() { return colliderRockManager_.get(); }
 	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }
 	WorldTransform& GetWorldTransformRock() { return worldTransformRock_; }
 	WorldTransform& GetWorldTransformArea() { return worldTransformArea_; }
@@ -164,6 +165,7 @@ private: // メンバ変数
 	WorldTransform worldTransformColliderImpact_[15];//衝撃波の座標
 	WorldTransform worldTransformSter_[3];
 	std::unique_ptr<ColliderManager> colliderManager_[15] = {};//衝撃波用の当たり判定
+	std::unique_ptr<ColliderManager> colliderRockManager_ = {};//投擲用
 
 	//アニメーション
 	std::unique_ptr<Animations>animation_;

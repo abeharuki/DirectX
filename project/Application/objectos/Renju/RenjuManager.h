@@ -11,10 +11,6 @@ public:
 	void Draw(const ViewProjection& camera);
 	void DrawUI();
 
-	// 衝突を検出したら呼び出されるコールバック関数
-	void OnAllyCollision(const WorldTransform& worldTransform);
-	void OnCollision(const WorldTransform& worldTransform);
-
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
 

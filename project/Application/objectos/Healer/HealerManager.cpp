@@ -199,17 +199,6 @@ void HealerManager::DrawUI(){
 
 void HealerManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }
 
-void HealerManager::OnAllyCollision(const WorldTransform& worldTransform) {
-	isHit_ = true;
-	if (isHit_ != preHit_) {
-		healer_->OnAllyCollision(worldTransform);
-	}
-
-
-}
-
-
-
 void HealerManager::SetParticlePos(Vector3 pos) {
 	emitter_.translate = pos;
 	isParticle_ = true;

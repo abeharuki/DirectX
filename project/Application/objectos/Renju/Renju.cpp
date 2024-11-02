@@ -586,40 +586,11 @@ void Renju::InitPos(){
 }
 
 // 衝突を検出したら呼び出されるコールバック関数
-void Renju::OnAllyCollision(const WorldTransform& worldTransform) {
-	worldTransform;
-};
-void Renju::OnCollision(const WorldTransform& worldTransform) {
-	worldTransform;
-	//const float kSpeed = 3.0f;
-	//velocity_ = { 0.0f, 0.0f, -kSpeed };
-	//velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
-	if (hp_ > 0) {
-		//behaviorRequest_ = Behavior::knock;
-	}
-	isHit_ = true;
-
-	if (isHit_ != preHit_) {
-		hp_ -= 10;
-		alpha_ = 2.0f;
-		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-		numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
-		damageModel_->SetTexture("character/10.png");
-	}
-
-};
-
 void Renju::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			if (enemy_->isAttack()) {
-				//const float kSpeed = 3.0f;
-				//velocity_ = { 0.0f, 0.0f, -kSpeed };
-				//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-				if (hp_ > 0) {
-					//behaviorRequest_ = Behavior::knock;
-				}
 
 				isHit_ = true;
 
@@ -656,13 +627,8 @@ void Renju::OnCollision(Collider* collider) {
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
-		if (enemy_->isAttack()) {
-			//const float kSpeed = 3.0f;
-			//velocity_ = { 0.0f, 0.0f, -kSpeed };
-			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			if (hp_ > 0) {
-				//behaviorRequest_ = Behavior::knock;
-			}
+		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kGround) {
+			
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
@@ -673,6 +639,18 @@ void Renju::OnCollision(Collider* collider) {
 				damageModel_->SetTexture("character/20.png");
 			}
 
+		}
+
+		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kThrowing) {
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				hp_ -= 10;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
+			}
 		}
 	}
 

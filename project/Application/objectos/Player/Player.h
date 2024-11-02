@@ -81,7 +81,6 @@ public: // メンバ関数
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
-	void OnCollision(const WorldTransform& worldTransform);
 
 	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
@@ -128,8 +127,6 @@ public: // メンバ関数
 	void SetCamera(const ViewProjection& camera) {camera_ = camera;}
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
-	//敵攻撃フラグ
-	void SetEnemyAttack(bool attack) { isEnemyAttack_ = attack; }
 	void SetEnemyLength(Vector3 pos){
 		// 敵の座標までの距離
 		length_ = Math::Length(Math::Subract(pos, worldTransformBase_.translate));
@@ -257,9 +254,6 @@ private: // メンバ変数
 
 	bool preHit_;
 	bool isHit_;
-
-	//敵の攻撃フラグ
-	bool isEnemyAttack_;
 
 	//味方の死亡フラグ
 	bool tankDead_;

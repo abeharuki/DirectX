@@ -677,61 +677,30 @@ void Tank::InitPos(){
 }
 
 // 衝突を検出したら呼び出されるコールバック関数
-void Tank::OnAllyCollision(const WorldTransform& worldTransform) {
-	worldTransform;
-};
-void Tank::OnCollision(const WorldTransform& worldTransform) {
-	worldTransform;
-	//const float kSpeed = 3.0f;
-	//velocity_ = { 0.0f, 0.0f, -kSpeed };
-	//velocity_ = Math::TransformNormal(velocity_, worldTransform.matWorld_);
-	if (hp_ > 0) {
-		//behaviorRequest_ = Behavior::knock;
-	}
-	
-
-	isHit_ = true;
-	if (isHit_ != preHit_) {
-		hp_ -= 10.0f;
-		alpha_ = 2.0f;
-		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-		numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
-		damageModel_->SetTexture("character/10.png");
-	}
-
-};
 void Tank::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
-			if (enemy_->isAttack()) {
-				//const float kSpeed = 3.0f;
-				//velocity_ = { 0.0f, 0.0f, -kSpeed };
-				//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-				if (hp_ > 0) {
-					//behaviorRequest_ = Behavior::knock;
+		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+					hp_ -= 10.0f;
+					alpha_ = 2.0f;
+					worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+					numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+					damageModel_->SetTexture("character/10.png");
 				}
-				isHit_ = true;
-
-				if (isHit_ != preHit_) {
-					if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
-						hp_ -= 10.0f;
-						alpha_ = 2.0f;
-						worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-						numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
-						damageModel_->SetTexture("character/10.png");
-					}
-					else {
-						hp_ -= 5.0f;
-					}
-
-				}
-
-				if (stanAttack_) {
-					stanAttack_ = false;
+				else {
+					hp_ -= 5.0f;
 				}
 
 			}
+
+			if (stanAttack_) {
+				stanAttack_ = false;
+			}
+
 		}
 	
 
@@ -750,13 +719,9 @@ void Tank::OnCollision(Collider* collider) {
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
-		if (enemy_->isAttack()&& enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
-			//const float kSpeed = 3.0f;
-			//velocity_ = { 0.0f, 0.0f, -kSpeed };
-			//velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
-			if (hp_ > 0) {
-				//behaviorRequest_ = Behavior::knock;
-			}
+		//衝撃波の当たり判定
+		if (enemy_->isAttack()&& enemy_->GetBehaviorAttack() == BehaviorAttack::kGround) {
+			
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
@@ -768,6 +733,18 @@ void Tank::OnCollision(Collider* collider) {
 			}
 
 		}
+		//投擲の当たり判定
+		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kThrowing) {
+			isHit_ = true;
+			if (isHit_ != preHit_) {
+				hp_ -= 10.0f;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
+			}
+		}
+
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {

@@ -96,8 +96,6 @@ void PlayerManager::Update() {
 	preHitT_ = isHitT_;
 	isHitT_ = false;
 
-	OnCollision();
-
 
 	
 	if (Input::PushKey(DIK_P)) {
@@ -267,9 +265,7 @@ void PlayerManager::OnTCollision() {
 	}
 
 }
-void PlayerManager::OnCollision() {
-	
-};
+
 
 void PlayerManager::SetParticlePos(Vector3 pos) {
 	emitter_.translate = pos;

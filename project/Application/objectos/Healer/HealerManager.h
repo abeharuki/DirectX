@@ -12,13 +12,8 @@ public:
 	
 	
 	//プレイヤーに追従
-	//  プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
 	
-
-	// 衝突を検出したら呼び出されるコールバック関数
-	void OnAllyCollision(const WorldTransform& worldTransform);
-
 	void Dissolve() {
 		threshold_ += 0.004f;
 		

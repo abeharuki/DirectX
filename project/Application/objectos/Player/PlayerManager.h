@@ -15,7 +15,7 @@ public:
 	void OnHCollision();
 	void OnRCollision();
 	void OnTCollision();
-	void OnCollision();
+
 
 	//復活(今は使ってない)
 	void Revival() { 

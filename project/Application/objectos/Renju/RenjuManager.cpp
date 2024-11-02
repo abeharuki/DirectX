@@ -194,22 +194,6 @@ void RenjuManager::SetParticlePos(Vector3 pos) {
 	isParticle_ = true;
 }
 
-// 衝突を検出したら呼び出されるコールバック関数
-void RenjuManager::OnAllyCollision(const WorldTransform& worldTransform) {
-	isHit_ = true;
-	if (isHit_ != preHit_) {
-		renju_->OnAllyCollision(worldTransform);
-	}
-
-};
-
-// 衝突を検出したら呼び出されるコールバック関数
-void RenjuManager::OnCollision(const WorldTransform& worldTransform) {
-	isHitE_ = true;
-	if (isHitE_ != preHitE_) {
-		renju_->OnCollision(worldTransform);
-	}
-};
 void RenjuManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }
 
 const WorldTransform& RenjuManager::GetWorldTransform() { return renju_->GetWorldTransform(); }

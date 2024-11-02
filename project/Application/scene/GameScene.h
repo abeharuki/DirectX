@@ -4,13 +4,8 @@
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include "DirectXCommon.h"
-#include "Model.h"
 #include "Engine.h"
-#include "Sprite.h"
 #include "Skydome.h"
-#include "Sphere.h"
-#include "ParticleSystem.h"
-#include "Ground.h"
 #include <Player/PlayerManager.h>
 #include "camera/followCamera.h"
 #include <Enemy/EnemyManager.h>
@@ -20,6 +15,7 @@
 #include "CollisionManager/CollisionManager.h"
 #include <Command/Command.h>
 #include <ModelLoader.h>
+#include "BaseCharacter.h"
 
 /// <summary>
 /// ゲームシーン
@@ -99,4 +95,7 @@ private: // メンバ変数
 	//バトル開始時のカメラ演出
 	bool cameraDirection_ = false;
 	int cameraDirectionTime_;
+
+
+	std::vector<BaseCharacter*> characters;
 };

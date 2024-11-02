@@ -188,24 +188,6 @@ void TankManager::DrawUI(){
 	}
 };
 
-
-// 衝突を検出したら呼び出されるコールバック関数
-void TankManager::OnAllyCollision(const WorldTransform& worldTransform) {
-	isHit_ = true;
-	if (isHit_ != preHit_) {
-		tank_->OnAllyCollision(worldTransform);
-	}
-
-}
-// 衝突を検出したら呼び出されるコールバック関数
-void TankManager::OnCollision(const WorldTransform& worldTransform) {
-	isHitE_ = true;
-	if (isHitE_ != preHitE_) {
-		tank_->OnCollision(worldTransform);
-	}
-};
-
-
 void TankManager::SetParticlePos(Vector3 pos) {
 	emitter_.translate = pos;
 	isParticle_ = true;

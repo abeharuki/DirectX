@@ -34,6 +34,7 @@ void Enemy::Initialize() {
 	worldTransformCircleArea_.Initialize();
 	worldTransformCircleArea_.scale = { 3.0f,3.0f,3.0f };
 	worldTransformImpact_.Initialize();
+	//衝撃波の当たり判定の設定
 	for (int i = 0; i < 15; ++i) {
 		worldTransformColliderImpact_[i].Initialize();
 		AABB aabb = { {-7.0f,-0.2f,-1 },{7.0f,0.2f,1} };
@@ -44,6 +45,13 @@ void Enemy::Initialize() {
 		colliderManager_[i]->SetCollisionAttribute(kCollisionAttributeEnemyAttack);
 		colliderManager_[i]->SetCollisionPrimitive(kCollisionPrimitiveOBB);
 	}
+	//投擲攻撃の当たり判定の設定
+	colliderRockManager_ = std::make_unique<ColliderManager>();
+	colliderRockManager_->SetRadius(2.f);
+	colliderRockManager_->SetCollisionMask(kCollisionMaskEnemyAttack);
+	colliderRockManager_->SetCollisionAttribute(kCollisionAttributeEnemyAttack);
+	colliderRockManager_->SetCollisionPrimitive(kCollisionPrimitiveSphere);
+
 
 	InitializeImpact();
 	clear_ = false;
@@ -54,6 +62,7 @@ void Enemy::Initialize() {
 	Relationship();
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
+
 	worldTransformImpact_.UpdateMatrix();
 	for (int i = 0; i < 15; ++i) {
 		worldTransformColliderImpact_[i].UpdateMatrix();
@@ -128,6 +137,7 @@ void Enemy::Update() {
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.TransferMatrix();
 	worldTransformRock_.UpdateMatrix();
+	colliderRockManager_->SetWorldTransform(worldTransformRock_);
 	worldTransformImpact_.UpdateMatrix();
 	worldTransformArea_.UpdateMatrix();
 	worldTransformCircleArea_.UpdateMatrix();
@@ -306,8 +316,8 @@ void Enemy::MoveUpdata() {
 };
 
 void Enemy::AttackInitialize() {
-
-	int num = RandomGenerator::GetRandomInt(1, 4);
+	//1,4
+	int num = RandomGenerator::GetRandomInt(3, 3);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
