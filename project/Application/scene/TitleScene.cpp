@@ -128,13 +128,6 @@ void TitleScene::Update() {
 	tankManager_->GetTank()->SetLight(directionLight_);
 	loader_->SetLight(directionLight_);
 
-	if (Input::PushKey(DIK_C)) {
-		SceneManager::GetInstance()->ChangeScene("ClearScene");
-	}
-
-	if (Input::PushKey(DIK_O)) {
-		SceneManager::GetInstance()->ChangeScene("OverScene");
-	}
 	PostEffect::GetInstance()->ValueOutLine(a_);
 
 	ImGui::Begin("Player");

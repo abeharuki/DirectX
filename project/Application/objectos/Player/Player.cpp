@@ -198,7 +198,7 @@ void Player::MoveInitialize() {
 	workAttack_.isAttack = false;
 	dash_ = false;
 	combo_ = false;
-	outo_ = false;
+	auto_ = false;
 	animation_->SetpreAnimationTimer(0);
 	flameTime_ = 30.0f;
 	animation_->SetLoop(true);
@@ -251,7 +251,8 @@ void Player::MoveUpdata() {
 			}
 		}
 
-		if (outo_) {
+		//敵に向かって行く
+		if (auto_) {
 			animationNumber_ = run;
 			// 敵の座標までの距離
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
@@ -276,7 +277,7 @@ void Player::MoveUpdata() {
 
 
 			if (length < 5) {
-				outo_ = false;
+				auto_ = false;
 				behaviorRequest_ = Behavior::kAttack;
 			}
 
@@ -290,11 +291,11 @@ void Player::MoveUpdata() {
 
 		// 攻撃
 		if (attackType_[kNormalAttack] && !preNoAttack_) {
-			outo_ = true;
+			auto_ = true;
 			// 敵の座標までの距離
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 			if (length < 5) {
-				outo_ = false;
+				auto_ = false;
 				behaviorRequest_ = Behavior::kAttack;
 			}
 		}
@@ -385,7 +386,7 @@ void Player::MoveUpdata() {
 		
 		
 
-		if (outo_) {
+		if (auto_) {
 			animationNumber_ = run;
 			// 敵の座標までの距離
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
@@ -410,7 +411,7 @@ void Player::MoveUpdata() {
 
 
 			if (length < 5) {
-				outo_ = false;
+				auto_ = false;
 				behaviorRequest_ = Behavior::kAttack;
 			}
 
@@ -423,11 +424,11 @@ void Player::MoveUpdata() {
 
 		//攻撃
 		if (attackType_[kNormalAttack]) {
-			outo_ = true;
+			auto_ = true;
 			// 敵の座標までの距離
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 			if (length < 5) {
-				outo_ = false;
+				auto_ = false;
 				behaviorRequest_ = Behavior::kAttack;
 			}
 			
@@ -452,8 +453,10 @@ void Player::JumpInitialize() {
 	flameTime_ = 30.0f;
 	animation_->SetAnimationTimer(0.5f, flameTime_);
 	animation_->SetLoop(false);
+
 };
 void Player::JumpUpdata() {
+	root_ = true;
 	// 移動
 	worldTransformBase_.translate += velocity_;
 	// 重力加速度
@@ -478,7 +481,7 @@ void Player::DashInitialize() {
 }
 void Player::DashUpdata() {
 	// dashTimer -= 4;
-
+	root_ = true;
 	Vector3 velocity = { 0, 0, workDash_.dashSpeed };
 
 	velocity = Math::TransformNormal(velocity, worldTransformBase_.matWorld_);

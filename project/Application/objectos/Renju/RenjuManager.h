@@ -14,15 +14,12 @@ public:
 	// プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
 
-	void Dissolve() {
-		threshold_ += 0.004f;
-	}
+	
 
 	/*-----ゲッター-----*/
 	Renju* GetRenju() { return renju_.get(); };
 	const WorldTransform& GetWorldTransform();
-	// 弾リストの取得
-	const std::list<RenjuBullet*>& GetBullets() const { return renju_->GetBullets(); }
+
 
 	/*-----セッター-----*/
 	void SetParticlePos(Vector3 pos);
@@ -54,7 +51,6 @@ private:
 	EmitterSphere emitter_;
 	bool isParticle_ = false;
 
-	float threshold_ = 0.0f;//ディゾルブ
 	Vector3 playerPos_;
 
 	Vector2 spriteHpSize_;//hpサイズ

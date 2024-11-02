@@ -1,15 +1,7 @@
 #include "RenjuBullet.h"
 #include <cassert>
+#include <CollisionManager/CollisionConfig.h>
 
-Vector3 RenjuBullet::GetWorldPosition() {
-	// ワールド座標を入れる関数
-	Vector3 worldPos;
-	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransform_.matWorld_.m[3][0];
-	worldPos.y = worldTransform_.matWorld_.m[3][1];
-	worldPos.z = worldTransform_.matWorld_.m[3][2];
-	return worldPos;
-}
 
 
 
@@ -30,6 +22,11 @@ void RenjuBullet::Initialize(
 	worldTransform_.rotate = rotation;
 	// 引数で受け取った速度をメンバ変数に代入
 	velocity_ = velocity;
+	AABB aabbSize{ .min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f} };
+	SetAABB(aabbSize);
+	SetCollisionPrimitive(kCollisionPrimitiveAABB);
+	SetCollisionAttribute(kCollisionAttributeRenju);
+	SetCollisionMask(kCollisionMaskRenju);
 };
 
 /// <summary>
@@ -45,6 +42,7 @@ void RenjuBullet::Update() {
 	worldTransform_.translate = worldTransform_.translate + velocity_;
 
 	worldTransform_.UpdateMatrix();
+
 };
 
 /// <summary>
@@ -54,6 +52,18 @@ void RenjuBullet::Draw(const ViewProjection& viewprojection) {
 	model_->Draw(worldTransform_, viewprojection, false);
 };
 
-void RenjuBullet::OnCollision() {
-	isDead_ = true;
+void RenjuBullet::OnCollision(Collider* collider) {
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+		isDead_ = true;
+	}
+}
+
+const Vector3 RenjuBullet::GetWorldPosition() const {
+	// ワールド座標を入れる関数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
 }

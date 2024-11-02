@@ -10,10 +10,6 @@ class TankManager {
 		void Draw(const ViewProjection& camera);
 		void DrawUI();
 		
-
-		//ディゾルブ
-		void Dissolve() {threshold_ += 0.004f;}
-
 		// プレイヤーに追従
 		void followPlayer(Vector3 playerPos);
 
@@ -54,7 +50,6 @@ class TankManager {
 		bool isParticle_ = false;
 		//デスフラグ
 		bool isDead_ = false;
-		float threshold_ = 0.0f;
 
 		Vector3 playerPos_;
 

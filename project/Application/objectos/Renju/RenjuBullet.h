@@ -1,9 +1,8 @@
 #pragma once
-#include "Model.h"
-#include "ViewProjection.h"
-#include "WorldTransform.h"
+#include <CollisionManager/Collider.h>
+#include <Model.h>
 
-class RenjuBullet {
+class RenjuBullet : public Collider {
 public:
 
 	void Initialize(
@@ -13,18 +12,17 @@ public:
 
 	void Update();
 
-
 	void Draw(const ViewProjection& viewprojection);
 
 	bool IsDead() const { return isDead_; }
 
-	// ワールド座標を取得
-	Vector3 GetWorldPosition();
-
-	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
-
 	
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision(Collider* collider) override;
+
+	/*-----ゲッター-----*/
+	const Vector3 GetWorldPosition() const override;
+	const WorldTransform& GetWorldTransform() const override { return worldTransform_; }
 
 private:
 	WorldTransform worldTransform_;

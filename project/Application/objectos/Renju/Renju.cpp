@@ -74,15 +74,22 @@ void Renju::Update() {
 		behaviorTree_->Update();
 	}
 
+	hitBullet_ = false;
+	for (RenjuBullet* bullet : bullets_) {
+		if (bullet->IsDead()) {
+			hitBullet_ = true;
+		}
+	}
+
 	// デスフラグが立った弾を削除
 	bullets_.remove_if([](RenjuBullet* bullet) {
 		if (bullet->IsDead()) {
-
+			
 			delete bullet;
 			return true;
 		}
 		return false;
-		});
+	});
 
 	for (RenjuBullet* bullet : bullets_) {
 
@@ -612,6 +619,7 @@ void Renju::OnCollision(Collider* collider) {
 		}
 
 
+		/*----------押し出し処理----------*/
 		OBB obb = {
 			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
 

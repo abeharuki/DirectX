@@ -96,7 +96,7 @@ public: // メンバ関数
 	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }
 	bool IsOver() { return isOver_; }
-	bool IsOuto() { return outo_; }
+	bool IsOuto() { return auto_; }
 	float GetHp() { return hp_; }
 	float GetMp() { return mp_; }
 	int GetRevival() { return revivalCount_; }
@@ -229,7 +229,7 @@ private: // メンバ変数
 	bool combo_;
 	bool noAttack_;
 	bool preNoAttack_;
-	bool outo_;
+	bool auto_;
 
 	// 攻撃の時間
 	const uint32_t behaviorAttackTime = 15;

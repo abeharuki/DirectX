@@ -87,10 +87,6 @@ void GameScene::Update() {
 	BattleBegin();
 	
 
-	if (Input::PushKey(DIK_P)) {
-		SceneManager::GetInstance()->ChangeScene("ClearScene");
-	}
-
 	if (enemyManager_->IsClear() && isFadeOut_) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
 	}
@@ -209,16 +205,14 @@ void GameScene::Update() {
 	if (healerManager_->IsAttack()) {enemyManager_->OnHealerCollision();}
 	if (tankManager_->GetAttack()) {enemyManager_->OnTankCollision();}
 	if (playerManager_->IsAttack()) {enemyManager_->OnCollision();}
-
-
+	if (renjuManager_->GetRenju()->GetHitBullet()) {enemyManager_->OnRenjuCollision();}
+	
+	
 	//倒された時のディゾルブ
 	if (playerManager_->GetPlayer()->GetHp() <= 0) {
 		healerManager_->GetHealer()->Dissolve();
 		renjuManager_->GetRenju()->Dissolve();
 		tankManager_->GetTank()->Dissolve();
-		healerManager_->Dissolve();
-		renjuManager_->Dissolve();
-		tankManager_->Dissolve();
 	}
 
 	// 追従カメラの更新
@@ -418,8 +412,14 @@ void GameScene::CheckAllCollision() {
 	}
 	
 	collisionManager_->SetColliderList(healerManager_->GetHealer());
-	collisionManager_->SetColliderList(renjuManager_->GetRenju());
+	collisionManager_->SetColliderList(renjuManager_->GetRenju());	
 	collisionManager_->SetColliderList(tankManager_->GetTank());
+
+	for (RenjuBullet* bullet : renjuManager_->GetRenju()->GetBullets()) {
+		collisionManager_->SetColliderList(bullet);
+	}
+	
+
 	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
 		collisionManager_->SetColliderList(loader_->GetCollider(i));
 	}
@@ -430,23 +430,4 @@ void GameScene::CheckAllCollision() {
 	playerManager_->GetPlayer()->SetRenjuDead(renjuManager_->GetRenju()->IsDead());
 	playerManager_->GetPlayer()->SetHealerDead(healerManager_->GetHealer()->IsDead());
 
-	// 判定対象AとBの座標
-	Vector3 posA, posB;
-
-	const std::list<RenjuBullet*>& renjuBullets = renjuManager_->GetBullets();
-
-#pragma region 敵とレンジャーの弾の当たり判定
-	// 敵キャラ座標
-	posA = { enemyManager_->GetEnemy()->GetWorldPosition().x,enemyManager_->GetEnemy()->GetWorldPosition().y + 6.0f,enemyManager_->GetEnemy()->GetWorldPosition().z };
-	//レンジャー弾
-	for (RenjuBullet* bullet : renjuBullets) {
-		posB = bullet->GetWorldPosition();
-
-		if (Math::IsAABBCollision(posA, { 2.0f, 6.0f, 1.0f }, posB, { 0.3f, 0.3f, 0.3f })) {
-			bullet->OnCollision();
-			enemyManager_->OnRenjuCollision();
-			renjuManager_->SetParticlePos(posB);
-		}
-	}
-#pragma endregion
 }

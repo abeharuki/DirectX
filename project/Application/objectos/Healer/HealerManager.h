@@ -13,11 +13,6 @@ public:
 	
 	//プレイヤーに追従
 	void followPlayer(Vector3 playerPos);
-	
-	void Dissolve() {
-		threshold_ += 0.004f;
-		
-	}
 
 	/*-----ゲッター-----*/
 	Healer* GetHealer() { return healer_.get(); };
@@ -55,7 +50,6 @@ private:
 	bool isParticle_ = false;
 
 	bool isDead_ = false;
-	float threshold_ = 0.0f;//ディゾルブ
 
 	Vector3 playerPos_;
 	

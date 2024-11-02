@@ -75,6 +75,7 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
+	bool GetHitBullet() { return hitBullet_; }
 	float GetHp() { return hp_; }
 	float GetMp() { return mp_; }
 	bool IsDead() { return isDead_; }
@@ -151,7 +152,9 @@ private: // メンバ変数
 	// 味方の押し出し処理
 	Vector3 allyVelocity;
 
+	//攻撃フラグ
 	bool attack_;
+	bool hitBullet_ = false;
 
 	// プレイヤー座標
 	float minDistance_ = 10.0f;
