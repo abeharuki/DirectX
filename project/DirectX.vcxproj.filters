@@ -190,6 +190,12 @@
     <Filter Include="リソース ファイル\CS">
       <UniqueIdentifier>{4e837183-7f4d-4ec2-b177-fb1ecb8786e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="imnodes">
+      <UniqueIdentifier>{191fbcc2-d209-4f9c-b8fc-b8117e5e4c9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Application\Editor">
+      <UniqueIdentifier>{ab0fa621-7868-43df-aa48-b75f1e727a0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -427,10 +433,10 @@
       <Filter>ソース ファイル\Engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="externals\imnode\imnodes.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>imnodes</Filter>
     </ClCompile>
     <ClCompile Include="Application\Editor\editor.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Application\Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -776,10 +782,10 @@
       <Filter>ヘッダー ファイル\Application\objects\Tank</Filter>
     </ClInclude>
     <ClInclude Include="externals\imnode\imnodes.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>imnodes</Filter>
     </ClInclude>
     <ClInclude Include="externals\imnode\imnodes_internal.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>imnodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
