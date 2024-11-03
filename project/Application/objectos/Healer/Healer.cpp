@@ -396,7 +396,7 @@ void Healer::AttackUpdate() {
 	// 攻撃の合計時間
 	uint32_t totalTime = anticipationTime + chargeTime + swingTime;
 
-
+	//攻撃が終わったら
 	if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
 		workAttack_.attackParameter_ = 0;
 		searchTarget_ = true;

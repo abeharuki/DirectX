@@ -239,7 +239,6 @@ void GameScene::Update() {
 	
 }
 
-
 void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理

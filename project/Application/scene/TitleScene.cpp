@@ -108,7 +108,7 @@ void TitleScene::Update() {
 
 	PostEffect::GetInstance()->ValueOutLine(a_);
 
-	ImGui::Begin("Player");
+	ImGui::Begin("Playe");
 	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 10.0f);
 	ImGui::End();
@@ -120,9 +120,9 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-	NodeEditor::editor.load("Player");
+	NodeEditor::editor.load("Healer");
 	NodeEditor::editor.show();
-	NodeEditor::editor.save("Player");
+	NodeEditor::editor.save("Healer");
 
 }
 
