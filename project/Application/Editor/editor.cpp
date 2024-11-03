@@ -383,12 +383,7 @@ namespace NodeEditor
 
 			void GetNodeOutPut(){}
 
-		private:
-
-			void DeleatNode(){
 		
-		    }
-
 		private:
 			std::vector<Node> nodes_;
 			std::vector<Link> links_;
