@@ -168,29 +168,7 @@ namespace NodeEditor
 
 					ImNodes::EndNode();
 
-					//if (ImNodes::IsNodeSelected(node.id)) {
-					//	ImGui::OpenPopup("Edit Node"); // ノードが選択されたらポップアップを開く
-					//}
-
-					//if (ImGui::BeginPopup("Edit Node")) {
-					//	for (size_t i = 0; i < node.outputNames.size(); ++i) {
-					//		char buffer[128];
-					//		strncpy_s(buffer, sizeof(buffer), node.outputNames[i].c_str(), _TRUNCATE);
-					//		if (ImGui::InputText(("Output Name " + std::to_string(i + 1)).c_str(), buffer, sizeof(buffer))) {
-					//			node.outputNames[i] = buffer; // 名前を更新
-					//		}
-					//	}
-					//	ImGui::EndPopup();
-					//}
-
-					// //NodeTypeによる出力属性の条件分岐
-					//for (size_t i = 0; i < node.outputNames.size(); ++i) {
-					//	ImNodes::BeginOutputAttribute((node.id << 24) + int(i));
-					//	ImGui::TextUnformatted(node.outputNames[i].c_str()); // ユーザーが指定した名前を表示
-					//	ImNodes::EndOutputAttribute();
-					//}
-
-
+					
 					// 右クリックで削除ポップアップを開く
 					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
 					{
