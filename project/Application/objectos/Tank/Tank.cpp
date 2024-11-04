@@ -61,10 +61,6 @@ void Tank::Initialize() {
 /// 毎フレーム処理
 /// </summary>
 void Tank::Update() {
-	// 前のフレームの当たり判定のフラグを取得
-	preHit_ = isHit_;
-	isHit_ = false;
-
 	// 状態が変わった場合にノードの初期化を行う
 	if (state_ != previousState_) {
 		// 状態に応じた初期化処理を呼び出す
@@ -74,13 +70,24 @@ void Tank::Update() {
 		previousState_ = state_;  // 現在の状態を記録しておく
 	}
 
+	// 前のフレームの当たり判定のフラグを取得
+	preHit_ = isHit_;
+	isHit_ = false;
 
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 	
+	editor_.load("Tank");
+	editor_.show("TankNode");
+	editor_.save("Tank");
+
 	if (hp_ <= 0) {
 		hp_ = 0;
-		state_ = CharacterState::Dead;
+		if (NextState("Move", Output4) == CharacterState::Dead ||
+			NextState("Attack", Output3) == CharacterState::Dead ||
+			NextState("Jump", Output2) == CharacterState::Dead) {
+			state_ = CharacterState::Dead;
+		}
 
 	}
 
@@ -221,19 +228,19 @@ void Tank::MoveUpdate() {
 			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
 
 			if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
-				state_ = CharacterState::Jumping;
+				state_ = NextState("Move", Output2);
 			}
 			
 			if (Math::isWithinRange(enemylength_,10,5)&& Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
-				state_ = CharacterState::Jumping;
+				state_ = NextState("Move", Output2);
 			}
 
 			if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
-				state_ = CharacterState::Jumping;
+				state_ = NextState("Move", Output2);
 			}
 
 			if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
-				state_ = CharacterState::Jumping;
+				state_ = NextState("Move", Output2);
 			}
 		}
 		
@@ -265,7 +272,7 @@ void Tank::JumpUpdate() {
 
 	if (worldTransformBase_.translate.y <= 0.0f) {
 		// ジャンプ終了
-		state_ = CharacterState::Moveing;
+		state_ = NextState("Jump", Output1);
 		velocity_.y = 0.0f;
 	}
 };
@@ -284,10 +291,10 @@ void Tank::knockUpdate() {
 	if (--nockTime_ <= 0) {
 		nockBack_ = false;
 		if (hp_ <= 0) {
-			state_ = CharacterState::Dead;
+			//state_ = CharacterState::Dead;
 		}
 		else {
-			state_ = CharacterState::Moveing;
+			//state_ = CharacterState::Moveing;
 		}
 		animation_->SetAnimationTimer(0, 9.0f);
 		animation_->SetpreAnimationTimer(0);
@@ -325,7 +332,7 @@ void Tank::AttackUpdate() {
 
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
-		state_ = CharacterState::Moveing;
+		state_ = NextState("Attack", Output1);
 		searchTarget_ = true;
 	}
 
@@ -349,7 +356,7 @@ void Tank::AttackUpdate() {
 	else if (fireTimer_ <= 0) {
 		fireTimer_ = 40;
 		coolTime = 60;
-		state_ = CharacterState::Moveing;
+		state_ = NextState("Attack", Output1);
 	}
 
 
@@ -361,19 +368,19 @@ void Tank::AttackUpdate() {
 				//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
 
 				if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
-					state_ = CharacterState::Jumping;
+					state_ = NextState("Attack", Output2);
 				}
 
 				if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
-					state_ = CharacterState::Jumping;
+					state_ = NextState("Attack", Output2);
 				}
 
 				if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
-					state_ = CharacterState::Jumping;
+					state_ = NextState("Attack", Output2);
 				}
 
 				if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
-					state_ = CharacterState::Jumping;
+					state_ = NextState("Attack", Output2);
 				}
 			}
 
@@ -384,7 +391,7 @@ void Tank::AttackUpdate() {
 	if (operation_) {
 		
 
-		state_ = CharacterState::Moveing;
+		state_ = NextState("Attack", Output1);
 		followPlayer_ = true;
 		searchTarget_ = false;
 		attack_ = false;
@@ -439,7 +446,7 @@ void Tank::UniqueUpdate(){
 		fireTimer_ = 40;
 		coolTime = 60;
 		stanAttack_ = false;
-		state_ = CharacterState::Moveing;
+		//state_ = CharacterState::Moveing;
 	}
 
 }
@@ -486,7 +493,7 @@ void Tank::DeadUpdate() {
 
 	if (revivalCount_ >= 60) {
 		hp_ = 21;
-		state_ = CharacterState::Moveing;
+		//state_ = CharacterState::Moveing;
 		isDead_ = false;
 	}
 
@@ -577,11 +584,11 @@ void Tank::searchTarget(Vector3 enemyPos) {
 			animationNumber_ = standby;
 			if (coolTime <= 0 && !isArea_ && enemy_->GetBehavior() != Behavior::kDead) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
-					state_ = CharacterState::Attacking;
+					state_ = NextState("Move", Output1);
 				}
 				else {
 					if (!enemy_->IsBehaberAttack()) {
-						state_ = CharacterState::Attacking;
+						state_ = NextState("Move", Output1);
 					}
 					
 				}
@@ -686,7 +693,7 @@ CharacterState Tank::NextState(std::string name, int outputNum)
 	else if (linkedNode.name == "Jump") {
 		return CharacterState::Jumping;
 	}
-	else if (linkedNode.name == "Heal") {
+	else if (linkedNode.name == "Stan") {
 		return CharacterState::Unique;
 	}
 	else if (linkedNode.name == "Dead") {

@@ -121,9 +121,7 @@ void TitleScene::Update() {
 	ImGui::End();
 
 
-	editor_.load("Tank");
-	editor_.show("TankNode");
-	editor_.save("Tank");
+	
 }
 
 void TitleScene::Draw() {

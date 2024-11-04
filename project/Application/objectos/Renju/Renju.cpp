@@ -611,7 +611,7 @@ CharacterState Renju::NextState(std::string name, int outputNum)
 	else if (linkedNode.name == "Jump") {
 		return CharacterState::Jumping;
 	}
-	else if (linkedNode.name == "Heal") {
+	else if (linkedNode.name == "???") {//まだスキルがない
 		return CharacterState::Unique;
 	}
 	else if (linkedNode.name == "Dead") {
