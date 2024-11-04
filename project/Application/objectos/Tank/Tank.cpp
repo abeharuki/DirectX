@@ -195,13 +195,13 @@ void Tank::MoveUpdate() {
 
 	if (enemy_->GetBehavior() != Behavior::kStan && !operation_) {
 		if (enemy_->IsBehaberAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && mp_ >= 20) {
-			//state_ = CharacterState::Unique;
+			//state_ = NextState("Move", Output3);
 		}
 	}
 	
 
 	if (Input::PressKey(DIK_T)) {
-		//state_ = CharacterState::Unique;
+		//state_ = NextState("Move", Output3);
 	}
 
 	if (isArea_ && searchTarget_ && enemy_->IsAreaDraw()) {
