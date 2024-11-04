@@ -69,7 +69,8 @@ namespace Editor
 		char new_node_name[128] = ""; // 新しいノード名の入力用
 		NodeType selected_type;
 
-		bool selectEditor_;
+		ImVec2 offset_;
+		bool isFocused_;
 	};
 
 

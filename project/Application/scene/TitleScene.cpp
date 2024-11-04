@@ -108,7 +108,7 @@ void TitleScene::Update() {
 
 	PostEffect::GetInstance()->ValueOutLine(a_);
 
-	ImGui::Begin("Playe");
+	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 10.0f);
 	ImGui::End();
@@ -131,9 +131,10 @@ void TitleScene::Update() {
 	editor2_.show("HealerNode");
 	editor2_.save("Healer");
 
-	/*std::string nodeName1 = editor2_.GetLinkNode("Move", 0).name;
+	std::string nodeName1 = editor2_.GetLinkNode("Move", 0).name;
 	std::string nodeName2 = editor2_.GetLinkNode("Move", 1).name;
-	std::string nodeName3 = editor2_.GetLinkNode("Move", 2).name;*/
+	std::string nodeName3 = editor1_.GetLinkNode("Attack", 0).name;
+	std::string nodeName4 = editor1_.GetLinkNode("Attack", 1).name;
 }
 
 void TitleScene::Draw() {

@@ -8,15 +8,29 @@ namespace Editor
 	{
 
 		bool node_deleted = false;
-		static std::vector<std::string> outputNames;
+		std::vector<std::string> outputNames;
 		if (ImGui::Begin(filename.c_str())) {
 
 			ImGui::TextUnformatted("Press N to add a node.");
 
+			if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+				if (!isFocused_) {
+					// フォーカスを失う前の状態を保存
+					offset_ = ImNodes::EditorContextGetPanning();
+				}
+				isFocused_ = true;
+			}
+			else {
+				if (isFocused_) {
+					// フォーカスが失われたときにのみパニングをリセット
+					ImNodes::EditorContextResetPanning(offset_);
+					isFocused_ = false;
+				}
+			}
+
 			ImNodes::BeginNodeEditor();
 
-
-
+			
 			// ノード追加用のポップアップを表示
 			if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
 				ImNodes::IsEditorHovered() && ImGui::IsKeyReleased(ImGuiKey_N))
@@ -213,46 +227,49 @@ namespace Editor
 	//セーブするファイル名
 	void NodeEditor::save(const std::string& filename) {
 
-		// ファイルパスを作成
-		std::string ini_filepath = "Application/Editor/" + filename + ".ini";
-		std::string bytes_filepath = "Application/Editor/" + filename + ".bytes";
+		if (isFocused_) {
 
-		//状態をセーブ
-		ImNodes::SaveCurrentEditorStateToIniFile(ini_filepath.c_str());
+			// ファイルパスを作成
+			std::string ini_filepath = "Application/Editor/" + filename + ".ini";
+			std::string bytes_filepath = "Application/Editor/" + filename + ".bytes";
 
-		//エディタの状態をバイナリファイルに書き出す
-		std::fstream fout(bytes_filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+			//状態をセーブ
+			ImNodes::SaveCurrentEditorStateToIniFile(ini_filepath.c_str());
 
-		//ノード情報をコピー
-		const size_t num_nodes = nodes_.size();
-		fout.write(reinterpret_cast<const char*>(&num_nodes), static_cast<std::streamsize>(sizeof(size_t)));
-		for (const Node& node : nodes_) {
-			fout.write(reinterpret_cast<const char*>(&node.id), sizeof(int));
-			fout.write(reinterpret_cast<const char*>(&node.type), sizeof(NodeType));
+			//エディタの状態をバイナリファイルに書き出す
+			std::fstream fout(bytes_filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
-			// ノード名のセーブ
-			size_t name_size = node.name.size();
-			fout.write(reinterpret_cast<const char*>(&name_size), sizeof(size_t));
-			fout.write(node.name.c_str(), name_size);
+			//ノード情報をコピー
+			const size_t num_nodes = nodes_.size();
+			fout.write(reinterpret_cast<const char*>(&num_nodes), static_cast<std::streamsize>(sizeof(size_t)));
+			for (const Node& node : nodes_) {
+				fout.write(reinterpret_cast<const char*>(&node.id), sizeof(int));
+				fout.write(reinterpret_cast<const char*>(&node.type), sizeof(NodeType));
 
-			// 出力名のセーブ
-			size_t output_count = node.outputNames.size();
-			fout.write(reinterpret_cast<const char*>(&output_count), sizeof(size_t));
-			for (const auto& outputName : node.outputNames) {
-				size_t output_name_size = outputName.size();
-				fout.write(reinterpret_cast<const char*>(&output_name_size), sizeof(size_t));
-				fout.write(outputName.c_str(), output_name_size);
+				// ノード名のセーブ
+				size_t name_size = node.name.size();
+				fout.write(reinterpret_cast<const char*>(&name_size), sizeof(size_t));
+				fout.write(node.name.c_str(), name_size);
+
+				// 出力名のセーブ
+				size_t output_count = node.outputNames.size();
+				fout.write(reinterpret_cast<const char*>(&output_count), sizeof(size_t));
+				for (const auto& outputName : node.outputNames) {
+					size_t output_name_size = outputName.size();
+					fout.write(reinterpret_cast<const char*>(&output_name_size), sizeof(size_t));
+					fout.write(outputName.c_str(), output_name_size);
+				}
 			}
+
+			//リンク情報をコピー
+			const size_t num_links = links_.size();
+			fout.write(reinterpret_cast<const char*>(&num_links), static_cast<std::streamsize>(sizeof(size_t)));
+			fout.write(reinterpret_cast<const char*>(links_.data()), static_cast<std::streamsize>(sizeof(Link) * num_links));
+
+			//current_idをコピー
+			fout.write(reinterpret_cast<const char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
+			fout.close();
 		}
-
-		//リンク情報をコピー
-		const size_t num_links = links_.size();
-		fout.write(reinterpret_cast<const char*>(&num_links), static_cast<std::streamsize>(sizeof(size_t)));
-		fout.write(reinterpret_cast<const char*>(links_.data()), static_cast<std::streamsize>(sizeof(Link) * num_links));
-
-		//current_idをコピー
-		fout.write(reinterpret_cast<const char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
-		fout.close();
 	}
 
 
