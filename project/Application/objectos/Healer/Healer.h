@@ -10,6 +10,7 @@
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
 #include <ParticleSystem.h>
+#include "Editor/editor.h"
 
 /// <summary>
 /// ゲームシーン
@@ -128,6 +129,7 @@ public: // メンバ関数
 		
 	}
 	
+	
 
 private:
 	//敵を探す
@@ -139,6 +141,11 @@ private:
 
 	// パーツ親子関係
 	void Relationship();
+
+	//次の状態遷移をノードから検索
+	CharacterState nextState(std::string name,int outputNum);
+
+
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
@@ -278,4 +285,6 @@ private: // メンバ変数
 	float renjuHp_;
 	float tankHp_;
 
+	//ノードエディター
+	Editor::NodeEditor editor_;
 };

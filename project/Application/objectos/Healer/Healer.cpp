@@ -117,10 +117,20 @@ void Healer::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
+	//ノードの更新
+	editor_.load("Healer");
+	editor_.show("HealerNode");
+	editor_.save("Healer");
+
 	//体力がなくなあったら強制的に死亡に状態遷移
 	if (hp_ <= 0) {
 		hp_ = 0;
-		state_ = CharacterState::Dead;
+		if (nextState("Move", Output1) == CharacterState::Dead ||
+			nextState("Attack", Output3) == CharacterState::Dead ||
+			nextState("Jump", Output2) == CharacterState::Dead ||
+			nextState("Heal", Output2) == CharacterState::Dead) {
+			state_ = CharacterState::Dead;
+		}
 	}
 
 	if (behaviorTree_) {
@@ -131,7 +141,7 @@ void Healer::Update() {
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i]->SetThreshold(t_[i]);
 	}
-	
+
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimHealer()) {
 		if (enemy_->isAttack()) {
@@ -155,13 +165,13 @@ void Healer::Update() {
 
 	//回復の表示
 	for (int i = 0; i < 4; ++i) {
-		healModel_[i]->SetColor({ 1.f,1.f,1.f,healAlph_[i]});
+		healModel_[i]->SetColor({ 1.f,1.f,1.f,healAlph_[i] });
 		if (healAlph_[i] > 0.0f) {
 			healAlph_[i] -= 0.08f;
-			worldTransformHeal_[i].translate = Math::Lerp(worldTransformHeal_[i].translate, {healNumMove_[i]}, 0.05f);
+			worldTransformHeal_[i].translate = Math::Lerp(worldTransformHeal_[i].translate, { healNumMove_[i] }, 0.05f);
 		}
 	}
-	
+
 
 
 	// 回転
@@ -177,12 +187,12 @@ void Healer::Update() {
 		worldTransformMagicCircle_[i].UpdateMatrix();
 		worldTransformHeal_[i].TransferMatrix();
 	}
-	
+
 	if (nockBack_) {
 		animation_->SetLoop(false);
 		animation_->Update(0);
 	}
-	
+
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("HealerHp", &hp_, 1.0f);
 	ImGui::End();
@@ -195,6 +205,9 @@ void Healer::Update() {
 	ImGui::DragFloat3("scale", &worldTransformCane_.scale.x, 0.1f);
 	ImGui::DragFloat("magicCirecle", &t_[0], 0.01f);
 	ImGui::End();
+
+
+	
 };
 
 void Healer::Draw(const ViewProjection& camera) {
@@ -275,19 +288,19 @@ void Healer::MoveUpdate() {
 			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
 
 			if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
-				state_ = CharacterState::Jumping;
+				state_ = nextState("Move", Output2);
 			}
 
 			if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
-				state_ = CharacterState::Jumping;
+				state_ = nextState("Move", Output2);
 			}
 
 			if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
-				state_ = CharacterState::Jumping;
+				state_ = nextState("Move", Output2);
 			}
 
 			if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
-				state_ = CharacterState::Jumping;
+				state_ = nextState("Move", Output2);
 			}
 		}
 
@@ -298,16 +311,18 @@ void Healer::MoveUpdate() {
 	if ((playerHp_ <= 20 && playerHp_ > 0)|| (renjuHp_ <= 20 && renjuHp_ > 0)|| (tankHp_ <= 20 && tankHp_ > 0) || (hp_ <= 20 && hp_ > 0)) {
 		if(mp_ >= 10){
 			oneHeal_ = true;
-			state_ = CharacterState::Unique;
+			state_ = nextState("Move", Output3);
 		}
 		
 	}
 	else if (playerHp_ < 50 && renjuHp_ < 50 && tankHp_ < 50 && hp_ < 50) {
 		if(mp_ >= 20){
 			allHeal_ = true;
-			state_ = CharacterState::Unique;
+			state_ = nextState("Move", Output3);
 		}
 	}
+
+	
 
 };
 
@@ -335,7 +350,7 @@ void Healer::JumpUpdate() {
 
  	if (worldTransformBase_.translate.y <= 0.0f) {
 		// ジャンプ終了
-		state_ = CharacterState::Moveing;
+		state_ = nextState("Jump", Output1);
 		velocity_.y = 0.0f;
 	}
 };
@@ -356,10 +371,10 @@ void Healer::knockUpdate() {
 		animation_->SetAnimationTimer(0, 8.0f);
 		animation_->SetpreAnimationTimer(0);
 		if (hp_ <= 0) {
-			state_ = CharacterState::Dead;
+			//state_ = CharacterState::Dead;
 		}
 		else {
-			state_ = CharacterState::Moveing;
+			//state_ = CharacterState::Moveing;
 		}
 		
 	}
@@ -375,10 +390,10 @@ void Healer::AttackInitialize() {
 void Healer::AttackUpdate() {
 	// プレイヤーの座標までの距離
 	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
-
+	
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
-		state_ = CharacterState::Moveing;
+		state_ = nextState("Attack", Output1);
 		searchTarget_ = true;
 	}
 
@@ -401,7 +416,7 @@ void Healer::AttackUpdate() {
 		workAttack_.attackParameter_ = 0;
 		searchTarget_ = true;
 		coolTime = 60;
-		state_ = CharacterState::Moveing;
+		state_ = nextState("Attack", Output1);
 	}
 
 	if (!workAttack_.isAttack) {
@@ -412,19 +427,19 @@ void Healer::AttackUpdate() {
 				//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
 
 				if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
-					state_ = CharacterState::Jumping;
+					state_ = nextState("Attack", Output2);
 				}
 
 				if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
-					state_ = CharacterState::Jumping;
+					state_ = nextState("Attack", Output2);
 				}
 
 				if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
-					state_ = CharacterState::Jumping;
+					state_ = nextState("Attack", Output2);
 				}
 
 				if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
-					state_ = CharacterState::Jumping;
+					state_ = nextState("Attack", Output2);
 				}
 			}
 
@@ -433,7 +448,7 @@ void Healer::AttackUpdate() {
 
 	// プレイヤーに集合
 	if (operation_) {
-		state_ = CharacterState::Moveing;
+		state_ = nextState("Attack", Output1);
 		workAttack_.isAttack = false;
 		followPlayer_ = true;
 		searchTarget_ = false;
@@ -484,7 +499,7 @@ void Healer::UniqueUpdate(){
 
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
-		state_ = CharacterState::Moveing;
+		state_ = nextState("Heal", Output1);
 		searchTarget_ = true;
 	}
 
@@ -622,7 +637,7 @@ void Healer::UniqueUpdate(){
 
 	if (coolTime <= 0) {
 		heal_ = true;
-		state_ = CharacterState::Moveing;
+		state_ = nextState("Heal", Output1);
 		coolTime = 60;
 		
 		for (int i = 0; i < 4; ++i) {
@@ -673,7 +688,7 @@ void Healer::DeadUpdate(){
 
 	if (revivalCount_ >= 60) {
 		hp_ = 21;
-		state_ = CharacterState::Moveing;
+		//state_ = CharacterState::Moveing;
 		isDead_ = false;
 	}
 
@@ -765,11 +780,11 @@ void Healer::searchTarget(Vector3 enemyPos) {
 			animationNumber_ = standby;
 			if (coolTime <= 0 && !isArea_ && enemy_->GetBehavior() != Behavior::kDead ) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
-					state_ = CharacterState::Attacking;
+					state_ = nextState("Move", Output1);
 				}
 				else {
 					if (!enemy_->IsBehaberAttack()) {
-						state_ = CharacterState::Attacking;
+						state_ = nextState("Move", Output1);
 					}
 
 				}
@@ -887,6 +902,33 @@ void Healer::Relationship() {
 			worldTransformCollision_.scale, worldTransformCollision_.rotate,
 			worldTransformCollision_.translate),
 		worldTransformCane_.matWorld_);
+}
+
+CharacterState Healer::nextState(std::string name, int outputNum)
+{
+
+	auto linkedNode = editor_.GetLinkNode(name, outputNum);
+
+	if (linkedNode.name == "Move") {
+		return CharacterState::Moveing;
+	}
+	else if (linkedNode.name == "Attack") {
+		return CharacterState::Attacking;
+	}
+	else if (linkedNode.name == "Jump") {
+		return CharacterState::Jumping;
+	}
+	else if (linkedNode.name == "Heal") {
+		return CharacterState::Unique;
+	}
+	else if (linkedNode.name == "Dead") {
+		return CharacterState::Dead;
+	}
+	else {
+		return CharacterState::Moveing; // デフォルトの状態
+	}
+
+
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

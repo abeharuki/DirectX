@@ -10,6 +10,7 @@
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
 #include <ParticleSystem.h>
+#include "Editor/editor.h"
 
 /// <summary>
 /// ゲームシーン

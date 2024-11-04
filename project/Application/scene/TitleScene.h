@@ -81,6 +81,6 @@ private:
 
 	float a_;
 
-	Editor::NodeEditor editor1_;
-	Editor::NodeEditor editor2_;
+	//ノードエディター
+	Editor::NodeEditor editor_;
 };

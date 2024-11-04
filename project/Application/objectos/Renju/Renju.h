@@ -10,6 +10,7 @@
 #include <Animation/Animation.h>
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
+#include "Editor/editor.h"
 
 /// <summary>
 /// ゲームシーン

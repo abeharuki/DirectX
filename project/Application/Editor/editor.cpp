@@ -8,7 +8,7 @@ namespace Editor
 	{
 
 		bool node_deleted = false;
-		std::vector<std::string> outputNames;
+		static std::vector<std::string> outputNames;
 		if (ImGui::Begin(filename.c_str())) {
 
 			ImGui::TextUnformatted("Press N to add a node.");
@@ -55,12 +55,19 @@ namespace Editor
 				if (ImGui::RadioButton("TripleOutput Node", selected_type == NodeType::TripleOutputNode))
 					selected_type = NodeType::TripleOutputNode;
 				ImGui::SameLine();
+				if (ImGui::RadioButton("QuadrupleOutput Node", selected_type == NodeType::QuadrupleOutputNode))
+					selected_type = NodeType::QuadrupleOutputNode;
+				ImGui::SameLine();
 				if (ImGui::RadioButton("NoOutput Node", selected_type == NodeType::NoOutputNode))
 					selected_type = NodeType::NoOutputNode;
 
 
 				if (selected_type != NodeType::NoOutputNode) {
-					int outputCount = (selected_type == NodeType::BasicNode) ? 1 : (selected_type == NodeType::DoubleOutputNode ? 2 : 3);
+					int outputCount = (selected_type == NodeType::BasicNode) ? 1 :
+						(selected_type == NodeType::DoubleOutputNode ? 2 :
+							(selected_type == NodeType::TripleOutputNode ? 3 :
+								(selected_type == NodeType::QuadrupleOutputNode ? 4 : 0)));
+
 					outputNames.resize(outputCount); // 出力名のベクターをサイズ変更
 
 					for (int i = 0; i < outputCount; ++i) {
@@ -91,7 +98,19 @@ namespace Editor
 			for (auto iter = nodes_.begin(); iter != nodes_.end();)
 			{
 				Node& node = *iter;
+
+				float maxOutputWidth = 0.0f;
+
+				// outputNamesの最大幅を計算
+				for (const auto& outputName : node.outputNames) {
+					float width = ImGui::CalcTextSize(outputName.c_str()).x;
+					if (width > maxOutputWidth) {
+						maxOutputWidth = width;
+					}
+				}
+
 				ImNodes::BeginNode(node.id);
+				
 
 				// ノードタイトルバーに名前とタイプを表示
 				ImNodes::BeginNodeTitleBar();
@@ -99,6 +118,7 @@ namespace Editor
 					node.type == NodeType::BasicNode ? "Basic" :
 					node.type == NodeType::DoubleOutputNode ? "Double Output" :
 					node.type == NodeType::TripleOutputNode ? "Triple Output" :
+					node.type == NodeType::QuadrupleOutputNode ? "Quadruple Output" :
 					"No Output");
 				ImNodes::EndNodeTitleBar();
 
@@ -108,34 +128,16 @@ namespace Editor
 				ImNodes::EndInputAttribute();
 
 				// NodeTypeによる出力属性の条件分岐
-				if (node.type == NodeType::BasicNode) {
-					ImNodes::BeginOutputAttribute(node.id << 24);
-					const float text_width = ImGui::CalcTextSize("output 1").x; // 基本的な出力名の幅を計算
-					ImGui::Indent(120.f - text_width); // ここでインデントを調整
-					ImGui::TextUnformatted(node.outputNames.empty() ? "output 1" : node.outputNames[0].c_str());
-					ImNodes::EndOutputAttribute();
-				}
-				else if (node.type == NodeType::DoubleOutputNode) {
-					for (int i = 0; i < 2; ++i) {
+				if (node.type != NodeType::NoOutputNode) {
+					for (int i = 0; i < (node.type == NodeType::QuadrupleOutputNode ? 4 : (node.type == NodeType::TripleOutputNode ? 3 : (node.type == NodeType::DoubleOutputNode ? 2 : 1))); ++i) {
 						ImNodes::BeginOutputAttribute((node.id << 24) + i);
-						const float text_width = ImGui::CalcTextSize(node.outputNames.size() > i ? node.outputNames[i].c_str() : ("output " + std::to_string(i + 1)).c_str()).x;
-						ImGui::Indent(120.f - text_width); // インデントを調整
+						float textWidth = ImGui::CalcTextSize(node.outputNames.size() > i ? node.outputNames[i].c_str() : ("output " + std::to_string(i + 1)).c_str()).x;
+						ImGui::Indent(maxOutputWidth - textWidth + 20.0f); // +20.0fは追加の余白
+
 						ImGui::TextUnformatted(node.outputNames.size() > i ? node.outputNames[i].c_str() : ("output " + std::to_string(i + 1)).c_str());
 						ImNodes::EndOutputAttribute();
 					}
 				}
-				else if (node.type == NodeType::TripleOutputNode) {
-					for (int i = 0; i < 3; ++i) {
-						ImNodes::BeginOutputAttribute((node.id << 24) + i);
-						const float text_width = ImGui::CalcTextSize(node.outputNames.size() > i ? node.outputNames[i].c_str() : ("output " + std::to_string(i + 1)).c_str()).x;
-						ImGui::Indent(120.f - text_width); // インデントを調整
-						ImGui::TextUnformatted(node.outputNames.size() > i ? node.outputNames[i].c_str() : ("output " + std::to_string(i + 1)).c_str());
-						ImNodes::EndOutputAttribute();
-					}
-				}
-
-
-
 
 				ImNodes::EndNode();
 
@@ -163,6 +165,68 @@ namespace Editor
 						ImGui::EndPopup(); // ポップアップを閉じる
 						continue;
 					}
+
+					ImGui::Text("Links:");
+					bool hasLinks = false; // リンクがあるかどうかのフラグ
+					for (const auto& link : links_) {
+						// リンクの始点と終点のノードIDを取得
+						int startNodeId = link.start_attr >> 24; // 出力属性用
+						int endNodeId = link.end_attr >> 8; // 入力属性用
+
+						// 現在のノードID
+						int currentNodeId = node.id;
+
+						// ノードの名前を取得するための変数
+						std::string connectedNodeName;
+						std::string linkType;
+
+						// リンクの始点ノードの名前を取得
+						if (startNodeId != currentNodeId) {
+							auto startNode = std::find_if(nodes_.begin(), nodes_.end(), [startNodeId](const Node& node) {
+								return node.id == startNodeId;
+								});
+
+							if (startNode != nodes_.end()) {
+								connectedNodeName = startNode->name; // 出力ノードの名前を取得
+								linkType = "Input"; // リンクの種類を設定
+							}
+						}
+
+						// リンクの終点ノードの名前を取得
+						if (endNodeId != currentNodeId) {
+							auto endNode = std::find_if(nodes_.begin(), nodes_.end(), [endNodeId](const Node& node) {
+								return node.id == endNodeId;
+								});
+
+							if (endNode != nodes_.end()) {
+								connectedNodeName = endNode->name; // 入力ノードの名前を取得
+								linkType = "Output"; // リンクの種類を設定
+							}
+						}
+
+						// 現在のノードと接続されている場合
+						if (startNodeId == currentNodeId || endNodeId == currentNodeId) {
+							hasLinks = true; // リンクがあることを示すフラグを立てる
+
+							// メニューアイテムの表示
+							if (!connectedNodeName.empty()) {
+								if (ImGui::MenuItem(("Delete Link to " + linkType + " " + connectedNodeName).c_str())) {
+									// 特定のリンクを削除
+									links_.erase(std::remove_if(links_.begin(), links_.end(), [&](const Link& l) {
+										return l.id == link.id; // 選択されたリンクのIDが一致する場合
+										}), links_.end());
+								}
+							}
+						}
+					}
+
+
+
+					if (!hasLinks) {
+						ImGui::Text("No links available."); // リンクがなかった場合のメッセージ
+					}
+
+
 					ImGui::EndPopup();
 				}
 
@@ -335,37 +399,40 @@ namespace Editor
 	//引数のNodeNameのnum番目のoutputがつながっているノードを返す
 	Node NodeEditor::GetLinkNode(const std::string& nodename, int outputnum) {
 		// ノードのIDを取得
-		auto startNode = std::find_if(nodes_.begin(), nodes_.end(), [nodename](const Node& node) {
+		auto startNodeIt = std::find_if(nodes_.begin(), nodes_.end(), [nodename](const Node& node) {
 			return node.name == nodename;
 			});
 
-		if (startNode == nodes_.end()) {
+		if (startNodeIt == nodes_.end()) {
 			throw std::runtime_error("指定されたノードが見つかりません");
 		}
 
-		int startNodeId = startNode->id;
+		int startNodeId = startNodeIt->id;
 
 		// outputnum 番目の出力に対応するリンクを探す
 		auto linkIt = std::find_if(links_.begin(), links_.end(), [&](const Link& link) {
 			return (link.start_attr >> 24) == startNodeId && (link.start_attr & 0xFF) == outputnum;
 			});
 
+		// リンクが見つからなかった場合、自分のノードを返す
 		if (linkIt == links_.end()) {
-			throw std::runtime_error("指定された出力にリンクが見つかりません");
+			return *startNodeIt; // 自分のノードを返す(指定された出力リンクがない)
 		}
 
 		// 終点ノードを検索して取得
 		int endNodeId = (linkIt->end_attr >> 8);
-		auto endNode = std::find_if(nodes_.begin(), nodes_.end(), [endNodeId](const Node& node) {
+		auto endNodeIt = std::find_if(nodes_.begin(), nodes_.end(), [endNodeId](const Node& node) {
 			return node.id == endNodeId;
 			});
 
-		if (endNode == nodes_.end()) {
-			throw std::runtime_error("リンク先のノードが見つかりません");
+		// 終点ノードが見つからなかった場合、自分のノードを返す
+		if (endNodeIt == nodes_.end()) {
+			return *startNodeIt; // 自分のノードを返す(リンク先のノードがない)
 		}
 
-		return *endNode; // リンク先のノードを返す
+		return *endNodeIt; // リンク先のノードを返す
 	}
+
 
 	
 }

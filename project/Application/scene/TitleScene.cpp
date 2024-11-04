@@ -120,21 +120,10 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-	
 
-	editor1_.load("Tank");
-	editor1_.show("TnkeNode");
-	editor1_.save("Tank");
-
-	
-	editor2_.load("Healer");
-	editor2_.show("HealerNode");
-	editor2_.save("Healer");
-
-	std::string nodeName1 = editor2_.GetLinkNode("Move", 0).name;
-	std::string nodeName2 = editor2_.GetLinkNode("Move", 1).name;
-	std::string nodeName3 = editor1_.GetLinkNode("Attack", 0).name;
-	std::string nodeName4 = editor1_.GetLinkNode("Attack", 1).name;
+	editor_.load("Healer");
+	editor_.show("HealerNode");
+	//editor_.save("Healer");
 }
 
 void TitleScene::Draw() {

@@ -12,6 +12,13 @@
 #include <string>
 #include <iostream>
 
+enum OutputNum
+{
+	Output1, // 1出力ポート
+	Output2, // 2出力ポート
+	Output3, // 3出力ポート
+	Output4, // 4出力ポート
+};
 
 namespace Editor
 {
@@ -20,6 +27,7 @@ namespace Editor
 		BasicNode,
 		DoubleOutputNode, // 2出力ポート
 		TripleOutputNode, // 3出力ポート
+		QuadrupleOutputNode, // 4出力ポート
 		NoOutputNode      // 0出力ポート
 	};
 
@@ -60,8 +68,7 @@ namespace Editor
 		//引数のNodeNameのnum番目のoutputがつながっているノードを返す
 		Node GetLinkNode(const std::string& nodename, int outputnum);
 
-
-
+	
 	private:
 		std::vector<Node> nodes_;
 		std::vector<Link> links_;
