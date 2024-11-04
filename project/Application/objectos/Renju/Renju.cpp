@@ -66,8 +66,17 @@ void Renju::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
+	editor_.load("Renju");
+	editor_.show("RenjuNode");
+	editor_.save("Renju");
+
 	if (hp_ <= 0) {
-		state_ = CharacterState::Dead;
+		if (NextState("Move", Output3) == CharacterState::Dead ||
+			NextState("Attack", Output2) == CharacterState::Dead ||
+			NextState("Jump", Output2) == CharacterState::Dead) {
+			state_ = CharacterState::Dead;
+		}
+		
 	}
 
 	if (behaviorTree_) {
@@ -209,19 +218,19 @@ void Renju::MoveUpdate() {
 			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
 
 			if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
-				state_ = CharacterState::Jumping;
+				state_ = NextState("Move", Output2);
 			}
 
 			if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
-				state_ = CharacterState::Jumping;
+				state_ = NextState("Move", Output2);
 			}
 
 			if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
-				state_ = CharacterState::Jumping;
+				state_ = NextState("Move", Output2);
 			}
 
 			if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
-				state_ = CharacterState::Jumping;
+				state_ = NextState("Move", Output2);
 			}
 		}
 
@@ -254,7 +263,7 @@ void Renju::JumpUpdate() {
 
 	if (worldTransformBase_.translate.y <= 0.0f) {
 		// ジャンプ終了
-		state_ = CharacterState::Moveing;
+		state_ = NextState("Jump", Output1);
 		velocity_.y = 0.0f;
 
 	}
@@ -274,10 +283,10 @@ void Renju::knockUpdate() {
 	if (--nockTime_ <= 0) {
 		nockBack_ = false;
 		if (hp_ == 0) {
-			state_ = CharacterState::Dead;
+			//state_ = CharacterState::Dead;
 		}
 		else {
-			state_ = CharacterState::Moveing;
+			//state_ = CharacterState::Moveing;
 		}
 
 		animation_->SetAnimationTimer(0, 8.0f);
@@ -297,7 +306,7 @@ void Renju::AttackUpdate() {
 
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
-		state_ = CharacterState::Moveing;
+		state_ = NextState("Attack", Output1);
 		searchTarget_ = true;
 	}
 
@@ -350,7 +359,7 @@ void Renju::AttackUpdate() {
 			fireTimer_ = 20;
 
 			coolTime = 60;
-			state_ = CharacterState::Moveing;
+			state_ = NextState("Attack", Output1);
 		}
 	}
 	else {
@@ -373,15 +382,15 @@ void Renju::AttackUpdate() {
 
 	// プレイヤーに集合
 	if (operation_) {
-		state_ = CharacterState::Moveing;
+		state_ = NextState("Attack", Output1);
 		followPlayer_ = true;
 		searchTarget_ = false;
 	}
 }
+
 void Renju::UniqueInitialize() {
 
 }
-
 void Renju::UniqueUpdate() {
 
 }
@@ -425,7 +434,7 @@ void Renju::DeadUpdate() {
 
 	if (revivalCount_ >= 60) {
 		hp_ = 21;
-		state_ = CharacterState::Moveing;
+		//state_ = CharacterState::Moveing;
 		isDead_ = false;
 	}
 
@@ -510,7 +519,7 @@ void Renju::searchTarget(Vector3 enemyPos) {
 		else {
 			animationNumber_ = standby;
 			if (coolTime <= 0 && !isArea_ && enemy_->GetBehavior() != Behavior::kDead) {
-				state_ = CharacterState::Attacking;
+				state_ = NextState("Move", Output1);
 			}
 		}
 	}

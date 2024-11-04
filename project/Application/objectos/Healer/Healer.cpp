@@ -125,7 +125,7 @@ void Healer::Update() {
 	//体力がなくなあったら強制的に死亡に状態遷移
 	if (hp_ <= 0) {
 		hp_ = 0;
-		if (NextState("Move", Output1) == CharacterState::Dead ||
+		if (NextState("Move", Output4) == CharacterState::Dead ||
 			NextState("Attack", Output3) == CharacterState::Dead ||
 			NextState("Jump", Output2) == CharacterState::Dead ||
 			NextState("Heal", Output2) == CharacterState::Dead) {

@@ -121,9 +121,9 @@ void TitleScene::Update() {
 	ImGui::End();
 
 
-	editor_.load("Renju");
-	editor_.show("RenjuNode");
-	editor_.save("Renju");
+	editor_.load("Tank");
+	editor_.show("TankNode");
+	editor_.save("Tank");
 }
 
 void TitleScene::Draw() {
@@ -173,7 +173,7 @@ void TitleScene::Fade() {
 	}
 
 	if (Input::PushKey(DIK_P) && !isFadeIn_) {
-		isFadeOut_ = true;
+		//isFadeOut_ = true;
 	}
 
 	//フェードイン時

@@ -194,7 +194,7 @@ void Tank::MoveUpdate() {
 	
 
 	if (Input::PressKey(DIK_T)) {
-		state_ = CharacterState::Unique;
+		//state_ = CharacterState::Unique;
 	}
 
 	if (isArea_ && searchTarget_ && enemy_->IsAreaDraw()) {
