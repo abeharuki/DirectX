@@ -10,7 +10,6 @@
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
 #include <ParticleSystem.h>
-#include "Editor/editor.h"
 
 /// <summary>
 /// ゲームシーン
@@ -143,7 +142,7 @@ private:
 	void Relationship();
 
 	//次の状態遷移をノードから検索
-	CharacterState nextState(std::string name,int outputNum);
+	CharacterState NextState(std::string name,int outputNum);
 
 
 private: // メンバ変数

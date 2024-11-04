@@ -121,9 +121,9 @@ void TitleScene::Update() {
 	ImGui::End();
 
 
-	editor_.load("Healer");
-	editor_.show("HealerNode");
-	//editor_.save("Healer");
+	editor_.load("Renju");
+	editor_.show("RenjuNode");
+	editor_.save("Renju");
 }
 
 void TitleScene::Draw() {

@@ -3,12 +3,11 @@
 #include "Engine.h"
 #include "Input.h"
 #include "Sprite.h"
-#include "ViewProjection.h"
-#include "WorldTransform.h"
 #include "Utilities/RandomGenerator.h"
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>
 #include <CollisionManager/ColliderManager.h>
+#include "Editor/editor.h"
 
 enum AnimationNumber {
 	dashAttack,//ダッシュ攻撃

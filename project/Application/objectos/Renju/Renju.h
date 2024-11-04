@@ -117,6 +117,9 @@ private:
 	// パーツ親子関係
 	void Relationship();
 
+
+	//次の状態遷移をノードから検索
+	CharacterState NextState(std::string name, int outputNum);
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
@@ -212,4 +215,7 @@ private: // メンバ変数
 	float angleRange_ = 30.0f * kDegreeToRandian;
 	//敵の攻撃範囲ないかどうか
 	bool isArea_ = false;
+
+	//ノードエディター
+	Editor::NodeEditor editor_;
 };

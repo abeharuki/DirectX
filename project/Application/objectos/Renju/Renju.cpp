@@ -588,6 +588,33 @@ void Renju::Relationship() {
 	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
 }
 
+CharacterState Renju::NextState(std::string name, int outputNum)
+{
+
+	auto linkedNode = editor_.GetLinkNode(name, outputNum);
+
+	if (linkedNode.name == "Move") {
+		return CharacterState::Moveing;
+	}
+	else if (linkedNode.name == "Attack") {
+		return CharacterState::Attacking;
+	}
+	else if (linkedNode.name == "Jump") {
+		return CharacterState::Jumping;
+	}
+	else if (linkedNode.name == "Heal") {
+		return CharacterState::Unique;
+	}
+	else if (linkedNode.name == "Dead") {
+		return CharacterState::Dead;
+	}
+	else {
+		return CharacterState::Moveing; // デフォルトの状態
+	}
+
+
+}
+
 void Renju::InitPos(){
 	worldTransformBase_.translate = { -3.0f,0.0f,-35.0f };
 }
