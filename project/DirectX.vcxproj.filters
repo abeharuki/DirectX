@@ -196,6 +196,9 @@
     <Filter Include="ソース ファイル\Application\Editor">
       <UniqueIdentifier>{ab0fa621-7868-43df-aa48-b75f1e727a0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Application\Editor">
+      <UniqueIdentifier>{edc94e57-22a1-4288-9db9-bfe61e507d57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -788,7 +791,7 @@
       <Filter>imnodes</Filter>
     </ClInclude>
     <ClInclude Include="Application\Editor\editor.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

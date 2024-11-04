@@ -294,8 +294,8 @@ namespace Editor
 		if (isFocused_) {
 
 			// ファイルパスを作成
-			std::string ini_filepath = "Application/Editor/" + filename + ".ini";
-			std::string bytes_filepath = "Application/Editor/" + filename + ".bytes";
+			std::string ini_filepath = "resources/NodeEditor/" + filename + ".ini";
+			std::string bytes_filepath = "resources/NodeEditor/" + filename + ".bytes";
 
 			//状態をセーブ
 			ImNodes::SaveCurrentEditorStateToIniFile(ini_filepath.c_str());
@@ -343,8 +343,8 @@ namespace Editor
 		links_.clear(); // 既存リンクをクリア
 
 		// ファイルパスを作成
-		std::string ini_filepath = "Application/Editor/" + filename + ".ini";
-		std::string bytes_filepath = "Application/Editor/" + filename + ".bytes";
+		std::string ini_filepath = "resources/NodeEditor/" + filename + ".ini";
+		std::string bytes_filepath = "resources/NodeEditor/" + filename + ".bytes";
 
 		//状態をロード
 		ImNodes::LoadCurrentEditorStateFromIniFile(ini_filepath.c_str());
