@@ -787,6 +787,9 @@
     <ClInclude Include="externals\imnode\imnodes_internal.h">
       <Filter>imnodes</Filter>
     </ClInclude>
+    <ClInclude Include="Application\Editor\editor.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">

@@ -1,10 +1,6 @@
 #pragma once
 #include "Framework/IScene.h"
-#include "Input.h"
-#include <memory>
 #include "Audio/Audio.h"
-#include <Sprite.h>
-#include <Model.h>
 #include <Ground.h>
 #include <Skydome.h>
 #include <camera/followCamera.h>
@@ -13,10 +9,9 @@
 #include <Healer/HealerManager.h>
 #include <Tank/TankManager.h>
 #include <Renju/RenjuManager.h>
-#include <Animation/Animation.h>
 #include "PostEffects/PostEffect.h"
-#include <Line.h>
 #include <ModelLoader.h>
+#include "Editor/editor.h"
 
 class TitleScene : public IScene {
 public:
@@ -85,4 +80,7 @@ private:
 	float alpha_;
 
 	float a_;
+
+	Editor::NodeEditor editor1_;
+	Editor::NodeEditor editor2_;
 };

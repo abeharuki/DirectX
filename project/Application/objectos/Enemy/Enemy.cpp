@@ -316,7 +316,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 	//1,4
-	int num = RandomGenerator::GetRandomInt(3, 3);
+	int num = RandomGenerator::GetRandomInt(1, 4);
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -875,9 +875,9 @@ void Enemy::DeadUpdata() {
 	
 
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-	threshold_ += 0.004f;
+	threshold_ += 0.001f;
 	animation_->SetThreshold(threshold_);
-	if (animation_->GetAnimationTimer() >= 9.0f) {
+	if (animation_->GetAnimationTimer() >= 5.0f) {
 		clear_ = true;
 	}
 

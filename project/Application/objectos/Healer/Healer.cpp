@@ -763,7 +763,7 @@ void Healer::searchTarget(Vector3 enemyPos) {
 		}
 		else {
 			animationNumber_ = standby;
-			if (coolTime <= 0 && !isArea_) {
+			if (coolTime <= 0 && !isArea_ && enemy_->GetBehavior() != Behavior::kDead ) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
 					state_ = CharacterState::Attacking;
 				}

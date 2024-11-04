@@ -188,7 +188,7 @@ void Tank::MoveUpdate() {
 
 	if (enemy_->GetBehavior() != Behavior::kStan && !operation_) {
 		if (enemy_->IsBehaberAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && mp_ >= 20) {
-			state_ = CharacterState::Unique;
+			//state_ = CharacterState::Unique;
 		}
 	}
 	
@@ -575,7 +575,7 @@ void Tank::searchTarget(Vector3 enemyPos) {
 		}
 		else {
 			animationNumber_ = standby;
-			if (coolTime <= 0 && !isArea_) {
+			if (coolTime <= 0 && !isArea_ && enemy_->GetBehavior() != Behavior::kDead) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
 					state_ = CharacterState::Attacking;
 				}

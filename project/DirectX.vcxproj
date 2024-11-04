@@ -338,6 +338,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\BehaviorTree\ConditionNode.h" />
     <ClInclude Include="Application\BehaviorTree\SelectorNode.h" />
     <ClInclude Include="Application\BehaviorTree\SequenceNode.h" />
+    <ClInclude Include="Application\Editor\editor.h" />
     <ClInclude Include="Application\Game\game.h" />
     <ClInclude Include="Application\objectos\Command\Command.h" />
     <ClInclude Include="Application\objectos\Enemy\Enemy.h" />

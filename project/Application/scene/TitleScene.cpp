@@ -1,6 +1,6 @@
 #include "TitleScene.h"
 #include "Framework/SceneManager.h"
-#include "Editor/editor.cpp"
+
 
 
 void TitleScene::Initialize() {
@@ -120,10 +120,20 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-	NodeEditor::editor.load("Healer");
-	NodeEditor::editor.show();
-	NodeEditor::editor.save("Healer");
+	
 
+	editor1_.load("Tank");
+	editor1_.show("TnkeNode");
+	editor1_.save("Tank");
+
+	
+	editor2_.load("Healer");
+	editor2_.show("HealerNode");
+	editor2_.save("Healer");
+
+	/*std::string nodeName1 = editor2_.GetLinkNode("Move", 0).name;
+	std::string nodeName2 = editor2_.GetLinkNode("Move", 1).name;
+	std::string nodeName3 = editor2_.GetLinkNode("Move", 2).name;*/
 }
 
 void TitleScene::Draw() {
@@ -172,8 +182,8 @@ void TitleScene::Fade() {
 		}
 	}
 
-	if (Input::PushKey(DIK_G) && !isFadeIn_) {
-		isFadeOut_ = true;
+	if (Input::PushKey(DIK_P) && !isFadeIn_) {
+		//isFadeOut_ = true;
 	}
 
 	//フェードイン時
