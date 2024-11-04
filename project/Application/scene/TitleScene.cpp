@@ -173,7 +173,7 @@ void TitleScene::Fade() {
 	}
 
 	if (Input::PushKey(DIK_P) && !isFadeIn_) {
-		//isFadeOut_ = true;
+		isFadeOut_ = true;
 	}
 
 	//フェードイン時
