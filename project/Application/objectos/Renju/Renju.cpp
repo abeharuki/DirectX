@@ -369,9 +369,16 @@ void Renju::AttackUpdate() {
 	}
 	else {
 	
-		const float kSpeed = 0.4f;
-		velocity_ = { 0.0f, 0.0f, -kSpeed };
-		velocity_ = Math::TransformNormal(velocity_, enemy_->GetWorldTransform().matWorld_);
+		const float kSpeed = 0.04f;
+		// 敵の位置から自分の位置への方向ベクトルを計算
+		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
+
+		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+		Math::Normalize(direction);   // 正規化して単位ベクトルにする
+		direction *= -1.0f; // 反転して反対方向に進む
+
+		// 速度を設定
+		velocity_ = direction * kSpeed;
 		worldTransformBase_.translate -= velocity_;
 		worldTransformBase_.translate.y = 0;
 

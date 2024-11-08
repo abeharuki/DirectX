@@ -8,7 +8,7 @@ class BaseCharacter : public Collider {
 public:
     virtual ~BaseCharacter() = default;
 
-    virtual void Initialize(const Animation* animation) = 0;
+    virtual void Initialize(const Animation* animation,std::string skillName) = 0;
     virtual void Update() = 0;
     virtual void Draw(const ViewProjection& camera) = 0;
     virtual void NoDepthDraw(const ViewProjection& camera) = 0;
@@ -55,9 +55,6 @@ public:
     void SetOperation(bool flag) { operation_ = flag; }
     void SetViewProjection(const ViewProjection& viewProjection) { viewProjection_ = viewProjection; }
 
-
-    //プレイヤーに追従
-    virtual void followPlayer(Vector3 playerPos) = 0;
     // パーツ親子関係
     virtual void Relationship() = 0;
 
@@ -65,10 +62,12 @@ public:
     virtual void InitPos();//引数に座標をいれられるようにする
 
     // 共通の関数
+    //プレイヤーに追従
+    void followPlayer();
     //ディゾルブ
     void Dissolve();
     //敵を探す
-    void searchTarget(Vector3 enemyPos);
+    void searchTarget();
     //敵の視野内にいるかどうか
     void IsVisibleToEnemy();
     //逃げる方向
@@ -86,16 +85,60 @@ protected:
     WorldTransform worldTransformBody_;
     ViewProjection viewProjection_;
 
-    Animation* animation_;
+    Animations* animation_;
+    int animationNumber_;
+    enum AnimationNumber {
+        animeAttack,//攻撃
+        death,//死亡
+        jump,//ジャンプ
+        standby,//待機
+        run,//移動
+    };
+    float flameTime_;//フレームタイム
+    float threshold_;//ディゾルブ
+    // 目標の角度
+    float destinationAngleY_ = 0.0f;
+    //プレイヤー座標
+    float minDistance_ = 8.0f;
+    bool followPlayer_;
+
+    // 敵を探すフラグ
+    bool searchTarget_ = false;
+
+    //攻撃ができるようになるまでの
+    int coolTime_ = 60;
+
+    //ノードエディター
+    Editor::NodeEditor editor_;
+    //敵の情報
+    Enemy* enemy_;
+    float enemylength_;
+
+    float kDegreeToRandian = 3.141592f / 180.0f;
+
+    //敵の視野内
+    //最小距離
+    float enemyMinDistance_ = 2.0f;
+    //最大距離
+    float enemyMaxDistance_ = 45.0f;
+    //角度範囲
+    float angleRange_ = 35.0f * kDegreeToRandian;
+    //敵の攻撃範囲ないかどうか
+    bool isArea_ = false;
+
 
     float hp_ = 100.0f;
     float mp_ = 100.0f;
     bool isDead_ = false;
 
+    Vector3 playerPos_;
     //作戦
     bool operation_;
 
-    //敵の情報
-    Enemy* enemy_;  
+    // 速度
+    Vector3 velocity_ = {};
+
+    //ユニークスキルのノードの名前
+    std::string skillName_;
 };
 

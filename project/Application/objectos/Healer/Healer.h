@@ -5,13 +5,11 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include <CollisionManager/Collider.h>
-#include <Animation/Animation.h>
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
 #include <ParticleSystem.h>
+#include "base/BaseCharacter.h"
 
-//関数に違うと書かれていたら virtualで基底クラスに関数を作る、同じならそのまま関数をつくkる
 
 /// <summary>
 /// ゲームシーン
@@ -134,7 +132,7 @@ public: // メンバ関数
 
 private:
 	//敵を探す
-	void searchTarget(Vector3 enemyPos);//同じ
+	void searchTarget();//同じ
 	//敵の視野内にいるかどうか
 	void IsVisibleToEnemy();//同じ
 	//逃げる方向
@@ -229,8 +227,6 @@ private: // メンバ変数
 
 	// 敵を探すフラグ
 	bool searchTarget_ = false;
-
-	Vector3 enemyPos_;
 
 	uint32_t nockTime_;
 	bool nockBack_;

@@ -264,7 +264,7 @@ void Healer::MoveUpdate() {
 	if (!operation_) {
 		searchTarget_ = true;
 		followPlayer_ = false;
-		searchTarget(enemy_->GetWorldPosition());
+		searchTarget();
 	}
 
 	if (isArea_ && searchTarget_ && enemy_->IsAreaDraw()) {
@@ -391,7 +391,7 @@ void Healer::AttackInitialize() {
 };
 void Healer::AttackUpdate() {
 	// プレイヤーの座標までの距離
-	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
+	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 	
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
@@ -497,7 +497,7 @@ void Healer::UniqueInitialize(){
 void Healer::UniqueUpdate(){
 
 	// 敵の座標までの距離
-	float length = Math::Length(Math::Subract(enemyPos_, worldTransformBase_.translate));
+	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
@@ -505,7 +505,7 @@ void Healer::UniqueUpdate(){
 		searchTarget_ = true;
 	}
 
-	if (length >= minDistance_ * 1.5f) {
+	if (length >= minDistance_ * 2.f) {
 		healAnimation_ = true;
 		animationNumber_ = standby;//攻撃モーションをいれたら変える
 	}
@@ -580,9 +580,17 @@ void Healer::UniqueUpdate(){
 				: -std::numbers::pi_v<float> / 2.0f;
 		}
 
-		const float kSpeed = 0.4f;
-		velocity_ = { 0.0f, 0.0f, -kSpeed };
-		velocity_ = Math::TransformNormal(velocity_, enemy_->GetWorldTransform().matWorld_);
+
+		const float kSpeed = 0.04f;
+		// 敵の位置から自分の位置への方向ベクトルを計算
+		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
+
+		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+		Math::Normalize(direction);   // 正規化して単位ベクトルにする
+		direction *= -1.0f; // 反転して反対方向に進む
+
+		// 速度を設定
+		velocity_ = direction * kSpeed;
 		worldTransformBase_.translate -= velocity_;
 		worldTransformBase_.translate.y = 0;
 	}
@@ -743,12 +751,12 @@ void Healer::followPlayer(Vector3 playerPos) {
 
 }
 // 敵を探す
-void Healer::searchTarget(Vector3 enemyPos) {
-	enemyPos_ = enemyPos;
+void Healer::searchTarget() {
+
 	
 	if (!followPlayer_ && searchTarget_) {
 		// 追従対象からロックオン対象へのベクトル
-		Vector3 sub = enemyPos - GetWorldPosition();
+		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
 		// y軸周りの回転
 		if (sub.z != 0.0) {
@@ -769,7 +777,7 @@ void Healer::searchTarget(Vector3 enemyPos) {
 		if (minDistance_ <= enemylength_) {
 			if (state_ != CharacterState::Jumping) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash || !enemy_->IsBehaberAttack()) {
-					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemyPos, 0.02f);
+					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.02f);
 					animationNumber_ = run;
 				}
 				if (velocity_.y == 0.0f) {
@@ -800,7 +808,7 @@ void Healer::searchTarget(Vector3 enemyPos) {
 void Healer::IsVisibleToEnemy(){
 	isArea_ = false;
 	//float rectWidth = 6.0f; // 横幅の設定 (敵の中心から±3)
-	Vector3 toEnemy = enemyPos_ - worldTransformBase_.translate;
+	Vector3 toEnemy = enemy_->GetWorldPosition() - worldTransformBase_.translate;
 	// 敵の視線方向を取得 (Z軸方向が前方)
 	Vector3 enemyForward = {
 		enemy_->GetWorldTransform().matWorld_.m[2][0],
@@ -837,8 +845,8 @@ void Healer::IsVisibleToEnemy(){
 
 void Healer::RunAway(){
 	animationNumber_ = run;
-	if (enemyPos_.z > worldTransformBase_.translate.z) {
-		if (enemyPos_.x > worldTransformBase_.translate.x) {
+	if (enemy_->GetWorldPosition().z > worldTransformBase_.translate.z) {
+		if (enemy_->GetWorldPosition().x > worldTransformBase_.translate.x) {
 			velocity_ = { -1.0f,0.0f,-1.5f };
 		}
 		else {
@@ -846,7 +854,7 @@ void Healer::RunAway(){
 		}
 	}
 	else {
-		if (enemyPos_.x < worldTransformBase_.translate.x) {
+		if (enemy_->GetWorldPosition().x < worldTransformBase_.translate.x) {
 			velocity_ = { -1.0f,0.0f,-1.5f };
 		}
 		else {
