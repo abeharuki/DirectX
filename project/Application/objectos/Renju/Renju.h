@@ -71,7 +71,6 @@ public: // メンバ関数
 
 	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
-	Vector3 GetLocalPosition();
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
 	// 弾リストの取得

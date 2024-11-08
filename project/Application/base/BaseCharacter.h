@@ -8,7 +8,7 @@ class BaseCharacter : public Collider {
 public:
     virtual ~BaseCharacter() = default;
 
-    virtual void Initialize() = 0;
+    virtual void Initialize(const Animation* animation) = 0;
     virtual void Update() = 0;
     virtual void Draw(const ViewProjection& camera) = 0;
     virtual void NoDepthDraw(const ViewProjection& camera) = 0;
@@ -86,6 +86,7 @@ protected:
     WorldTransform worldTransformBody_;
     ViewProjection viewProjection_;
 
+    Animation* animation_;
 
     float hp_ = 100.0f;
     float mp_ = 100.0f;

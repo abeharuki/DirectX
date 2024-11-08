@@ -839,12 +839,3 @@ const Vector3 Tank::GetWorldPosition() const {
 	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
 	return worldPos;
 }
-Vector3 Tank::GetLocalPosition() {
-	// ワールド座標を入れる関数
-	Vector3 worldPos;
-	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransformBase_.translate.x;
-	worldPos.y = worldTransformBase_.translate.y;
-	worldPos.z = worldTransformBase_.translate.z;
-	return worldPos;
-}
