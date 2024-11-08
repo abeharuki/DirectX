@@ -26,9 +26,6 @@ void Healer::Initialize() {
 	worldTransformCane_.translate = { -0.03f, 0.04f, 0.1f };
 	worldTransformCane_.rotate = { 1.3f, 0.f, 0.f };
 	worldTransformCane_.scale = { 1.f, 1.f, 1.f };
-	worldTransformCollision_.Initialize();
-	worldTransformCollision_.scale = { 0.27f, 0.27f, 1.0f };
-	worldTransformCollision_.translate.z = 1.5f;
 
 	worldTransformNum_.Initialize();
 	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
@@ -119,8 +116,13 @@ void Healer::Update() {
 
 	//ノードの更新
 	editor_.load("Healer");
+#ifdef _DEBUG
+
 	editor_.show("HealerNode");
 	editor_.save("Healer");
+
+#endif // DEBUG
+	
 
 	//体力がなくなあったら強制的に死亡に状態遷移
 	if (hp_ <= 0) {
@@ -897,11 +899,6 @@ void Healer::Relationship() {
 
 	}
 
-	worldTransformCollision_.matWorld_ = Math::Multiply(
-		Math::MakeAffineMatrix(
-			worldTransformCollision_.scale, worldTransformCollision_.rotate,
-			worldTransformCollision_.translate),
-		worldTransformCane_.matWorld_);
 }
 
 CharacterState Healer::NextState(std::string name, int outputNum)
@@ -1058,12 +1055,3 @@ const Vector3 Healer::GetWorldPosition() const {
 	return worldPos;
 }
 
-Vector3 Healer::GetLocalPosition() {
-	// ワールド座標を入れる関数
-	Vector3 worldPos;
-	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransformBase_.translate.x;
-	worldPos.y = worldTransformBase_.translate.y;
-	worldPos.z = worldTransformBase_.translate.z;
-	return worldPos;
-}

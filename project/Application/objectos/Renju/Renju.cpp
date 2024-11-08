@@ -67,8 +67,13 @@ void Renju::Update() {
 	isHitPlayer_ = false;
 
 	editor_.load("Renju");
+#ifdef _DEBUG
+
 	editor_.show("RenjuNode");
 	editor_.save("Renju");
+
+#endif // DEBUG
+	
 
 	if (hp_ <= 0) {
 		if (NextState("Move", Output3) == CharacterState::Dead ||

@@ -11,89 +11,91 @@
 #include "Enemy/Enemy.h"
 #include <ParticleSystem.h>
 
+//関数に違うと書かれていたら virtualで基底クラスに関数を作る、同じならそのまま関数をつくkる
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
 class Healer : public Collider {
 
 public: // メンバ関数
-	~Healer();
+	~Healer();	
 	void SetState(CharacterState newState) {
 		state_ = newState;
-	}
+	}//同じ
 
 	CharacterState GetState() const {
 		return state_;
-	}
+	}//同じ
+	void Initialize();//違う
 
-	
-	void Initialize();
+	void Update();//違う
 
-	void Update();
-
-	void Draw(const ViewProjection& camera);
-	void NoDepthDraw(const ViewProjection& camera);
+	void Draw(const ViewProjection& camera);//違う
+	void NoDepthDraw(const ViewProjection& camera);//違う
 
 	// 移動
-	void MoveInitialize();
-	void MoveUpdate();
+	void MoveInitialize();//違う
+	void MoveUpdate();//違う
 
 	// ジャンプ
-	void JumpInitialize();
-	void JumpUpdate();
+	void JumpInitialize();//違う
+	void JumpUpdate();//違う
 
 	// ノックバック
-	void knockInitialize();
-	void knockUpdate();
+	void knockInitialize();//いらない
+	void knockUpdate();//いらない
 
 	// 攻撃
-	void AttackInitialize();
-	void AttackUpdate();
+	void AttackInitialize();//違う
+	void AttackUpdate();//違う
 
 	//味方の回復
-	void UniqueInitialize();
-	void UniqueUpdate();
+	void UniqueInitialize();//違う
+	void UniqueUpdate();//違う
 
 	//死亡
-	void DeadInitialize();
-	void DeadUpdate();
+	void DeadInitialize();//違う
+	void DeadUpdate();//違う
 
 
 	// プレイヤーに追従
-	void followPlayer(Vector3 playerPos);
+	void followPlayer(Vector3 playerPos);//同じ
 	
 	//位置の初期化
-	void InitPos();
+	void InitPos();//違う
 
 	void Dissolve() {
 		animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
 		threshold_ += 0.004f;
 		animation_->SetThreshold(threshold_);
-	}
+	}//同じ
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision(Collider* collider) override;
+	void OnCollision(Collider* collider) override;//違う
 
 
 	/*-----ゲッター-----*/
-	const Vector3 GetWorldPosition() const override;
-	Vector3 GetLocalPosition();
-	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
-	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
-	WorldTransform& GetWorldTransformCane() { return worldTransformCane_; }
-	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
+	const Vector3 GetWorldPosition() const override;//同じ
+	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }//おなじ
+	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }//同じ
+	WorldTransform& GetWorldTransformCane() { return worldTransformCane_; }//このクラスだけ
 
-	bool IsAttack() { return workAttack_.isAttack; }
-	float GetHp() { return hp_; }
-	float GetMp() { return mp_; }
-	bool GetHeal() { return heal_; }
-	bool GetAllHeal() { return allHeal_; }
-	bool GetOneHeal() { return oneHeal_; }
-	float GetHealAmount() { return healAmount_; }
-	bool IsDead() { return isDead_; }
+
+	bool IsAttack() { return workAttack_.isAttack; }//違う
+	float GetHp() { return hp_; }//同じ
+	float GetMp() { return mp_; }//同じ
+	bool GetHeal() { return heal_; }//このクラスだけ
+	bool GetAllHeal() { return allHeal_; }//このクラスだけ
+	bool GetOneHeal() { return oneHeal_; }//このクラスだけ
+	float GetHealAmount() { return healAmount_; }//このクラスだけ
+	bool IsDead() { return isDead_; }//同じ
 
 
 	/*-----セッター-----*/
+	//敵の情報の受け取り
+	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
+
 	void SetLight(DirectionLight directionLight) {
 		animation_->DirectionalLightDraw(directionLight);
 		DirectionLight light;
@@ -103,18 +105,18 @@ public: // メンバ関数
 			magicCircle_[i]->DirectionalLightDraw(light);
 		}
 
-	}
+	}//違う
 
-	void SetOperation(bool flag) { operation_ = flag; }
-	void SetViewProjection(const ViewProjection& viewProjection) {viewProjection_ = viewProjection;}
+	void SetOperation(bool flag) { operation_ = flag; }//同じ
+	void SetViewProjection(const ViewProjection& viewProjection) {viewProjection_ = viewProjection;}//同じ
+
+	/*--------このクラス特有の関数-------*/
 	//座標の受け取り
 	void SetPos(Vector3 playerPos, Vector3 renjuPos, Vector3 tankPos) {
 		pos[0] = playerPos;
 		pos[1] = renjuPos;
 		pos[2] = tankPos;
 	}
-	//敵の情報の受け取り
-	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 	//味方キャラのHpの受け取り
 	void SetHp(Vector3 hp) { 
 		playerHp_ = hp.x;
@@ -132,24 +134,23 @@ public: // メンバ関数
 
 private:
 	//敵を探す
-	void searchTarget(Vector3 enemyPos);
+	void searchTarget(Vector3 enemyPos);//同じ
 	//敵の視野内にいるかどうか
-	void IsVisibleToEnemy();
+	void IsVisibleToEnemy();//同じ
 	//逃げる方向
-	void RunAway();
+	void RunAway();//同じ
 
 	// パーツ親子関係
-	void Relationship();
+	void Relationship();//違う
 
 	//次の状態遷移をノードから検索
-	CharacterState NextState(std::string name,int outputNum);
+	CharacterState NextState(std::string name,int outputNum);//同じ(関数の引数にユニークスキル名を追加)
 
 
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformCane_;
-	WorldTransform worldTransformCollision_;
 	WorldTransform worldTransformMagicCircle_[4];
 	WorldTransform worldTransformHeal_[4];
 	ViewProjection viewProjection_;

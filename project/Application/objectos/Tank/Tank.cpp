@@ -78,8 +78,13 @@ void Tank::Update() {
 	isHitPlayer_ = false;
 	
 	editor_.load("Tank");
+#ifdef _DEBUG
+
 	editor_.show("TankNode");
 	editor_.save("Tank");
+
+#endif // DEBUG
+	
 
 	if (hp_ <= 0) {
 		hp_ = 0;

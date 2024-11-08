@@ -134,9 +134,6 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 	linebox_->Draw(worldTransform_, viewProjection, false);
 
 #endif // DEBUG
-
-
-
 }
 
 void ParticleSystem::SetFiled(AccelerationField accelerationField) {

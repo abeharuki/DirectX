@@ -19,9 +19,6 @@ class Tank : public Collider {
 
 public: // メンバ関数
 	~Tank();
-
-	
-
 	void Initialize();
 	void Update();
 
@@ -92,9 +89,7 @@ public: // メンバ関数
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
 
-	void SetViewProjection(const ViewProjection& viewProjection) {
-		viewProjection_ = viewProjection;
-	}
+	void SetViewProjection(const ViewProjection& viewProjection) {viewProjection_ = viewProjection;}
 
 	void SetLight(DirectionLight directionLight) {
 		animation_->DirectionalLightDraw(directionLight);
