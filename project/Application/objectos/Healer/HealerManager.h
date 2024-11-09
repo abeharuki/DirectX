@@ -12,7 +12,7 @@ public:
 	
 	
 	//プレイヤーに追従
-	void followPlayer(Vector3 playerPos);
+	void SetPlayerPos(Vector3 playerPos);
 
 	/*-----ゲッター-----*/
 	Healer* GetHealer() { return healer_.get(); };
@@ -28,6 +28,8 @@ public:
 
 private:
 	WorldTransform worldTransformShadow_;
+	//アニメーション
+	std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Model> shadowModel_;
 	std::unique_ptr<Model> StaffModel_;
 	std::unique_ptr<Healer> healer_;

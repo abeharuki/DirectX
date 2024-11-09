@@ -165,7 +165,7 @@ void TutorialScene::Update() {
 	}
 
 	//プレイヤーに追従
-	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	healerManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
 	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 

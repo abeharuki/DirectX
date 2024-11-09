@@ -1,7 +1,9 @@
 #include "HealerManager.h"
 
 void HealerManager::Initialize() {
-	
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/Healer", "Atlas.png", "healer.gltf"));
+
 	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
 
@@ -66,7 +68,7 @@ void HealerManager::Initialize() {
 	worldTransformShadow_.scale = { 1.8f,1.8f,1.0f };
 
 	healer_ = std::make_unique<Healer>();
-	healer_->Initialize();
+	healer_->Initialize(animation_.get(),"Heal");
 
 	worldTransformShadow_.translate = { healer_->GetWorldPosition().x,0.1f,healer_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
@@ -98,7 +100,7 @@ void HealerManager::Update() {
 
 	//キャラクターの更新
 	healer_->Update();
-	healer_->followPlayer(playerPos_);
+	healer_->SetPlayerPos(playerPos_);
 
 	//ゲージの増減
 	spriteHpSize_.x = healer_->GetHp();
@@ -197,7 +199,7 @@ void HealerManager::DrawUI(){
 
 
 
-void HealerManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }
+void HealerManager::SetPlayerPos(Vector3 playerPos) { playerPos_ = playerPos; }
 
 void HealerManager::SetParticlePos(Vector3 pos) {
 	emitter_.translate = pos;

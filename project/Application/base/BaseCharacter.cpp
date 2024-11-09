@@ -1,6 +1,234 @@
 #include "BaseCharacter.h"
-#include <cassert>
-#include <numbers>
+
+
+void BaseCharacter::Initialize(Animations* animation, std::string skillName){
+	skillName_ = skillName;
+	animation_ = animation;
+	animationNumber_ = standby;
+	flameTime_ = 30.0f;
+
+	// 初期化
+	worldTransformBase_.Initialize();
+	worldTransformBody_.Initialize();
+	worldTransformNum_.Initialize();
+	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
+	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
+	alpha_ = 0.0f;
+}
+
+void BaseCharacter::Update(){
+	//体力がなくなあったら強制的に死亡に状態遷移
+	if (hp_ <= 0) {
+		hp_ = 0;
+		if (NextState("Move", Output4) == CharacterState::Dead ||
+			NextState("Attack", Output3) == CharacterState::Dead ||
+			NextState("Jump", Output2) == CharacterState::Dead ||
+			NextState(skillName_, Output2) == CharacterState::Dead) {
+			state_ = CharacterState::Dead;
+		}
+	}
+
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimHealer()) {
+		if (enemy_->isAttack()) {
+			isHit_ = true;
+			if (isHit_ != preHit_) {
+				hp_ -= 10;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
+			}
+		}
+	}
+
+	//ダメージの表示
+	damageModel_->SetColor({ 1.f,1.f,1.f,alpha_ });
+	if (alpha_ > 0.0f) {
+		alpha_ -= 0.08f;
+		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
+	}
+
+
+	// 回転
+	worldTransformBase_.rotate.y =
+		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+	animation_->SetFlameTimer(flameTime_);
+	animation_->Update(animationNumber_);
+	worldTransformBase_.UpdateMatrix();
+	worldTransformBody_.TransferMatrix();
+	worldTransformNum_.TransferMatrix();
+}
+
+void BaseCharacter::Draw(const ViewProjection& camera){
+	animation_->Draw(worldTransformBody_, camera, true);
+}
+void BaseCharacter::NoDepthDraw(const ViewProjection& camera){
+	damageModel_->Draw(worldTransformNum_, camera, false);
+}
+
+void BaseCharacter::MoveInitialize()
+{
+	worldTransformBase_.translate.y = 0.0f;
+	velocity_ = { 0.0f,0.0f,0.0f };
+	searchTarget_ = false;
+	isAttack_ = false;
+	animation_->SetpreAnimationTimer(0);
+	animation_->SetLoop(true);
+	flameTime_ = 30.0f;
+	animationNumber_ = standby;
+}
+void BaseCharacter::MoveUpdate()
+{
+	--coolTime_;
+	// 敵の座標までの距離
+	enemylength_ = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+
+
+	// プレイヤーに集合
+	if ((operation_ || !searchTarget_) && (!gameStart_ || battleStart_)) {
+		followPlayer_ = true;
+		searchTarget_ = false;
+		followPlayer();
+	}
+
+	// 敵を探す
+	if (!operation_) {
+		searchTarget_ = true;
+		followPlayer_ = false;
+		searchTarget();
+	}
+
+	if (isArea_ && searchTarget_ && enemy_->IsAreaDraw()) {
+		const float kCharacterSpeed = 0.3f;
+		velocity_ = Math::Normalize(velocity_);
+		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
+		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
+		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
+		worldTransformBase_.translate += velocity_;
+		animationNumber_ = run;
+	}
+	IsVisibleToEnemy();
+
+	//敵の攻撃が終わったらまたジャンプできるように設定
+	if (!enemy_->isAttack()) {
+		jumpCount_ = 1;
+	}
+
+	//地面をたたきつける攻撃が来たらジャンプする
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+		//ジャンプは敵の攻撃一回に対して一回まで
+		if (jumpCount_ == 1 && enemylength_ <= 35) {
+			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
+
+			if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
+				state_ = NextState("Move", Output2);
+			}
+
+			if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
+				state_ = NextState("Move", Output2);
+			}
+
+			if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
+				state_ = NextState("Move", Output2);
+			}
+
+			if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
+				state_ = NextState("Move", Output2);
+			}
+		}
+
+	}
+}
+
+void BaseCharacter::JumpInitialize()
+{
+	--jumpCount_;
+	worldTransformBase_.translate.y = 0.0f;
+	// ジャンプ初速
+	const float kJumpFirstSpeed = 0.6f;
+	velocity_.y = kJumpFirstSpeed;
+	animationNumber_ = jump;
+	flameTime_ = 30.0f;
+	animation_->SetAnimationTimer(0.5f, flameTime_);
+	animation_->SetLoop(false);
+}
+void BaseCharacter::JumpUpdate()
+{
+	// 移動
+	worldTransformBase_.translate += velocity_;
+	// 重力加速度
+	const float kGravity = 0.05f;
+	// 加速ベクトル
+	Vector3 accelerationVector = { 0, -kGravity, 0 };
+	// 加速
+	velocity_ += accelerationVector;
+
+	if (worldTransformBase_.translate.y <= 0.0f) {
+		// ジャンプ終了
+		state_ = NextState("Jump", Output1);
+		velocity_.y = 0.0f;
+	}
+}
+
+void BaseCharacter::AttackInitialize()
+{
+	searchTarget_ = false;
+	animationNumber_ = animeAttack;
+	animation_->SetLoop(false);
+}
+void BaseCharacter::AttackUpdate()
+{
+	if (!isAttack_) {
+		//地面をたたきつける攻撃が来たらジャンプする
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+			//ジャンプは敵の攻撃一回に対して一回まで
+			if (jumpCount_ == 1 && enemylength_ <= 36) {
+				//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
+
+				if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
+					state_ = NextState("Attack", Output2);
+				}
+
+				if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
+					state_ = NextState("Attack", Output2);
+				}
+
+				if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
+					state_ = NextState("Attack", Output2);
+				}
+
+				if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
+					state_ = NextState("Attack", Output2);
+				}
+			}
+
+		}
+	}
+
+	// プレイヤーに集合
+	if (operation_) {
+		state_ = NextState("Attack", Output1);
+		isAttack_ = false;
+		followPlayer_ = true;
+		searchTarget_ = false;
+		animation_->SetLoop(true);
+	}
+}
+
+void BaseCharacter::DeadInitialize()
+{
+	isDead_ = true;
+	animationNumber_ = death;
+	animation_->SetLoop(false);
+}
+
+void BaseCharacter::Relationship()
+{
+	worldTransformBody_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformBody_.scale, worldTransformBody_.rotate, worldTransformBody_.translate),
+		worldTransformBase_.matWorld_);
+}
 
 void BaseCharacter::followPlayer()
 {
@@ -187,4 +415,95 @@ CharacterState BaseCharacter::NextState(std::string name, int outputNum)
 	}
 }
 
+void BaseCharacter::OnCollision(Collider* collider)
+{
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+			if (enemy_->isAttack()) {
 
+				isHit_ = true;
+
+				if (isHit_ != preHit_) {
+					if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+						hp_ -= 10.0f;
+						alpha_ = 2.0f;
+						worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+						numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+						damageModel_->SetTexture("character/10.png");
+					}
+					else {
+						hp_ -= 5.0f;
+					}
+				}
+
+			}
+		}
+
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
+
+			.orientations{
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+			},
+			.size{collider->GetOBB().size}
+		};
+
+		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
+	}
+
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
+		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kGround) {
+
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				hp_ -= 20;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/20.png");
+			}
+
+		}
+
+		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kThrowing) {
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				hp_ -= 10;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
+			}
+		}
+	}
+
+	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
+
+			.orientations{
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+			},
+			.size{collider->GetOBB().size}
+		};
+		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
+	}
+	worldTransformBase_.UpdateMatrix();
+}
+
+const Vector3 BaseCharacter::GetWorldPosition() const
+{
+	// ワールド座標を入れる関数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransformBase_.matWorld_.m[3][0];
+	worldPos.y = worldTransformBase_.matWorld_.m[3][1];
+	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
+	return worldPos;
+}

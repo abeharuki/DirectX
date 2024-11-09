@@ -99,10 +99,7 @@ void GameScene::Update() {
 
 	//敵の情報取得
 	playerManager_->GetPlayer()->SetEnemy(enemyManager_->GetEnemy());
-	healerManager_->GetHealer()->SetEnemy(enemyManager_->GetEnemy());
-	renjuManager_->GetRenju()->SetEnemy(enemyManager_->GetEnemy());
-	tankManager_->GetTank()->SetEnemy(enemyManager_->GetEnemy());
-
+	
 	//playerの更新
 	playerManager_->GetPlayer()->SetEnemyLength(enemyManager_->GetWorldTransform().translate);
 	if (radialBlur_.blurWidth == 0.01f) {
@@ -120,9 +117,18 @@ void GameScene::Update() {
 		playerManager_->GetPlayer()->SetAttack(command_->GetAttack(i), i);
 	}
 
+	//敵情報の受け取り
+	healerManager_->GetHealer()->SetEnemy(enemyManager_->GetEnemy());
+	renjuManager_->GetRenju()->SetEnemy(enemyManager_->GetEnemy());
+	tankManager_->GetTank()->SetEnemy(enemyManager_->GetEnemy());
+	//作戦の受け取り
 	healerManager_->GetHealer()->SetOperation(command_->GetOperatin());
 	renjuManager_->GetRenju()->SetOperation(command_->GetOperatin());
 	tankManager_->GetTank()->SetOperation(command_->GetOperatin());
+	//プレイヤーに追従
+	healerManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
+	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
 
 	//各キャラの更新
 	if (!enemyManager_->IsClear()) {
@@ -171,10 +177,7 @@ void GameScene::Update() {
 	//hp情報の取得
 	healerManager_->GetHealer()->SetHp({ playerManager_->GetPlayer()->GetHp(),renjuManager_->GetRenju()->GetHp(),tankManager_->GetTank()->GetHp() });
 
-	//プレイヤーに追従
-	healerManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
-	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
-	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	
 	//生存しているかどうか
 	enemyManager_->GetEnemy()->SetIsDeadPlayer(playerManager_->GetPlayer()->GetIsDead());
 	enemyManager_->GetEnemy()->SetIsDeadHealer(healerManager_->GetHealer()->IsDead());
@@ -354,6 +357,8 @@ void GameScene::BattleBegin(){
 
 		radialBlur_.blurWidth = Math::LerpShortAngle(radialBlur_.blurWidth,1.0f,0.15f);
 		cameraDirectionTime_ = 10;
+
+		healerManager_->GetHealer()->SetGameStart(true);
 	}
 
 	//カメラの演出に移行
@@ -366,7 +371,7 @@ void GameScene::BattleBegin(){
 			cameraDirection_ = true;
 			//位置の初期化
 			playerManager_->GetPlayer()->InitPos();
-			healerManager_->GetHealer()->InitPos();
+			healerManager_->GetHealer()->InitPos(6.0f);
 			renjuManager_->GetRenju()->InitPos();
 			tankManager_->GetTank()->InitPos();
 			//カメラの初期化
@@ -395,7 +400,7 @@ void GameScene::BattleBegin(){
 	//バトル開始のフラグ受け取り
 	playerManager_->GetPlayer()->SetBattleStart(battle_);
 	enemyManager_->GetEnemy()->SetBattleStart(battle_);
-	
+	healerManager_->GetHealer()->SetBattleStart(battle_);
 	
 }
 

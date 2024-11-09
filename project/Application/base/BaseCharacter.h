@@ -1,33 +1,42 @@
 #pragma once
-#include "Model.h"
 #include "CollisionManager/Collider.h"
+#include <CollisionManager/CollisionConfig.h>
 #include <BehaviorTree/BehaviorTreeNode.h>
 #include <Enemy/Enemy.h>
+#include <cassert>
+#include <numbers>
+
 
 class BaseCharacter : public Collider {
 public:
     virtual ~BaseCharacter() = default;
 
-    virtual void Initialize(const Animation* animation,std::string skillName) = 0;
-    virtual void Update() = 0;
-    virtual void Draw(const ViewProjection& camera) = 0;
-    virtual void NoDepthDraw(const ViewProjection& camera) = 0;
+    virtual void Initialize(Animations* animation,std::string skillName);
+    virtual void Update();
+    virtual void Draw(const ViewProjection& camera);
+    virtual void NoDepthDraw(const ViewProjection& camera);
 
-    virtual void MoveInitialize() = 0;
-    virtual void MoveUpdate() = 0;
-    virtual void JumpInitialize() = 0;
-    virtual void JumpUpdate() = 0;
+    //移動
+    virtual void MoveInitialize();
+    virtual void MoveUpdate();
 
-    virtual void AttackInitialize() = 0;
-    virtual void AttackUpdate() = 0;
+    //ジャンプ
+    virtual void JumpInitialize();
+    virtual void JumpUpdate();
 
-    virtual void UniqueInitialize() = 0;
-    virtual void UniqueUpdate() = 0;
+    //攻撃
+    virtual void AttackInitialize();
+    virtual void AttackUpdate();
 
-    virtual void DeadInitialize() = 0;
-    virtual void DeadUpdate() = 0;
+    //スキル
+    virtual void UniqueInitialize() = 0;//純粋仮想関数
+    virtual void UniqueUpdate() = 0;//純粋仮想関数
 
-    virtual void OnCollision(Collider* collider) override = 0;
+    //死亡
+    virtual void DeadInitialize();
+    virtual void DeadUpdate() = 0;//純粋仮想関数
+
+    virtual void OnCollision(Collider* collider) override;
 
     /*---------------------状態遷移関連---------------------*/
     virtual CharacterState GetState() const { return state_; }
@@ -39,8 +48,8 @@ public:
     WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }
 
     /*----------------------ゲッター-----------------------*/
-    //純粋仮想関数
-    virtual bool IsAttack() = 0;
+    //仮想関数
+    virtual bool IsAttack() { return isAttack_; }
     //メンバ関数
     float GetHp() { return hp_; }
     float GetMp() { return mp_; }
@@ -48,18 +57,21 @@ public:
 
     /*----------------------セッター------------------------*/
     //仮想関数
-    virtual void SetLight(DirectionLight directionLight);
+    virtual void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
 
     //メンバ関数
+    void SetPlayerPos(Vector3 pos) { playerPos_ = pos; }
     void SetEnemy(Enemy* enemy) {enemy_ = enemy;}
     void SetOperation(bool flag) { operation_ = flag; }
     void SetViewProjection(const ViewProjection& viewProjection) { viewProjection_ = viewProjection; }
+    void SetGameStart(bool flag) { gameStart_ = flag; animationNumber_ = standby;}
+    void SetBattleStart(bool flag) { battleStart_ = flag;}
 
     // パーツ親子関係
-    virtual void Relationship() = 0;
+    virtual void Relationship();
 
     //位置の初期化
-    virtual void InitPos();//引数に座標をいれられるようにする
+    virtual void InitPos(float posX){ worldTransformBase_.translate = { posX,0.0f,-35.0f }; }//H6.0,R-3.0,T0.0 
 
     // 共通の関数
     //プレイヤーに追従
@@ -85,6 +97,13 @@ protected:
     WorldTransform worldTransformBody_;
     ViewProjection viewProjection_;
 
+    //ダメージ表示
+    WorldTransform worldTransformNum_;
+    std::unique_ptr<Model> damageModel_;
+    float alpha_;
+    Vector3 numMove_;
+
+    //アニメーション
     Animations* animation_;
     int animationNumber_;
     enum AnimationNumber {
@@ -105,9 +124,6 @@ protected:
     // 敵を探すフラグ
     bool searchTarget_ = false;
 
-    //攻撃ができるようになるまでの
-    int coolTime_ = 60;
-
     //ノードエディター
     Editor::NodeEditor editor_;
     //敵の情報
@@ -126,17 +142,30 @@ protected:
     //敵の攻撃範囲ないかどうか
     bool isArea_ = false;
 
+    //ヒット確認用フラグ
+    bool preHit_;
+    bool isHit_;
+    bool isDead_ = false;
+    bool isAttack_;
+    //ゲームスタートフラグ
+    bool gameStart_ = false;
+    //バトルが始まったかどうかのフラグ
+    bool battleStart_ = false;
 
     float hp_ = 100.0f;
     float mp_ = 100.0f;
-    bool isDead_ = false;
+    //ジャンプ可能なカウント
+    int jumpCount_;
+    //攻撃ができるようになるまでの
+    int coolTime_ = 60;
+    // 速度
+    Vector3 velocity_ = {};
 
     Vector3 playerPos_;
     //作戦
     bool operation_;
 
-    // 速度
-    Vector3 velocity_ = {};
+  
 
     //ユニークスキルのノードの名前
     std::string skillName_;
