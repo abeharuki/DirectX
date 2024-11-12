@@ -139,7 +139,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\scene\OverScene.cpp" />
     <ClCompile Include="Application\scene\SceneFactory.cpp" />
     <ClCompile Include="Application\scene\TitleScene.cpp" />
-    <ClCompile Include="Application\scene\TutorialScene.cpp" />
     <ClCompile Include="Engine\2d\Sprite.cpp" />
     <ClCompile Include="Engine\3d\Line.cpp" />
     <ClCompile Include="Engine\3d\LineBox.cpp" />
@@ -358,7 +357,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\scene\OverScene.h" />
     <ClInclude Include="Application\scene\SceneFactory.h" />
     <ClInclude Include="Application\scene\TitleScene.h" />
-    <ClInclude Include="Application\scene\TutorialScene.h" />
     <ClInclude Include="Engine\2d\Sprite.h" />
     <ClInclude Include="Engine\3d\Line.h" />
     <ClInclude Include="Engine\3d\LineBox.h" />

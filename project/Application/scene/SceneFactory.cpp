@@ -7,8 +7,6 @@ IScene* SceneFactory::CreateScene(const std::string& sceneName) {
 
 	if (sceneName == "TitleScene") {
 		newScene = new TitleScene();
-	} else if (sceneName == "TutorialScene") {
-		newScene = new TutorialScene();
 	}
 	else if (sceneName == "GameScene") {
 		newScene = new GameScene();

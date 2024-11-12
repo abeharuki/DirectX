@@ -55,8 +55,6 @@ void HealerManager::Update() {
 
 	//キャラクターの更新
 	healer_->Update();
-	healer_->SetPlayerPos(playerPos_);
-
 	
 };
 
@@ -72,10 +70,6 @@ void HealerManager::Draw(const ViewProjection& camera) {
 	
 }
 
-
-void HealerManager::DrawUI(){
-	healer_->DrawUI();
-};
 
 void HealerManager::SetParticlePos(Vector3 pos) {
 	emitter_.translate = pos;

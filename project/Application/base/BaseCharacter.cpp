@@ -79,6 +79,14 @@ void BaseCharacter::Update(){
 		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
 	}
 
+	// 回転
+	worldTransformBase_.rotate.y =
+		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+	animation_->SetFlameTimer(flameTime_);
+	animation_->Update(animationNumber_);
+	worldTransformBase_.UpdateMatrix();
+	worldTransformBody_.TransferMatrix();
+	worldTransformNum_.TransferMatrix();
 
 	spriteHP_->SetSize({hp_,10.f});
 	spriteMP_->SetSize({ mp_,10.f});
@@ -134,14 +142,7 @@ void BaseCharacter::Update(){
 	}
 
 
-	// 回転
-	worldTransformBase_.rotate.y =
-		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-	animation_->SetFlameTimer(flameTime_);
-	animation_->Update(animationNumber_);
-	worldTransformBase_.UpdateMatrix();
-	worldTransformBody_.TransferMatrix();
-	worldTransformNum_.TransferMatrix();
+	
 }
 
 void BaseCharacter::Draw(const ViewProjection& camera){
@@ -604,8 +605,6 @@ bool BaseCharacter::GetAimCharacter()
 	}
 	
 }
-
-
 
 void BaseCharacter::OnCollision(Collider* collider)
 {

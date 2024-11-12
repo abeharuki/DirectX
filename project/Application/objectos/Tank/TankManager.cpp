@@ -51,8 +51,7 @@ void TankManager::Update() {
 
 	//キャラクターの更新
 	tank_->Update();
-	tank_->SetPlayerPos(playerPos_);
-
+	
 	
 	
 };
@@ -63,9 +62,8 @@ void TankManager::Draw(const ViewProjection& camera) {
 
 	shadowModel_->Draw(worldTransformShadow_, camera, false);
 }
-void TankManager::DrawUI(){
-	tank_->DrawUI();
-};
+
+
 
 void TankManager::SetParticlePos(Vector3 pos) {
 	emitter_.translate = pos;

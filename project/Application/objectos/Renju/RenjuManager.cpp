@@ -55,8 +55,6 @@ void RenjuManager::Update() {
 
 	//キャラクターの更新
 	renju_->Update();
-	renju_->SetPlayerPos(playerPos_);
-
 	
 	particle_->DebugParameter();
 
@@ -69,9 +67,7 @@ void RenjuManager::Draw(const ViewProjection& camera) {
 
 	//particle_->Draw(camera);
 }
-void RenjuManager::DrawUI(){
-	renju_->DrawUI();
-};
+
 
 
 

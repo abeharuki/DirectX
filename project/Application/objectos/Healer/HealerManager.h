@@ -8,7 +8,6 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& camera);
-	void DrawUI();
 	
 
 	/*-----ゲッター-----*/
@@ -18,8 +17,6 @@ public:
 	bool IsAttack() { return healer_->IsAttack(); }
 
 	/*-----セッター-----*/
-	void SetPlayerPos(Vector3 playerPos) { playerPos_ = playerPos; };
-	void SetViewProjection(const ViewProjection& camera) { healer_->SetViewProjection(camera); };
 	//パーティクルのpos
 	void SetParticlePos(Vector3 pos);
 
@@ -36,7 +33,6 @@ private:
 	EmitterSphere emitter_;
 	bool isParticle_ = false;
 
-	Vector3 playerPos_;
 	
 	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 

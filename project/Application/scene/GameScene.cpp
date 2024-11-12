@@ -73,11 +73,9 @@ void GameScene::Initialize() {
 	radialBlur_.rotation = 0.1f;
 	
 
-	//characters = { playerManager_->GetPlayer(), healerManager_->GetHealer(), renjuManager_->GetRenju(),tankManager_->GetTank()};
+	characters = {healerManager_->GetHealer(), renjuManager_->GetRenju(),tankManager_->GetTank()};
 
-	/*for (auto* character : characters) {
-		character->SetEnemy(enemyManager_->GetEnemy());
-	}*/
+	
 }
 
 void GameScene::Update() {
@@ -117,18 +115,18 @@ void GameScene::Update() {
 		playerManager_->GetPlayer()->SetAttack(command_->GetAttack(i), i);
 	}
 
-	//敵情報の受け取り
-	healerManager_->GetHealer()->SetEnemy(enemyManager_->GetEnemy());
-	renjuManager_->GetRenju()->SetEnemy(enemyManager_->GetEnemy());
-	tankManager_->GetTank()->SetEnemy(enemyManager_->GetEnemy());
-	//作戦の受け取り
-	healerManager_->GetHealer()->SetOperation(command_->GetOperatin());
-	renjuManager_->GetRenju()->SetOperation(command_->GetOperatin());
-	tankManager_->GetTank()->SetOperation(command_->GetOperatin());
-	//プレイヤーに追従
-	healerManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
-	renjuManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
-	tankManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
+	for (auto* character : characters) {
+		//敵情報の受け取り
+		character->SetEnemy(enemyManager_->GetEnemy());
+		//作戦の受け取り
+		character->SetOperation(command_->GetOperatin());
+		//プレイヤーに追従
+		character->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
+		//倒された時のディゾルブ
+		if (playerManager_->GetPlayer()->GetHp() <= 0) {
+			character->Dissolve();
+		}
+	}
 
 	//各キャラの更新
 	if (!enemyManager_->IsClear()) {
@@ -203,13 +201,8 @@ void GameScene::Update() {
 	if (playerManager_->IsAttack()) {enemyManager_->OnCollision();}
 	if (renjuManager_->GetRenju()->GetHitBullet()) {enemyManager_->OnRenjuCollision();}
 	
-	
-	//倒された時のディゾルブ
-	if (playerManager_->GetPlayer()->GetHp() <= 0) {
-		healerManager_->GetHealer()->Dissolve();
-		renjuManager_->GetRenju()->Dissolve();
-		tankManager_->GetTank()->Dissolve();
-	}
+	skydome_->Update();
+	loader_->Update();
 
 	// 追従カメラの更新
 	if ((!cameraDirection_||battle_) && radialBlur_.blurWidth == 0.01f) {
@@ -219,23 +212,19 @@ void GameScene::Update() {
 	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
 
+	//viewの設定
 	enemyManager_->SetCamera(viewProjection_);
 	playerManager_->GetPlayer()->SetCamera(viewProjection_);
-	healerManager_->SetViewProjection(viewProjection_);
-	renjuManager_->SetViewProjection(viewProjection_);
-	tankManager_->SetViewProjection(viewProjection_);
-
-	skydome_->Update();
-	loader_->Update();
-
-	
 	//ライティングの設定
 	playerManager_->GetPlayer()->SetLight(directionLight_);
 	enemyManager_->GetEnemy()->SetLight(directionLight_);
-	healerManager_->GetHealer()->SetLight(directionLight_);
-	renjuManager_->GetRenju()->SetLight(directionLight_);
-	tankManager_->GetTank()->SetLight(directionLight_);
 
+	//view・ライティングの設定
+	for (auto* character : characters) {
+		character->SetViewProjection(viewProjection_);
+		character->SetLight(directionLight_);
+	}
+	
 	loader_->SetLight(directionLight_);
 
 	
@@ -280,9 +269,9 @@ void GameScene::Draw() {
 
 	enemyManager_->DrawUI();
 	playerManager_->DrawUI();
-	healerManager_->DrawUI();
-	renjuManager_->DrawUI();
-	tankManager_->DrawUI();
+	for (auto* character : characters) {
+		character->DrawUI();
+	}
 
 	//コマンド
 	if (battle_) {
@@ -420,9 +409,12 @@ void GameScene::CheckAllCollision() {
 		}
 	}
 	
-	collisionManager_->SetColliderList(healerManager_->GetHealer());
+	for (auto* character : characters) {
+		collisionManager_->SetColliderList(character);
+	}
+	/*collisionManager_->SetColliderList(healerManager_->GetHealer());
 	collisionManager_->SetColliderList(renjuManager_->GetRenju());	
-	collisionManager_->SetColliderList(tankManager_->GetTank());
+	collisionManager_->SetColliderList(tankManager_->GetTank());*/
 
 	for (RenjuBullet* bullet : renjuManager_->GetRenju()->GetBullets()) {
 		collisionManager_->SetColliderList(bullet);
