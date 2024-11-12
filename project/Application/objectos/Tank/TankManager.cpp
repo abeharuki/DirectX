@@ -8,20 +8,6 @@ void TankManager::Initialize() {
 	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
 
-	emitter_ = {
-		.translate{0,0,0},
-		.count{10},
-		.frequency{0.02f},
-		.frequencyTime{0.0f},
-		.scaleRange{.min{1,1,1},.max{1,1,1}},
-		.translateRange{.min{0,0,0},.max{0,0,0}},
-		.colorRange{.min{1,1,1},.max{1,1,1}},
-		.lifeTimeRange{.min{0.5f},.max{0.5f}},
-		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
-	};
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
-	isParticle_ = false;
-
 	worldTransformShadow_.Initialize();
 	worldTransformShadow_.rotate = { -1.571f,0.0f,0.0f };
 	worldTransformShadow_.scale = { 2.2f,2.2f,1.0f };
@@ -34,13 +20,6 @@ void TankManager::Initialize() {
 }
 
 void TankManager::Update() {
-	particle_->SetEmitter(emitter_);
-	if (isParticle_) {
-		particle_->Update();
-		if (!particle_->GetEmit()) {
-			isParticle_ = false;
-		}
-	}
 	
 	//影の計算
 	shadowColor_.w = 1 - (tank_->GetWorldPosition().y / 3.9f);
@@ -58,15 +37,10 @@ void TankManager::Update() {
 
 void TankManager::Draw(const ViewProjection& camera) {
 	tank_->Draw(camera);
-	particle_->Draw(camera);
-
 	shadowModel_->Draw(worldTransformShadow_, camera, false);
 }
 
 
 
-void TankManager::SetParticlePos(Vector3 pos) {
-	emitter_.translate = pos;
-	isParticle_ = true;
-}
+
 

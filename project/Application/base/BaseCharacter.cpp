@@ -65,7 +65,6 @@ void BaseCharacter::Update(){
 			if (isHit_ != preHit_) {
 				hp_ -= 10;
 				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
 				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/10.png");
 			}
@@ -78,10 +77,12 @@ void BaseCharacter::Update(){
 		alpha_ -= 0.08f;
 		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
 	}
+	else {
+		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+	}
 
 	// 回転
-	worldTransformBase_.rotate.y =
-		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+	worldTransformBase_.rotate.y =Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 	animation_->SetFlameTimer(flameTime_);
 	animation_->Update(animationNumber_);
 	worldTransformBase_.UpdateMatrix();
