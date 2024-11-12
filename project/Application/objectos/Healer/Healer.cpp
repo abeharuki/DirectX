@@ -93,6 +93,8 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 /// 毎フレーム処理
 /// </summary>
 void Healer::Update() {
+	//ノードの更新
+	editor_.load("Healer");
 	// 状態が変わった場合にノードの初期化を行う
 	if (state_ != previousState_) {
 		// 状態に応じた初期化処理を呼び出す
@@ -109,14 +111,8 @@ void Healer::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
-	//ノードの更新
-	editor_.load("Healer");
-#ifdef _DEBUG
+	
 
-	editor_.show("HealerNode");
-	editor_.save("Healer");
-
-#endif // DEBUG
 	
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i]->SetThreshold(t_[i]);
@@ -144,6 +140,7 @@ void Healer::Update() {
 		behaviorTree_->Update();
 	}
 
+
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("HealerHp", &hp_, 1.0f);
 	ImGui::End();
@@ -157,7 +154,12 @@ void Healer::Update() {
 	ImGui::DragFloat("magicCirecle", &t_[0], 0.01f);
 	ImGui::End();
 
+#ifdef _DEBUG
 
+	editor_.show("HealerNode");
+	editor_.save("Healer");
+#endif // DEBUG
+	
 	
 };
 

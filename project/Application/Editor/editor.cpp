@@ -3,7 +3,7 @@
 
 namespace Editor
 {
-	
+
 	void NodeEditor::show(const std::string& filename)
 	{
 
@@ -30,7 +30,7 @@ namespace Editor
 
 			ImNodes::BeginNodeEditor();
 
-			
+
 			// ノード追加用のポップアップを表示
 			if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
 				ImNodes::IsEditorHovered() && ImGui::IsKeyReleased(ImGuiKey_N))
@@ -108,9 +108,12 @@ namespace Editor
 						maxOutputWidth = width;
 					}
 				}
-
+				// フラグに基づいて色を設定
+				if (node.isActive) {
+					ImNodes::PushColorStyle(ImNodesCol_NodeBackground, IM_COL32(255, 100, 100, 255)); // アクティブなノードは赤
+				}
 				ImNodes::BeginNode(node.id);
-				
+
 
 				// ノードタイトルバーに名前とタイプを表示
 				ImNodes::BeginNodeTitleBar();
@@ -140,7 +143,9 @@ namespace Editor
 				}
 
 				ImNodes::EndNode();
-
+				if (node.isActive) {
+					ImNodes::PopColorStyle(); // 色スタイルを元に戻す
+				}
 
 				// 右クリックで削除ポップアップを開く
 				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
@@ -254,8 +259,8 @@ namespace Editor
 
 			}
 
-			
-			
+
+
 			ImNodes::EndNodeEditor();
 
 			// リンク作成処理
@@ -282,7 +287,7 @@ namespace Editor
 				}
 			}
 		};
-		
+
 
 		ImGui::End();
 	}
@@ -291,49 +296,56 @@ namespace Editor
 	//セーブするファイル名
 	void NodeEditor::save(const std::string& filename) {
 
-		if (isFocused_) {
 
-			// ファイルパスを作成
-			std::string ini_filepath = "resources/NodeEditor/" + filename + ".ini";
-			std::string bytes_filepath = "resources/NodeEditor/" + filename + ".bytes";
 
-			//状態をセーブ
-			ImNodes::SaveCurrentEditorStateToIniFile(ini_filepath.c_str());
+		// ファイルパスを作成
+		std::string ini_filepath = "resources/NodeEditor/" + filename + ".ini";
+		std::string bytes_filepath = "resources/NodeEditor/" + filename + ".bytes";
 
-			//エディタの状態をバイナリファイルに書き出す
-			std::fstream fout(bytes_filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+		//状態をセーブ
+		ImNodes::SaveCurrentEditorStateToIniFile(ini_filepath.c_str());
 
-			//ノード情報をコピー
-			const size_t num_nodes = nodes_.size();
-			fout.write(reinterpret_cast<const char*>(&num_nodes), static_cast<std::streamsize>(sizeof(size_t)));
-			for (const Node& node : nodes_) {
-				fout.write(reinterpret_cast<const char*>(&node.id), sizeof(int));
-				fout.write(reinterpret_cast<const char*>(&node.type), sizeof(NodeType));
+		//エディタの状態をバイナリファイルに書き出す
+		std::fstream fout(bytes_filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
-				// ノード名のセーブ
-				size_t name_size = node.name.size();
-				fout.write(reinterpret_cast<const char*>(&name_size), sizeof(size_t));
-				fout.write(node.name.c_str(), name_size);
+		//ノード情報をコピー
+		const size_t num_nodes = nodes_.size();
+		fout.write(reinterpret_cast<const char*>(&num_nodes), static_cast<std::streamsize>(sizeof(size_t)));
+		for (const Node& node : nodes_) {
+			fout.write(reinterpret_cast<const char*>(&node.id), sizeof(int));
+			fout.write(reinterpret_cast<const char*>(&node.type), sizeof(NodeType));
 
-				// 出力名のセーブ
-				size_t output_count = node.outputNames.size();
-				fout.write(reinterpret_cast<const char*>(&output_count), sizeof(size_t));
-				for (const auto& outputName : node.outputNames) {
-					size_t output_name_size = outputName.size();
-					fout.write(reinterpret_cast<const char*>(&output_name_size), sizeof(size_t));
-					fout.write(outputName.c_str(), output_name_size);
-				}
+			// ノード名のセーブ
+			size_t name_size = node.name.size();
+			fout.write(reinterpret_cast<const char*>(&name_size), sizeof(size_t));
+			fout.write(node.name.c_str(), name_size);
+
+			// 出力名のセーブ
+			size_t output_count = node.outputNames.size();
+			fout.write(reinterpret_cast<const char*>(&output_count), sizeof(size_t));
+			for (const auto& outputName : node.outputNames) {
+				size_t output_name_size = outputName.size();
+				fout.write(reinterpret_cast<const char*>(&output_name_size), sizeof(size_t));
+				fout.write(outputName.c_str(), output_name_size);
 			}
 
-			//リンク情報をコピー
-			const size_t num_links = links_.size();
-			fout.write(reinterpret_cast<const char*>(&num_links), static_cast<std::streamsize>(sizeof(size_t)));
-			fout.write(reinterpret_cast<const char*>(links_.data()), static_cast<std::streamsize>(sizeof(Link) * num_links));
-
-			//current_idをコピー
-			fout.write(reinterpret_cast<const char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
-			fout.close();
+			// ノードのisActive状態を保存
+			fout.write(reinterpret_cast<const char*>(&node.isActive), sizeof(bool));
 		}
+
+		//リンク情報をコピー
+		const size_t num_links = links_.size();
+		fout.write(reinterpret_cast<const char*>(&num_links), static_cast<std::streamsize>(sizeof(size_t)));
+		fout.write(reinterpret_cast<const char*>(links_.data()), static_cast<std::streamsize>(sizeof(Link) * num_links));
+
+		//current_idをコピー
+		fout.write(reinterpret_cast<const char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
+
+		// current_idをコピーの前にアクティブなノードIDをセーブ
+		fout.write(reinterpret_cast<const char*>(&currentStateNodeId_), static_cast<std::streamsize>(sizeof(int)));
+
+		fout.close();
+
 	}
 
 	//ロードするファイル名
@@ -381,7 +393,14 @@ namespace Editor
 				fin.read(&outputName[0], output_name_size);
 				outputNames[j] = outputName; // 出力名を追加
 			}
+
+			//isActive のロード（新しいフィールドの処理）
+			bool isActive = false;  // デフォルト値
+			fin.read(reinterpret_cast<char*>(&isActive), sizeof(bool));
+
 			nodes_[i] = Node(id, name, node_type, outputNames);
+
+			nodes_[i].isActive = isActive;
 		}
 
 		//リンク情報をコピー
@@ -392,6 +411,11 @@ namespace Editor
 
 		//current_idをコピー
 		fin.read(reinterpret_cast<char*>(&current_id_), static_cast<std::streamsize>(sizeof(int)));
+
+		//現在のノードidをコピー
+		fin.read(reinterpret_cast<char*>(&currentStateNodeId_), static_cast<std::streamsize>(sizeof(int)));
+
+
 		fin.close();
 	}
 
@@ -432,7 +456,32 @@ namespace Editor
 		return *endNodeIt; // リンク先のノードを返す
 	}
 
+	void NodeEditor::SetCurrentStateNode(int nodeId) {
+		// もし現在のノードIDが新しいノードIDと同じであれば何もしない
+		if (currentStateNodeId_ == nodeId) {
+			return;
+		}
 
-	
+		// 現在のアクティブなノードを非アクティブにする
+		auto currentNodeIt = std::find_if(nodes_.begin(), nodes_.end(),
+			[this](Node& node) { return node.id == currentStateNodeId_; });
+		if (currentNodeIt != nodes_.end()) {
+			currentNodeIt->isActive = false; // 現在のアクティブを解除
+		}
+
+		// 新しいノードをアクティブにする
+		auto newNodeIt = std::find_if(nodes_.begin(), nodes_.end(),
+			[nodeId](Node& node) { return node.id == nodeId; });
+		if (newNodeIt != nodes_.end()) {
+			newNodeIt->isActive = true;     // 新しいノードをアクティブに設定
+			currentStateNodeId_ = nodeId;   // 現在のノードIDを更新
+		}
+		else {
+			// 新しいノードが見つからない場合、currentStateNodeId_ を無効な状態に設定
+			currentStateNodeId_ = -1;
+		}
+	}
+
+
 }
 

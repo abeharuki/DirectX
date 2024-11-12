@@ -67,12 +67,23 @@ void BaseCharacter::Update(){
 	//体力がなくなあったら強制的に死亡に状態遷移
 	if (hp_ <= 0) {
 		hp_ = 0;
-		if (NextState("Move", Output4) == CharacterState::Dead ||
-			NextState("Attack", Output3) == CharacterState::Dead ||
-			NextState("Jump", Output2) == CharacterState::Dead ||
-			NextState(skillName_, Output2) == CharacterState::Dead) {
-			state_ = CharacterState::Dead;
+		if (className_ != "Renju") {
+			if (NextState("Move", Output4) == CharacterState::Dead ||
+				NextState("Attack", Output3) == CharacterState::Dead ||
+				NextState("Jump", Output2) == CharacterState::Dead ||
+				NextState(skillName_, Output2) == CharacterState::Dead) {
+				state_ = CharacterState::Dead;
+			}
 		}
+		else {
+			if (NextState("Move", Output3) == CharacterState::Dead ||
+				NextState("Attack", Output3) == CharacterState::Dead ||
+				NextState("Jump", Output2) == CharacterState::Dead ||
+				NextState(skillName_, Output2) == CharacterState::Dead) {
+				state_ = CharacterState::Dead;
+			}
+		}
+		
 	}
 
 	//各キャラの処理にしないといけない
@@ -531,6 +542,10 @@ void BaseCharacter::RunAway()
 CharacterState BaseCharacter::NextState(std::string name, int outputNum)
 {
 	auto linkedNode = editor_.GetLinkNode(name, outputNum);
+
+	// 状態に応じてノードの色を変更
+	editor_.SetCurrentStateNode(linkedNode.id);
+
 
 	if (linkedNode.name == "Move") {
 		return CharacterState::Moveing;

@@ -42,6 +42,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 /// 毎フレーム処理
 /// </summary>
 void Renju::Update() {
+	editor_.load("Renju");
 	// 状態が変わった場合にノードの初期化を行う
 	if (state_ != previousState_) {
 		// 状態に応じた初期化処理を呼び出す
@@ -58,13 +59,8 @@ void Renju::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
-	editor_.load("Renju");
-#ifdef _DEBUG
+	
 
-	editor_.show("RenjuNode");
-	editor_.save("Renju");
-
-#endif // DEBUG
 	
 	Relationship();
 	BaseCharacter::Update();
@@ -105,6 +101,13 @@ void Renju::Update() {
 	ImGui::Text("animeNunber%d", animationNumber_);
 	ImGui::Text("animeTime%f", animation_->GetAnimationTimer());
 	ImGui::End();
+
+#ifdef _DEBUG
+
+	editor_.show("RenjuNode");
+	editor_.save("Renju");
+
+#endif // DEBUG
 };
 
 void Renju::Draw(const ViewProjection& camera) {

@@ -53,6 +53,7 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 /// 毎フレーム処理
 /// </summary>
 void Tank::Update() {
+	editor_.load("Tank");
 	// 状態が変わった場合にノードの初期化を行う
 	if (state_ != previousState_) {
 		// 状態に応じた初期化処理を呼び出す
@@ -69,13 +70,8 @@ void Tank::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 	
-	editor_.load("Tank");
-#ifdef _DEBUG
+	
 
-	editor_.show("TankNode");
-	editor_.save("Tank");
-
-#endif // DEBUG
 
 	Relationship();
 	BaseCharacter::Update();
@@ -100,6 +96,13 @@ void Tank::Update() {
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("TankHp", &hp_, 1.0f);
 	ImGui::End();
+
+#ifdef _DEBUG
+
+	editor_.show("TankNode");
+	editor_.save("Tank");
+
+#endif // DEBUG
 };
 
 void Tank::Draw(const ViewProjection& camera) {

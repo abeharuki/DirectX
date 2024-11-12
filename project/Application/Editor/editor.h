@@ -39,6 +39,7 @@ namespace Editor
 		NodeType type; // ノードの種類を追加
 		std::vector<std::string> outputNames; // 出力ポートの名前を保存するベクター
 
+		bool isActive = false;
 
 		Node() = default;
 		Node(int i, const std::string& n, NodeType t, const std::vector<std::string>& outputNames) : id(i), name(n), type(t), outputNames(outputNames) {}
@@ -68,7 +69,8 @@ namespace Editor
 		//引数のNodeNameのnum番目のoutputがつながっているノードを返す
 		Node GetLinkNode(const std::string& nodename, int outputnum);
 
-	
+		void SetCurrentStateNode(int NodeId);
+
 	private:
 		std::vector<Node> nodes_;
 		std::vector<Link> links_;
@@ -78,6 +80,8 @@ namespace Editor
 
 		ImVec2 offset_;
 		bool isFocused_;
+
+		int currentStateNodeId_;
 	};
 
 
