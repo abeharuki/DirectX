@@ -7,6 +7,11 @@ void BaseCharacter::Initialize(Animations* animation, std::string className){
 	animationNumber_ = standby;
 	flameTime_ = 30.0f;
 
+	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
+	shadowModel_->SetBlendMode(BlendMode::kSubtract);
+
+	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
+
 	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
 	spriteHPG_.reset(Sprite::Create("resources/character/HPG.png"));
 	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
@@ -40,13 +45,25 @@ void BaseCharacter::Initialize(Animations* animation, std::string className){
 	worldTransformBase_.Initialize();
 	worldTransformBody_.Initialize();
 	worldTransformNum_.Initialize();
+	worldTransformShadow_.Initialize();
+	worldTransformShadow_.rotate = { -1.571f,0.0f,0.0f };
+	if (className != "Tank") {worldTransformShadow_.scale = { 1.8f,1.8f,1.0f };}
+	else { worldTransformShadow_.scale = { 2.2f,2.2f,1.0f }; }
 	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
-	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
 	alpha_ = 0.0f;
 
+	
 }
 
 void BaseCharacter::Update(){
+
+	//影の計算
+	shadowColor_.w = 1 - (worldTransformBase_.translate.y / 3.9f);
+
+	shadowModel_->SetColor(shadowColor_);
+	worldTransformShadow_.translate = { worldTransformBase_.translate.x,0.1f,worldTransformBase_.translate.z };
+	worldTransformShadow_.UpdateMatrix();
+
 	//体力がなくなあったら強制的に死亡に状態遷移
 	if (hp_ <= 0) {
 		hp_ = 0;
@@ -148,6 +165,7 @@ void BaseCharacter::Update(){
 
 void BaseCharacter::Draw(const ViewProjection& camera){
 	animation_->Draw(worldTransformBody_, camera, true);
+	shadowModel_->Draw(worldTransformShadow_, camera, false);
 }
 void BaseCharacter::NoDepthDraw(const ViewProjection& camera){
 	damageModel_->Draw(worldTransformNum_, camera, false);

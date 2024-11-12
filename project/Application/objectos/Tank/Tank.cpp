@@ -19,6 +19,9 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	Relationship();
 	worldTransformBody_.TransferMatrix();
 
+	worldTransformShadow_.translate = { worldTransformBase_.translate.x,0.1f,worldTransformBase_.translate.z };
+	worldTransformShadow_.UpdateMatrix();
+
 	emitter_ = {
 	.translate{0,0,0},
 	.count{50},

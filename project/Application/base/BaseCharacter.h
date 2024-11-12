@@ -99,8 +99,9 @@ protected:
     CharacterState state_;
     CharacterState previousState_;
 
-    WorldTransform worldTransformBase_;
-    WorldTransform worldTransformBody_;
+    WorldTransform worldTransformBase_;//ベース
+    WorldTransform worldTransformBody_;//体
+    WorldTransform worldTransformShadow_;//影
     ViewProjection viewProjection_;
 
     /*---------------UI----------------*/
@@ -115,6 +116,9 @@ protected:
     std::unique_ptr<Sprite> HPnum_[3];
     std::unique_ptr<Sprite> MPnum_[3];
 
+    //影のモデル
+    std::unique_ptr<Model> shadowModel_;
+    Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 
     //ダメージ表示
     WorldTransform worldTransformNum_;

@@ -16,11 +16,6 @@ public:
 
 private:
 	std::unique_ptr<Animations>animation_;
-	WorldTransform worldTransformShadow_;
-	std::unique_ptr<Model> shadowModel_;
-
 	std::unique_ptr<Tank> tank_;
-
-	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 
 };
