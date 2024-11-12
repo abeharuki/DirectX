@@ -1,11 +1,13 @@
 #include "BaseCharacter.h"
 
 
-void BaseCharacter::Initialize(Animations* animation, std::string skillName){
-	skillName_ = skillName;
+void BaseCharacter::Initialize(Animations* animation, std::string className){
+	className_ = className;
 	animation_ = animation;
 	animationNumber_ = standby;
 	flameTime_ = 30.0f;
+
+	InitializePerCharacter();
 
 	// 初期化
 	worldTransformBase_.Initialize();
@@ -14,6 +16,8 @@ void BaseCharacter::Initialize(Animations* animation, std::string skillName){
 	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
 	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
 	alpha_ = 0.0f;
+
+	state_ = CharacterState::Moveing;
 }
 
 void BaseCharacter::Update(){
@@ -28,7 +32,8 @@ void BaseCharacter::Update(){
 		}
 	}
 
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimHealer()) {
+	//各キャラの処理にしないといけない
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && GetAimCharacter()) {
 		if (enemy_->isAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
@@ -217,6 +222,7 @@ void BaseCharacter::AttackUpdate()
 
 void BaseCharacter::DeadInitialize()
 {
+	isAttack_ = false;
 	isDead_ = true;
 	animationNumber_ = death;
 	animation_->SetLoop(false);
@@ -228,6 +234,14 @@ void BaseCharacter::Relationship()
 		Math::MakeAffineMatrix(
 			worldTransformBody_.scale, worldTransformBody_.rotate, worldTransformBody_.translate),
 		worldTransformBase_.matWorld_);
+
+	backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
+	Matrix4x4 billboardMatrixNum = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
+	billboardMatrixNum.m[3][0] = worldTransformNum_.translate.x;
+	billboardMatrixNum.m[3][1] = worldTransformNum_.translate.y;
+	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
+	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
+
 }
 
 void BaseCharacter::followPlayer()
@@ -299,7 +313,7 @@ void BaseCharacter::searchTarget()
 		}
 
 		// 距離条件チェック
-		if (minDistance_ <= enemylength_) {
+		if (minDistance_ * distance_ <= enemylength_) {
 			if (state_ != CharacterState::Jumping) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash || !enemy_->IsBehaberAttack()) {
 					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.02f);
@@ -414,6 +428,39 @@ CharacterState BaseCharacter::NextState(std::string name, int outputNum)
 		return CharacterState::Moveing; // デフォルトの状態
 	}
 }
+
+void BaseCharacter::InitializePerCharacter()
+{
+	if (className_ == "Healer") {
+		skillName_ = "Heal";
+	}
+	else if (className_ == "Renju") {
+		skillName_ = "???";
+	}
+	else if (className_ == "Tank") {
+		skillName_ = "Stan";
+	}
+	
+}
+
+bool BaseCharacter::GetAimCharacter()
+{
+	if (className_ == "Healer") {
+		return enemy_->GetAimHealer();
+	}
+	else if (className_ == "Renju") {
+		return enemy_->GetAimRenju();
+	}
+	else if (className_ == "Tank") {
+		return enemy_->GetAimTank();
+	}
+	else {
+		return false;
+	}
+	
+}
+
+
 
 void BaseCharacter::OnCollision(Collider* collider)
 {

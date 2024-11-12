@@ -127,8 +127,8 @@ void GameScene::Update() {
 	tankManager_->GetTank()->SetOperation(command_->GetOperatin());
 	//プレイヤーに追従
 	healerManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
-	renjuManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
-	tankManager_->followPlayer(playerManager_->GetPlayer()->GetWorldPosition());
+	renjuManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
+	tankManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
 
 	//各キャラの更新
 	if (!enemyManager_->IsClear()) {
@@ -138,7 +138,7 @@ void GameScene::Update() {
 	}
 
 	//魔法陣に使う座標の受け取り
-	healerManager_->GetHealer()->SetPos(playerManager_->GetPlayer()->GetWorldPosition(), renjuManager_->GetRenju()->GetWorldPosition(), tankManager_->GetTank()->GetWorldPosition());
+	healerManager_->GetHealer()->SetPos( renjuManager_->GetRenju()->GetWorldPosition(), tankManager_->GetTank()->GetWorldPosition());
 
 	//回復
 	if (healerManager_->GetHealer()->GetHeal()) {
@@ -199,7 +199,7 @@ void GameScene::Update() {
 
 	//攻撃の受け取り
 	if (healerManager_->IsAttack()) {enemyManager_->OnHealerCollision();}
-	if (tankManager_->GetAttack()) {enemyManager_->OnTankCollision();}
+	if (tankManager_->IsAttack()) {enemyManager_->OnTankCollision();}
 	if (playerManager_->IsAttack()) {enemyManager_->OnCollision();}
 	if (renjuManager_->GetRenju()->GetHitBullet()) {enemyManager_->OnRenjuCollision();}
 	
@@ -359,6 +359,8 @@ void GameScene::BattleBegin(){
 		cameraDirectionTime_ = 10;
 
 		healerManager_->GetHealer()->SetGameStart(true);
+		renjuManager_->GetRenju()->SetGameStart(true);
+		tankManager_->GetTank()->SetGameStart(true);
 	}
 
 	//カメラの演出に移行
@@ -371,9 +373,9 @@ void GameScene::BattleBegin(){
 			cameraDirection_ = true;
 			//位置の初期化
 			playerManager_->GetPlayer()->InitPos();
-			healerManager_->GetHealer()->InitPos(6.0f);
-			renjuManager_->GetRenju()->InitPos();
-			tankManager_->GetTank()->InitPos();
+			healerManager_->GetHealer()->InitPos(6.f);
+			renjuManager_->GetRenju()->InitPos(-3.f);
+			tankManager_->GetTank()->InitPos(0.f);
 			//カメラの初期化
 			followCamera_->InitAngle();
 			followCamera_->SetinterTargetPos({ 3.0f,0.0f,-35.0f });
@@ -401,7 +403,8 @@ void GameScene::BattleBegin(){
 	playerManager_->GetPlayer()->SetBattleStart(battle_);
 	enemyManager_->GetEnemy()->SetBattleStart(battle_);
 	healerManager_->GetHealer()->SetBattleStart(battle_);
-	
+	renjuManager_->GetRenju()->SetBattleStart(battle_);
+	tankManager_->GetTank()->SetBattleStart(battle_);
 }
 
 void GameScene::CheckAllCollision() {

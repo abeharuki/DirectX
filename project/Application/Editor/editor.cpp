@@ -336,7 +336,6 @@ namespace Editor
 		}
 	}
 
-
 	//ロードするファイル名
 	void NodeEditor::load(const std::string& filename) {
 		nodes_.clear(); // 既存ノードをクリア

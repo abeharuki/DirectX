@@ -11,23 +11,22 @@ public:
 	void Draw(const ViewProjection& camera);
 	void DrawUI();
 
-	// プレイヤーに追従
-	void followPlayer(Vector3 playerPos);
-
+	
 	
 
 	/*-----ゲッター-----*/
 	Renju* GetRenju() { return renju_.get(); };
-	const WorldTransform& GetWorldTransform();
-
+	
 
 	/*-----セッター-----*/
+	// プレイヤーに追従
+	void SetPlayerPos(Vector3 playerPos) { playerPos_ = playerPos; };
 	void SetParticlePos(Vector3 pos);
-	void SetViewProjection(const ViewProjection& viewProjection);
+	void SetViewProjection(const ViewProjection& viewProjection) {renju_->SetViewProjection(viewProjection);}
 
 
 private:
-	
+	std::unique_ptr<Animations>animation_;
 	//丸影
 	WorldTransform worldTransformShadow_;
 	std::unique_ptr<Model> shadowModel_;
@@ -61,11 +60,4 @@ private:
 
 	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 
-	// 味方の判定
-	bool preHit_;
-	bool isHit_;
-
-	// 敵の判定
-	bool preHitE_;
-	bool isHitE_;
 };

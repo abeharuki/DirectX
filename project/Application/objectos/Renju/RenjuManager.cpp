@@ -2,6 +2,9 @@
 
 void RenjuManager::Initialize() {
 
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));
+
 	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
 
@@ -65,19 +68,14 @@ void RenjuManager::Initialize() {
 	worldTransformShadow_.scale = { 1.8f,1.8f,1.0f };
 
 	renju_ = std::make_unique<Renju>();
-	renju_->Initialize();
+	renju_->Initialize(animation_.get(),"Renju");
 
 	worldTransformShadow_.translate = { renju_->GetWorldPosition().x,0.1f,renju_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
 }
 
 void RenjuManager::Update() {
-	// 前のフレームの当たり判定のフラグを取得
-	preHit_ = isHit_;
-	isHit_ = false;
-	// 敵の判定
-	preHitE_ = isHitE_;
-	isHitE_ = false;
+	
 
 	
 	particle_->SetEmitter(emitter_);
@@ -98,7 +96,7 @@ void RenjuManager::Update() {
 
 	//キャラクターの更新
 	renju_->Update();
-	renju_->followPlayer(playerPos_);
+	renju_->SetPlayerPos(playerPos_);
 
 	spriteHpSize_.x = renju_->GetHp();
 	spriteMpSize_.x = renju_->GetMp();
@@ -192,11 +190,4 @@ void RenjuManager::DrawUI(){
 void RenjuManager::SetParticlePos(Vector3 pos) {
 	emitter_.translate = pos;
 	isParticle_ = true;
-}
-
-void RenjuManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }
-
-const WorldTransform& RenjuManager::GetWorldTransform() { return renju_->GetWorldTransform(); }
-void RenjuManager::SetViewProjection(const ViewProjection& viewProjection) {
-	renju_->SetViewProjection(viewProjection);
 }

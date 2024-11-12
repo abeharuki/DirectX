@@ -68,19 +68,14 @@ void HealerManager::Initialize() {
 	worldTransformShadow_.scale = { 1.8f,1.8f,1.0f };
 
 	healer_ = std::make_unique<Healer>();
-	healer_->Initialize(animation_.get(),"Heal");
+	healer_->Initialize(animation_.get(),"Healer");
 
 	worldTransformShadow_.translate = { healer_->GetWorldPosition().x,0.1f,healer_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
 }
 
 void HealerManager::Update() {
-	// 前のフレームの当たり判定のフラグを取得
-	preHit_ = isHit_;
-	isHit_ = false;
-	// 敵の判定
-	preHitE_ = isHitE_;
-	isHitE_ = false;
+	
 	particle_->SetEmitter(emitter_);
 	
 	if (isParticle_) {
@@ -197,18 +192,7 @@ void HealerManager::DrawUI(){
 	}
 };
 
-
-
-void HealerManager::SetPlayerPos(Vector3 playerPos) { playerPos_ = playerPos; }
-
 void HealerManager::SetParticlePos(Vector3 pos) {
 	emitter_.translate = pos;
 	isParticle_ = true;
-}
-
-
-
-const WorldTransform& HealerManager::GetWorldTransform() { return healer_->GetWorldTransform(); }
-void HealerManager::SetViewProjection(const ViewProjection& viewProjection) {
-	healer_->SetViewProjection(viewProjection);
 }

@@ -120,8 +120,12 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-
+	editor_.load("Tank");
+	editor_.show("TankNode");
+	editor_.save("Tank");
 	
+	std::string state = editor_.GetLinkNode("Attack", Output1).name;
+
 }
 
 void TitleScene::Draw() {

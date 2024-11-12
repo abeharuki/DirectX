@@ -527,12 +527,6 @@ void Healer::Relationship() {
 	worldTransformMagicCircle_[3].translate.x = pos[2].x;
 	worldTransformMagicCircle_[3].translate.z = pos[2].z;
 
-	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
-	Matrix4x4 billboardMatrixNum = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
-	billboardMatrixNum.m[3][0] = worldTransformNum_.translate.x;
-	billboardMatrixNum.m[3][1] = worldTransformNum_.translate.y;
-	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
-	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
 
 	for (int i = 0; i < 4; ++i) {
 		Matrix4x4 billboardMatrixHealNum = backToFrontMatrix * Math::Inverse(viewProjection_.matView);

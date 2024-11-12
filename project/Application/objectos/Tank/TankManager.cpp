@@ -2,6 +2,8 @@
 
 void TankManager::Initialize() {
 	
+	animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/Tank", "Atlas.png", "tank.gltf"));
 
 	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
@@ -66,21 +68,13 @@ void TankManager::Initialize() {
 	worldTransformShadow_.scale = { 2.2f,2.2f,1.0f };
 
 	tank_ = std::make_unique<Tank>();
-	tank_->Initialize();
+	tank_->Initialize(animation_.get(),"Tank");
 
 	worldTransformShadow_.translate = { tank_->GetWorldPosition().x,0.1f,tank_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
 }
 
 void TankManager::Update() {
-	// 前のフレームの当たり判定のフラグを取得 
-	preHit_ = isHit_;
-	isHit_ = false;
-
-	// 敵の判定
-	preHitE_ = isHitE_;
-	isHitE_ = false;
-	
 	particle_->SetEmitter(emitter_);
 	if (isParticle_) {
 		particle_->Update();
@@ -98,8 +92,7 @@ void TankManager::Update() {
 
 	//キャラクターの更新
 	tank_->Update();
-	tank_->followPlayer(playerPos_);
-	
+	tank_->SetPlayerPos(playerPos_);
 
 	spriteHpSize_.x = tank_->GetHp();
 	spriteMpSize_.x = tank_->GetMp();
@@ -193,10 +186,3 @@ void TankManager::SetParticlePos(Vector3 pos) {
 	isParticle_ = true;
 }
 
-
-void TankManager::followPlayer(Vector3 playerPos) { playerPos_ = playerPos; }
-
-const WorldTransform& TankManager::GetWorldTransform() { return tank_->GetWorldTransform(); }
-void TankManager::SetViewProjection(const ViewProjection& viewProjection) {
-	tank_->SetViewProjection(viewProjection);
-}

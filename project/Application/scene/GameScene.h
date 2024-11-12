@@ -102,4 +102,7 @@ private: // メンバ変数
 
 
 	std::vector<BaseCharacter*> characters;
+
+
+	
 };

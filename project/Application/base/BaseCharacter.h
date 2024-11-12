@@ -11,7 +11,7 @@ class BaseCharacter : public Collider {
 public:
     virtual ~BaseCharacter() = default;
 
-    virtual void Initialize(Animations* animation,std::string skillName);
+    virtual void Initialize(Animations* animation,std::string className);
     virtual void Update();
     virtual void Draw(const ViewProjection& camera);
     virtual void NoDepthDraw(const ViewProjection& camera);
@@ -71,7 +71,7 @@ public:
     virtual void Relationship();
 
     //位置の初期化
-    virtual void InitPos(float posX){ worldTransformBase_.translate = { posX,0.0f,-35.0f }; }//H6.0,R-3.0,T0.0 
+    virtual void InitPos(float posX){ worldTransformBase_.translate = { posX,0.0f,-35.0f }; }
 
     // 共通の関数
     //プレイヤーに追従
@@ -79,15 +79,20 @@ public:
     //ディゾルブ
     void Dissolve();
     //敵を探す
-    void searchTarget();
+    void searchTarget();//敵との距離感
     //敵の視野内にいるかどうか
     void IsVisibleToEnemy();
     //逃げる方向
     void RunAway();
     //次の状態遷移をノードから検索
     CharacterState NextState(std::string name, int outputNum);
+private:
+    //クラスごとの初期化
+    void InitializePerCharacter();
 
-    
+    //敵がどのキャラを狙っているか
+    bool GetAimCharacter();
+
 protected:
     //状態遷移
     CharacterState state_;
@@ -129,6 +134,7 @@ protected:
     //敵の情報
     Enemy* enemy_;
     float enemylength_;
+    int distance_ = 1;
 
     float kDegreeToRandian = 3.141592f / 180.0f;
 
@@ -165,9 +171,12 @@ protected:
     //作戦
     bool operation_;
 
-  
-
+    //クラスの名前
+    std::string className_;
     //ユニークスキルのノードの名前
     std::string skillName_;
+
+    //ビルビード用
+    Matrix4x4 backToFrontMatrix = {};
 };
 

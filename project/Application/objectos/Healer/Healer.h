@@ -46,20 +46,19 @@ public: // メンバ関数
 	void DeadUpdate() override;
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision(Collider* collider) override;//違う
+	void OnCollision(Collider* collider) override;
 
 
 	/*-----ゲッター-----*/
-	WorldTransform& GetWorldTransformCane() { return worldTransformCane_; }//このクラスだけ
-
-	bool GetHeal() { return heal_; }//このクラスだけ
-	bool GetAllHeal() { return allHeal_; }//このクラスだけ
-	bool GetOneHeal() { return oneHeal_; }//このクラスだけ
-	float GetHealAmount() { return healAmount_; }//このクラスだけ
+	WorldTransform& GetWorldTransformCane() { return worldTransformCane_; }
+	bool GetHeal() { return heal_; }
+	bool GetAllHeal() { return allHeal_; }
+	bool GetOneHeal() { return oneHeal_; }
+	float GetHealAmount() { return healAmount_; }
 
 	/*-----セッター-----*/
-	void SetLight(DirectionLight directionLight) {
-		animation_->DirectionalLightDraw(directionLight);
+	void SetLight(DirectionLight directionLight) override{
+		BaseCharacter::SetLight(directionLight);
 		DirectionLight light;
 		light = directionLight;
 		light.direction *= -1.0f;
@@ -67,12 +66,12 @@ public: // メンバ関数
 			magicCircle_[i]->DirectionalLightDraw(light);
 		}
 
-	}//違う
+	}
 
 	/*--------このクラス特有の関数-------*/
 	//座標の受け取り
-	void SetPos(Vector3 playerPos, Vector3 renjuPos, Vector3 tankPos) {
-		pos[0] = playerPos;
+	void SetPos(Vector3 renjuPos, Vector3 tankPos) {
+		pos[0] = playerPos_;
 		pos[1] = renjuPos;
 		pos[2] = tankPos;
 	}
@@ -91,14 +90,12 @@ public: // メンバ関数
 	
 private:
 	// パーツ親子関係
-	void Relationship();
+	void Relationship() override;
 
 private: // メンバ変数
 	WorldTransform worldTransformCane_;
 	WorldTransform worldTransformMagicCircle_[4];
 	WorldTransform worldTransformHeal_[4];
-
-	
 	enum Character {
 		healer,
 		player,

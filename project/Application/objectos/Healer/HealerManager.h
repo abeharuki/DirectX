@@ -10,19 +10,16 @@ public:
 	void Draw(const ViewProjection& camera);
 	void DrawUI();
 	
-	
-	//プレイヤーに追従
-	void SetPlayerPos(Vector3 playerPos);
 
 	/*-----ゲッター-----*/
 	Healer* GetHealer() { return healer_.get(); };
-	const WorldTransform& GetWorldTransform();
 	Vector3 GetCanePos() { return healer_->GetWorldTransformCane().GetWorldPos(); }
 
 	bool IsAttack() { return healer_->IsAttack(); }
 
 	/*-----セッター-----*/
-	void SetViewProjection(const ViewProjection& viewProjection);
+	void SetPlayerPos(Vector3 playerPos) { playerPos_ = playerPos; };
+	void SetViewProjection(const ViewProjection& camera) { healer_->SetViewProjection(camera); };
 	//パーティクルのpos
 	void SetParticlePos(Vector3 pos);
 
@@ -51,8 +48,6 @@ private:
 	EmitterSphere emitter_;
 	bool isParticle_ = false;
 
-	bool isDead_ = false;
-
 	Vector3 playerPos_;
 	
 	Vector2 spriteHpSize_;
@@ -63,11 +58,5 @@ private:
 
 	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 
-	// 味方の判定
-	bool preHit_;
-	bool isHit_;
-
-	// 敵の判定
-	bool preHitE_;
-	bool isHitE_;
+	
 };
