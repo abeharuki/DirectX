@@ -7,7 +7,34 @@ void BaseCharacter::Initialize(Animations* animation, std::string className){
 	animationNumber_ = standby;
 	flameTime_ = 30.0f;
 
+	spriteHP_.reset(Sprite::Create("resources/Player/HP.png"));
+	spriteHPG_.reset(Sprite::Create("resources/character/HPG.png"));
+	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
+	spriteMPG_.reset(Sprite::Create("resources/character/HPG.png"));
+	
+	spriteH_.reset(Sprite::Create("resources/character/H.png"));
+	spriteM_.reset(Sprite::Create("resources/character/M.png"));
+	
+
+	for (int i = 0; i < 3; ++i) {
+		HPnum_[i].reset(Sprite::Create("resources/character/0.png"));
+		MPnum_[i].reset(Sprite::Create("resources/character/0.png"));
+		HPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
+		MPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
+	}
+
+	HPnum_[2]->SetTexture("resources/character/1.png");
+	MPnum_[2]->SetTexture("resources/character/1.png");
+	
+	spriteHPG_->SetSize(Vector2{ 100.0f,10.0f });
+	spriteMPG_->SetSize(Vector2{ 100.0f,10.0f });
+	spriteH_->SetSize(Vector2{ 35.0f,35.0f });
+	spriteM_->SetSize(Vector2{ 35.0f,35.0f });
+
 	InitializePerCharacter();
+
+	spriteNumP_->SetSize(Vector2{ 93.0f,85.0f });
+	spriteName_->SetSize(Vector2{ 106.0f,50.0f });
 
 	// 初期化
 	worldTransformBase_.Initialize();
@@ -17,7 +44,6 @@ void BaseCharacter::Initialize(Animations* animation, std::string className){
 	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
 	alpha_ = 0.0f;
 
-	state_ = CharacterState::Moveing;
 }
 
 void BaseCharacter::Update(){
@@ -54,6 +80,60 @@ void BaseCharacter::Update(){
 	}
 
 
+	spriteHP_->SetSize({hp_,10.f});
+	spriteMP_->SetSize({ mp_,10.f});
+	//HP,MP表示の計算
+	if (hp_ < 100.0f) {
+		int HPnum = int(hp_);
+		HPnum %= 10;
+		if (hp_ >= 0) {
+			HPnum_[0]->SetTexture("resources/character/" + std::to_string(HPnum) + ".png");
+			HPnum_[1]->SetTexture("resources/character/" + std::to_string(int(hp_ / 10)) + ".png");
+		}
+		else {
+			HPnum_[0]->SetTexture("resources/character/0.png");
+			HPnum_[1]->SetTexture("resources/character/0.png");
+		}
+
+	}
+	else {
+		HPnum_[0]->SetTexture("resources/character/0.png");
+		HPnum_[1]->SetTexture("resources/character/0.png");
+	}
+
+
+	if (mp_ < 100.0f) {
+		int MPnum = int(mp_);
+		MPnum %= 10;
+		MPnum_[0]->SetTexture("resources/character/" + std::to_string(MPnum) + ".png");
+		MPnum_[1]->SetTexture("resources/character/" + std::to_string(int(mp_ / 10)) + ".png");
+	}
+	else {
+		MPnum_[0]->SetTexture("resources/character/0.png");
+		MPnum_[1]->SetTexture("resources/character/0.png");
+	}
+
+	spriteHP_->SetColor(hpColor_);
+	for (int i = 0; i < 3; ++i) {
+		HPnum_[i]->SetColor(hpNumColor_);
+		MPnum_[i]->SetColor(hpNumColor_);
+	}
+
+
+	if (hp_ < 20) {
+		hpColor_ = { 5.0f,0.0f,0.0f,1.0f };
+		hpNumColor_ = { 5.0f,0.0f,0.0f,1.0f };
+
+	}
+	else if (hp_ <= 50) {
+		hpNumColor_ = { 1.0f,0.2f,0.0f,1.0f };
+	}
+	else {
+		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
+		hpNumColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	}
+
+
 	// 回転
 	worldTransformBase_.rotate.y =
 		Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -69,6 +149,29 @@ void BaseCharacter::Draw(const ViewProjection& camera){
 }
 void BaseCharacter::NoDepthDraw(const ViewProjection& camera){
 	damageModel_->Draw(worldTransformNum_, camera, false);
+}
+
+void BaseCharacter::DrawUI(){
+	spriteHPG_->Draw();
+	spriteHP_->Draw();
+	spriteMPG_->Draw();
+	spriteMP_->Draw();
+	spriteNumP_->Draw();
+	spriteH_->Draw();
+	spriteM_->Draw();
+	spriteName_->Draw();
+
+	for (int i = 0; i < 2; ++i) {
+		HPnum_[i]->Draw();
+		MPnum_[i]->Draw();
+	}
+
+	if (hp_ == 100) {
+		HPnum_[2]->Draw();
+	}
+	if (mp_ == 100) {
+		MPnum_[2]->Draw();
+	}
 }
 
 void BaseCharacter::MoveInitialize()
@@ -433,12 +536,54 @@ void BaseCharacter::InitializePerCharacter()
 {
 	if (className_ == "Healer") {
 		skillName_ = "Heal";
+		spriteNumP_.reset(Sprite::Create("resources/character/4P.png"));
+		spriteName_.reset(Sprite::Create("resources/Healer/healer.png"));
+		spriteHP_->SetPosition(Vector2{ 1106.0f,615.0f });
+		spriteHPG_->SetPosition(Vector2{ 1106.0f,615.0f });
+		spriteMP_->SetPosition(Vector2{ 1106.0f,640.0f });
+		spriteMPG_->SetPosition(Vector2{ 1106.0f,640.0f });
+		spriteNumP_->SetPosition(Vector2{ 995.0f,583.0f });
+		spriteH_->SetPosition(Vector2{ 1097.0f,593.0f });
+		spriteM_->SetPosition(Vector2{ 1097.0f,618.0f });
+		spriteName_->SetPosition(Vector2{ 995.0f,573.0f });
+		for (int i = 0; i < 3; ++i) {
+			HPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,595.0f });
+			MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,620.0f });
+		}
 	}
 	else if (className_ == "Renju") {
 		skillName_ = "???";
+		spriteNumP_.reset(Sprite::Create("resources/character/3P.png"));
+		spriteName_.reset(Sprite::Create("resources/Renju/renju.png"));
+		spriteHP_->SetPosition(Vector2{ 1106.0f,545.0f });
+		spriteHPG_->SetPosition(Vector2{ 1106.0f,545.0f });
+		spriteMP_->SetPosition(Vector2{ 1106.0f,570.0f });
+		spriteMPG_->SetPosition(Vector2{ 1106.0f,570.0f });
+		spriteNumP_->SetPosition(Vector2{ 995.0f,513.0f });
+		spriteH_->SetPosition(Vector2{ 1097.0f,523.0f });
+		spriteM_->SetPosition(Vector2{ 1097.0f,548.0f });
+		spriteName_->SetPosition(Vector2{ 995.0f,503.0f });
+		for (int i = 0; i < 3; ++i) {
+			HPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,525.0f });
+			MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,560.0f });
+		}
 	}
 	else if (className_ == "Tank") {
 		skillName_ = "Stan";
+		spriteName_.reset(Sprite::Create("resources/Tank/tank.png"));
+		spriteNumP_.reset(Sprite::Create("resources/character/2P.png"));
+		spriteHP_->SetPosition(Vector2{ 1106.0f,475.0f });
+		spriteHPG_->SetPosition(Vector2{ 1106.0f,475.0f });
+		spriteMP_->SetPosition(Vector2{ 1106.0f,500.0f });
+		spriteMPG_->SetPosition(Vector2{ 1106.0f,500.0f });
+		spriteNumP_->SetPosition(Vector2{ 995.0f,443.0f });
+		spriteH_->SetPosition(Vector2{ 1097.0f,453.0f });
+		spriteM_->SetPosition(Vector2{ 1097.0f,478.0f });
+		spriteName_->SetPosition(Vector2{ 995.0f,433.0f });
+		for (int i = 0; i < 3; ++i) {
+			HPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,455.0f });
+			MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,480.0f });
+		}
 	}
 	
 }

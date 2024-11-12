@@ -298,12 +298,7 @@ void Healer::UniqueUpdate(){
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 
-	// 距離条件チェック
-	if (minDistance_ * 2 <= length && !followPlayer_) {
-		state_ = NextState("Heal", Output1);
-		searchTarget_ = true;
-	}
-
+	//距離チェック
 	if (length >= minDistance_ * 2.f) {
 		healAnimation_ = true;
 		animationNumber_ = standby;//攻撃モーションをいれたら変える

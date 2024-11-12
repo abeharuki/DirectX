@@ -15,6 +15,7 @@ public:
     virtual void Update();
     virtual void Draw(const ViewProjection& camera);
     virtual void NoDepthDraw(const ViewProjection& camera);
+    void DrawUI();
 
     //移動
     virtual void MoveInitialize();
@@ -102,6 +103,19 @@ protected:
     WorldTransform worldTransformBody_;
     ViewProjection viewProjection_;
 
+    /*---------------UI----------------*/
+    std::unique_ptr<Sprite> spriteHP_;
+    std::unique_ptr<Sprite> spriteHPG_;
+    std::unique_ptr<Sprite> spriteMP_;
+    std::unique_ptr<Sprite> spriteMPG_;
+    std::unique_ptr<Sprite> spriteH_;
+    std::unique_ptr<Sprite> spriteM_;
+    std::unique_ptr<Sprite> spriteNumP_;
+    std::unique_ptr<Sprite> spriteName_;
+    std::unique_ptr<Sprite> HPnum_[3];
+    std::unique_ptr<Sprite> MPnum_[3];
+
+
     //ダメージ表示
     WorldTransform worldTransformNum_;
     std::unique_ptr<Model> damageModel_;
@@ -178,5 +192,8 @@ protected:
 
     //ビルビード用
     Matrix4x4 backToFrontMatrix = {};
+
+    Vector4 hpColor_ = { 1.0f,1.0f,1.0f,1.0f };//hp文字の色
+    Vector4 hpNumColor_;//hp数字の色
 };
 
