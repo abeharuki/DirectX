@@ -6,7 +6,7 @@ class RenjuBullet : public Collider {
 public:
 
 	void Initialize(
-		Model* model, Vector3& position, const Vector3& scale, Vector3& rotation,
+		Model* model, Vector3& position, const Vector3& scale, const Vector3& rotation,
 		const Vector3& velocity);
 
 

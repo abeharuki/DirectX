@@ -5,6 +5,8 @@ void RenjuManager::Initialize() {
 	animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));
 
+	bowModel_.reset(Model::CreateModelFromObj("resources/Renju/bow.obj", "resources/Renju/bow.png"));
+
 	renju_ = std::make_unique<Renju>();
 	renju_->Initialize(animation_.get(),"Renju");
 }

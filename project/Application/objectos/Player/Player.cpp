@@ -303,7 +303,10 @@ void Player::MoveUpdata() {
 
 		// ダッシュボタンを押したら
 		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
-			behaviorRequest_ = Behavior::kDash;
+			if (gameStart_) {
+				behaviorRequest_ = Behavior::kDash;
+			}
+			
 		}
 
 
@@ -436,7 +439,10 @@ void Player::MoveUpdata() {
 
 		// ダッシュ
 		if (Input::PushKey(DIK_F)) {
-			behaviorRequest_ = Behavior::kDash;
+			if (gameStart_) {
+				behaviorRequest_ = Behavior::kDash;
+			}
+			
 		}
 
 
@@ -478,6 +484,7 @@ void Player::DashInitialize() {
 	workDash_.dashParameter_ = 0;
 	worldTransformBase_.rotate.y = destinationAngleY_;
 	dash_ = true;
+	animationNumber_ = run;
 }
 void Player::DashUpdata() {
 	// dashTimer -= 4;

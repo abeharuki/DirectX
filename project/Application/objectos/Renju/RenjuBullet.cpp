@@ -9,7 +9,7 @@
 /// 初期化
 /// </summary>
 void RenjuBullet::Initialize(
-	Model* model, Vector3& position, const Vector3& scale, Vector3& rotation,
+	Model* model, Vector3& position, const Vector3& scale,const Vector3& rotation,
 	const Vector3& velocity) {
 
 	assert(model);
@@ -22,9 +22,12 @@ void RenjuBullet::Initialize(
 	worldTransform_.rotate = rotation;
 	// 引数で受け取った速度をメンバ変数に代入
 	velocity_ = velocity;
-	AABB aabbSize{ .min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f} };
-	SetAABB(aabbSize);
-	SetCollisionPrimitive(kCollisionPrimitiveAABB);
+	AABB aabbSize{ .min{-0.3f,-0.3f,-0.3f},.max{0.3f,1.0f,0.3f} };
+	OBB obb;
+	obb.size = { 0.5f,1.f,0.5f };
+	obb.center = { 0.0f,2.0f,0.0f };
+	SetOBB(obb);
+	SetCollisionPrimitive(kCollisionPrimitiveOBB);
 	SetCollisionAttribute(kCollisionAttributeRenju);
 	SetCollisionMask(kCollisionMaskRenju);
 };
@@ -50,6 +53,8 @@ void RenjuBullet::Update() {
 /// </summary>
 void RenjuBullet::Draw(const ViewProjection& viewprojection) {
 	model_->Draw(worldTransform_, viewprojection, false);
+
+	RenderCollisionBounds(worldTransform_, viewprojection);
 };
 
 void RenjuBullet::OnCollision(Collider* collider) {

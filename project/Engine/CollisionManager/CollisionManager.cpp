@@ -217,7 +217,7 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 	if (((colliderA->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0 && (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0) ||
 		((colliderA->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0 && (colliderB->GetCollisionPrimitive() & kCollisionPrimitiveOBB) != 0))
 	{
-		//コライダーAのAABBを取得
+		//コライダーAのOBBを取得
 		OBB obbA = {
 				.center{colliderA->GetOBB().center.x + colliderA->GetWorldPosition().x,colliderA->GetOBB().center.y + colliderA->GetWorldPosition().y,colliderA->GetOBB().center.z + colliderA->GetWorldPosition().z},
 

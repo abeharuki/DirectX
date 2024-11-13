@@ -14,7 +14,7 @@ Renju::~Renju() {
 void Renju::Initialize(Animations* animation, std::string skillName) {
 	BaseCharacter::Initialize(animation, skillName);
 	worldTransformBase_.translate.x = -3.0f;
-	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/cube.obj", "resources/Renju/Bullet.png"));
+	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/arrow.obj", "resources/Renju/bow.png"));
 
 	
 	worldTransformBase_.UpdateMatrix();
@@ -190,7 +190,7 @@ void Renju::AttackUpdate() {
 
 		if (fireTimer_ == 0) {
 			// 弾の速度
-			const float kBulletSpeed = 1.0f;
+			const float kBulletSpeed = 1.5f;
 
 			Vector3 vector = Vector3{ enemy_->GetWorldPosition().x,enemy_->GetWorldPosition().y + 7,enemy_->GetWorldPosition().z } - worldTransformBase_.GetWorldPos();
 			vector = Math::Normalize(vector);
@@ -199,8 +199,8 @@ void Renju::AttackUpdate() {
 			// 弾を生成、初期化
 			RenjuBullet* newBullet = new RenjuBullet();
 			newBullet->Initialize(
-				bulletModel_.get(), worldTransformBase_.translate, { 0.3f, 0.3f, 0.3f },
-				worldTransformBase_.rotate, velocity);
+				bulletModel_.get(), worldTransformBase_.translate, {1.5f, 1.5f, 1.5f },
+				{1.2f,worldTransformBase_.rotate.y,0.f}, velocity);
 
 
 			bullets_.push_back(newBullet);

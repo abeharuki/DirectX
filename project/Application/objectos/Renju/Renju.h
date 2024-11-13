@@ -38,7 +38,7 @@ public: // メンバ関数
 	void AttackInitialize() override;
 	void AttackUpdate() override;
 
-	//味方の回復
+	//ため攻撃
 	void UniqueInitialize() override;
 	void UniqueUpdate() override;
 

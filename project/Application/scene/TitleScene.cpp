@@ -70,8 +70,13 @@ void TitleScene::Initialize() {
 	a_ = 0.005f;
 
 	PostEffect::GetInstance()->isGrayscale(false);
-	//PostEffect::GetInstance()->isOutLine(true);
-	//PostEffect::GetInstance()->isBloom(true);
+
+#ifndef NDEBUG
+#else
+	// リリースビルド時のコード
+	PostEffect::GetInstance()->isOutLine(true);
+	PostEffect::GetInstance()->isBloom(true);
+#endif
 	
 	
 	
