@@ -344,7 +344,7 @@ void GameScene::BattleBegin(){
 	if (playerManager_->GetPlayer()->GameStart() && !cameraDirection_ && radialBlur_.blurWidth < 0.9f) {
 		posteffect->isRadialBlur(true);
 
-		radialBlur_.blurWidth = Math::LerpShortAngle(radialBlur_.blurWidth,1.0f,0.15f);
+		radialBlur_.blurWidth = Math::LerpShortAngle(radialBlur_.blurWidth,1.0f,0.1f);
 		cameraDirectionTime_ = 10;
 
 		healerManager_->GetHealer()->SetGameStart(true);

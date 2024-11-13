@@ -195,10 +195,10 @@ void FollowCamera::CameraDirection(){
 	}
 
 	if (moveToEnemy_) {
-		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 0.0f,6.0f,-15.0f }, 0.1f);
+		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 0.0f,6.0f,-15.0f }, 0.05f);
 	}
 	if (moveToPlayer_) {
-		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 3.f,4.f,-50.0f }, 0.1f);
+		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 3.f,4.f,-50.0f }, 0.08f);
 	}
 
 	// ビュー行列の更新
