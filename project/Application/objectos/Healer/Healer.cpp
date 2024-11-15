@@ -58,6 +58,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 		.scaleRange{.min{0.2f,0.2f,0.0f},.max{0.2f,0.2f,0.0f}},
 		.translateRange{.min{-0.1f,-0.1f,0.f},.max{0.1f,0.1f,0.f}},
 		.colorRange{.min{0.5f,1,1.0f},.max{0.5f,1,1.0f}},
+		.alphaRange{.min{1.0f},.max{1.0f}},
 		.lifeTimeRange{.min{0.1f},.max{0.2f}},
 		.velocityRange{.min{-0.4f,0.1f,-0.4f},.max{0.4f,0.4f,0.4f}},
 		};
@@ -72,6 +73,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	.scaleRange{.min{0.05f,0.2f,0.2f},.max{0.05f,0.5f,0.2f}},
 	.translateRange{.min{-0.5f,-0.5f,-0.5f},.max{0.5f,0.5f,0.5f}},
 	.colorRange{.min{0.5f,1,1.0f},.max{0.5f,1,1.0f}},
+	.alphaRange{.min{1.0f},.max{1.0f}},
 	.lifeTimeRange{.min{0.1f},.max{0.5f}},
 	.velocityRange{.min{0.f,0.1f,0.f},.max{0.f,0.4f,0.0f}},
 	};

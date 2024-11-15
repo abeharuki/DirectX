@@ -224,8 +224,10 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 		                .scaleRange{.min{2.2f,1.0f,11.0f},.max{2.2f,3.5f,1.0f}},
 		                .translateRange{.min{-3.2f,-1.2f,0.0f},.max{3.2f,1.2f,0.0f}},
 		                .colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
+						.alphaRange{.min{1.0f},.max{1.0f}},
 		                .lifeTimeRange{.min{0.1f},.max{1.0f}},
 		                .velocityRange{.min{0.0f,0.1f,0.0f},.max{0.0f,0.4f,0.3f}},
+						
 				  };
 				particle->SetEmitter(emitter_);
 

@@ -217,8 +217,12 @@ void ParticleSystem::CreateResource() {
 	emitterSphere_->scaleRange = { .min{1,1,1},.max{1,1,1} };
 	emitterSphere_->translateRange = { .min{0,0,0},.max{0,0,0} };
 	emitterSphere_->colorRange = { .min{1,1,1},.max{1,1,1} };
+	emitterSphere_->alphaRange = { .min{1.0f},.max{1.0f} };
 	emitterSphere_->lifeTimeRange = { .min{1.0f},.max{1.0f} };
 	emitterSphere_->velocityRange = { .min{-0.1f,-0.1f,-0.1f},.max{0.1f,0.1f,0.1f} };
+	emitterSphere_->endAlpha = 0.0f;
+	emitterSphere_->endScale = {0.f,0.f,0.f};
+	emitterSphere_->isScaleChanging = 0;
 
 	perFrameResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(EmitterSphere));
 	perFrameResource_->Map(0, nullptr, reinterpret_cast<void**>(&perFrame_));

@@ -75,11 +75,13 @@ void DebugScene::Initialize() {
 		.count{50},
 		.frequency{0.075f},
 		.frequencyTime{0.5f},
-		.scaleRange{.min{2.2f,1.0f,11.0f},.max{2.2f,3.5f,1.0f}},
+		.scaleRange{.min{1.0f,1.0f,11.0f},.max{1.0f,1.0f,1.0f}},
 		.translateRange{.min{-3.2f,-1.2f,0.0f},.max{3.2f,1.2f,0.0f}},
 		.colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
+		.alphaRange{.min{1.0f},.max{1.0f}},
 		.lifeTimeRange{.min{0.1f},.max{1.0f}},
-		.velocityRange{.min{0.0f,0.1f,0.0f},.max{0.0f,0.4f,0.3f}},
+		.velocityRange{.min{0.0f,0.f,0.0f},.max{0.0f,0.f,0.f}},
+		
 	};
 
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
@@ -117,6 +119,7 @@ void DebugScene::Update() {
 	model_->DirectionalLightDraw(directionLight_);
 	model_->SetColor({ 1.0f,1.0f,1.0f,a_ });
 	emitter_.count = particleCount_;
+	emitter_.isScaleChanging = scaleFlag_;
 	particle_->SetEmitter(emitter_);
 	if (particleFlag_) {
 		particle_->Update();
@@ -216,17 +219,21 @@ void DebugScene::Update() {
 		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
 		ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);
 		ImGui::DragFloat3("Pos", &emitter_.translate.x, 0.1f);
-		ImGui::DragFloat3("ScaleRangeMin", &emitter_.scaleRange.min.x, 0.1f);
-		ImGui::DragFloat3("ScaleRangeMax", &emitter_.scaleRange.max.x, 0.1f);
+		ImGui::DragFloat3("ScaleRangeMin", &emitter_.scaleRange.min.x, 0.01f);
+		ImGui::DragFloat3("ScaleRangeMax", &emitter_.scaleRange.max.x, 0.01f);
 		ImGui::DragFloat3("PosRangeMin", &emitter_.translateRange.min.x, 0.1f);
 		ImGui::DragFloat3("PosRangeMax", &emitter_.translateRange.max.x, 0.1f);
 		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f, 1.0f);
 		ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f, 1.0f);
+		ImGui::SliderFloat("AlphaMin", &emitter_.alphaRange.min, 0.0f, 3.0f);
+		ImGui::SliderFloat("AlphaMax", &emitter_.alphaRange.max, 0.0f, 3.0f);
 		ImGui::SliderFloat("lifeTimeMin", &emitter_.lifeTimeRange.min, 0.0f, 1.0f);
 		ImGui::SliderFloat("lifeTimeMax", &emitter_.lifeTimeRange.max, 0.0f, 1.0f);
 		ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
 		ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
-
+		ImGui::Checkbox("scaleFlag", &scaleFlag_);
+		ImGui::SliderFloat("endAlpha", &emitter_.endAlpha, 0.0f, 3.0f);
+		ImGui::SliderFloat3("scaleAlpha", &emitter_.endScale.x, 0.0f, 3.0f);
 		ImGui::TreePop();
 	}
 

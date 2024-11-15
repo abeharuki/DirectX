@@ -16,6 +16,10 @@ struct Particle
     float32_t3 velocity;
     float32_t currentTime;
     float32_t4 color;
+    float32_t initialAlpha;
+    float32_t endAlpha;
+    float32_t3 initialScale;
+    float32_t3 endScale;
 };
 
 struct ParticleForGPU {

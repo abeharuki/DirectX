@@ -42,9 +42,14 @@ struct EmitterSphere {
 	float frequency;//射出間隔
 	float frequencyTime;//射出間隔調整時間
 	uint32_t emit;//射出許可
+	float endAlpha;//アルファ値
+	Vector3 endScale;//最終的なサイズ
+	uint32_t isScaleChanging;//サイズを変えるか
+	float padding[3];
 	Range scaleRange;
 	Range translateRange;
 	Range colorRange;
+	Range1d alphaRange;
 	Range1d lifeTimeRange;
 	Range velocityRange;
 };
@@ -107,8 +112,12 @@ public:
 		emitterSphere_->scaleRange = emite.scaleRange;
 		emitterSphere_->translateRange = emite.translateRange;
 		emitterSphere_->colorRange = emite.colorRange;
+		emitterSphere_->alphaRange = emite.alphaRange;
 		emitterSphere_->lifeTimeRange = emite.lifeTimeRange;
 		emitterSphere_->velocityRange = emite.velocityRange;
+		emitterSphere_->endAlpha = emite.endAlpha;
+		emitterSphere_->endScale = emite.endScale;
+		emitterSphere_->isScaleChanging = emite.isScaleChanging;
 	}
 	//座標
 	void SetTranslate(Vector3 transform) { emitterSphere_->translate = transform; }

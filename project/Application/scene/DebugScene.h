@@ -71,6 +71,7 @@ private:
 	EmitterSphere emitter_;
 	int particleCount_;
 	bool particleFlag_;
+	bool scaleFlag_;
 
 	// 速度
 	Vector3 velocity_ = {};

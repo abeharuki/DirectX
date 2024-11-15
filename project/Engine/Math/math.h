@@ -231,11 +231,15 @@ struct Particle {
 
 struct ParticleCS {
 	Vector3 translate;
-	Vector3 scsle;
+	Vector3 scale;
 	float lifeTime;
 	Vector3 velocity;
 	float currentTime;
 	Vector4 color;
+	float initialAlpha;
+	float endAlpha;
+	Vector3 initialScale;
+	Vector3 endScale;
 };
 
 struct ParticleForGPU {

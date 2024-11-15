@@ -30,6 +30,7 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	.scaleRange{.min{0.1f,0.1f,0.1f},.max{0.1f,0.1f,0.1f}},
 	.translateRange{.min{-0.5f,0.0f,-0.5f},.max{0.5f,1.0f,0.5f}},
 	.colorRange{.min{1.f,0,0.0f},.max{1.f,0.5f,0.0f}},
+	.alphaRange{.min{1.0f},.max{1.0f}},
 	.lifeTimeRange{.min{0.5f},.max{0.5f}},
 	.velocityRange{.min{0.f,0.0f,0.f},.max{0.f,0.01f,0.0f}},
 	};
