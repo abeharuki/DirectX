@@ -9,16 +9,14 @@
 #include <ColorBuffer.h>
 #include <RWStructuredBuffer.h>
 #include <StructuredBuffer.h>
+#include <UploadBuffer.h>
 
 class Mesh
 {
 public:
 
-	void Initialize(const ModelData& meshData);
+	void Initialize(const MeshData& meshData, const bool skinFlag);
 
-	void Update();
-
-	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetVertexResource() const { return vertexResource; };
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView; };
 
@@ -30,33 +28,39 @@ public:
 
 	const uint32_t GetMaterialIndex() const { return meshData_.materialIndex; };
 
-	
+
+	RWStructuredBuffer* GetOutputVertex() const { return outputVertices_.get(); };
+	StructuredBuffer* GetInputVertex() const { return inputVertices_.get(); };
+	UploadBuffer* GetSkinningInformationBuffer() const { return skinningInformationBuffer_.get(); };
+
 	//バッファーの作成
 	//読み込み用リソースの作成
 	static ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes);
 
-
-	RWStructuredBuffer* GetOutputVertex() const { return outputVertices_.get(); };
-	StructuredBuffer* GetInputVertex() const { return inputVertices_.get(); };
-
-
 private:
-	void CreateVertexBuffer();
+	void CreateVertexBuffer(bool flag);
 
 	void CreateIndexBuffer();
 
+	void CreateInputVerticesBuffer();
+
+	void CreateOutputVerticesBuffer();
+
+	void CreateVertexBufferView();
+
+	void CreateSkinningBuffer();
+
 private:
-	ModelData modelData_{};
 	MeshData meshData_{};
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
-	// 頂点
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 
 	std::unique_ptr<RWStructuredBuffer> outputVertices_ = nullptr;
 	std::unique_ptr<StructuredBuffer> inputVertices_ = nullptr;
 	
+	std::unique_ptr<UploadBuffer> vertexBuffer_ = nullptr;
+	std::unique_ptr<UploadBuffer> indexBuffer_ = nullptr;
+	std::unique_ptr<UploadBuffer> skinningInformationBuffer_ = nullptr;
 };
 

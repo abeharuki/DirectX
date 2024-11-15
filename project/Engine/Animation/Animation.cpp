@@ -424,7 +424,7 @@ void Animations::sPipeline() {
 void Animations::CreateResource() {
 	// モデルの読み込み
 	meshData_ = std::make_unique<Mesh>();
-	meshData_->Initialize(modelData);
+	meshData_->Initialize(modelData.meshData, !modelData.skinClusterData.empty());
 	//マテリアル
 	materialData_ = std::make_unique<Material>();
 	materialData_->Initialize();

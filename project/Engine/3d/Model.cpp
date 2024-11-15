@@ -110,7 +110,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 void Model::CreateVertexResource() {
 	// モデルの読み込み 
 	meshData_ = std::make_unique<Mesh>();
-	meshData_->Initialize(modelData);
+	meshData_->Initialize(modelData.meshData, !modelData.skinClusterData.empty());
 	
 
 	materialData_ = std::make_unique<Material>();

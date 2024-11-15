@@ -237,7 +237,7 @@ void ParticleSystem::CreateResource() {
 // 頂点データの設定
 void ParticleSystem::CreateVertexResource() {
 	meshData_ = std::make_unique<Mesh>();
-	meshData_->Initialize(modelData);
+	meshData_->Initialize(modelData.meshData, !modelData.skinClusterData.empty());
 
 	materialData_ = std::make_unique<Material>();
 	materialData_->Initialize();
