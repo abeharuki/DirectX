@@ -77,6 +77,10 @@ public: // 静的メンバ変数
 	
 	//パーティクルの最大数
 	static const uint32_t kMaxParticles = 1024;
+	//加速フィールドの最大数
+	static const uint32_t kMaxAccelerationFields = 10;
+	//重力フィールドの最大数
+	static const uint32_t kMaxGravityFields = 10;
 
 public:
 	
@@ -129,7 +133,9 @@ public:
 	// パーティクル速度
 	void SetSpeed(Range speed) { emitterSphere_->velocityRange = speed; };
 	//フィールドをセット
-	void SetFiled(AccelerationField accelerationField);
+	void SetAccelerationFiled(AccelerationField accelerationField);
+	//フィールドをセット
+	void SetGravityFiled(GravityField gravityField);
 	//テクスチャ
 	void SetTexture(const std::string& filename);
 	//モデル
@@ -140,7 +146,6 @@ private:
 
 	void InitilaizeCS();
 	void UpdateCS();
-
 
 	void sPipeline();
 
@@ -167,18 +172,22 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> emitterResource_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Resource> perFrameResource_ = nullptr;
 
+	std::unique_ptr<StructuredBuffer> accelerationFieldResource_ = nullptr;
+	std::unique_ptr<StructuredBuffer> gravityFieldResource_ = nullptr;
+
+
 	// データを書き込む
-	//ParticleForGPU* instancingData_;
 	PerView* perViewData_;
 	ModelData modelData;
 	EmitterSphere* emitterSphere_;
 	PerFrame* perFrame_;
-	
+	AccelerationField* accelerationFieldData_;
+	GravityField* gravityFieldData_;
 
 	uint32_t texture_;
 	
 	std::list<Particle> particles;
-	AccelerationField accelerationField_;
+	
 
 	float kDeltaTime = 1.0f / 60.0f;
 	

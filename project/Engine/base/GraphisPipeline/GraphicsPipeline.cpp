@@ -2061,6 +2061,16 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateUpdatePartic
 	}
 
 #pragma region RootSignature
+	D3D12_DESCRIPTOR_RANGE descriptorRange[2] = {};
+	descriptorRange[0].BaseShaderRegister = 0;                      // 0から始まる
+	descriptorRange[0].NumDescriptors = 1;                          // 数は1つ
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
+	descriptorRange[1].BaseShaderRegister = 1;                      // 0から始まる
+	descriptorRange[1].NumDescriptors = 1;                          // 数は1つ
+	descriptorRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
+	descriptorRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
+
 	D3D12_DESCRIPTOR_RANGE descriptorRangeUAV[3] = {};
 	descriptorRangeUAV[0].BaseShaderRegister = 0;
 	descriptorRangeUAV[0].NumDescriptors = 1;
@@ -2075,8 +2085,9 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateUpdatePartic
 	descriptorRangeUAV[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
 	descriptorRangeUAV[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	
 	// RootSignature作成. 複数設定できるので配列。
-	D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	D3D12_ROOT_PARAMETER rootParameters[6] = {};
 	//particle書き込み用
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -2096,6 +2107,16 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateUpdatePartic
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	rootParameters[3].DescriptorTable.pDescriptorRanges = &descriptorRangeUAV[2];
 	rootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
+	//風フィールド
+	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う;
+	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[4].DescriptorTable.pDescriptorRanges = &descriptorRange[0]; // Tableの中身の配列を指定
+	rootParameters[4].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
+	//重力フィールド
+	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う;
+	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[5].DescriptorTable.pDescriptorRanges = &descriptorRange[1]; // Tableの中身の配列を指定
+	rootParameters[5].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};

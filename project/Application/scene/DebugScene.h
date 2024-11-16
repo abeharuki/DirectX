@@ -69,6 +69,8 @@ private:
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;
 	EmitterSphere emitter_;
+	AccelerationField accelerationFiled_;
+	GravityField gravityFiled_;
 	int particleCount_;
 	bool particleFlag_;
 	bool scaleFlag_;

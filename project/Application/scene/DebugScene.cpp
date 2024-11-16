@@ -76,7 +76,7 @@ void DebugScene::Initialize() {
 		.frequency{0.075f},
 		.frequencyTime{0.5f},
 		.scaleRange{.min{1.0f,1.0f,11.0f},.max{1.0f,1.0f,1.0f}},
-		.translateRange{.min{-3.2f,-1.2f,0.0f},.max{3.2f,1.2f,0.0f}},
+		.translateRange{.min{-3.f,-3.f,-3.f},.max{3.f,3.f,3.f}},
 		.colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
 		.alphaRange{.min{1.0f},.max{1.0f}},
 		.lifeTimeRange{.min{0.1f},.max{1.0f}},
@@ -120,7 +120,15 @@ void DebugScene::Update() {
 	model_->SetColor({ 1.0f,1.0f,1.0f,a_ });
 	emitter_.count = particleCount_;
 	emitter_.isScaleChanging = scaleFlag_;
+	gravityFiled_.min = emitter_.translateRange.min;
+	gravityFiled_.max = emitter_.translateRange.max;
+	gravityFiled_.translate = emitter_.translate;
+	accelerationFiled_.min = emitter_.translateRange.min;
+	accelerationFiled_.max = emitter_.translateRange.max;
+	accelerationFiled_.translate = emitter_.translate;
 	particle_->SetEmitter(emitter_);
+	particle_->SetAccelerationFiled(accelerationFiled_);
+	particle_->SetGravityFiled(gravityFiled_);
 	if (particleFlag_) {
 		particle_->Update();
 	}
@@ -219,10 +227,11 @@ void DebugScene::Update() {
 		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
 		ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);
 		ImGui::DragFloat3("Pos", &emitter_.translate.x, 0.1f);
-		ImGui::DragFloat3("ScaleRangeMin", &emitter_.scaleRange.min.x, 0.01f);
-		ImGui::DragFloat3("ScaleRangeMax", &emitter_.scaleRange.max.x, 0.01f);
 		ImGui::DragFloat3("PosRangeMin", &emitter_.translateRange.min.x, 0.1f);
 		ImGui::DragFloat3("PosRangeMax", &emitter_.translateRange.max.x, 0.1f);
+		ImGui::DragFloat3("ScaleRangeMin", &emitter_.scaleRange.min.x, 0.01f);
+		ImGui::DragFloat3("ScaleRangeMax", &emitter_.scaleRange.max.x, 0.01f);
+		
 		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f, 1.0f);
 		ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("AlphaMin", &emitter_.alphaRange.min, 0.0f, 3.0f);
@@ -234,6 +243,11 @@ void DebugScene::Update() {
 		ImGui::Checkbox("scaleFlag", &scaleFlag_);
 		ImGui::SliderFloat("endAlpha", &emitter_.endAlpha, 0.0f, 3.0f);
 		ImGui::SliderFloat3("scaleAlpha", &emitter_.endScale.x, 0.0f, 3.0f);
+
+		ImGui::SliderFloat3("Acceleration", &accelerationFiled_.acceleration.x, 0.0f, 3.0f);
+		ImGui::SliderFloat("GravityStrength", &gravityFiled_.strength, 0.0f, 10.0f);
+		ImGui::SliderFloat("GravityStop", &gravityFiled_.stopDistance, 0.0f, 10.0f);
+		
 		ImGui::TreePop();
 	}
 

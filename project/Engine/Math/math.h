@@ -257,7 +257,18 @@ struct Emitter {
 
 struct AccelerationField {
 	Vector3 acceleration;//加速度
-	AABB area;//範囲
+	Vector3 translate;//位置
+	Vector3 min;//最小範囲
+	Vector3 max;//最大範囲
+};
+
+struct GravityField
+{
+	Vector3 translate;//位置
+	Vector3 min;//最小範囲
+	Vector3 max;//最大範囲
+	float strength;//重力の強さ
+	float stopDistance;//動きを止める中心点からの距離
 };
 
 struct PerView {

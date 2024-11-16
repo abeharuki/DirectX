@@ -38,7 +38,6 @@ bool IsCollision(const AABB& aabb, const Vector3& point) {
 
 void ParticleSystem::Initialize(const std::string& filename) {
 	initializeCS_ = false;
-	accelerationField_.acceleration = { 0.0f, 0.0f, 0.0f };
 	LoadTexture(filename);
 	CreateResource();
 	sPipeline();
@@ -62,14 +61,6 @@ void ParticleSystem::Update() {
 	else {
 		emitterSphere_->emit = 0;
 	}
-
-	if (IsCollision(accelerationField_.area, emitterSphere_->translate)) {
-		emitterSphere_->velocityRange.min -= accelerationField_.acceleration;
-		emitterSphere_->velocityRange.max += accelerationField_.acceleration;
-	}
-
-
-
 }
 
 void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection) {
@@ -136,8 +127,39 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 #endif // DEBUG
 }
 
-void ParticleSystem::SetFiled(AccelerationField accelerationField) {
-	accelerationField_ = accelerationField;
+
+void ParticleSystem::SetAccelerationFiled(AccelerationField accelerationField)
+{
+	accelerationFieldData_ = static_cast<AccelerationField*>(accelerationFieldResource_->Map());
+
+	accelerationFieldData_[0] = accelerationField;
+
+	accelerationFieldResource_->Unmap();
+}
+
+void ParticleSystem::SetGravityFiled(GravityField gravityField)
+{
+	gravityFieldData_ = static_cast<GravityField*>(gravityFieldResource_->Map());
+
+	gravityFieldData_[0] = gravityField;
+
+	gravityFieldResource_->Unmap();
+
+	/*/ マップしてリソースにアクセス
+	GravityField* gravityFieldData = static_cast<GravityField*>(gravityFieldResource_->Map());
+
+	// 必要な変更を加える
+	// 例えば、gravityFieldData[0]にデータを設定
+	gravityFieldData[0].translate = gravityField.translate;
+	gravityFieldData[0].min = gravityField.min;
+	gravityFieldData[0].max = gravityField.max;
+	gravityFieldData[0].strength = gravityField.strength;
+	gravityFieldData[0].stopDistance = gravityField.stopDistance;
+
+
+	// マップ解除
+	gravityFieldResource_->Unmap();*/
+
 }
 
 void ParticleSystem::SetTexture(const std::string& filename) {
@@ -188,6 +210,8 @@ void ParticleSystem::UpdateCS() {
 	Engine::GetList()->SetComputeRootConstantBufferView(1, perFrameResource_->GetGPUVirtualAddress());
 	Engine::GetList()->SetComputeRootDescriptorTable(2, freeListIndexResource_->GetUAVHandle());
 	Engine::GetList()->SetComputeRootDescriptorTable(3, freeListResource_->GetUAVHandle());
+	Engine::GetList()->SetComputeRootDescriptorTable(4, accelerationFieldResource_->GetSRVHandle());
+	Engine::GetList()->SetComputeRootDescriptorTable(5, gravityFieldResource_->GetSRVHandle());
 	Engine::GetList()->Dispatch(1, 1, 1);
 
 }
@@ -202,6 +226,11 @@ void ParticleSystem::CreateResource() {
 	freeListResource_ = std::make_unique<RWStructuredBuffer>();
 	freeListResource_->Create(kMaxParticles, sizeof(uint32_t));
 
+	accelerationFieldResource_ = std::make_unique<StructuredBuffer>();
+	accelerationFieldResource_->Create(kMaxAccelerationFields, sizeof(AccelerationField));
+
+	gravityFieldResource_ = std::make_unique<StructuredBuffer>();
+	gravityFieldResource_->Create(kMaxGravityFields, sizeof(GravityField));
 
 	perViewResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(PerView));
 	perViewResource_->Map(0, nullptr, reinterpret_cast<void**>(&perViewData_));
@@ -249,6 +278,7 @@ void ParticleSystem::LoadTexture(const std::string& filename) {
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
 
 }
+
 
 void ParticleSystem::sPipeline() {
 
