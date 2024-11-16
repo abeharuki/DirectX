@@ -31,7 +31,7 @@ void UploadBuffer::Create(size_t sizeInBytes)
 		&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
 		IID_PPV_ARGS(&resource_));
 	assert(SUCCEEDED(hr));
-
+	hr;
 	//GpuVirtualAddressの初期化
 	gpuVirtualAddress_ = resource_->GetGPUVirtualAddress();
 }
