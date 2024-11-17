@@ -50,7 +50,6 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> skyboxPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> linePipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> spritePipelineState_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> particlesPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> particleCSPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> emiteCSPipelineState_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> updateParticleCSPipelineState_ = nullptr;

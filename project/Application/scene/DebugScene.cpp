@@ -234,14 +234,14 @@ void DebugScene::Update() {
 		
 		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f, 1.0f);
 		ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f, 1.0f);
-		ImGui::SliderFloat("AlphaMin", &emitter_.alphaRange.min, 0.0f, 3.0f);
-		ImGui::SliderFloat("AlphaMax", &emitter_.alphaRange.max, 0.0f, 3.0f);
+		ImGui::SliderFloat("AlphaMin", &emitter_.alphaRange.min, 0.0f, 10.0f);
+		ImGui::SliderFloat("AlphaMax", &emitter_.alphaRange.max, 0.0f, 10.0f);
 		ImGui::SliderFloat("lifeTimeMin", &emitter_.lifeTimeRange.min, 0.0f, 1.0f);
 		ImGui::SliderFloat("lifeTimeMax", &emitter_.lifeTimeRange.max, 0.0f, 1.0f);
 		ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
 		ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
 		ImGui::Checkbox("scaleFlag", &scaleFlag_);
-		ImGui::SliderFloat("endAlpha", &emitter_.endAlpha, 0.0f, 3.0f);
+		ImGui::SliderFloat("endAlpha", &emitter_.endAlpha, 0.0f, 10.0f);
 		ImGui::SliderFloat3("scaleAlpha", &emitter_.endScale.x, 0.0f, 3.0f);
 
 		ImGui::SliderFloat3("Acceleration", &accelerationFiled_.acceleration.x, 0.0f, 3.0f);

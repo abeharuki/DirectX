@@ -175,6 +175,13 @@ void ParticleSystem::SetModel(const std::string& filename, std::string& path) {
 	}
 }
 
+void ParticleSystem::SetBlendMode(BlendMode blendMode){
+	if (blendMode_ != blendMode) {
+		blendMode_ = blendMode;
+		sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
+	}
+}
+
 ParticleSystem* ParticleSystem::Create(const std::string& filename) {
 	ParticleSystem* model = new ParticleSystem;
 	model->Initialize(filename);

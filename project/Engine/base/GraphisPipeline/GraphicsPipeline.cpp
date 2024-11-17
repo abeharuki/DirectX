@@ -715,11 +715,9 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateSpritePipelin
 }
 
 Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateParticleGraphicsPipeline(BlendMode blendMode_) {
-	if (particlesPipelineState_) {
-		return particlesPipelineState_;
-	}
-	else {
-		particlesPipelineState_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState;
+
+	sPipelineState = nullptr;
 
 #pragma region InputLayout
 
@@ -848,11 +846,11 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState>GraphicsPipeline::CreateParticleGraph
 		// 実際に生成
 		HRESULT hr_;
 		hr_ = Engine::GetDevice()->CreateGraphicsPipelineState(
-			&graphicsPipelineStateDesc, IID_PPV_ARGS(&particlesPipelineState_));
+			&graphicsPipelineStateDesc, IID_PPV_ARGS(&sPipelineState));
 		assert(SUCCEEDED(hr_));
 
-		return particlesPipelineState_;
-	}
+		return sPipelineState;
+	
 }
 
 Microsoft::WRL::ComPtr<ID3D12PipelineState> GraphicsPipeline::CreateParticleCSGraphicsPipeline()

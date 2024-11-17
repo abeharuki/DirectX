@@ -73,7 +73,7 @@ public: // 静的メンバ変数
 	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
-	BlendMode blendMode_ = BlendMode::kAdd;
+	BlendMode blendMode_ = BlendMode::kAdd; //BlendMode::kAdd;
 	
 	//パーティクルの最大数
 	static const uint32_t kMaxParticles = 1024;
@@ -140,6 +140,8 @@ public:
 	void SetTexture(const std::string& filename);
 	//モデル
 	void SetModel(const std::string& filename, std::string& path);
+	//ブレンドモード
+	void SetBlendMode(BlendMode blendMode);
 
 	void DebugParameter();
 private:
