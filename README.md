@@ -15,9 +15,12 @@
 * 各味方キャラごとのスキルの実装
 * 味方AIをビヘイビアツリーを使用して管理
 * 画面全体の絵作り(UI)
-* エンカウント時の演出 など<br>
+* エンカウント時の演出 など
+* ImNodesをエディタとして使用し味方AIの状態遷移を管理
+  - ImNodeエディタではノードの追加やリンクの削除などが行えます<br>
 
 <img src="https://github.com/user-attachments/assets/d5f5ac05-6d9c-4e19-9da2-27de4c19e361" alt="アニメーション" width="500" />
+<img src="https://github.com/user-attachments/assets/8c8e4516-a2bb-4bb4-b983-bed9f78eca04" alt="アニメーション" width="500" />
 <br><br>
 さらに細かい進捗は下記のURLから確認できます。<br>
 
