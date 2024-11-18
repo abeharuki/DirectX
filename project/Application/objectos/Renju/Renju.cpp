@@ -13,6 +13,8 @@ Renju::~Renju() {
 /// </summary>
 void Renju::Initialize(Animations* animation, std::string skillName) {
 	BaseCharacter::Initialize(animation, skillName);
+	worldTransformBow_.Initialize();
+	worldTransformBow_.rotate = { 1.9f,0.0f,-1.5f };
 	worldTransformBase_.translate.x = -3.0f;
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/arrow.obj", "resources/Renju/bow.png"));
 
@@ -63,7 +65,10 @@ void Renju::Update() {
 
 	
 	Relationship();
+
 	BaseCharacter::Update();
+
+	worldTransformBow_.TransferMatrix();
 
 	if (behaviorTree_) {
 		behaviorTree_->Update();
@@ -100,6 +105,8 @@ void Renju::Update() {
 	ImGui::Begin("Renju");
 	ImGui::Text("animeNunber%d", animationNumber_);
 	ImGui::Text("animeTime%f", animation_->GetAnimationTimer());
+	ImGui::SliderFloat3("BowPos", &worldTransformBow_.translate.x, -10.0f, 10.0f);
+	ImGui::DragFloat3("rotate", &worldTransformBow_.rotate.x, 0.1f);
 	ImGui::End();
 
 #ifdef _DEBUG
@@ -289,6 +296,13 @@ void Renju::DeadUpdate() {
 
 void Renju::Relationship() {
 	BaseCharacter::Relationship();
+
+	worldTransformBow_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformBow_.scale, worldTransformBow_.rotate,
+			worldTransformBow_.translate),
+		animation_->GetJointWorldTransform("mixamorig:LeftHand").matWorld_);
+
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

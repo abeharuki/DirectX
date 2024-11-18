@@ -50,6 +50,7 @@ public: // メンバ関数
 	void OnCollision(Collider* collider) override;
 
 	/*-----ゲッター-----*/
+	WorldTransform& GetWorldTransformBow() { return worldTransformBow_; }
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
 	bool GetHitBullet() { return hitBullet_; }
@@ -73,6 +74,8 @@ private:
 
 private: // メンバ変数
 	
+	WorldTransform worldTransformBow_;
+
 	std::unique_ptr<Model> bulletModel_;
 	
 	//ビヘイビアツリー
