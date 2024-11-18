@@ -56,7 +56,7 @@ void DebugScene::Initialize() {
 	worldTransformModel_.scale = { 1.f,1.f,1.f };
 	worldTransformSter_[0].Initialize();
 	worldTransformSter_[1].Initialize();
-	sprite_.reset(Sprite::Create("resources/Healer/mahoujin.png"));
+	sprite_.reset(Sprite::Create("resources/DDS/cat.dds"));
 
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
@@ -395,7 +395,7 @@ void DebugScene::Draw() {
 	model_2->Draw(worldTransformModel_, viewProjection_, false);
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
 	ster_[1]->Draw(worldTransformSter_[1], viewProjection_, true);*/
-	//sprite_->Draw();
+	sprite_->Draw();
 
 	/*debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);
