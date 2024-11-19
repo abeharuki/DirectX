@@ -22,7 +22,7 @@ void HealerManager::Update() {
 void HealerManager::Draw(const ViewProjection& camera) {
 	healer_->Draw(camera);
 	
-	if (healer_->IsAttack()) {
+	if (healer_->GetDrawWepon()) {
 		StaffModel_->Draw(healer_->GetWorldTransformCane(), camera, false);
 	}
 	

@@ -14,9 +14,11 @@ Renju::~Renju() {
 void Renju::Initialize(Animations* animation, std::string skillName) {
 	BaseCharacter::Initialize(animation, skillName);
 	worldTransformBow_.Initialize();
+	worldTransformArrow_.Initialize();
 	worldTransformBow_.rotate = { 1.9f,0.0f,-1.5f };
 	worldTransformBase_.translate.x = -3.0f;
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/arrow.obj", "resources/Renju/bow.png"));
+	bowModel_.reset(Model::CreateModelFromObj("resources/Renju/bow.obj", "resources/Renju/bow.png"));
 
 	
 	worldTransformBase_.UpdateMatrix();
@@ -25,6 +27,23 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 
 	worldTransformShadow_.translate = { worldTransformBase_.translate.x,0.1f,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
+
+
+	emitter_ = {
+		.translate = {0,3,0},
+		.count{50},
+		.frequency{0.075f},
+		.frequencyTime{0.5f},
+		.scaleRange{.min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f}},
+		.translateRange{.min{-2.f,-1.f,-2.f},.max{2.f,2.f,2.f}},
+		.colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
+		.alphaRange{.min{1.0f},.max{1.0f}},
+		.lifeTimeRange{.min{0.1f},.max{1.0f}},
+		.velocityRange{.min{0.0f,0.f,0.0f},.max{0.0f,0.f,0.f}},
+
+	};
+
+	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
 
 	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);
@@ -62,13 +81,23 @@ void Renju::Update() {
 	isHitPlayer_ = false;
 
 	
-
 	
 	Relationship();
 
 	BaseCharacter::Update();
 
 	worldTransformBow_.TransferMatrix();
+	worldTransformArrow_.TransferMatrix();
+
+	
+	//フィールドとエミッターの設定
+	filed_.min = emitter_.translateRange.min;
+	filed_.max = emitter_.translateRange.max;
+	filed_.translate = emitter_.translate;
+	emitter_.count = particleCount_;
+	emitter_.isScaleChanging = scaleFlag_;
+	particle_->SetEmitter(emitter_);
+	particle_->SetGravityFiled(filed_);
 
 	if (behaviorTree_) {
 		behaviorTree_->Update();
@@ -96,6 +125,8 @@ void Renju::Update() {
 		bullet->Update();
 	}
 
+	
+	
 
 	
 	ImGui::Begin("Sprite");
@@ -105,8 +136,37 @@ void Renju::Update() {
 	ImGui::Begin("Renju");
 	ImGui::Text("animeNunber%d", animationNumber_);
 	ImGui::Text("animeTime%f", animation_->GetAnimationTimer());
-	ImGui::SliderFloat3("BowPos", &worldTransformBow_.translate.x, -10.0f, 10.0f);
-	ImGui::DragFloat3("rotate", &worldTransformBow_.rotate.x, 0.1f);
+	ImGui::SliderFloat3("BowPos", &worldTransformArrow_.translate.x, -10.0f, 10.0f);
+	ImGui::DragFloat3("rotate", &worldTransformArrow_.rotate.x, 0.1f);
+
+	if (ImGui::TreeNode("Particle")) {
+		
+		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
+		ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);
+		ImGui::DragFloat3("Pos", &emitter_.translate.x, 0.1f);
+		ImGui::DragFloat3("PosRangeMin", &emitter_.translateRange.min.x, 0.1f);
+		ImGui::DragFloat3("PosRangeMax", &emitter_.translateRange.max.x, 0.1f);
+		ImGui::DragFloat3("ScaleRangeMin", &emitter_.scaleRange.min.x, 0.01f);
+		ImGui::DragFloat3("ScaleRangeMax", &emitter_.scaleRange.max.x, 0.01f);
+
+		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f, 1.0f);
+		ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f, 1.0f);
+		ImGui::SliderFloat("AlphaMin", &emitter_.alphaRange.min, 0.0f, 10.0f);
+		ImGui::SliderFloat("AlphaMax", &emitter_.alphaRange.max, 0.0f, 10.0f);
+		ImGui::SliderFloat("lifeTimeMin", &emitter_.lifeTimeRange.min, 0.0f, 1.0f);
+		ImGui::SliderFloat("lifeTimeMax", &emitter_.lifeTimeRange.max, 0.0f, 1.0f);
+		ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
+		ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
+		ImGui::Checkbox("scaleFlag", &scaleFlag_);
+		ImGui::SliderFloat("endAlpha", &emitter_.endAlpha, 0.0f, 10.0f);
+		ImGui::SliderFloat3("scaleAlpha", &emitter_.endScale.x, 0.0f, 3.0f);
+
+		ImGui::SliderFloat("GravityStrength", &filed_.strength, 0.0f, 10.0f);
+		ImGui::SliderFloat("GravityStop", &filed_.stopDistance, 0.0f, 10.0f);
+
+		ImGui::TreePop();
+	}
+
 	ImGui::End();
 
 #ifdef _DEBUG
@@ -126,6 +186,15 @@ void Renju::Draw(const ViewProjection& camera) {
 
 
 	BaseCharacter::Draw(camera);
+	if (state_ == CharacterState::Attacking || state_ == CharacterState::Unique) {
+		bulletModel_->Draw(worldTransformArrow_, camera, true);
+	}
+
+	if (GetDrawWepon()) {
+		bowModel_->Draw(GetWorldTransformBow(), camera, true);
+	}
+	
+	particle_->Draw(camera);
 
 	RenderCollisionBounds(worldTransformBody_, camera);
 
@@ -155,6 +224,8 @@ void Renju::JumpUpdate() {
 void Renju::AttackInitialize() {
 	BaseCharacter::AttackInitialize();
 	fireTimer_ = 20;
+	flameTime_ = 60.0f;
+	worldTransformArrow_.rotate = { -0.3f,0.0f,1.3f };
 };
 void Renju::AttackUpdate() {
 	// 敵の座標までの距離
@@ -168,7 +239,7 @@ void Renju::AttackUpdate() {
 
 	if (length >= minDistance_ * 1.5f) {
 		isAttack_ = true;
-		animationNumber_ = standby;//攻撃モーションをいれたら変える
+		animationNumber_ = animeAttack;
 	}
 	else {
 		isAttack_ = false;
@@ -195,6 +266,7 @@ void Renju::AttackUpdate() {
 				(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
 		}
 
+
 		if (fireTimer_ == 0) {
 			// 弾の速度
 			const float kBulletSpeed = 1.5f;
@@ -206,13 +278,11 @@ void Renju::AttackUpdate() {
 			// 弾を生成、初期化
 			RenjuBullet* newBullet = new RenjuBullet();
 			newBullet->Initialize(
-				bulletModel_.get(), worldTransformBase_.translate, {1.5f, 1.5f, 1.5f },
-				{1.2f,worldTransformBase_.rotate.y,0.f}, velocity);
+				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
+				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity);
 
 
 			bullets_.push_back(newBullet);
-
-			fireTimer_ = 20;
 
 			coolTime_ = 60;
 			state_ = NextState("Attack", Output1);
@@ -241,9 +311,101 @@ void Renju::AttackUpdate() {
 }
 
 void Renju::UniqueInitialize() {
-
+	drawWepon_ = true;
+	animation_->SetLoop(false);
+	fireTimer_ =60;
+	flameTime_ = 60.0f;
+	
+	
 }
 void Renju::UniqueUpdate() {
+	emitter_.translate = { worldTransformBow_.matWorld_.m[3][0],worldTransformBow_.matWorld_.m[3][1] ,worldTransformBow_.matWorld_.m[3][2] };
+	// 敵の座標までの距離
+	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+
+	// 距離条件チェック
+	if (minDistance_ * 3.f <= length && !followPlayer_) {
+		state_ = NextState("Skill", Output1);
+		searchTarget_ = true;
+	}
+
+	if (length >= minDistance_ * 2.f) {
+		isAttack_ = true;
+		animationNumber_ = animeAttack;
+	}
+	else {
+		isAttack_ = false;
+		animationNumber_ = run;
+	}
+
+	if (isAttack_) {
+		--fireTimer_;
+
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
+
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ =
+				(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		//チャージ中アニメーションを止める
+		if (/*fireTimer_ >= 1 &&*/ fireTimer_ <= 48) {
+			fireTimer_ = 48;
+			animation_->Stop(true);
+			particle_->Update();
+		}
+		
+
+		if (fireTimer_ <= 0) {
+			animation_->Stop(false);
+			// 弾の速度
+			const float kBulletSpeed = 2.0f;
+
+			Vector3 vector = Vector3{ enemy_->GetWorldPosition().x,enemy_->GetWorldPosition().y + 7,enemy_->GetWorldPosition().z } - worldTransformBase_.GetWorldPos();
+			vector = Math::Normalize(vector);
+			Vector3 velocity = kBulletSpeed * vector;
+
+			// 弾を生成、初期化
+			RenjuBullet* newBullet = new RenjuBullet();
+			newBullet->Initialize(
+				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
+				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity);
+
+
+			bullets_.push_back(newBullet);
+
+			coolTime_ = 60;
+			state_ = NextState("Attack", Output1);//Skill
+		}
+	}
+	else {
+
+		const float kSpeed = 0.04f;
+		// 敵の位置から自分の位置への方向ベクトルを計算
+		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
+
+		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+		Math::Normalize(direction);   // 正規化して単位ベクトルにする
+		direction *= -1.0f; // 反転して反対方向に進む
+
+		// 速度を設定
+		velocity_ = direction * kSpeed;
+		worldTransformBase_.translate -= velocity_;
+		worldTransformBase_.translate.y = 0;
+
+
+	}
+	
 
 }
 
@@ -302,6 +464,12 @@ void Renju::Relationship() {
 			worldTransformBow_.scale, worldTransformBow_.rotate,
 			worldTransformBow_.translate),
 		animation_->GetJointWorldTransform("mixamorig:LeftHand").matWorld_);
+
+	worldTransformArrow_.matWorld_ = Math::Multiply(
+		Math::MakeAffineMatrix(
+			worldTransformArrow_.scale, worldTransformArrow_.rotate,
+			worldTransformArrow_.translate),
+		animation_->GetJointWorldTransform("mixamorig:RightHand").matWorld_);
 
 }
 

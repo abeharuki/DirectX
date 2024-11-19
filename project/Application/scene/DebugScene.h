@@ -65,6 +65,7 @@ private:
 	std::unique_ptr<Animations>animation_;
 	int AnimationNum_ = 0;
 	float animaflame_ = 0.0f;
+	bool animationStop_ = false;
 
 	//パーティクル
 	std::unique_ptr<ParticleSystem> particle_;

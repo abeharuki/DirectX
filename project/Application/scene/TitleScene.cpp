@@ -136,6 +136,9 @@ void TitleScene::Update() {
 void TitleScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	
+	// 天球
+	skydome_->Draw(viewProjection_, false);
+
 	// 地面
 	loader_->Draw(viewProjection_, true);
 
@@ -152,8 +155,7 @@ void TitleScene::Draw() {
 
 	spriteTitle_->Draw();
 	spritePushA_->Draw();
-	// 天球
-	skydome_->Draw(viewProjection_, false);
+	
 }
 
 void TitleScene::RenderDirect() {
@@ -179,8 +181,8 @@ void TitleScene::Fade() {
 		}
 	}
 
-	if (Input::PushKey(DIK_0) && !isFadeIn_) {
-		isFadeOut_ = true;
+	if (Input::PushKey(DIK_SPACE) && !isFadeIn_) {
+		//isFadeOut_ = true;
 	}
 
 	//フェードイン時

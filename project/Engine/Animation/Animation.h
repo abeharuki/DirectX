@@ -112,8 +112,8 @@ public:
 	}
 
 	//止める
-	void Stop() {
-		animationTime = 0.0f;
+	void Stop(bool flag) {
+		stop_ = flag;
 	}
 	//ループさせるかどうか
 	void SetLoop(bool flag) { isLoop_ = flag; }
@@ -184,6 +184,7 @@ private:
 	float animationTime = 0.0f;
 	float nextAnimationTime = 0.0f;
 	float flameTimer_ = 0.0f;
+	bool stop_ = false;
 
 	ModelManager* modelManager_;
 	ModelData modelData;

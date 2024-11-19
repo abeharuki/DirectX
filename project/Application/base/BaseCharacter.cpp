@@ -211,6 +211,7 @@ void BaseCharacter::MoveInitialize()
 	velocity_ = { 0.0f,0.0f,0.0f };
 	searchTarget_ = false;
 	isAttack_ = false;
+	drawWepon_ = false;
 	animation_->SetpreAnimationTimer(0);
 	animation_->SetLoop(true);
 	flameTime_ = 30.0f;
@@ -247,6 +248,11 @@ void BaseCharacter::MoveUpdate()
 		animationNumber_ = run;
 	}
 	IsVisibleToEnemy();
+
+	if (Input::PushKey(DIK_U)) {
+		state_ = CharacterState::Unique;
+	}
+
 
 	//敵の攻撃が終わったらまたジャンプできるように設定
 	if (!enemy_->isAttack()) {
@@ -314,6 +320,7 @@ void BaseCharacter::AttackInitialize()
 	searchTarget_ = false;
 	animationNumber_ = animeAttack;
 	animation_->SetLoop(false);
+	drawWepon_ = true;
 }
 void BaseCharacter::AttackUpdate()
 {
@@ -381,6 +388,7 @@ void BaseCharacter::Relationship()
 void BaseCharacter::followPlayer()
 {
 	if (followPlayer_ && state_ != CharacterState::Unique) {
+		
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = playerPos_ - GetWorldPosition();
 
@@ -404,6 +412,7 @@ void BaseCharacter::followPlayer()
 
 		// 距離条件チェック
 		if (minDistance_ <= length) {
+			drawWepon_ = false;
 			worldTransformBase_.translate =
 				Math::Lerp(worldTransformBase_.translate, playerPos_, 0.02f);
 			animationNumber_ = run;
@@ -428,6 +437,7 @@ void BaseCharacter::Dissolve()
 void BaseCharacter::searchTarget()
 {
 	if (!followPlayer_ && searchTarget_) {
+		drawWepon_ = false;
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
@@ -460,6 +470,7 @@ void BaseCharacter::searchTarget()
 
 		}
 		else {
+			drawWepon_ = true;
 			animationNumber_ = standby;
 			if (coolTime_ <= 0 && !isArea_ && enemy_->GetBehavior() != Behavior::kDead) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
@@ -587,7 +598,7 @@ void BaseCharacter::InitializePerCharacter()
 		}
 	}
 	else if (className_ == "Renju") {
-		skillName_ = "???";
+		skillName_ = "Skill";
 		spriteNumP_.reset(Sprite::Create("resources/character/3P.png"));
 		spriteName_.reset(Sprite::Create("resources/Renju/renju.png"));
 		spriteHP_->SetPosition(Vector2{ 1106.0f,545.0f });

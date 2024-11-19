@@ -15,6 +15,6 @@ public:
 
 private:
 	std::unique_ptr<Animations>animation_;
-	std::unique_ptr<Model> bowModel_;
+
 	std::unique_ptr<Renju> renju_;
 };

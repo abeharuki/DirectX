@@ -292,14 +292,18 @@ void Animations::Update(const uint32_t animationNumber) {
 
 
 
-	
-	if (flameTimer_ == 0.0f) { animationTime += 1.0f / 60.0f; }
-	else { animationTime += 1.0f / flameTimer_; }
+	if (!stop_) {
+		if (flameTimer_ == 0.0f) { animationTime += 1.0f / 60.0f; }
+		else { animationTime += 1.0f / flameTimer_; }
 
-	if (isLoop_) {
-		animationTime = std::fmod(animationTime, animation[animationNumber].duration);//最後まで行ったら最初に戻る。リピート再生 
-		localMatrix = Math::MakeIdentity4x4();
+		if (isLoop_) {
+			animationTime = std::fmod(animationTime, animation[animationNumber].duration);//最後まで行ったら最初に戻る。リピート再生 
+			localMatrix = Math::MakeIdentity4x4();
+		}
 	}
+
+
+	
 	
 	
 }

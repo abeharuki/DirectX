@@ -68,7 +68,7 @@ void DebugScene::Initialize() {
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf"));
+	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));
 
 	emitter_ = {
 		.translate = {0,3,0},
@@ -113,6 +113,8 @@ void DebugScene::Initialize() {
 }
 
 void DebugScene::Update() {
+	animation_->Stop(animationStop_);
+	
 	animation_->DirectionalLightDraw(directionLight_);
 	animation_->Update(AnimationNum_);
 	animation_->SetFlameTimer(animaflame_);
@@ -295,8 +297,9 @@ void DebugScene::Update() {
 
 	//アニメーション
 	if (ImGui::TreeNode("Animation")) {
-		ImGui::SliderInt("AnimationNum", &AnimationNum_, 0, 7);
-		ImGui::SliderFloat("AnimationFlame", &animaflame_, 0, 60);
+		ImGui::Checkbox("StopAnimation", &animationStop_);
+		ImGui::SliderInt("AnimationNum", &AnimationNum_, 0, 4);
+		ImGui::SliderFloat("AnimationFlame", &animaflame_, 0, 120);
 		ImGui::DragFloat3("AnimationPos", &worldTransformAnimation_.translate.x, 0.1f);
 		ImGui::DragFloat3("AnimationRotate", &worldTransformAnimation_.rotate.x, 0.01f);
 		ImGui::DragFloat3("AnimationSize", &worldTransformAnimation_.scale.x, 0.1f);
@@ -384,18 +387,18 @@ void DebugScene::Update() {
 void DebugScene::Draw() {
 
 
-	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	colliderManager_[0]->Draw(viewProjection_);
 	colliderManager_[1]->Draw(viewProjection_);
 
 	skybox_->Draw(worldTransformSkybox_, viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
-	model_->Draw(worldTransformAnimation_, viewProjection_, false);
+	//model_->Draw(worldTransformAnimation_, viewProjection_, false);
 	model_2->Draw(worldTransformModel_, viewProjection_, false);
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
 	ster_[1]->Draw(worldTransformSter_[1], viewProjection_, true);*/
-	sprite_->Draw();
+	//sprite_->Draw();
 
 	/*debugPlayer_->Draw(viewProjection_);
 	debugEnemy_->Draw(viewProjection_);

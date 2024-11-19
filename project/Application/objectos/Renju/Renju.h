@@ -63,7 +63,11 @@ public: // メンバ関数
 		}
 	}
 
-	void SetLight(DirectionLight directionLight)override { BaseCharacter::SetLight(directionLight); }
+	void SetLight(DirectionLight directionLight)override { 
+		BaseCharacter::SetLight(directionLight); 
+		bulletModel_->DirectionalLightDraw(directionLight);
+		bowModel_->DirectionalLightDraw(directionLight);
+	}
 	
 
 
@@ -75,9 +79,17 @@ private:
 private: // メンバ変数
 	
 	WorldTransform worldTransformBow_;
+	WorldTransform worldTransformArrow_;
 
+	std::unique_ptr<Model> bowModel_;
 	std::unique_ptr<Model> bulletModel_;
 	
+	std::unique_ptr<ParticleSystem> particle_;
+	EmitterSphere emitter_{};
+	GravityField filed_;
+	int particleCount_;
+	bool scaleFlag_;
+
 	//ビヘイビアツリー
 	BehaviorTree<Renju>* behaviorTree_;
 	

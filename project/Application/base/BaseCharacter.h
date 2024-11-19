@@ -55,6 +55,7 @@ public:
     float GetHp() { return hp_; }
     float GetMp() { return mp_; }
     bool IsDead() { return isDead_; }
+    bool GetDrawWepon() { return drawWepon_; }
 
     /*----------------------セッター------------------------*/
     //仮想関数
@@ -143,6 +144,7 @@ protected:
     //プレイヤー座標
     float minDistance_ = 8.0f;
     bool followPlayer_;
+    bool drawWepon_ = false;
 
     // 敵を探すフラグ
     bool searchTarget_ = false;
