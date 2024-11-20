@@ -96,14 +96,7 @@ void Renju::Update() {
 	worldTransformArrow_.TransferMatrix();
 
 	
-	//フィールドとエミッターの設定
-	filed_.min = emitter_.translateRange.min;
-	filed_.max = emitter_.translateRange.max;
-	filed_.translate = emitter_.translate;
-	emitter_.count = 10;//particleCount_;
-	emitter_.isScaleChanging = true;//scaleFlag_;
-	particle_->SetEmitter(emitter_);
-	particle_->SetGravityFiled(filed_);
+	
 
 	if (behaviorTree_) {
 		behaviorTree_->Update();
@@ -322,6 +315,7 @@ void Renju::UniqueInitialize() {
 	fireTimer_ =60;
 	flameTime_ = 60.0f;
 	
+	//フィールドとエミッターの設定
 	
 }
 void Renju::UniqueUpdate() {
@@ -346,7 +340,7 @@ void Renju::UniqueUpdate() {
 
 	if (isAttack_) {
 		--fireTimer_;
-
+		
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
@@ -369,12 +363,19 @@ void Renju::UniqueUpdate() {
 			//fireTimer_ = 48;
 			
 			animation_->Stop(true);
+			filed_.min = emitter_.translateRange.min;
+			filed_.max = emitter_.translateRange.max;
+			filed_.translate = emitter_.translate;
+			emitter_.count = 10;//particleCount_;
+			emitter_.isScaleChanging = true;//scaleFlag_;
+			particle_->SetEmitter(emitter_);
+			particle_->SetGravityFiled(filed_);
 			particle_->Update();
 		}
 		
 
 		if (fireTimer_ <= 0) {
-			
+			particle_->StopParticle();
 			animation_->Stop(false);
 			// 弾の速度
 			const float kBulletSpeed = 2.0f;
