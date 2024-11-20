@@ -34,6 +34,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 		.count{50},
 		.frequency{0.075f},
 		.frequencyTime{0.5f},
+		.endAlpha{1},
 		.scaleRange{.min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f}},
 		.translateRange{.min{-2.f,-1.f,-2.f},.max{2.f,2.f,2.f}},
 		.colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
@@ -41,6 +42,11 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 		.lifeTimeRange{.min{0.1f},.max{1.0f}},
 		.velocityRange{.min{0.0f,0.f,0.0f},.max{0.0f,0.f,0.f}},
 
+	};
+
+	filed_ = {
+		.strength{1.f},
+		.stopDistance{0.5f},
 	};
 
 	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
@@ -94,8 +100,8 @@ void Renju::Update() {
 	filed_.min = emitter_.translateRange.min;
 	filed_.max = emitter_.translateRange.max;
 	filed_.translate = emitter_.translate;
-	emitter_.count = particleCount_;
-	emitter_.isScaleChanging = scaleFlag_;
+	emitter_.count = 10;//particleCount_;
+	emitter_.isScaleChanging = true;//scaleFlag_;
 	particle_->SetEmitter(emitter_);
 	particle_->SetGravityFiled(filed_);
 
@@ -359,14 +365,16 @@ void Renju::UniqueUpdate() {
 		}
 
 		//チャージ中アニメーションを止める
-		if (/*fireTimer_ >= 1 &&*/ fireTimer_ <= 48) {
-			fireTimer_ = 48;
+		if (fireTimer_ >= 1 && fireTimer_ <= 48) {
+			//fireTimer_ = 48;
+			
 			animation_->Stop(true);
 			particle_->Update();
 		}
 		
 
 		if (fireTimer_ <= 0) {
+			
 			animation_->Stop(false);
 			// 弾の速度
 			const float kBulletSpeed = 2.0f;
@@ -381,9 +389,9 @@ void Renju::UniqueUpdate() {
 				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
 				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity);
 
-
+			
 			bullets_.push_back(newBullet);
-
+		
 			coolTime_ = 60;
 			state_ = NextState("Attack", Output1);//Skill
 		}
