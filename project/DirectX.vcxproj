@@ -166,6 +166,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Engine\Framework\Framework.cpp" />
     <ClCompile Include="Engine\Framework\SceneManager.cpp" />
+    <ClCompile Include="Engine\Manager\AnimationManager.cpp" />
     <ClCompile Include="Engine\Manager\ModelManager.cpp" />
     <ClCompile Include="Engine\Manager\ParticleManager.cpp" />
     <ClCompile Include="Engine\Math\math.cpp" />
@@ -392,6 +393,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Framework\Framework.h" />
     <ClInclude Include="Engine\Framework\IScene.h" />
     <ClInclude Include="Engine\Framework\SceneManager.h" />
+    <ClInclude Include="Engine\Manager\AnimationManager.h" />
     <ClInclude Include="Engine\Manager\ModelManager.h" />
     <ClInclude Include="Engine\Manager\ParticleManager.h" />
     <ClInclude Include="Engine\Math\math.h" />

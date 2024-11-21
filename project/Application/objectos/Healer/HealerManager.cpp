@@ -1,8 +1,8 @@
 #include "HealerManager.h"
 
 void HealerManager::Initialize() {
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/Healer", "Atlas.png", "healer.gltf"));
+	/*animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/Healer", "Atlas.png", "healer.gltf"));*/
 
 
 
@@ -10,7 +10,7 @@ void HealerManager::Initialize() {
 
 	
 	healer_ = std::make_unique<Healer>();
-	healer_->Initialize(animation_.get(),"Healer");
+	healer_->Initialize(AnimationManager::Create("./resources/Healer", "Atlas.png", "healer.gltf"), "Healer");
 
 }
 

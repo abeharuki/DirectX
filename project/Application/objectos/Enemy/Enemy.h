@@ -8,6 +8,7 @@
 #include <Animation/Animation.h>
 #include <CollisionManager/ColliderManager.h>
 #include "Editor/editor.h"
+#include <AnimationManager.h>
 
 enum AnimationNumber {
 	dashAttack,//ダッシュ攻撃
@@ -167,7 +168,7 @@ private: // メンバ変数
 	std::unique_ptr<ColliderManager> colliderRockManager_ = {};//投擲用
 
 	//アニメーション
-	std::unique_ptr<Animations>animation_;
+	Animations* animation_;
 	int animationNumber_;
 
 	std::unique_ptr<Model> impactModel_;//衝撃波

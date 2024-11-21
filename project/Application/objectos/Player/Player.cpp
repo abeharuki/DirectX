@@ -28,8 +28,7 @@ void Player::Initialize() {
 	alpha_ = 0.0f;
 
 	isOver_ = false;
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Player", "Atlas.png", "player.gltf"));
+	animation_ = AnimationManager::Create("resources/Player", "Atlas.png", "player.gltf");
 	animationNumber_ = standby;
 	flameTime_ = 30.0f;
 	attackType_.resize(AttackType::kAttackMax);

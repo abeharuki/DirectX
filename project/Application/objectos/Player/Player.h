@@ -179,7 +179,7 @@ private: // メンバ変数
 	float alpha_;
 	Vector3 numMove_;
 
-	std::unique_ptr<Animations>animation_;
+	Animations* animation_;
 	int animationNumber_;
 	enum AnimationNumber {
 		animeAttack,//攻撃

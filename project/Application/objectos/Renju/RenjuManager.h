@@ -14,7 +14,7 @@ public:
 	Renju* GetRenju() { return renju_.get(); };
 
 private:
-	std::unique_ptr<Animations>animation_;
+	//std::unique_ptr<Animations>animation_;
 
 	std::unique_ptr<Renju> renju_;
 };

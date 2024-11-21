@@ -2,13 +2,13 @@
 
 void RenjuManager::Initialize() {
 
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));
+	/*animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));*/
 
 	
 
 	renju_ = std::make_unique<Renju>();
-	renju_->Initialize(animation_.get(),"Renju");
+	renju_->Initialize(AnimationManager::Create("./resources/Renju", "Atlas.png", "renju.gltf"),"Renju");
 }
 
 void RenjuManager::Update() {

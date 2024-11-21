@@ -31,5 +31,5 @@ private:
 private:
 	static ParticleManager* instance_;
 
-	std::map<ParticleId, std::shared_ptr<ParticleSystem>> particleSystems_;
+	std::map<ParticleId, std::unique_ptr<ParticleSystem>> particleSystems_;
 };
