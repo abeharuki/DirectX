@@ -1,6 +1,7 @@
 #include "Healer.h"
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
+#include <ParticleManager.h>
 
 
 Healer::~Healer() {
@@ -62,7 +63,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 		.lifeTimeRange{.min{0.1f},.max{0.2f}},
 		.velocityRange{.min{-0.4f,0.1f,-0.4f},.max{0.4f,0.4f,0.4f}},
 		};
-		particle_[i].reset(ParticleSystem::Create("resources/particle/circle.png"));
+		particle_[i] = ParticleManager::Create("resources/particle/circle.png", 10+(i+1));
 	}
 	
 	emitter_[0] = {

@@ -43,7 +43,7 @@ private:
 	WorldTransform worldTransformModel_;
 	WorldTransform worldTransformSter_[2];
 	//ローダー
-	//std::unique_ptr<ModelLoader> loader_;
+	std::unique_ptr<ModelLoader> loader_;
 	ViewProjection viewProjection_;
 
 	
@@ -68,8 +68,8 @@ private:
 	bool animationStop_ = false;
 
 	//パーティクル
-	std::unique_ptr<ParticleSystem> particle_;
-	std::unique_ptr<ParticleSystem> particle2_;
+	ParticleSystem* particle_;
+	ParticleSystem* particle2_;
 	EmitterSphere emitter_;
 	AccelerationField accelerationFiled_;
 	GravityField gravityFiled_;

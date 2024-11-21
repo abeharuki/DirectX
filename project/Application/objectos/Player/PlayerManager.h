@@ -102,7 +102,7 @@ private:
 	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
 
 	//パーティクル
-	std::unique_ptr<ParticleSystem> particle_;
+	ParticleSystem* particle_;
 	EmitterSphere emitter_{};
 	bool isParticle_ = false;
 

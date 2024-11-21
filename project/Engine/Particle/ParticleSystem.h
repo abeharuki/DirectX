@@ -78,7 +78,8 @@ public:
 	
 	//static ParticleSystem* GetInstance();
 	//static void Destroy();
-	~ParticleSystem();
+
+	void Clear();
 
 	// 初期化
 	void Initialize(const std::string& filename);
@@ -88,7 +89,7 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	static ParticleSystem*Create(const std::string& filename);
+	//static ParticleSystem*Create(const std::string& filename);
 
 	void StopParticle() { emitterSphere_->frequencyTime = 0.0f; }
 

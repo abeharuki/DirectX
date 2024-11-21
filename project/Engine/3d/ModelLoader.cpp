@@ -1,7 +1,9 @@
 #include "ModelLoader.h"
 #include <CollisionManager/CollisionConfig.h>
+#include <ParticleManager.h>
 
 void ModelLoader::Initialize(const std::string& filename) {
+	particleNum_ = -1;
 	LoadJsonObjFile(filename);
 }
 
@@ -214,8 +216,9 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 			//配列に登録
 			worldTransforms.push_back(newObject);
 			if (objectData.filename == "pillar") {
+				++particleNum_;
 				ParticleSystem* particle = new ParticleSystem;
-				particle->Initialize("resources/particle/circle.png");
+				particle = ParticleManager::Create("resources/particle/circle.png",particleNum_);
 				  emitter_ = {
 						.translate = {objectData.transform.translate.x,objectData.transform.translate.y+4,objectData.transform.translate.z},
 		                .count{50},

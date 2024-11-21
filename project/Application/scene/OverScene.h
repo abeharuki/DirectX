@@ -18,7 +18,6 @@ private:
 	std::unique_ptr<Sprite> spritePushA_;
 	// フェードイン・フェードアウト用スプライト
 	std::unique_ptr<Sprite> spriteBack_;
-	std::unique_ptr<ParticleSystem> particle_;
 	ViewProjection viewProjection_;
 	bool isFadeOut_;
 	bool isFadeIn_;

@@ -1,4 +1,5 @@
 #include "PlayerManager.h"
+#include <ParticleManager.h>
 
 
 void PlayerManager::Initialize() {
@@ -75,7 +76,7 @@ void PlayerManager::Initialize() {
 		.lifeTimeRange{.min{0.5f},.max{0.5f}},
 		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
 	};
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
+	particle_ = ParticleManager::Create("resources/particle/circle.png",8);
 
 	isParticle_ = false;
 	

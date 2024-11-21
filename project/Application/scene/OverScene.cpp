@@ -6,7 +6,6 @@
 void OverScene::Initialize() {
 	spriteOver_.reset(Sprite::Create("resources/over.png"));
 	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
-	particle_.reset(ParticleManager::Create("resources/particle/circle.png"));
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Black.png"));
@@ -26,7 +25,6 @@ void OverScene::Initialize() {
 void OverScene::Update() {
 	
 	Fade();
-	particle_->Update();
 	viewProjection_.UpdateMatrix();
 	if (isFede_) {
 		SceneManager::GetInstance()->ChangeScene("TitleScene");
@@ -38,10 +36,10 @@ void OverScene::Draw() {
 	uv.scale = { 0.0f, 0.0f, 0.0f };
 	uv.rotate = { 0.0f, 0.0f, 0.0f };
 	uv.translate = { 0.0f, 0.0f, 0.0f };
-	/*spriteOver_->Draw(uv);
+	spriteOver_->Draw(uv);
 	spritePushA_->Draw(uv);
-	spriteBack_->Draw(uv);*/
-	particle_->Draw(viewProjection_);
+	spriteBack_->Draw(uv);
+	
 }
 
 void OverScene::RenderDirect() {

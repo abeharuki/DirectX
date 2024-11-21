@@ -20,27 +20,34 @@ void ParticleManager::Destroy()
 	}
 }
 
-ParticleSystem* ParticleManager::Create(const std::string& name)
+ParticleSystem* ParticleManager::Create(const std::string& name, uint32_t Id)
 {
-	ParticleSystem* particleSystem = ParticleManager::GetInstance()->CreateInternal(name);
+	ParticleSystem* particleSystem = ParticleManager::GetInstance()->CreateInternal(name,Id);
 	return particleSystem;
 }
 
-ParticleSystem* ParticleManager::CreateInternal(const std::string& name)
+
+ParticleSystem* ParticleManager::CreateInternal(const std::string& name,uint32_t Id)
 {
-	// リソースが存在するかチェック
-	auto it = particleSystems_.find(name);
-	if (it != particleSystems_.end()) {
-		
-		// 既存のリソースを返す
-		return particleSystems_[name].get();
-	}
+    // 検索用のParticleIdを作成
+    ParticleId pid = { name, Id };
 
-	
-	// マップに追加
-	particleSystems_[name] = std::make_unique<ParticleSystem>();
-	particleSystems_[name]->Initialize(name);
+    // リソースが既に存在するかを検索
+    auto it = particleSystems_.find(pid);
+    if (it != particleSystems_.end()) {
+        // 既存のリソースを返す
+        return it->second.get();
+    }
 
-	// 新規リソースを返す
-	return particleSystems_[name].get();
+    // 新規リソースを作成
+    auto particleSystem = std::make_unique<ParticleSystem>();
+    particleSystem->Initialize(name);
+    ParticleSystem* rawPtr = particleSystem.get(); // 生ポインタを取得
+
+    // 新しいリソースをマップに追加
+    particleSystems_[pid] = std::move(particleSystem);
+
+    // 新規リソースを返す
+    return rawPtr;
 }
+

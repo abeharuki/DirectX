@@ -111,7 +111,7 @@ private: // メンバ変数
 	Vector3 healNumMove_[4];
 
 	//パーティクル
-	std::vector<std::unique_ptr<ParticleSystem>> particle_;
+	std::vector<ParticleSystem*> particle_;
 	std::vector<EmitterSphere> emitter_{};
 
 	//ビヘイビアツリー

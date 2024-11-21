@@ -4,52 +4,6 @@
 #include <format>
 #include <numbers>
 
-//ParticleSystem* ParticleSystem::instance_ = nullptr;
-//
-//ParticleSystem* ParticleSystem::GetInstance()
-//{
-//	if (instance_ == nullptr)
-//	{
-//		instance_ = new ParticleSystem();
-//	}
-//	return instance_;
-//}
-//
-//void ParticleSystem::Destroy()
-//{
-//	if (instance_ != nullptr)
-//	{
-//		delete instance_;
-//		instance_ = nullptr;
-//	}
-//
-//}
-
-
-
-bool IsCollision(const AABB& aabb, const Vector3& point) {
-	if ((aabb.min.x <= point.x && point.x <= aabb.max.x) &&
-		(aabb.min.y <= point.y && point.y <= aabb.max.y) &&
-		(aabb.min.z <= point.z && point.z <= aabb.max.z)) {
-		return true;
-	}
-
-	return false;
-}
-
-ParticleSystem::~ParticleSystem()
-{
-	// 既存リソースの解放
-	//particleResource_.reset();
-	/*freeListIndexResource_.reset();
-	freeListResource_.reset();*/
-	/*perViewResource_ = nullptr;
-	emitterResource_ = nullptr;
-	perFrameResource_ = nullptr;*/
-	/*accelerationFieldResource_.reset();
-	gravityFieldResource_.reset();*/
-	//linebox_.reset();
-}
 
 void ParticleSystem::Initialize(const std::string& filename) {
 	initializeCS_ = false;
@@ -60,7 +14,6 @@ void ParticleSystem::Initialize(const std::string& filename) {
 	linebox_ = std::make_unique<LineBox>();
 	AABB aabb = { emitterSphere_->translateRange.min, emitterSphere_->translateRange.max };
 	linebox_.reset(LineBox::Create(aabb));
-
 }
 
 void ParticleSystem::Update() {
@@ -194,11 +147,11 @@ void ParticleSystem::SetBlendMode(BlendMode blendMode){
 	}
 }
 
-ParticleSystem* ParticleSystem::Create(const std::string& filename) {
-	ParticleSystem* model = new ParticleSystem;
-	model->Initialize(filename);
-	return model;
-}
+//ParticleSystem* ParticleSystem::Create(const std::string& filename) {
+//	ParticleSystem* model = new ParticleSystem;
+//	model->Initialize(filename);
+//	return model;
+//}
 
 void ParticleSystem::InitilaizeCS() {
 

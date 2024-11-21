@@ -65,7 +65,7 @@ void DebugScene::Initialize() {
 	model_2.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
 	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
-	//loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
+	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
 	/*animation_ = std::make_unique<Animations>();
 	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));*/
@@ -83,9 +83,9 @@ void DebugScene::Initialize() {
 		.velocityRange{.min{0.0f,0.f,0.0f},.max{0.0f,0.f,0.f}},
 		
 	};
-
-	particle_.reset(ParticleManager::Create("resources/particle/circle.png"));
-
+	
+	particle_ = ParticleManager::Create("resources/particle/circle.png",8);
+	particle2_ = ParticleManager::Create("resources/particle/circle.png",20);
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
@@ -132,15 +132,11 @@ void DebugScene::Update() {
 	particle_->SetAccelerationFiled(accelerationFiled_);
 	particle_->SetGravityFiled(gravityFiled_);
 	if (particleFlag_) {
-		particle2_.reset(ParticleManager::Create("resources/particle/circle.png"));
-		particleFlag_ = false;
+		particle_->Update();
+		
 	}
-	if (particle2_) {
-		particle2_->Update();
-	}
-
-	particle_->Update();
-	//loader_->Update();
+	particle2_->Update();
+	loader_->Update();
 
 	if (blendNum_ == 0) {
 		blendMode_ = BlendMode::kNone;
@@ -397,11 +393,9 @@ void DebugScene::Draw() {
 	colliderManager_[1]->Draw(viewProjection_);
 
 	skybox_->Draw(worldTransformSkybox_, viewProjection_);
-	//loader_->Draw(viewProjection_, true);
-	//particle_->Draw(viewProjection_);
-	if (particle2_) {
-		particle2_->Draw(viewProjection_);
-	}
+	loader_->Draw(viewProjection_, true);
+	particle_->Draw(viewProjection_);
+	particle2_->Draw(viewProjection_);
 	//model_->Draw(worldTransformAnimation_, viewProjection_, false);
 	model_2->Draw(worldTransformModel_, viewProjection_, false);
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
