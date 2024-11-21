@@ -1,4 +1,5 @@
 #include "Tank.h"
+#include <ParticleManager.h>
 
 
 Tank::~Tank() {
@@ -34,7 +35,7 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	.lifeTimeRange{.min{0.5f},.max{0.5f}},
 	.velocityRange{.min{0.f,0.0f,0.f},.max{0.f,0.01f,0.0f}},
 	};
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
+	particle_ = ParticleManager::Create("resources/particle/circle.png", 10);
 	particle_->SetEmitter(emitter_);
 
 	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };

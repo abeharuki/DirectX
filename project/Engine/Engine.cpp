@@ -16,12 +16,14 @@
 #include "Input.h"
 #include <GlobalVariables.h>
 #include "Audio/Audio.h"
+#include "Manager/ParticleManager.h"
 
 WinApp* win = nullptr;
 DirectXCommon* dxCommon = nullptr;
 ImGuiManager* imguiManager = nullptr;
 Input* keyInput = nullptr;
 Audio* audio = nullptr;
+ParticleManager* particleManager = nullptr;
 float Engine::gameTime = 0;
 
 Engine* Engine::GetInstance() {
@@ -87,6 +89,8 @@ void Engine::Finalize() {
 	//dxCommon->Debug();
 
 	TextureManager::GetInstance()->Destroy();
+
+	ParticleManager::GetInstance()->Destroy();
 }
 
 void Engine::EndFrame() {

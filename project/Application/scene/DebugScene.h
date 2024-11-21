@@ -14,7 +14,7 @@
 #include <ParticleSystem.h>
 #include <Enemy/EnemyManager.h>
 #include "CollisionManager/CollisionConfig.h"
-
+#include "Manager/ParticleManager.h"
 
 class DebugScene: public IScene {
 public:
@@ -62,13 +62,14 @@ private:
 	Vector3 impactPos_;
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
-	std::unique_ptr<Animations>animation_;
+	//std::unique_ptr<Animations>animation_;
 	int AnimationNum_ = 0;
 	float animaflame_ = 0.0f;
 	bool animationStop_ = false;
 
 	//パーティクル
-	std::unique_ptr<ParticleSystem> particle_;
+	ParticleSystem* particle_;
+	ParticleSystem* particle2_;
 	EmitterSphere emitter_;
 	AccelerationField accelerationFiled_;
 	GravityField gravityFiled_;

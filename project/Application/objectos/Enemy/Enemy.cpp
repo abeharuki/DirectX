@@ -5,8 +5,8 @@
 
 void Enemy::Initialize() {
 
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf"));
+
+	animation_ = AnimationManager::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf");
 	impactModel_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj", "resources/white.png"));
 	areaModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/red_.png"));
 	circleAreaModel_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj", "resources/Enemy/red_.png"));

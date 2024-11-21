@@ -61,6 +61,8 @@ private:
 	std::vector<ColliderManager*> colliderManager_;
 	std::vector<ParticleSystem*> particle_;
 	EmitterSphere emitter_;
+
+	int particleNum_;
 };
 
 

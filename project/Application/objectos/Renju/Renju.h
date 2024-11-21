@@ -84,7 +84,7 @@ private: // メンバ変数
 	std::unique_ptr<Model> bowModel_;
 	std::unique_ptr<Model> bulletModel_;
 	
-	std::unique_ptr<ParticleSystem> particle_;
+	ParticleSystem* particle_;
 	EmitterSphere emitter_{};
 	GravityField filed_;
 	int particleCount_;

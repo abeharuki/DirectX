@@ -2,6 +2,7 @@
 #include "Framework/IScene.h"
 #include "Input.h"
 #include <Sprite.h>
+#include <ParticleSystem.h>
 
 class OverScene : public IScene {
 public:
@@ -17,7 +18,7 @@ private:
 	std::unique_ptr<Sprite> spritePushA_;
 	// フェードイン・フェードアウト用スプライト
 	std::unique_ptr<Sprite> spriteBack_;
-
+	ViewProjection viewProjection_;
 	bool isFadeOut_;
 	bool isFadeIn_;
 	bool isFede_;

@@ -1,11 +1,11 @@
 #include "OverScene.h"
 #include "Framework/SceneManager.h"
 #include <PostEffects/PostEffect.h>
+#include <ParticleManager.h>
 
 void OverScene::Initialize() {
 	spriteOver_.reset(Sprite::Create("resources/over.png"));
 	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
-
 	alpha_ = 1.0f;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Black.png"));
@@ -16,13 +16,16 @@ void OverScene::Initialize() {
 	isFede_ = false;
 
 	PostEffect::GetInstance()->isGrayscale(true);
+
+	viewProjection_.Initialize();
+	viewProjection_.rotation_.x = 0.28f;
+	viewProjection_.translation_ = { 0.0f, 3.0f, -9.0f };
 }
 
 void OverScene::Update() {
 	
 	Fade();
-	
-
+	viewProjection_.UpdateMatrix();
 	if (isFede_) {
 		SceneManager::GetInstance()->ChangeScene("TitleScene");
 	}
@@ -36,6 +39,7 @@ void OverScene::Draw() {
 	spriteOver_->Draw(uv);
 	spritePushA_->Draw(uv);
 	spriteBack_->Draw(uv);
+	
 }
 
 void OverScene::RenderDirect() {

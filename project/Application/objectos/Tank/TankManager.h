@@ -15,7 +15,7 @@ public:
 	
 
 private:
-	std::unique_ptr<Animations>animation_;
+	//std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Tank> tank_;
 
 };

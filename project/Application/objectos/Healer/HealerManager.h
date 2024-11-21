@@ -17,7 +17,7 @@ public:
 
 private:
 	//アニメーション
-	std::unique_ptr<Animations>animation_;
+	//std::unique_ptr<Animations>animation_;
 	
 	std::unique_ptr<Model> StaffModel_;
 	std::unique_ptr<Healer> healer_;

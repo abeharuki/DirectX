@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Engine.h"
 #include "GraphicsPipeline.h"
 #include "Mesh.h"
@@ -7,13 +6,6 @@
 #include "TextureManeger.h"
 #include "ViewProjection.h"
 #include <DirectXTex.h>
-#include <d3d12.h>
-#include <d3dx12.h>
-#include <dxcapi.h>
-#include <fstream>
-#include <memory>
-#include <sstream>
-#include <wrl.h>
 #include <random>
 #include "ModelManager.h"
 #include <Material.h>
@@ -84,8 +76,11 @@ public: // 静的メンバ変数
 
 public:
 	
-	static ParticleSystem* GetInstance();
-	static void Destroy();
+	//static ParticleSystem* GetInstance();
+	//static void Destroy();
+
+	void Clear();
+
 	// 初期化
 	void Initialize(const std::string& filename);
 
@@ -94,7 +89,7 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	static ParticleSystem*Create(const std::string& filename);
+	//static ParticleSystem*Create(const std::string& filename);
 
 	void StopParticle() { emitterSphere_->frequencyTime = 0.0f; }
 
@@ -160,7 +155,7 @@ private:
 	void LoadTexture(const std::string& filename);
 
 private:
-	static ParticleSystem* instance_;
+	//static ParticleSystem* instance_;
 
 	//インスタンスの最大数
 	const uint32_t kNumMaxInstance = 100;

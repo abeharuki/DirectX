@@ -77,7 +77,7 @@ private: // メンバ変数
 	BehaviorTree<Tank>* behaviorTree_;
 	std::unique_ptr<Model>shield_;
 
-	std::unique_ptr<ParticleSystem> particle_;
+	ParticleSystem* particle_;
 	EmitterSphere emitter_{};
 	
 	// 味方の押し出し処理

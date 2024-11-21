@@ -1,6 +1,7 @@
 #include "Renju.h"
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
+#include <ParticleManager.h>
 
 
 Renju::~Renju() {
@@ -49,7 +50,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 		.stopDistance{0.5f},
 	};
 
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
+	particle_ = ParticleManager::Create("resources/particle/circle.png", 9);
 
 	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);

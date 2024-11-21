@@ -67,8 +67,8 @@ void DebugScene::Initialize() {
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
-	animation_ = std::make_unique<Animations>();
-	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));
+	/*animation_ = std::make_unique<Animations>();
+	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));*/
 
 	emitter_ = {
 		.translate = {0,3,0},
@@ -83,9 +83,9 @@ void DebugScene::Initialize() {
 		.velocityRange{.min{0.0f,0.f,0.0f},.max{0.0f,0.f,0.f}},
 		
 	};
-
-	particle_.reset(ParticleSystem::Create("resources/particle/circle.png"));
-
+	
+	particle_ = ParticleManager::Create("resources/particle/circle.png",8);
+	particle2_ = ParticleManager::Create("resources/particle/circle.png",20);
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
@@ -113,11 +113,11 @@ void DebugScene::Initialize() {
 }
 
 void DebugScene::Update() {
-	animation_->Stop(animationStop_);
+	/*animation_->Stop(animationStop_);
 	
 	animation_->DirectionalLightDraw(directionLight_);
 	animation_->Update(AnimationNum_);
-	animation_->SetFlameTimer(animaflame_);
+	animation_->SetFlameTimer(animaflame_);*/
 	model_->DirectionalLightDraw(directionLight_);
 	model_->SetColor({ 1.0f,1.0f,1.0f,a_ });
 	emitter_.count = particleCount_;
@@ -133,8 +133,9 @@ void DebugScene::Update() {
 	particle_->SetGravityFiled(gravityFiled_);
 	if (particleFlag_) {
 		particle_->Update();
+		
 	}
-
+	particle2_->Update();
 	loader_->Update();
 
 	if (blendNum_ == 0) {
@@ -190,9 +191,9 @@ void DebugScene::Update() {
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
 	model_->SetThreshold(animeDissolve_.threshold);
-	animation_->SetThreshold(animeDissolve_.threshold);
+	/*animation_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
-	animation_->SetEnvironment(env_, true);
+	animation_->SetEnvironment(env_, true);*/
 
 	PostEffect* const posteffect = PostEffect::GetInstance();
 
@@ -221,7 +222,7 @@ void DebugScene::Update() {
 	posteffect->SetHsv(hsv_);
 	CheckAllCollision();
 
-	particle_->DebugParameter();
+	//particle_->DebugParameter();
 	ImGui::Begin("Setting");
 	ImGui::Text("Angle%f", angle_[0]);
 	if (ImGui::TreeNode("Particle")) {
@@ -305,7 +306,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("AnimationSize", &worldTransformAnimation_.scale.x, 0.1f);
 		ImGui::DragFloat("Env", &env_, 0.01f, 0.0f, 1.0f);
 		ImGui::SliderFloat("Thresholed", &animeDissolve_.threshold, 0.01f, 1.0f);
-		ImGui::Text("AnimationTimer%f", animation_->GetAnimationTimer());
+		//ImGui::Text("AnimationTimer%f", animation_->GetAnimationTimer());
 		ImGui::TreePop();
 	}
 	//Posteffect
@@ -387,13 +388,14 @@ void DebugScene::Update() {
 void DebugScene::Draw() {
 
 
-	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	colliderManager_[0]->Draw(viewProjection_);
 	colliderManager_[1]->Draw(viewProjection_);
 
 	skybox_->Draw(worldTransformSkybox_, viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
+	particle2_->Draw(viewProjection_);
 	//model_->Draw(worldTransformAnimation_, viewProjection_, false);
 	model_2->Draw(worldTransformModel_, viewProjection_, false);
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
@@ -529,9 +531,9 @@ void DebugScene::CheckAllCollision() {
 	collisionManager_->SetColliderList(colliderManager_[0].get());
 	collisionManager_->SetColliderList(colliderManager_[1].get());
 	//collisionManager_->SetColliderList(colliderManager_[2].get());
-	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
+	/*for (int i = 0; i < loader_->GetColliderSize(); ++i) {
 		collisionManager_->SetColliderList(loader_->GetCollider(i));
-	}
+	}*/
 	collisionManager_->CheckAllCollisions();
 }
 
