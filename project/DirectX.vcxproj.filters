@@ -441,6 +441,9 @@
     <ClCompile Include="Engine\base\UploadBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Manager\ParticleManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\hlsl\Bloom.PS.hlsl">
@@ -791,6 +794,9 @@
       <Filter>ヘッダー ファイル\Application\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\UploadBuffer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Manager\ParticleManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

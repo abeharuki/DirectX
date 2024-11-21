@@ -4,26 +4,27 @@
 #include <format>
 #include <numbers>
 
-ParticleSystem* ParticleSystem::instance_ = nullptr;
+//ParticleSystem* ParticleSystem::instance_ = nullptr;
+//
+//ParticleSystem* ParticleSystem::GetInstance()
+//{
+//	if (instance_ == nullptr)
+//	{
+//		instance_ = new ParticleSystem();
+//	}
+//	return instance_;
+//}
+//
+//void ParticleSystem::Destroy()
+//{
+//	if (instance_ != nullptr)
+//	{
+//		delete instance_;
+//		instance_ = nullptr;
+//	}
+//
+//}
 
-ParticleSystem* ParticleSystem::GetInstance()
-{
-	if (instance_ == nullptr)
-	{
-		instance_ = new ParticleSystem();
-	}
-	return instance_;
-}
-
-void ParticleSystem::Destroy()
-{
-	if (instance_ != nullptr)
-	{
-		delete instance_;
-		instance_ = nullptr;
-	}
-
-}
 
 
 bool IsCollision(const AABB& aabb, const Vector3& point) {
@@ -34,6 +35,20 @@ bool IsCollision(const AABB& aabb, const Vector3& point) {
 	}
 
 	return false;
+}
+
+ParticleSystem::~ParticleSystem()
+{
+	// 既存リソースの解放
+	//particleResource_.reset();
+	/*freeListIndexResource_.reset();
+	freeListResource_.reset();*/
+	/*perViewResource_ = nullptr;
+	emitterResource_ = nullptr;
+	perFrameResource_ = nullptr;*/
+	/*accelerationFieldResource_.reset();
+	gravityFieldResource_.reset();*/
+	//linebox_.reset();
 }
 
 void ParticleSystem::Initialize(const std::string& filename) {
@@ -47,7 +62,6 @@ void ParticleSystem::Initialize(const std::string& filename) {
 	linebox_.reset(LineBox::Create(aabb));
 
 }
-
 
 void ParticleSystem::Update() {
 	perFrame_->time = Engine::gameTime;
@@ -74,7 +88,6 @@ void ParticleSystem::UpdatePerViewResource(const ViewProjection& viewProjection)
 	perViewData_->projection = viewProjection.matProjection;
 	perViewData_->billboardMatrix = billboardMatrix;
 }
-
 
 void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
@@ -126,7 +139,6 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
 #endif // DEBUG
 }
-
 
 void ParticleSystem::SetAccelerationFiled(AccelerationField accelerationField)
 {
