@@ -249,9 +249,7 @@ void BaseCharacter::MoveUpdate()
 	}
 	IsVisibleToEnemy();
 
-	if (Input::PushKey(DIK_U)) {
-		state_ = CharacterState::Unique;
-	}
+	
 
 
 	//敵の攻撃が終わったらまたジャンプできるように設定

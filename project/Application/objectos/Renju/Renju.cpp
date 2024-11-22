@@ -210,6 +210,10 @@ void Renju::MoveInitialize() {
 };
 void Renju::MoveUpdate() {
 	BaseCharacter::MoveUpdate();
+
+	if (Input::PushKey(DIK_U)) {
+		state_ = CharacterState::Unique;
+	}
 };
 
 // ジャンプ

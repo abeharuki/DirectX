@@ -125,11 +125,11 @@ void TitleScene::Update() {
 	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
-	editor_.load("Renju");
-	editor_.show("RenjuNode");
-	editor_.save("Renju");
+	editor_.load("Example");
+	editor_.show("ExampleNode");
+	editor_.save("Example");
 	
-	std::string state = editor_.GetLinkNode("Attack", Output1).name;
+	//std::string state = editor_.GetLinkNode("Attack", Output1).name;
 
 }
 
