@@ -15,10 +15,11 @@
 #include "base/ColorBuffer.h"
 
 struct DissolveStyle {
+	Matrix4x4 uvTransform;
 	float threshold;
 	Vector3 edgeColor;
 	int32_t isEnble;
-	
+	float pading[3];
 };
 
 class Dissolve {

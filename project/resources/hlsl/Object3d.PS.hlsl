@@ -39,6 +39,7 @@ struct Environment
 
 struct DissolveStyle
 {
+    float32_t4x4 uvTransform;
     float32_t threshold;
     float32_t3 edgeColor;
     int32_t isEnble;
@@ -99,14 +100,13 @@ PixelShaderOutput main(VertexShaderOutput input)
        
     }
     
-    float32_t mask = gMaskTexture.Sample(gSampler, input.texcoord);
+    float4 maskUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gLight.dissolve.uvTransform);
+    float32_t mask = gMaskTexture.Sample(gSampler, maskUV.xy);
         //maskの値が0.5（閾値）以下の場合はdiscardして抜く
     if (mask < gLight.dissolve.threshold)
     {
         discard;
     }
-        //Edgeっぽさほ算出
-    float32_t edge = 1.0f - smoothstep(gLight.dissolve.threshold, gLight.dissolve.threshold + 0.03f, mask); 
   
     
     if (gMaterial.enableLighting != 0)
@@ -218,7 +218,9 @@ PixelShaderOutput main(VertexShaderOutput input)
      
     }
    
-    
+    //Edgeっぽさほ算出
+    float32_t edge = 1.0f - smoothstep(gLight.dissolve.threshold, gLight.dissolve.threshold + 0.03f, mask);
+  
     //Edgeっぽいほど指定した色を加算
     finalColor.rgb += edge * gLight.dissolve.edgeColor;
     

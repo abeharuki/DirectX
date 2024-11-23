@@ -49,7 +49,6 @@ private:
 	
 	std::unique_ptr<Skybox> skybox_;
 	std::unique_ptr<Model> model_;
-	std::unique_ptr<Model> model_2;
 	std::unique_ptr<Model> ster_[2];
 	std::unique_ptr<Sprite> sprite_;
 	float a_;
@@ -69,7 +68,6 @@ private:
 
 	//パーティクル
 	ParticleSystem* particle_;
-	ParticleSystem* particle2_;
 	EmitterSphere emitter_;
 	AccelerationField accelerationFiled_;
 	GravityField gravityFiled_;
@@ -104,7 +102,7 @@ private:
 	bool postEffects[9];
 
 	float env_;
-
+	Transform maskUV_;
 	Vector4 modelColor_ = { 1.f,1.f,1.f,1.f };
 	BlendMode blendMode_ = BlendMode::kNormal;
 	int blendNum_;

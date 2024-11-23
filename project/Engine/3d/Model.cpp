@@ -138,6 +138,9 @@ void Model::CreateVertexResource() {
 	lightData->dissolve_.threshold = 0.0f;
 	lightData->dissolve_.edgeColor = { 1.0f,0.4f,0.3f };
 	lightData->dissolve_.isEnble = false;
+	// UVTransform用の行列
+	Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(Vector3{1,1,1},Vector3{0,0,0},Vector3{0,0,0});
+	lightData->dissolve_.uvTransform = uvTransformMatrix;
 
 	//カメラ
 	cameraResorce_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(CameraForGPU));
@@ -228,7 +231,7 @@ void Model::DirectionalLight(Vector4 color, Vector3 direction, float intensity) 
 
 void Model::SetMaskTexture(const std::string& path) {
 	TextureManager::GetInstance()->Load("resources/Mask/" + path);
-	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/" + path);
+	maskTexture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/" + path);
 }
 
 void Model::SetTexture(const std::string& path) {

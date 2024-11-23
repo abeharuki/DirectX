@@ -102,6 +102,17 @@ public:
 	//static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 
 	void SetUV(Transform& uvTransform) { materialData_->SetUV(uvTransform); }
+	void SetMaskUV(Transform& uvTransform) { 
+		// UVTransform用の行列
+		Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
+			{
+				uvTransform.scale.x + 1,
+				uvTransform.scale.y + 1,
+				uvTransform.scale.z + 1,
+			},
+			uvTransform.rotate, uvTransform.translate);
+		lightData->dissolve_.uvTransform = uvTransformMatrix;
+	}
 
 	//色とアルファ値
 	void SetColor(Vector4 color);
@@ -121,7 +132,7 @@ public:
 		lightData->environment_.environment = environment;
 	}
 
-	//void isDissolve(bool flag) { lightData->dissolve_.isEnble = flag; }
+	void isDissolve(bool flag) { lightData->dissolve_.isEnble = flag; }
 	void SetThreshold(float num) { lightData->dissolve_.threshold = num; }
 	void SetEdgeColor(Vector3 color) { lightData->dissolve_.edgeColor = color; }
 	void SetMaskTexture(const std::string& texturePath);

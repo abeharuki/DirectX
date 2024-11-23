@@ -61,8 +61,8 @@ void DebugScene::Initialize() {
 
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
-	model_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/0.png"));
-	model_2.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
+	model_.reset(Model::CreateFromNoDepthObj("resources/particle/scalePlane.obj", "resources/Enemy/white.png"));
+
 	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -85,7 +85,7 @@ void DebugScene::Initialize() {
 	};
 	
 	particle_ = ParticleManager::Create("resources/particle/circle.png",8);
-	particle2_ = ParticleManager::Create("resources/particle/circle.png",20);
+
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
@@ -118,8 +118,8 @@ void DebugScene::Update() {
 	animation_->DirectionalLightDraw(directionLight_);
 	animation_->Update(AnimationNum_);
 	animation_->SetFlameTimer(animaflame_);*/
-	model_->DirectionalLightDraw(directionLight_);
-	model_->SetColor({ 1.0f,1.0f,1.0f,a_ });
+	//model_->DirectionalLightDraw(directionLight_);
+	model_->SetColor({ modelColor_ });
 	emitter_.count = particleCount_;
 	emitter_.isScaleChanging = scaleFlag_;
 	gravityFiled_.min = emitter_.translateRange.min;
@@ -135,7 +135,7 @@ void DebugScene::Update() {
 		particle_->Update();
 		
 	}
-	particle2_->Update();
+	
 	loader_->Update();
 
 	if (blendNum_ == 0) {
@@ -154,9 +154,8 @@ void DebugScene::Update() {
 	}
 
 
-
-	model_2->SetBlendMode(blendMode_);
-	model_2->SetColor(modelColor_);
+	model_->SetBlendMode(blendMode_);
+	model_->SetMaskTexture("shockwave.png");
 
 
 
@@ -191,6 +190,7 @@ void DebugScene::Update() {
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
 	model_->SetThreshold(animeDissolve_.threshold);
+	//model_->SetMaskUV(maskUV_);
 	/*animation_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
 	animation_->SetEnvironment(env_, true);*/
@@ -270,6 +270,9 @@ void DebugScene::Update() {
 		ImGui::SliderFloat("Color", &a_, -1.0f, 1.0f);
 		ImGui::SliderFloat4("modelColor", &modelColor_.x, -1.0f, 1.0f);
 		ImGui::DragInt("Blend", &blendNum_, 1,0,4);
+		ImGui::DragFloat3("MaskPos", &maskUV_.translate.x, 0.1f);
+		ImGui::DragFloat3("MaskRotate", &maskUV_.rotate.x, 0.01f);
+		ImGui::DragFloat3("MaskSize", &maskUV_.scale.x, 0.1f);
 		ImGui::TreePop();
 	}
 	//ローダーオブジェクト
@@ -395,9 +398,8 @@ void DebugScene::Draw() {
 	skybox_->Draw(worldTransformSkybox_, viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
-	particle2_->Draw(viewProjection_);
-	//model_->Draw(worldTransformAnimation_, viewProjection_, false);
-	model_2->Draw(worldTransformModel_, viewProjection_, false);
+	model_->Draw(worldTransformModel_, viewProjection_, false);
+	
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
 	ster_[1]->Draw(worldTransformSter_[1], viewProjection_, true);*/
 	//sprite_->Draw();
