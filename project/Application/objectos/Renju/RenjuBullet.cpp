@@ -23,7 +23,7 @@ void RenjuBullet::Initialize(
 
 	//衝撃波の初期設定
 	for (int i = 0; i < 3;++i) {
-		shockwave_[i].reset(Model::CreateModelFromObj("resources/particle/scalePlane.obj", "resources/Enemy/white.png"));
+		shockwave_[i].reset(Model::CreateModelFromObj("resources/particle/shockwavePlane.obj", "resources/Enemy/white.png"));
 		shockwave_[i]->SetMaskTexture("shockwave2.png");
 		shockwave_[i]->SetBlendMode(BlendMode::kNormal);
 		shockwave_[i]->IsGradient(true);
@@ -32,7 +32,7 @@ void RenjuBullet::Initialize(
 		worldTransformShockwave_[i].Initialize();
 		worldTransformShockwave_[i].translate = position;
 		worldTransformShockwave_[i].scale = { 0.f,0.f,0.f };//Vector3{ 5.f,5.f,5.f} - (1.5f * i);
-		worldTransformShockwave_[i].rotate = { rotation.x,rotation.y,0.f};
+		worldTransformShockwave_[i].rotate = { rotation.x,rotation.y,0.0f };
 
 
 		shockData_[i].alpha_ = 1.f;
