@@ -27,12 +27,13 @@ void RenjuBullet::Initialize(
 		shockwave_[i]->SetMaskTexture("shockwave2.png");
 		shockwave_[i]->SetBlendMode(BlendMode::kNormal);
 		shockwave_[i]->IsGradient(true);
-		//shockwave_[i]->SetColor({ 0.7f,0.f,1.f,1.f });
+	
 		
 		worldTransformShockwave_[i].Initialize();
 		worldTransformShockwave_[i].translate = position;
 		worldTransformShockwave_[i].scale = { 0.f,0.f,0.f };//Vector3{ 5.f,5.f,5.f} - (1.5f * i);
-		worldTransformShockwave_[i].rotate = { 1.6f,rotation.y,0.f};
+		worldTransformShockwave_[i].rotate = { rotation.x,rotation.y,0.f};
+
 
 		shockData_[i].alpha_ = 1.f;
 		shockData_[i].threshold_ = 0.f;
@@ -71,7 +72,7 @@ void RenjuBullet::Update() {
 
 	shockData_[0].threshold_ += shockData_[0].shockVelocity_;
 	shockData_[0].alpha_ -= 0.1f;
-	shockData_[0].scaleVelocity_ = Math::Lerp(worldTransformShockwave_[0].scale, { 7.f,7.f,7.f }, 0.8f);
+	shockData_[0].scaleVelocity_ = Math::Lerp(worldTransformShockwave_[0].scale, { 8.f,8.f,8.f }, 0.8f);
 	
 
 	if (shockData_[0].alpha_ <= 0.5f) {
@@ -94,7 +95,7 @@ void RenjuBullet::Update() {
 		}
 
 		shockwave_[i]->SetThreshold(shockData_[i].threshold_);
-		shockwave_[i]->SetColor({ 0.7f,0.f,1.f,shockData_[i].alpha_});
+		shockwave_[i]->SetColor({ 0.2f,0.f,1.f,shockData_[i].alpha_});
 		worldTransformShockwave_[i].scale = shockData_[i].scaleVelocity_;
 		if (worldTransformShockwave_[i].scale.x == 0) {
 			worldTransformShockwave_[i].translate = worldTransform_.translate;

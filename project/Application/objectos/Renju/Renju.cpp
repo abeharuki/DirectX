@@ -39,7 +39,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 		.endAlpha{1},
 		.scaleRange{.min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f}},
 		.translateRange{.min{-2.f,-1.f,-2.f},.max{2.f,2.f,2.f}},
-		.colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
+		.colorRange{.min{0.2f,0,1.f},.max{0.2f,0,1.0f}},
 		.alphaRange{.min{1.0f},.max{1.0f}},
 		.lifeTimeRange{.min{0.1f},.max{1.0f}},
 		.velocityRange{.min{0.0f,0.f,0.0f},.max{0.0f,0.f,0.f}},

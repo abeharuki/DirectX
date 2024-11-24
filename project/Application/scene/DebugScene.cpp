@@ -138,6 +138,7 @@ void DebugScene::Update() {
 	particle_->SetEmitter(emitter_);
 	particle_->SetAccelerationFiled(accelerationFiled_);
 	particle_->SetGravityFiled(gravityFiled_);
+	particle_->SetColor(modelColor_);
 	if (particleFlag_) {
 		particle_->Update();
 		
@@ -259,6 +260,7 @@ void DebugScene::Update() {
 		ImGui::SliderFloat("GravityStrength", &gravityFiled_.strength, 0.0f, 10.0f);
 		ImGui::SliderFloat("GravityStop", &gravityFiled_.stopDistance, 0.0f, 10.0f);
 		
+		ImGui::SliderFloat4("Color", &modelColor_.x, -1.0f, 1.0f);
 		ImGui::TreePop();
 	}
 

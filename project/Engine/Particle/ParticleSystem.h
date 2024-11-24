@@ -125,7 +125,7 @@ public:
 	void SetFrequencyTime(float frequencyTime) { emitterSphere_->frequencyTime = frequencyTime; }
 	// 色とアルファ値
 	void SetColor(Range color) { emitterSphere_->colorRange = color; };
-	void SetColor(Vector3){}
+	void SetColor(Vector4 color){ materialData_->SetColor(color); }
 	// パーティクル速度
 	void SetSpeed(Range speed) { emitterSphere_->velocityRange = speed; };
 	//フィールドをセット
