@@ -42,7 +42,7 @@ struct DissolveStyle
     float32_t4x4 uvTransform;
     float32_t threshold;
     float32_t3 edgeColor;
-    int32_t isEnble;
+    int32_t isGradient;
 };
 
 struct WritingStyle
@@ -95,18 +95,34 @@ PixelShaderOutput main(VertexShaderOutput input)
         discard;
     }
 	
-    if (gLight.dissolve.isEnble != 0)
-    {
-       
-    }
     
     float4 maskUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gLight.dissolve.uvTransform);
     float32_t mask = gMaskTexture.Sample(gSampler, maskUV.xy);
-        //maskの値が0.5（閾値）以下の場合はdiscardして抜く
-    if (mask < gLight.dissolve.threshold)
+    if (gLight.dissolve.isGradient != 0)
     {
-        discard;
+        
+        
+         // アルファ値を計算
+        finalColor.a = saturate((mask - gLight.dissolve.threshold) / (1.0f - gLight.dissolve.threshold));
+        if (finalColor.a < 0.01f)
+        {
+            discard;
+        }
+
     }
+    else
+    {
+        //maskの値が0.5（閾値）以下の場合はdiscardして抜く
+        if (mask < gLight.dissolve.threshold)
+        {
+            discard;
+        }
+           
+    }
+    
+   
+        
+  
   
     
     if (gMaterial.enableLighting != 0)
@@ -227,7 +243,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     
     output.color.rgb = finalColor.rgb;
 	 
-    output.color.a = gMaterial.color.a * textureColor.a;
+    output.color.a = gMaterial.color.a * textureColor.a * finalColor.a;
 
     if (output.color.a == 0.0)
     {

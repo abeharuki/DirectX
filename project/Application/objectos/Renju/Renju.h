@@ -54,7 +54,6 @@ public: // メンバ関数
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
 	bool GetHitBullet() { return hitBullet_; }
-	
 
 	/*-----セッター-----*/
 	void SetHeal(float heal) {

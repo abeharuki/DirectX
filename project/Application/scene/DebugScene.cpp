@@ -52,7 +52,8 @@ void DebugScene::Initialize() {
 	worldTransformCollider2_.Initialize();
 	worldTransformCollider3_.Initialize();
 	worldTransformModel_.Initialize();
-	worldTransformModel_.rotate.y = 3.14f;
+	worldTransformModel_.rotate.x = 1.6f;
+	worldTransformModel_.translate.y = 3.f;
 	worldTransformModel_.scale = { 1.f,1.f,1.f };
 	worldTransformSter_[0].Initialize();
 	worldTransformSter_[1].Initialize();
@@ -62,7 +63,7 @@ void DebugScene::Initialize() {
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 
 	model_.reset(Model::CreateFromNoDepthObj("resources/particle/scalePlane.obj", "resources/Enemy/white.png"));
-
+	model_->SetMaskTexture("shockwave.png");
 	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -85,6 +86,7 @@ void DebugScene::Initialize() {
 	};
 	
 	particle_ = ParticleManager::Create("resources/particle/circle.png",8);
+	//particle_->SetModel("particle/", "scalePlane.obj");
 
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
@@ -109,6 +111,11 @@ void DebugScene::Initialize() {
 	angle_[0] = 0.0f;
 	angle_[1] = 2.0f;
 	angle_[2] = 4.0f;
+
+	blendNum_ = 2;
+	maskUV_.scale = { 1.f,1.f,1.f };
+	animeDissolve_.threshold = 0.3f;
+	modelColor_ = { 0.7f,0.0f,1.0f,1.0f };
 
 }
 
@@ -155,9 +162,9 @@ void DebugScene::Update() {
 
 
 	model_->SetBlendMode(blendMode_);
-	model_->SetMaskTexture("shockwave.png");
-
-
+	particle_->SetBlendMode(blendMode_);
+	worldTransformModel_.scale = Vector3{ 6.f,6.f,6.f };
+	
 
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -186,11 +193,12 @@ void DebugScene::Update() {
 	radialBlur_.isEnble = postEffects[4];
 	dissolve_.isEnble = postEffects[5];
 	random_.isEnble = postEffects[6];
-	animeDissolve_.isEnble = isAnimeDissolve_;
+	//animeDissolve_.isGradient = isAnimeDissolve_;
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
 	model_->SetThreshold(animeDissolve_.threshold);
-	//model_->SetMaskUV(maskUV_);
+	model_->SetMaskUV(maskUV_);
+	model_->IsGradient(true);
 	/*animation_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
 	animation_->SetEnvironment(env_, true);*/
@@ -273,6 +281,9 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("MaskPos", &maskUV_.translate.x, 0.1f);
 		ImGui::DragFloat3("MaskRotate", &maskUV_.rotate.x, 0.01f);
 		ImGui::DragFloat3("MaskSize", &maskUV_.scale.x, 0.1f);
+
+		ImGui::SliderFloat("Thresholed", &animeDissolve_.threshold, 0.0f, 1.0f);
+		ImGui::Checkbox("ShockWave", &shockwaveflag_);
 		ImGui::TreePop();
 	}
 	//ローダーオブジェクト
@@ -398,7 +409,7 @@ void DebugScene::Draw() {
 	skybox_->Draw(worldTransformSkybox_, viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
-	model_->Draw(worldTransformModel_, viewProjection_, false);
+	//model_->Draw(worldTransformModel_, viewProjection_, false);
 	
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);
 	ster_[1]->Draw(worldTransformSter_[1], viewProjection_, true);*/

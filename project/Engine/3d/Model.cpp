@@ -137,9 +137,10 @@ void Model::CreateVertexResource() {
 	lightData->directionLight_.isEnable_ = true;
 	lightData->dissolve_.threshold = 0.0f;
 	lightData->dissolve_.edgeColor = { 1.0f,0.4f,0.3f };
-	lightData->dissolve_.isEnble = false;
+	lightData->dissolve_.isGradient = false;
+	
 	// UVTransform用の行列
-	Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(Vector3{1,1,1},Vector3{0,0,0},Vector3{0,0,0});
+	Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(Vector3{2,2,0},Vector3{0,0,0},Vector3{0,0,0});
 	lightData->dissolve_.uvTransform = uvTransformMatrix;
 
 	//カメラ
@@ -151,6 +152,8 @@ void Model::CreateVertexResource() {
 void Model::SetColor(Vector4 color) {
 	materialData_->SetColor(color);
 }
+
+
 
 void Model::SetBlendMode(BlendMode blendMode) { 
 

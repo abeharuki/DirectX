@@ -116,6 +116,7 @@ public:
 
 	//色とアルファ値
 	void SetColor(Vector4 color);
+	
 
 	//ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
@@ -132,7 +133,7 @@ public:
 		lightData->environment_.environment = environment;
 	}
 
-	void isDissolve(bool flag) { lightData->dissolve_.isEnble = flag; }
+	void IsGradient(bool flag) { lightData->dissolve_.isGradient = flag; }
 	void SetThreshold(float num) { lightData->dissolve_.threshold = num; }
 	void SetEdgeColor(Vector3 color) { lightData->dissolve_.edgeColor = color; }
 	void SetMaskTexture(const std::string& texturePath);

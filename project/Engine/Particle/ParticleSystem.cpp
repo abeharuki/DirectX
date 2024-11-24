@@ -84,7 +84,7 @@ void ParticleSystem::Draw(const ViewProjection& viewProjection) {
 
 
 	// 三角形の描画
-	Engine::GetList()->DrawInstanced(6, kMaxParticles, 0, 0);
+	Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), kMaxParticles, 0, 0);
 
 #ifdef _DEBUG
 
@@ -132,18 +132,19 @@ void ParticleSystem::SetTexture(const std::string& filename) {
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
 }
 
-void ParticleSystem::SetModel(const std::string& filename, std::string& path) {
+void ParticleSystem::SetModel(const std::string& filename,const std::string& path) {
 	modelData = ModelManager::LoadObjFile("resources/" + filename + path);
 	if (modelData.material.textureFilePath != "") {
 		TextureManager::GetInstance()->Load("resources/" + filename + modelData.material.textureFilePath);
 		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/" + filename + modelData.material.textureFilePath);
 	}
+	CreateVertexResource();
 }
 
 void ParticleSystem::SetBlendMode(BlendMode blendMode){
 	if (blendMode_ != blendMode) {
 		blendMode_ = blendMode;
-		sPipelineState_ = GraphicsPipeline::GetInstance()->CreateParticleGraphicsPipeline(blendMode_);
+		sPipeline();
 	}
 }
 

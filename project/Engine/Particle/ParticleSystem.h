@@ -125,6 +125,7 @@ public:
 	void SetFrequencyTime(float frequencyTime) { emitterSphere_->frequencyTime = frequencyTime; }
 	// 色とアルファ値
 	void SetColor(Range color) { emitterSphere_->colorRange = color; };
+	void SetColor(Vector3){}
 	// パーティクル速度
 	void SetSpeed(Range speed) { emitterSphere_->velocityRange = speed; };
 	//フィールドをセット
@@ -134,7 +135,7 @@ public:
 	//テクスチャ
 	void SetTexture(const std::string& filename);
 	//モデル
-	void SetModel(const std::string& filename, std::string& path);
+	void SetModel(const std::string& filename,const std::string& path);
 	//ブレンドモード
 	void SetBlendMode(BlendMode blendMode);
 

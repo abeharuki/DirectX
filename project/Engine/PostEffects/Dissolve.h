@@ -18,8 +18,9 @@ struct DissolveStyle {
 	Matrix4x4 uvTransform;
 	float threshold;
 	Vector3 edgeColor;
+	int32_t isGradient;
 	int32_t isEnble;
-	float pading[3];
+	float pading[2];
 };
 
 class Dissolve {

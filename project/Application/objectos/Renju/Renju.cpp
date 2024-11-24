@@ -30,6 +30,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 	worldTransformShadow_.UpdateMatrix();
 
 
+	//フィールドとエミッターの設定
 	emitter_ = {
 		.translate = {0,3,0},
 		.count{50},
@@ -105,8 +106,19 @@ void Renju::Update() {
 
 	hitBullet_ = false;
 	for (RenjuBullet* bullet : bullets_) {
-		if (bullet->IsDead()) {
+		if (!bullet->IsDraw()) {
 			hitBullet_ = true;
+			particle_->StopParticle();
+		}
+		else {
+			emitter_.translate = bullet->GetWorldPosition();
+			emitter_.count = 3;
+			emitter_.velocityRange = { .min{0,0,0},.max{0.1f,0.1f,0.1f} };
+			emitter_.scaleRange = { .min{1.f,1.f,1.f},.max{1.f,1.f,1.f} };
+			
+			particle_->SetEmitter(emitter_);
+			particle_->SetGravityFiled(filed_);
+			particle_->Update();
 		}
 	}
 
@@ -283,7 +295,7 @@ void Renju::AttackUpdate() {
 			RenjuBullet* newBullet = new RenjuBullet();
 			newBullet->Initialize(
 				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
-				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity);
+				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity,false);
 
 
 			bullets_.push_back(newBullet);
@@ -319,9 +331,9 @@ void Renju::UniqueInitialize() {
 	animation_->SetLoop(false);
 	fireTimer_ =60;
 	flameTime_ = 60.0f;
-	
-	//フィールドとエミッターの設定
-	
+	emitter_.velocityRange = { .min{0,0,0},.max{0.f,0.f,0.f} };
+	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} },
+	filed_.strength = 1.f;
 }
 void Renju::UniqueUpdate() {
 	emitter_.translate = { worldTransformBow_.matWorld_.m[3][0],worldTransformBow_.matWorld_.m[3][1] ,worldTransformBow_.matWorld_.m[3][2] };
@@ -380,10 +392,10 @@ void Renju::UniqueUpdate() {
 		
 
 		if (fireTimer_ <= 0) {
-			particle_->StopParticle();
+			
 			animation_->Stop(false);
 			// 弾の速度
-			const float kBulletSpeed = 2.0f;
+			const float kBulletSpeed = 3.f;
 
 			Vector3 vector = Vector3{ enemy_->GetWorldPosition().x,enemy_->GetWorldPosition().y + 7,enemy_->GetWorldPosition().z } - worldTransformBase_.GetWorldPos();
 			vector = Math::Normalize(vector);
@@ -393,12 +405,13 @@ void Renju::UniqueUpdate() {
 			RenjuBullet* newBullet = new RenjuBullet();
 			newBullet->Initialize(
 				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
-				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity);
+				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity,true);
 
 			
 			bullets_.push_back(newBullet);
 		
 			coolTime_ = 60;
+			filed_.strength = 0.0f;
 			state_ = NextState("Attack", Output1);//Skill
 		}
 	}
