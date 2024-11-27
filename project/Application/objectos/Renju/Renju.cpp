@@ -108,6 +108,7 @@ void Renju::Update() {
 	for (RenjuBullet* bullet : bullets_) {
 		if (!bullet->IsDraw()) {
 			hitBullet_ = true;
+			drawWepon_ = false;
 			particle_->StopParticle();
 		}
 		else {
@@ -115,12 +116,14 @@ void Renju::Update() {
 			emitter_.count = 3;
 			emitter_.velocityRange = { .min{0,0,0},.max{0.1f,0.1f,0.1f} };
 			emitter_.scaleRange = { .min{1.f,1.f,1.f},.max{1.f,1.f,1.f} };
-			
+
 			particle_->SetEmitter(emitter_);
 			particle_->SetGravityFiled(filed_);
-			particle_->Update();
+			
 		}
 	}
+
+	particle_->Update();
 
 	// デスフラグが立った弾を削除
 	bullets_.remove_if([](RenjuBullet* bullet) {
@@ -206,7 +209,10 @@ void Renju::Draw(const ViewProjection& camera) {
 		bowModel_->Draw(GetWorldTransformBow(), camera, true);
 	}
 	
-	particle_->Draw(camera);
+	if (skill_) {
+		particle_->Draw(camera);
+	}
+	
 
 	RenderCollisionBounds(worldTransformBody_, camera);
 
@@ -223,9 +229,22 @@ void Renju::MoveInitialize() {
 void Renju::MoveUpdate() {
 	BaseCharacter::MoveUpdate();
 
+	//スキル
+	if (mp_ >= 20 && enemy_->IsBehaviorRequest()) {
+		if (enemy_->GetBehavior() != enemy_->GetBehaviorRequest()) {
+			// 敵の座標までの距離
+			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+			if (length >= minDistance_ * 1.5f) {
+				state_ = CharacterState::Unique;
+			}
+		}
+
+	}
+
 	if (Input::PushKey(DIK_U)) {
 		state_ = CharacterState::Unique;
 	}
+	
 };
 
 // ジャンプ
@@ -239,6 +258,7 @@ void Renju::JumpUpdate() {
 // 攻撃
 void Renju::AttackInitialize() {
 	BaseCharacter::AttackInitialize();
+	skill_ = false;
 	fireTimer_ = 20;
 	flameTime_ = 60.0f;
 	worldTransformArrow_.rotate = { -0.3f,0.0f,1.3f };
@@ -255,6 +275,7 @@ void Renju::AttackUpdate() {
 
 	if (length >= minDistance_ * 1.5f) {
 		isAttack_ = true;
+		animation_->SetLoop(false);
 		animationNumber_ = animeAttack;
 	}
 	else {
@@ -295,7 +316,7 @@ void Renju::AttackUpdate() {
 			RenjuBullet* newBullet = new RenjuBullet();
 			newBullet->Initialize(
 				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
-				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity,false);
+				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity, skill_);
 
 
 			bullets_.push_back(newBullet);
@@ -327,34 +348,21 @@ void Renju::AttackUpdate() {
 }
 
 void Renju::UniqueInitialize() {
+	skill_ = true;
 	drawWepon_ = true;
+	isAttack_ = true;
+	mp_ -= 10;
 	animation_->SetLoop(false);
 	fireTimer_ =60;
 	flameTime_ = 60.0f;
 	emitter_.velocityRange = { .min{0,0,0},.max{0.f,0.f,0.f} };
 	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} },
 	filed_.strength = 1.f;
+	animationNumber_ = animeAttack;
 }
 void Renju::UniqueUpdate() {
 	emitter_.translate = { worldTransformBow_.matWorld_.m[3][0],worldTransformBow_.matWorld_.m[3][1] ,worldTransformBow_.matWorld_.m[3][2] };
-	// 敵の座標までの距離
-	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-
-	// 距離条件チェック
-	if (minDistance_ * 3.f <= length && !followPlayer_) {
-		state_ = NextState("Skill", Output1);
-		searchTarget_ = true;
-	}
-
-	if (length >= minDistance_ * 2.f) {
-		isAttack_ = true;
-		animationNumber_ = animeAttack;
-	}
-	else {
-		isAttack_ = false;
-		animationNumber_ = run;
-	}
-
+	
 	if (isAttack_) {
 		--fireTimer_;
 		
@@ -405,35 +413,17 @@ void Renju::UniqueUpdate() {
 			RenjuBullet* newBullet = new RenjuBullet();
 			newBullet->Initialize(
 				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
-				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity,true);
+				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity, skill_);
 
 			
 			bullets_.push_back(newBullet);
 		
 			coolTime_ = 60;
 			filed_.strength = 0.0f;
-			state_ = NextState("Attack", Output1);//Skill
+			state_ = NextState("Skill", Output1);
 		}
 	}
-	else {
-
-		const float kSpeed = 0.04f;
-		// 敵の位置から自分の位置への方向ベクトルを計算
-		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
-
-		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
-		Math::Normalize(direction);   // 正規化して単位ベクトルにする
-		direction *= -1.0f; // 反転して反対方向に進む
-
-		// 速度を設定
-		velocity_ = direction * kSpeed;
-		worldTransformBase_.translate -= velocity_;
-		worldTransformBase_.translate.y = 0;
-
-
-	}
 	
-
 }
 
 void Renju::DeadInitialize() {

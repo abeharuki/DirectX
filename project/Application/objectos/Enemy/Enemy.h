@@ -71,6 +71,19 @@ public: // メンバ関数
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	BehaviorAttack GetBehaviorAttack() { return attack_; }
 	Behavior GetBehavior() { return behavior_; }
+	Behavior GetBehaviorRequest() {
+		if (behaviorRequest_) {
+			return behaviorRequest_.value();
+		}
+		return Behavior::kRoot;
+	}
+
+	bool IsBehaviorRequest(){
+		if (behaviorRequest_) {
+			return true;
+		}
+		return false;
+	}
 	Collider* GetCollider(int i) { return colliderManager_[i].get(); }
 	Collider* GetRockCollider() { return colliderRockManager_.get(); }
 	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }

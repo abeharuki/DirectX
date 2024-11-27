@@ -20,7 +20,7 @@ public:
 	void OnCollision();
 	void OnHealerCollision();
 	void OnTankCollision();
-	void OnRenjuCollision();
+	void OnRenjuCollision(bool skill);
 
 	//ビルボードの計算
 	void Billboard();

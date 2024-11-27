@@ -54,7 +54,7 @@ public: // メンバ関数
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
 	bool GetHitBullet() { return hitBullet_; }
-
+	bool GetSkill() { return skill_; }
 	/*-----セッター-----*/
 	void SetHeal(float heal) {
 		if (!isDead_) {
@@ -110,4 +110,5 @@ private: // メンバ変数
 	//ヒット確認
 	bool isHitPlayer_ = false;
 	bool preHitPlayer_ = false;
+	bool skill_ = false;
 };

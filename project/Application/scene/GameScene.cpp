@@ -91,7 +91,7 @@ void GameScene::Update() {
 
 	//敵の更新
 	if (!playerManager_->IsOver()) {
-		//enemyManager_->Update();
+		enemyManager_->Update();
 
 	}
 
@@ -130,9 +130,9 @@ void GameScene::Update() {
 
 	//各キャラの更新
 	if (!enemyManager_->IsClear()) {
-		//healerManager_->Update();
+		healerManager_->Update();
 		renjuManager_->Update();
-		//tankManager_->Update();
+		tankManager_->Update();
 	}
 
 	//魔法陣に使う座標の受け取り
@@ -199,7 +199,7 @@ void GameScene::Update() {
 	if (healerManager_->IsAttack()) {enemyManager_->OnHealerCollision();}
 	if (tankManager_->IsAttack()) {enemyManager_->OnTankCollision();}
 	if (playerManager_->IsAttack()) {enemyManager_->OnCollision();}
-	if (renjuManager_->GetRenju()->GetHitBullet()) {enemyManager_->OnRenjuCollision();}
+	if (renjuManager_->GetRenju()->GetHitBullet()) {enemyManager_->OnRenjuCollision(renjuManager_->GetRenju()->GetSkill());}
 	
 	skydome_->Update();
 	loader_->Update();

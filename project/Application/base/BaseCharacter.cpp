@@ -317,7 +317,6 @@ void BaseCharacter::AttackInitialize()
 {
 	searchTarget_ = false;
 	animationNumber_ = animeAttack;
-	animation_->SetLoop(false);
 	drawWepon_ = true;
 }
 void BaseCharacter::AttackUpdate()

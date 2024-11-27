@@ -7,10 +7,10 @@ void EnemyManager::Initialize() {
 
 	nameModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/name.png"));
 
-	damageNumModel_[playerNum].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/30.png"));
+	damageNumModel_[playerNum].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/20.png"));
 	damageNumModel_[healerNum].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/10.png"));
 	damageNumModel_[renjuNum].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/20.png"));
-	damageNumModel_[tankNum].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/20.png"));
+	damageNumModel_[tankNum].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Enemy/num/10.png"));
 	
 	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
@@ -145,7 +145,7 @@ void EnemyManager::DamageNumMath(){
 void EnemyManager::OnCollision() {
 	isHit_ = true;
 	if (isHit_ != preHit_) {
-		HpTransform_.scale.x -= 30.0f;
+		HpTransform_.scale.x -= 20.0f;
 		playerNumAlpha_ = 2.0f;
 
 		worldTransformNum_[playerNum].translate.x = enemy_->GetWorldPosition().x +  RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
@@ -180,7 +180,7 @@ void EnemyManager::OnHealerCollision() {
 void EnemyManager::OnTankCollision() {
 	isHitT_ = true;
 	if (isHitT_ != preHitT_) {
-		HpTransform_.scale.x -= 20.0f;
+		HpTransform_.scale.x -= 10.0f;
 		tankNumAlpha_ = 2.0f;
 		worldTransformNum_[tankNum].translate.x = enemy_->GetWorldPosition().x + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
 		worldTransformNum_[tankNum].translate.z = enemy_->GetWorldPosition().z + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
@@ -193,10 +193,18 @@ void EnemyManager::OnTankCollision() {
 		HpTransform_.scale.x = 0;
 	}
 };
-void EnemyManager::OnRenjuCollision() {
+void EnemyManager::OnRenjuCollision(bool skill) {
 	isHitR_ = true;
 	if (isHitR_ != preHitR_) {
-		HpTransform_.scale.x -= 20.0f;
+		if (skill) {
+			HpTransform_.scale.x -= 30.0f;
+			damageNumModel_[renjuNum]->SetTexture("Enemy/num/30.png");
+		}
+		else {
+			HpTransform_.scale.x -= 20.0f;
+			damageNumModel_[renjuNum]->SetTexture("Enemy/num/20.png");
+		}
+		
 		renjuNumAlpha_ = 2.0f;
 		worldTransformNum_[renjuNum].translate.x = enemy_->GetWorldPosition().x + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
 		worldTransformNum_[renjuNum].translate.z = enemy_->GetWorldPosition().z + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
