@@ -217,8 +217,9 @@ void BaseCharacter::MoveInitialize()
 	flameTime_ = 30.0f;
 	animationNumber_ = standby;
 }
-void BaseCharacter::MoveUpdate()
-{
+void BaseCharacter::MoveUpdate(){
+
+
 	--coolTime_;
 	// 敵の座標までの距離
 	enemylength_ = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));

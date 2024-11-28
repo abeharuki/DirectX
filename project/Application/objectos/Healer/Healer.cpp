@@ -18,13 +18,13 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	BaseCharacter::Initialize(animation, skillName);
 
 	worldTransformBase_.translate.x = 6.0f;
-	
+
 	worldTransformCane_.Initialize();
 	worldTransformCane_.translate = { -0.03f, 0.04f, 0.1f };
 	worldTransformCane_.rotate = { 1.3f, 0.f, 0.f };
 	worldTransformCane_.scale = { 1.f, 1.f, 1.f };
 
-	
+
 
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Healer/mahoujin.png"));
@@ -49,8 +49,8 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	emitter_.resize(5);
 	particle_.resize(5);
 
-	
-	for (int i = 0; i < 5;++i) {
+
+	for (int i = 0; i < 5; ++i) {
 		emitter_[i] = {
 		.translate{0,0,0},
 		.count{50},
@@ -63,9 +63,9 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 		.lifeTimeRange{.min{0.1f},.max{0.2f}},
 		.velocityRange{.min{-0.4f,0.1f,-0.4f},.max{0.4f,0.4f,0.4f}},
 		};
-		particle_[i] = ParticleManager::Create("resources/particle/circle.png", 10+(i+1));
+		particle_[i] = ParticleManager::Create("resources/particle/circle.png", 10 + (i + 1));
 	}
-	
+
 	emitter_[0] = {
 	.translate{0,0,0},
 	.count{10},
@@ -89,7 +89,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	behaviorTree_ = new BehaviorTree<Healer>(this);
 	behaviorTree_->Initialize();
 
-	
+
 };
 
 /// <summary>
@@ -114,9 +114,9 @@ void Healer::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
-	
 
-	
+
+
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i]->SetThreshold(t_[i]);
 	}
@@ -162,8 +162,8 @@ void Healer::Update() {
 	editor_.show("HealerNode");
 	editor_.save("Healer");
 #endif // DEBUG
-	
-	
+
+
 };
 
 void Healer::Draw(const ViewProjection& camera) {
@@ -171,16 +171,16 @@ void Healer::Draw(const ViewProjection& camera) {
 	for (int i = 0; i < 5; ++i) {
 		particle_[i]->Draw(camera);
 	}
-	
+
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i]->Draw(worldTransformMagicCircle_[i], camera, true);
-		
+
 	}
-	
+
 	RenderCollisionBounds(worldTransformBody_, camera);
 }
 
-void Healer::NoDepthDraw(const ViewProjection& camera){
+void Healer::NoDepthDraw(const ViewProjection& camera) {
 	for (int i = 0; i < 4; ++i) {
 		healModel_[i]->Draw(worldTransformHeal_[i], camera, false);
 	}
@@ -190,7 +190,7 @@ void Healer::NoDepthDraw(const ViewProjection& camera){
 
 
 // 移動
-void Healer::MoveInitialize() { 
+void Healer::MoveInitialize() {
 	BaseCharacter::MoveInitialize();
 	allHeal_ = false;
 	oneHeal_ = false;
@@ -198,24 +198,29 @@ void Healer::MoveInitialize() {
 };
 void Healer::MoveUpdate() {
 
-	BaseCharacter::MoveUpdate();
+	if (!barrier_) {
+		BaseCharacter::MoveUpdate();
 
-	//味方の体力全員が50以下なら全体回復
-	//味方の体力が誰か20以下なら回復
-	if ((playerHp_ <= 20 && playerHp_ > 0)|| (renjuHp_ <= 20 && renjuHp_ > 0)|| (tankHp_ <= 20 && tankHp_ > 0) || (hp_ <= 20 && hp_ > 0)) {
-		if(mp_ >= 10){
-			oneHeal_ = true;
-			state_ = NextState("Move", Output3);
-		}
-		
-	}
-	else if (playerHp_ < 50 && renjuHp_ < 50 && tankHp_ < 50 && hp_ < 50) {
-		if(mp_ >= 20){
-			allHeal_ = true;
-			state_ = NextState("Move", Output3);
-		}
-	}
+		//味方の体力全員が50以下なら全体回復
+		//味方の体力が誰か20以下なら回復
+		if ((playerHp_ <= 20 && playerHp_ > 0) || (renjuHp_ <= 20 && renjuHp_ > 0) || (tankHp_ <= 20 && tankHp_ > 0) || (hp_ <= 20 && hp_ > 0)) {
+			if (mp_ >= 10) {
+				oneHeal_ = true;
+				state_ = NextState("Move", Output3);
+			}
 
+		}
+		else if (playerHp_ < 50 && renjuHp_ < 50 && tankHp_ < 50 && hp_ < 50) {
+			if (mp_ >= 20) {
+				allHeal_ = true;
+				state_ = NextState("Move", Output3);
+			}
+		}
+	}
+	else {
+		RunAway();
+	}
+	
 };
 
 // ジャンプ
@@ -233,7 +238,7 @@ void Healer::AttackInitialize() {
 void Healer::AttackUpdate() {
 	// プレイヤーの座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-	
+
 	// 距離条件チェック
 	if (minDistance_ * 2 <= length && !followPlayer_) {
 		state_ = NextState("Attack", Output1);
@@ -264,7 +269,7 @@ void Healer::AttackUpdate() {
 	BaseCharacter::AttackUpdate();
 }
 
-void Healer::UniqueInitialize(){
+void Healer::UniqueInitialize() {
 	//40回復
 	if (oneHeal_) {
 		mp_ -= 10;
@@ -272,7 +277,7 @@ void Healer::UniqueInitialize(){
 		for (int i = 0; i < 4; ++i) {
 			healModel_[i]->SetTexture("character/H40.png");
 		}
-		
+
 	}
 	//全員20回復
 	if (allHeal_) {
@@ -287,20 +292,20 @@ void Healer::UniqueInitialize(){
 		particle_[i]->SetFrequencyTime(0.0f);
 		particle_[i]->SetEmitter(emitter_[i]);
 	}
-	
+
 
 	coolTime_ = 60;
 	for (int i = 0; i < 4; ++i) {
 		t_[i] = 0.8f;
 	}
-	
+
 	for (int i = 0; i < 4; ++i) {
 		worldTransformMagicCircle_[i].scale = { 2.f,2.f,2.f };
 		worldTransformHeal_[i].scale = { 0.f,0.f,0.f };
 	}
 
 }
-void Healer::UniqueUpdate(){
+void Healer::UniqueUpdate() {
 
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
@@ -395,10 +400,10 @@ void Healer::UniqueUpdate(){
 		worldTransformBase_.translate -= velocity_;
 		worldTransformBase_.translate.y = 0;
 	}
-	
+
 
 	//回復数値の設定
-	worldTransformHeal_[player].translate = {pos[0].x,pos[0].y + 2.0f,pos[0].z};
+	worldTransformHeal_[player].translate = { pos[0].x,pos[0].y + 2.0f,pos[0].z };
 	healNumMove_[player] = { worldTransformHeal_[player].translate.x ,worldTransformHeal_[player].translate.y + 2.0f,worldTransformHeal_[player].translate.z };
 
 	worldTransformHeal_[renju].translate = { pos[1].x,pos[1].y + 2.0f,pos[1].z };
@@ -408,7 +413,7 @@ void Healer::UniqueUpdate(){
 	healNumMove_[tank] = { worldTransformHeal_[tank].translate.x ,worldTransformHeal_[tank].translate.y + 2.0f,worldTransformHeal_[tank].translate.z };
 
 	worldTransformHeal_[healer].translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-	healNumMove_[healer] = {worldTransformHeal_[healer].translate.x ,worldTransformHeal_[healer].translate.y + 2.0f,worldTransformHeal_[healer].translate.z};
+	healNumMove_[healer] = { worldTransformHeal_[healer].translate.x ,worldTransformHeal_[healer].translate.y + 2.0f,worldTransformHeal_[healer].translate.z };
 
 
 
@@ -417,7 +422,8 @@ void Healer::UniqueUpdate(){
 		for (int i = 0; i < 4; ++i) {
 			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale - 1.0f;
 		}
-	}else if (coolTime_ < 10) {
+	}
+	else if (coolTime_ < 10) {
 		for (int i = 0; i < 4; ++i) {
 			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale + 0.5f;
 		}
@@ -450,12 +456,12 @@ void Healer::UniqueUpdate(){
 		heal_ = true;
 		state_ = NextState("Heal", Output1);
 		coolTime_ = 60;
-		
+
 		for (int i = 0; i < 4; ++i) {
 			t_[i] = 0.8f;
 			healAlph_[i] = 2.0f;
 		}
-		
+
 	}
 }
 
@@ -464,7 +470,7 @@ void Healer::DeadInitialize() {
 	revivalCount_ = 0;
 	BaseCharacter::DeadInitialize();
 }
-void Healer::DeadUpdate(){
+void Healer::DeadUpdate() {
 	if (isHitPlayer_ != preHitPlayer_) {
 		if (Input::GetInstance()->GetPadConnect()) {
 			if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)) {
@@ -508,6 +514,57 @@ void Healer::DeadUpdate(){
 
 }
 
+void Healer::RunAway()
+{
+
+
+	if (barrier_) {
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = pos[2] - GetWorldPosition();
+
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+					? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				: -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		const float kSpeed = 0.06f;
+		// 敵の位置から自分の位置への方向ベクトルを計算
+		Vector3 direction = pos[2] - enemy_->GetWorldTransform().translate;
+
+		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+		Math::Normalize(direction);   // 正規化して単位ベクトルにする
+		direction *= -1.0f; // 反転して反対方向に進む
+
+		// 速度を設定
+		velocity_ = direction * kSpeed;
+
+		if (worldTransformBase_.translate.x == pos[2].x - (velocity_.x * 8.0f)||
+			worldTransformBase_.translate.z == pos[2].z - (velocity_.z * 8.0f)) {
+			animationNumber_ = standby;
+		}
+		else {
+			animationNumber_ = run;
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, pos[2] - (velocity_ * 8.0f), 0.05f);
+			worldTransformBase_.translate.y = 0;
+		}
+
+	}
+	
+
+
+
+}
+
 // 親子関係
 void Healer::Relationship() {
 
@@ -546,14 +603,14 @@ void Healer::OnCollision(Collider* collider) {
 
 	BaseCharacter::OnCollision(collider);
 
-	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy ) {
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (!followPlayer_ && searchTarget_) {
 			if (coolTime_ <= 0) {
 				state_ = CharacterState::Attacking;
 			}
 		}
 	}
-	
+
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer ||
 		collider->GetCollisionAttribute() == kCollisionAttributeRenju ||
 		collider->GetCollisionAttribute() == kCollisionAttributeTank) {

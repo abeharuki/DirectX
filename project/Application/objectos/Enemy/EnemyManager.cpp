@@ -33,7 +33,7 @@ void EnemyManager::Initialize() {
 	}
 
 	HpTransform_.scale = { 800.0f, 40.0f, 1.0f };
-	HpTransform_.translate = { 270.0f, 20.0f, 1.0f };
+	HpTransform_.translate = { 300.0f, 20.0f, 1.0f };
 
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
 	
@@ -61,6 +61,7 @@ void EnemyManager::Update() {
 	worldTransformShadow_.translate = { enemy_->GetWorldPosition().x,0.09f,enemy_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
 
+	enemy_->SetHP(HpTransform_.scale.x);
 	enemy_->SetDead(isDead_);
 	enemy_->Update();
 
@@ -145,6 +146,7 @@ void EnemyManager::DamageNumMath(){
 void EnemyManager::OnCollision() {
 	isHit_ = true;
 	if (isHit_ != preHit_) {
+		
 		HpTransform_.scale.x -= 20.0f;
 		playerNumAlpha_ = 2.0f;
 

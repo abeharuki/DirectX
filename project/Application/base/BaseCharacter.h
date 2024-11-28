@@ -56,6 +56,7 @@ public:
     float GetMp() { return mp_; }
     bool IsDead() { return isDead_; }
     bool GetDrawWepon() { return drawWepon_; }
+    bool GetBarrier() { return barrier_; }
 
     /*----------------------セッター------------------------*/
     //仮想関数
@@ -68,12 +69,16 @@ public:
     void SetViewProjection(const ViewProjection& viewProjection) { viewProjection_ = viewProjection; }
     void SetGameStart(bool flag) { gameStart_ = flag; animationNumber_ = standby;}
     void SetBattleStart(bool flag) { battleStart_ = flag;}
+    void SetBarrier(bool barrier) { barrier_ = barrier; }
 
     // パーツ親子関係
     virtual void Relationship();
 
     //位置の初期化
     virtual void InitPos(float posX){ worldTransformBase_.translate = { posX,0.0f,-35.0f }; }
+
+    //逃げる方向
+    virtual void RunAway();
 
     // 共通の関数
     //プレイヤーに追従
@@ -84,8 +89,7 @@ public:
     void searchTarget();//敵との距離感
     //敵の視野内にいるかどうか
     void IsVisibleToEnemy();
-    //逃げる方向
-    void RunAway();
+    
     //次の状態遷移をノードから検索
     CharacterState NextState(std::string name, int outputNum);
 private:
@@ -201,5 +205,8 @@ protected:
 
     Vector4 hpColor_ = { 1.0f,1.0f,1.0f,1.0f };//hp文字の色
     Vector4 hpNumColor_;//hp数字の色
+
+    //barrier展開の確認
+    bool barrier_ = false;
 };
 

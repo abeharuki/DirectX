@@ -9,12 +9,13 @@
 #include <CollisionManager/ColliderManager.h>
 #include "Editor/editor.h"
 #include <AnimationManager.h>
+#include <ParticleSystem.h>
 
 enum AnimationNumber {
 	dashAttack,//ダッシュ攻撃
 	death,//死亡
 	groundAttack,//地面を殴る攻撃
-	nomalAttack,//通常j攻撃
+	nomalAttack,//通常攻撃
 	run,//走る
 	runUp,//ダッシュ攻撃の走り出し
 	standby,//通常状態
@@ -35,6 +36,7 @@ enum class BehaviorAttack {
 	kDash, // ダッシュ攻撃
 	kThrowing,//投擲攻撃
 	kGround,//地面を殴る攻撃
+	kSpecial,//必殺技(体力が半分以下になった時に発動)
 };
 
 class Enemy : public Collider {
@@ -107,6 +109,7 @@ public: // メンバ関数
 	}
 
 	/*-----セッター-----*/
+	void SetHP(float hp) { hp_ = hp; }
 	void SetLight(DirectionLight directionLight) { 
 		animation_->DirectionalLightDraw(directionLight);
 		impactModel_->DirectionalLightDraw(directionLight);
@@ -161,9 +164,11 @@ private:
 	void InitializeImpact();
 	void UpdataImpact();
 	//スタン中
-	void StanInitalize();
+	void StanInitialize();
 	void StanUpdata();
-
+	//必殺技
+	void SpecialInitialize();
+	void SpecialUpdata();
 
 	// パーツ親子関係
 	void Relationship();
@@ -179,6 +184,9 @@ private: // メンバ変数
 	WorldTransform worldTransformSter_[3];
 	std::unique_ptr<ColliderManager> colliderManager_[15] = {};//衝撃波用の当たり判定
 	std::unique_ptr<ColliderManager> colliderRockManager_ = {};//投擲用
+
+	//std::vector<ParticleSystem*> particle_;
+	std::vector<EmitterSphere> emitter_{};
 
 	//アニメーション
 	Animations* animation_;
@@ -203,7 +211,7 @@ private: // メンバ変数
 	bool isDeadTank_ = false;
 
 	
-
+	//攻撃フラグ
 	bool isAttack_ = false;
 	bool behaviorAttack_ = false;
 
@@ -224,6 +232,9 @@ private: // メンバ変数
 	BehaviorAttack attack_ = BehaviorAttack::kNomal;
 	// 次の振る舞いリクエスト
 	std::optional<BehaviorAttack> attackRequest_ = std::nullopt;
+
+	//体力
+	float hp_;
 
 	// 速度
 	Vector3 velocity_ = {};
@@ -254,4 +265,9 @@ private: // メンバ変数
 
 	//ゲームが始まったかどうかのフラグ
 	bool battleStart_ = false;
+
+	//必殺技フラグ
+	bool special_ = false;
+	//発作つ技を打てる回数
+	int specialCount_ = 2;
 };

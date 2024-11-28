@@ -59,11 +59,10 @@ void DebugScene::Initialize() {
 	worldTransformSter_[1].Initialize();
 	sprite_.reset(Sprite::Create("resources/DDS/cat.dds"));
 
-
+	//rockModel_.reset(Model::CreateModelFromObj("resources/Tank/b.png"));
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
-
 	model_.reset(Model::CreateFromNoDepthObj("resources/particle/scalePlane.obj", "resources/Enemy/white.png"));
-	model_->SetMaskTexture("shockwave.png");
+	//model_->SetMaskTexture("shockwave.png");
 	ster_[0].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	ster_[1].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
@@ -127,6 +126,7 @@ void DebugScene::Update() {
 	animation_->SetFlameTimer(animaflame_);*/
 	//model_->DirectionalLightDraw(directionLight_);
 	model_->SetColor({ modelColor_ });
+	rockModel_->SetColor({ modelColor_ });
 	emitter_.count = particleCount_;
 	emitter_.isScaleChanging = scaleFlag_;
 	gravityFiled_.min = emitter_.translateRange.min;
@@ -164,6 +164,7 @@ void DebugScene::Update() {
 
 	model_->SetBlendMode(blendMode_);
 	particle_->SetBlendMode(blendMode_);
+	rockModel_->SetBlendMode(blendMode_);
 	worldTransformModel_.scale = Vector3{ 6.f,6.f,6.f };
 	
 
@@ -411,6 +412,7 @@ void DebugScene::Draw() {
 	skybox_->Draw(worldTransformSkybox_, viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
+	rockModel_->Draw(worldTransformModel_, viewProjection_,false);
 	//model_->Draw(worldTransformModel_, viewProjection_, false);
 	
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);

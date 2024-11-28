@@ -15,7 +15,6 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	worldTransformShield_.translate = { 0.0f,1.f,0.45f };
 	worldTransformShield_.rotate.y = 3.1415f;
 
-
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformBody_.TransferMatrix();
@@ -110,7 +109,7 @@ void Tank::Update() {
 void Tank::Draw(const ViewProjection& camera) {
 	BaseCharacter::Draw(camera);
 	
-	if (state_ == CharacterState::Unique) {
+	if (barrier_) {
 		shield_->Draw(worldTransformShield_, camera, true);
 	}
 	particle_->Draw(camera);
@@ -126,15 +125,14 @@ void Tank::NoDepthDraw(const ViewProjection& camera){
 void Tank::MoveInitialize() { 
 	BaseCharacter::MoveInitialize();
 	stanAttack_ = false;
+	barrier_ = false;
 };
 void Tank::MoveUpdate() {
 	
 	BaseCharacter::MoveUpdate();
 
-	if (enemy_->GetBehavior() != Behavior::kStan && !operation_) {
-		if (enemy_->IsBehaberAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && mp_ >= 20) {
-			//state_ = NextState("Move", Output3);
-		}
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial && enemy_->GetBehavior() == Behavior::kAttack && mp_ >= 20) {
+		state_ = CharacterState::Unique;
 	}
 	
 
@@ -217,9 +215,9 @@ void Tank::UniqueInitialize(){
 	mp_ -= 20;
 	fireTimer_ = 40;
 	stanAttack_ = false;
+	barrier_ = false;
 }
 void Tank::UniqueUpdate(){
-	--fireTimer_;
 	particle_->Update();
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
@@ -240,28 +238,41 @@ void Tank::UniqueUpdate(){
 
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-	if (length <= 4) {
-		stanAttack_ = true;
+
+	if (length >= minDistance_ * 2.0f) {
+		barrier_ = true;
+		animation_->SetLoop(false);
+		animationNumber_ = standby;
 	}
-	if (fireTimer_ > 10) {
-		velocity_ = { 0.0f,0.0f,-0.01f };
-		const float kCharacterSpeed = 0.1f;
-		velocity_ = Math::Normalize(velocity_);
-		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
-		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
-		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
-		worldTransformBase_.translate += velocity_;
+	else {
+		barrier_ = false;
+		animationNumber_ = run;
 	}
-	else if (fireTimer_ <= 5 && fireTimer_ > 0) {
-		
-		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.2f);
+
+	if (barrier_) {
+
+		if (enemy_->GetBehavior() != Behavior::kAttack) {
+			state_ = NextState("Attack", Output1);//スキルに変えておく
+		}
 	}
-	else if (fireTimer_ <= 0) {
-		fireTimer_ = 40;
-		coolTime_ = 60;
-		stanAttack_ = false;
-		//state_ = CharacterState::Moveing;
+	else {
+
+		const float kSpeed = 0.06f;
+		// 敵の位置から自分の位置への方向ベクトルを計算
+		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
+
+		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+		Math::Normalize(direction);   // 正規化して単位ベクトルにする
+		direction *= -1.0f; // 反転して反対方向に進む
+
+		// 速度を設定
+		velocity_ = direction * kSpeed;
+		worldTransformBase_.translate -= velocity_;
+		worldTransformBase_.translate.y = 0;
+
+
 	}
+
 
 }
 

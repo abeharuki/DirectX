@@ -45,6 +45,9 @@ public: // メンバ関数
 	void DeadInitialize() override;
 	void DeadUpdate() override;
 
+	//敵の大技をよける
+	void RunAway() override;
+
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
 
@@ -152,4 +155,5 @@ private: // メンバ変数
 	float renjuHp_;
 	float tankHp_;
 
+	
 };

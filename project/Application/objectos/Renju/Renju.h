@@ -46,6 +46,9 @@ public: // メンバ関数
 	void DeadInitialize() override;
 	void DeadUpdate() override;
 
+	//敵の大技をよける
+	void RunAway() override;
+
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
 
@@ -56,6 +59,7 @@ public: // メンバ関数
 	bool GetHitBullet() { return hitBullet_; }
 	bool GetSkill() { return skill_; }
 	/*-----セッター-----*/
+	void SetTankPos(Vector3 pos) { tankPos_ = pos; }
 	void SetHeal(float heal) {
 		if (!isDead_) {
 			hp_ += heal;
@@ -97,6 +101,9 @@ private: // メンバ変数
 
 	//攻撃フラグ
 	bool hitBullet_ = false;
+
+	//タンクのpos;
+	Vector3 tankPos_;
 
 	//弾
 	std::list<RenjuBullet*> bullets_;

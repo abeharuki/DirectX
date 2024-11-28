@@ -227,24 +227,30 @@ void Renju::MoveInitialize() {
 	BaseCharacter::MoveInitialize();
 };
 void Renju::MoveUpdate() {
-	BaseCharacter::MoveUpdate();
+	if (!barrier_) {
+		BaseCharacter::MoveUpdate();
 
-	//スキル
-	if (mp_ >= 20 && enemy_->IsBehaviorRequest()) {
-		if (enemy_->GetBehavior() != enemy_->GetBehaviorRequest()) {
-			// 敵の座標までの距離
-			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-			if (length >= minDistance_ * 1.5f) {
-				state_ = CharacterState::Unique;
+		//スキル
+		if (mp_ >= 20 && enemy_->IsBehaviorRequest()) {
+			if (enemy_->GetBehavior() != enemy_->GetBehaviorRequest() && enemy_->GetBehaviorRequest() != Behavior::kAttack) {
+				// 敵の座標までの距離
+				float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+				if (length >= minDistance_ * 1.5f) {
+					state_ = CharacterState::Unique;
+				}
 			}
+
 		}
 
+		if (Input::PushKey(DIK_U)) {
+			state_ = CharacterState::Unique;
+		}
 	}
-
-	if (Input::PushKey(DIK_U)) {
-		state_ = CharacterState::Unique;
+	else {
+		RunAway();
 	}
 	
+
 };
 
 // ジャンプ
@@ -471,6 +477,51 @@ void Renju::DeadUpdate() {
 	ImGui::Text("%d", isHitPlayer_);
 	ImGui::Text("%d", preHitPlayer_);
 	ImGui::End();
+}
+
+void Renju::RunAway()
+{
+	if (barrier_) {
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = tankPos_ - GetWorldPosition();
+
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+					? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				: -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		const float kSpeed = 0.06f;
+		// 敵の位置から自分の位置への方向ベクトルを計算
+		Vector3 direction = tankPos_ - enemy_->GetWorldTransform().translate;
+
+		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+		Math::Normalize(direction);   // 正規化して単位ベクトルにする
+		direction *= -1.0f; // 反転して反対方向に進む
+
+		// 速度を設定
+		velocity_ = direction * kSpeed;
+
+		if (worldTransformBase_.translate.x == tankPos_.x - (velocity_.x * 8.0f) ||
+			worldTransformBase_.translate.z == tankPos_.z - (velocity_.z * 8.0f)) {
+			animationNumber_ = standby;
+		}
+		else {
+			animationNumber_ = run;
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_ - (velocity_ * 8.0f), 0.05f);
+			worldTransformBase_.translate.y = 0;
+		}
+
+	}
 }
 
 void Renju::Relationship() {

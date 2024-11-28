@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
+#include <ParticleManager.h>
 
 
 void Enemy::Initialize() {
@@ -69,6 +70,25 @@ void Enemy::Initialize() {
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
 	}
 
+
+	emitter_.resize(5);
+	//particle_.resize(5);
+	for (int i = 0; i < 5; ++i) {
+		emitter_[i] = {
+		.translate{0,0,0},
+		.count{50},
+		.frequency{1.0f},
+		.frequencyTime{0.0f},
+		.scaleRange{.min{0.2f,0.2f,0.0f},.max{0.2f,0.2f,0.0f}},
+		.translateRange{.min{-0.1f,-0.1f,0.f},.max{0.1f,0.1f,0.f}},
+		.colorRange{.min{0.5f,1,1.0f},.max{0.5f,1,1.0f}},
+		.alphaRange{.min{1.0f},.max{1.0f}},
+		.lifeTimeRange{.min{0.1f},.max{0.2f}},
+		.velocityRange{.min{-0.4f,0.1f,-0.4f},.max{0.4f,0.1f,0.4f}},
+		};
+		//particle_[i] = ParticleManager::Create("resources/particle/circle.png", 15 + (i + 1));
+	}
+
 	AABB aabbSize{ .min{-3.0f,-2.0f,-2.0f},.max{3.0f,8.0f,2.0f} };
 	OBB obb = Math::ConvertAABBToOBB(aabbSize);
 	obb.center = { 0.0f,4.0f,0.0f };
@@ -97,7 +117,7 @@ void Enemy::Update() {
 			AttackInitialize();
 			break;
 		case Behavior::kStan:
-			StanInitalize();
+			StanInitialize();
 			break;
 		case Behavior::kDead:
 			DeadInitilize();
@@ -150,7 +170,7 @@ void Enemy::Update() {
 	}
 
 	if (Input::PressKey(DIK_4)) {
-		behaviorRequest_ = Behavior::kStan;
+		attackRequest_ = BehaviorAttack::kSpecial;
 	}
 
 	ImGui::Begin("EnemyRock");
@@ -199,7 +219,7 @@ void Enemy::Draw(const ViewProjection& camera) {
 
 //移動
 void Enemy::MoveInitialize() {
-	time_ = 60 * 2;
+	time_ = 60;
 	isAttack_ = false;
 	aimPlayer_ = false;
 	aimHealer_ = false;
@@ -316,8 +336,13 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 	//1,4
-	
-	int num = RandomGenerator::GetRandomInt(1, 4);
+	int num = RandomGenerator::GetRandomInt(1, 6);
+	if (hp_ <= 400 && specialCount_ == 2 && !special_) {
+		num = 7;
+	}
+	else if(hp_ <= 200 && specialCount_ == 1 && !special_){
+		num = 7;
+	}
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -327,9 +352,15 @@ void Enemy::AttackInitialize() {
 	else if (num == 3) {
 		attackRequest_ = BehaviorAttack::kThrowing;
 	}
-	else if (num == 4) {
+	else if (num >= 4 && num <= 6) {
 		attackRequest_ = BehaviorAttack::kGround;
 	}
+	else if (num == 7) {
+		attackRequest_ = BehaviorAttack::kSpecial;
+	}
+	
+	
+
 	behaviorAttack_ = true;
 }
 void Enemy::AttackUpdata() {
@@ -350,6 +381,9 @@ void Enemy::AttackUpdata() {
 			break;
 		case BehaviorAttack::kGround:
 			GroundAttackInitialize();
+			break; 
+		case BehaviorAttack::kSpecial:
+			SpecialInitialize();
 			break;
 		}
 
@@ -369,6 +403,9 @@ void Enemy::AttackUpdata() {
 		break;
 	case BehaviorAttack::kGround:
 		GroundAttackUpdata();
+		break;
+	case BehaviorAttack::kSpecial:
+		SpecialUpdata();
 		break;
 	}
 }
@@ -802,28 +839,6 @@ void Enemy::UpdataImpact() {
 
 }
 
-//スタン
-void Enemy::StanInitalize(){
-	sterAngle_[0] = 0.0f;
-	sterAngle_[1] = 2.0f;
-	sterAngle_[2] = 4.0f;
-	animationNumber_ = standby;
-
-	time_ = 60 * 3;
-}
-void Enemy::StanUpdata(){
-	--time_;
-	for (int i = 0; i < 3; ++i) {
-		Math::UpdateCircularMotion3D(worldTransformSter_[i].translate.x, worldTransformSter_[i].translate.z, worldTransformBase_.translate.x, worldTransformBase_.translate.z-2, 2.0f, sterAngle_[i], 0.1f);
-	}
-
-
-	if (time_ <= 0) {
-		behaviorRequest_ = Behavior::kRoot;
-	}
-}
-void Enemy::StanBehavior(){ behaviorRequest_ = Behavior::kStan; };
-
 //地面を殴る攻撃
 void Enemy::GroundAttackInitialize() {
 	worldTransformImpact_.translate = worldTransformBase_.translate;
@@ -848,6 +863,73 @@ void Enemy::GroundAttackUpdata() {
 
 }
 
+//必殺技
+void Enemy::SpecialInitialize() {
+	--specialCount_;
+	worldTransformImpact_.translate = worldTransformBase_.translate;
+	animationNumber_ = groundAttack;
+	animation_->SetLoop(false);
+	animation_->SetpreAnimationTimer(0.0f);
+	moveTime_ = 60;
+	InitializeImpact();
+}
+void Enemy::SpecialUpdata() {
+	if (animation_->GetAnimationTimer() >= 1.6f) {
+		isAttack_ = true;
+		worldTransformImpact_.scale += Vector3(4.0f, 0.0f, 2.0f);
+		UpdataImpact();
+		if (worldTransformImpact_.scale.x > 100) {
+			worldTransformImpact_.scale = { 1.0f,1.0f,1.0f };
+			InitializeImpact();
+			isAttack_ = false;
+			behaviorRequest_ = Behavior::kRoot;
+
+		}
+		
+	}
+}
+
+
+//スタン
+void Enemy::StanInitialize() {
+	sterAngle_[0] = 0.0f;
+	sterAngle_[1] = 2.0f;
+	sterAngle_[2] = 4.0f;
+	animationNumber_ = standby;
+
+	time_ = 60 * 3;
+}
+void Enemy::StanUpdata() {
+	--time_;
+	for (int i = 0; i < 3; ++i) {
+		Math::UpdateCircularMotion3D(worldTransformSter_[i].translate.x, worldTransformSter_[i].translate.z, worldTransformBase_.translate.x, worldTransformBase_.translate.z - 2, 2.0f, sterAngle_[i], 0.1f);
+	}
+
+
+	if (time_ <= 0) {
+		behaviorRequest_ = Behavior::kRoot;
+	}
+}
+
+
+void Enemy::DeadInitilize() {
+	animationNumber_ = death;
+	animation_->SetLoop(false);
+}
+void Enemy::DeadUpdata() {
+	
+
+	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
+	threshold_ += 0.001f;
+	animation_->SetThreshold(threshold_);
+	if (animation_->GetAnimationTimer() >= 5.0f) {
+		clear_ = true;
+	}
+
+
+
+};
+
 void Enemy::OnCollision(Collider* collider) {
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
@@ -868,24 +950,6 @@ void Enemy::OnCollision(Collider* collider) {
 
 }
 
-void Enemy::DeadInitilize() {
-	animationNumber_ = death;
-	animation_->SetLoop(false);
-}
-void Enemy::DeadUpdata() {
-	
-
-	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-	threshold_ += 0.001f;
-	animation_->SetThreshold(threshold_);
-	if (animation_->GetAnimationTimer() >= 5.0f) {
-		clear_ = true;
-	}
-
-
-
-};
-
 void Enemy::Relationship() {
 	worldTransformBody_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(
@@ -893,7 +957,6 @@ void Enemy::Relationship() {
 		worldTransformBase_.matWorld_);
 
 }
-
 
 const Vector3 Enemy::GetWorldPosition() const {
 	// ワールド座標を入れる関数
@@ -904,6 +967,6 @@ const Vector3 Enemy::GetWorldPosition() const {
 	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
 	return worldPos;
 }
-
+void Enemy::StanBehavior() { behaviorRequest_ = Behavior::kStan; };
 Enemy::~Enemy() {}
 

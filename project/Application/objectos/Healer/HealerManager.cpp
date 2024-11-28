@@ -5,7 +5,6 @@ void HealerManager::Initialize() {
 	animation_.reset(Animations::Create("./resources/Healer", "Atlas.png", "healer.gltf"));*/
 
 
-
 	StaffModel_.reset(Model::CreateModelFromObj("resources/Healer/weapon.obj", "resources/Healer/staff.png"));
 
 	

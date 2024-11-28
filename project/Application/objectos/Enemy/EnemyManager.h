@@ -48,8 +48,6 @@ public:
 	
 	}
 
-	
-	
 
 private:
 	WorldTransform worldTransformName_;

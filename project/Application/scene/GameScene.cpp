@@ -95,6 +95,9 @@ void GameScene::Update() {
 
 	}
 
+	healerManager_->GetHealer()->SetBarrier(tankManager_->GetTank()->GetBarrier());
+	renjuManager_->GetRenju()->SetBarrier(tankManager_->GetTank()->GetBarrier());
+
 	//敵の情報取得
 	playerManager_->GetPlayer()->SetEnemy(enemyManager_->GetEnemy());
 	
@@ -133,6 +136,7 @@ void GameScene::Update() {
 		healerManager_->Update();
 		renjuManager_->Update();
 		tankManager_->Update();
+		renjuManager_->GetRenju()->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
 	}
 
 	//魔法陣に使う座標の受け取り
