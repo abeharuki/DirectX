@@ -11,7 +11,7 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	BaseCharacter::Initialize(animation, skillName);
 	barrierModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj", "resources/Tank/b.png"));
 	barrierModel_->SetBlendMode(BlendMode::kNormal);
-	barrierModel_->SetColor({ 0.0f,1.0f,1.0f,0.3f });
+	barrierModel_->SetColor({ 0.f,1.0f,1.0f,0.4f });
 	worldTransformBarrier_.Initialize();
 	worldTransformBarrier_.scale = { 7.f,7.f,7.f };
 

@@ -72,6 +72,7 @@ public: // メンバ関数
 	}
 
 	/*--------このクラス特有の関数-------*/
+	void SetBarrierThreshold(float threshold) { barrierThreshold_ = threshold; }
 	//座標の受け取り
 	void SetPos(Vector3 renjuPos, Vector3 tankPos) {
 		pos[0] = playerPos_;
@@ -155,5 +156,6 @@ private: // メンバ変数
 	float renjuHp_;
 	float tankHp_;
 
-	
+	//
+	float barrierThreshold_;
 };

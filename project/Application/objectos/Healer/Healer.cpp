@@ -517,8 +517,7 @@ void Healer::DeadUpdate() {
 void Healer::TankRunAway()
 {
 
-
-	if (barrier_) {
+	if (barrier_ && barrierThreshold_ <= 0.5f) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = pos[2] - GetWorldPosition();
 

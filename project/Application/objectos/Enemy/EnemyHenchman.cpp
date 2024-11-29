@@ -72,7 +72,6 @@ void EnemyHenchman::followRenju(){
 	}
 }
 
-
 const Vector3 EnemyHenchman::GetWorldPosition() const{
 	// ワールド座標を入れる関数
 	Vector3 worldPos;

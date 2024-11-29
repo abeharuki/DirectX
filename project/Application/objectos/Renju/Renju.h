@@ -59,6 +59,7 @@ public: // メンバ関数
 	bool GetHitBullet() { return hitBullet_; }
 	bool GetSkill() { return skill_; }
 	/*-----セッター-----*/
+	void SetBarrierThreshold(float threshold) { barrierThreshold_ = threshold; }
 	void SetTankPos(Vector3 pos) { tankPos_ = pos; }
 	void SetHeal(float heal) {
 		if (!isDead_) {
@@ -118,4 +119,6 @@ private: // メンバ変数
 	bool isHitPlayer_ = false;
 	bool preHitPlayer_ = false;
 	bool skill_ = false;
+
+	float barrierThreshold_;
 };

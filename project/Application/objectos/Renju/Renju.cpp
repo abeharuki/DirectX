@@ -109,7 +109,7 @@ void Renju::Update() {
 		if (!bullet->IsDraw()) {
 			hitBullet_ = true;
 			drawWepon_ = false;
-			particle_->StopParticle();
+			/*particle_->StopParticle();*/
 		}
 		else {
 			emitter_.translate = bullet->GetWorldPosition();
@@ -119,11 +119,11 @@ void Renju::Update() {
 
 			particle_->SetEmitter(emitter_);
 			particle_->SetGravityFiled(filed_);
-			
+			particle_->Update();
 		}
 	}
 
-	particle_->Update();
+	
 
 	// デスフラグが立った弾を削除
 	bullets_.remove_if([](RenjuBullet* bullet) {
@@ -501,7 +501,7 @@ void Renju::DeadUpdate() {
 
 void Renju::TankRunAway()
 {
-	if (barrier_) {
+	if (barrier_ && barrierThreshold_ <= 0.5f) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = tankPos_ - GetWorldPosition();
 

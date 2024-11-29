@@ -255,17 +255,17 @@ void GameScene::Draw() {
 	//地面
 	loader_->Draw(viewProjection_, true);
 	
+	//敵
+	enemyManager_->Draw(viewProjection_);
+	// タンク
+	tankManager_->Draw(viewProjection_);
+	// ヒーラー
+	healerManager_->Draw(viewProjection_);
+	// レンジャー
+	renjuManager_->Draw(viewProjection_);
 	
-	
-	if (playerManager_->GetPlayer()->IsDash() || (playerManager_->GetPlayer()->GameStart() && !cameraDirection_) || (tankManager_->GetTank()->GetBarrier() || tankManager_->GetTank()->GetBarrierThreshold() < 1)) {
-		//敵
-		enemyManager_->Draw(viewProjection_);
-		// タンク
-		tankManager_->Draw(viewProjection_);
-		// ヒーラー
-		healerManager_->Draw(viewProjection_);
-		// レンジャー
-		renjuManager_->Draw(viewProjection_);
+	//ポストエフェクトをかける
+	if (!playerManager_->GetPlayer()->IsDash()/*|| (playerManager_->GetPlayer()->GameStart() && !cameraDirection_) || (tankManager_->GetTank()->GetBarrier() || tankManager_->GetTank()->GetBarrierThreshold() < 0.5f)*/ ) {
 		//プレイヤー
 		playerManager_->Draw(viewProjection_);
 	}
@@ -306,19 +306,24 @@ void GameScene::Draw() {
 
 void GameScene::RenderDirect() {
 	
-	if (!playerManager_->GetPlayer()->IsDash() && (!playerManager_->GetPlayer()->GameStart() || cameraDirection_)) {
-		if (!tankManager_->GetTank()->GetBarrier()) {
-			//敵
-			enemyManager_->Draw(viewProjection_);
-			// タンク
-			tankManager_->Draw(viewProjection_);
-			// ヒーラー
-			healerManager_->Draw(viewProjection_);
-			// レンジャー
-			renjuManager_->Draw(viewProjection_);
-			//プレイヤー
-			playerManager_->Draw(viewProjection_);
-		}
+	//ダッシュ中はポストエフェクトをかけない
+	if (playerManager_->GetPlayer()->IsDash()) {
+		playerManager_->Draw(viewProjection_);
+	}
+
+	if (!playerManager_->GetPlayer()->IsDash() && (playerManager_->GetPlayer()->GameStart() && cameraDirection_)) {
+		//if (!tankManager_->GetTank()->GetBarrier()) {
+		//	//敵
+		//	enemyManager_->Draw(viewProjection_);
+		//	// タンク
+		//	tankManager_->Draw(viewProjection_);
+		//	// ヒーラー
+		//	healerManager_->Draw(viewProjection_);
+		//	// レンジャー
+		//	renjuManager_->Draw(viewProjection_);
+		//	//プレイヤー
+		//	playerManager_->Draw(viewProjection_);
+		//}
 		
 		enemyManager_->DrawUI();
 		playerManager_->DrawUI();

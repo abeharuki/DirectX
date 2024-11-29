@@ -122,8 +122,6 @@ void Player::Update() {
 
 		break;
 	}
-	
-	
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimPlayer()) {
 		if (enemy_->isAttack()) {

@@ -70,6 +70,9 @@ public: // メンバ関数
 	//強制的にスタン状態にする
 	void StanBehavior();
 
+	//必殺技を打てる回数を増やす
+	void AddSpecialCount();
+
 	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
@@ -284,5 +287,5 @@ private: // メンバ変数
 	//必殺技フラグ
 	bool special_ = false;
 	//発作つ技を打てる回数
-	int specialCount_ = 2;
+	int specialCount_ = 1;
 };

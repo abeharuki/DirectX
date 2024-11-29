@@ -177,7 +177,9 @@ void Enemy::Update() {
 		//particle_[i]->Update();
 	}
 
-
+	//必殺技を打てる回数を増やす
+	AddSpecialCount();
+	
 	//アニメーションの更新
 	animation_->Update(animationNumber_);
 	//親子関係
@@ -377,12 +379,10 @@ void Enemy::MoveUpdata() {
 void Enemy::AttackInitialize() {
 	//1,4
 	int num = RandomGenerator::GetRandomInt(1, 5);
-	if (hp_ <= 400 && specialCount_ == 2 && !special_) {
+	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kSpecial && GetBehaviorAttack() != BehaviorAttack::kSpecial2) {
 		num = 7;
 	}
-	else if(hp_ <= 200 && specialCount_ == 1 && !special_){
-		num = 7;
-	}
+	
 	if (num == 1) {
 		attackRequest_ = BehaviorAttack::kNomal;
 	}
@@ -919,7 +919,7 @@ void Enemy::SpecialInitialize() {
 	animationNumber_ = groundAttack;
 	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
-	moveTime_ = 60 * 10;
+	moveTime_ = 60 * 7;
 
 	InitializeImpact();
 }
@@ -948,7 +948,7 @@ void Enemy::SpecialUpdata() {
 		}
 	}
 
-	if (moveTime_ <= 400) {
+	if (moveTime_ <= 320) {
 		isAttack_ = true;
 	}
 
@@ -1063,6 +1063,23 @@ const Vector3 Enemy::GetWorldPosition() const {
 	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
 	return worldPos;
 }
-void Enemy::StanBehavior() { behaviorRequest_ = Behavior::kStan; };
+void Enemy::StanBehavior() { behaviorRequest_ = Behavior::kStan; }
+void Enemy::AddSpecialCount()
+{
+	
+	if (Math::isWithinRange(hp_, 600, 25) && specialCount_ == 0) {
+		++specialCount_;
+	}
+	if (Math::isWithinRange(hp_, 400, 25) && specialCount_ == 0) {
+		++specialCount_;
+	}
+	if (Math::isWithinRange(hp_, 200, 25) && specialCount_ == 0) {
+		++specialCount_;
+	}
+	if (Math::isWithinRange(hp_, 100, 25) && specialCount_ == 0) {
+		++specialCount_;
+	}
+
+};
 Enemy::~Enemy() {}
 
