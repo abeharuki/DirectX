@@ -174,10 +174,10 @@ private:
 	void StanInitialize();
 	void StanUpdata();
 	//必殺技1
-	void SpecialInitialize();
-	void SpecialUpdata();
+	void SpecialBreathInit();
+	void SpecialBreathUpdata();
 	//必殺技2
-	void Special2Initialize();
+	void Special2Init();
 	void Special2Updata();
 
 	// パーツ親子関係

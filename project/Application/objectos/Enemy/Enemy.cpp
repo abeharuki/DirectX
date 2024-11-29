@@ -426,10 +426,10 @@ void Enemy::AttackUpdata() {
 			GroundAttackInitialize();
 			break; 
 		case BehaviorAttack::kSpecial:
-			SpecialInitialize();
+			SpecialBreathInit();
 			break;
 		case BehaviorAttack::kSpecial2:
-			Special2Initialize();
+			Special2Init();
 			break;
 		}
 
@@ -451,7 +451,7 @@ void Enemy::AttackUpdata() {
 		GroundAttackUpdata();
 		break;
 	case BehaviorAttack::kSpecial:
-		SpecialUpdata();
+		SpecialBreathUpdata();
 		break; 
 	case BehaviorAttack::kSpecial2:
 		Special2Updata();
@@ -913,7 +913,7 @@ void Enemy::GroundAttackUpdata() {
 }
 
 //必殺技
-void Enemy::SpecialInitialize() {
+void Enemy::SpecialBreathInit() {
 	--specialCount_;
 	worldTransformImpact_.translate = worldTransformBase_.translate;
 	animationNumber_ = threat;
@@ -923,7 +923,7 @@ void Enemy::SpecialInitialize() {
 	animation_->SetFlameTimer(100.0f);
 	InitializeImpact();
 }
-void Enemy::SpecialUpdata() {
+void Enemy::SpecialBreathUpdata() {
 	--moveTime_;
 	//max5
 	for (int i = 0; i < 5; ++i) {
@@ -961,7 +961,7 @@ void Enemy::SpecialUpdata() {
 	}
 }
 
-void Enemy::Special2Initialize()
+void Enemy::Special2Init()
 {
 	--specialCount_;
 	animationNumber_ = threat;
