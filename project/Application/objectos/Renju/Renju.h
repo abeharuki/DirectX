@@ -47,7 +47,7 @@ public: // メンバ関数
 	void DeadUpdate() override;
 
 	//敵の大技をよける
-	void RunAway() override;
+	void TankRunAway();
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;

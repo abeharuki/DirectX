@@ -81,6 +81,7 @@ public: // メンバ関数
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
+	void BarrierRange();
 
 	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
@@ -133,6 +134,7 @@ public: // メンバ関数
 	}
 
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
+	void SetBarrierPos(Vector3 pos) { barrierPos_ = pos; }
 
 	//死亡フラグ
 	void SetTankDead(bool dead) { tankDead_ = dead; }
@@ -260,6 +262,9 @@ private: // メンバ変数
 	bool healerDead_;
 	bool renjuDead_;
 	int revivalCount_;
+
+	//barrierのポジション
+	Vector3 barrierPos_;
 
 	//コマンドこうげきを受け取るよう
 	//攻撃フラグ

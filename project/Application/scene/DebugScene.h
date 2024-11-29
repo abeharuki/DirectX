@@ -71,6 +71,7 @@ private:
 	ParticleSystem* particle_;
 	EmitterSphere emitter_;
 	AccelerationField accelerationFiled_;
+
 	GravityField gravityFiled_;
 	int particleCount_;
 	bool particleFlag_;

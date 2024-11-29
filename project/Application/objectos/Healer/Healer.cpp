@@ -218,7 +218,7 @@ void Healer::MoveUpdate() {
 		}
 	}
 	else {
-		RunAway();
+		TankRunAway();
 	}
 	
 };
@@ -514,7 +514,7 @@ void Healer::DeadUpdate() {
 
 }
 
-void Healer::RunAway()
+void Healer::TankRunAway()
 {
 
 
@@ -548,13 +548,13 @@ void Healer::RunAway()
 		// 速度を設定
 		velocity_ = direction * kSpeed;
 
-		if (worldTransformBase_.translate.x == pos[2].x - (velocity_.x * 8.0f)||
-			worldTransformBase_.translate.z == pos[2].z - (velocity_.z * 8.0f)) {
+		if (Math::isWithinRange(worldTransformBase_.translate.x, (pos[2].x - (velocity_.x * 5.0f)), 2.0f) &&
+			Math::isWithinRange(worldTransformBase_.translate.z,(pos[2].z - (velocity_.z * 5.0f)),2.0f)) {
 			animationNumber_ = standby;
 		}
 		else {
 			animationNumber_ = run;
-			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, pos[2] - (velocity_ * 8.0f), 0.05f);
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, pos[2] - (velocity_ * 5.0f), 0.05f);
 			worldTransformBase_.translate.y = 0;
 		}
 

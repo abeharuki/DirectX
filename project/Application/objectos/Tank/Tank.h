@@ -24,6 +24,7 @@ public: // メンバ関数
 
 	void Draw(const ViewProjection& camera) override;
 	void NoDepthDraw(const ViewProjection& camera) override;
+	void BarrierDraw(const  ViewProjection& camera);
 
 	// 移動
 	void MoveInitialize() override;
@@ -49,19 +50,20 @@ public: // メンバ関数
 	void OnCollision(Collider* collider) override;
 
 	/*-----ゲッター-----*/
-	void SetHeal(float heal) { 
+	Vector3 GetBarrierWorldPos();
+	bool GetStanAttack() { return stanAttack_; }
+	float GetBarrierThreshold() { return barrierThreshold_; }
+	
+
+	/*-----セッター-----*/
+	void SetHeal(float heal) {
 		if (!isDead_) {
 			hp_ += heal;
 		}
 	}
-	bool GetStanAttack() { return stanAttack_; }
-
-	
-
-	/*-----セッター-----*/
 	void SetLight(DirectionLight directionLight) override{
 		BaseCharacter::SetLight(directionLight);
-		shield_->DirectionalLightDraw(directionLight);
+		//shield_->DirectionalLightDraw(directionLight);
 	}
 
 	
@@ -71,11 +73,12 @@ private:
 	void Relationship() override;
 
 private: // メンバ変数
-	WorldTransform worldTransformShield_;
+	WorldTransform worldTransformBarrier_;
 	
 	//ビヘイビアツリー
 	BehaviorTree<Tank>* behaviorTree_;
-	std::unique_ptr<Model>shield_;
+	std::unique_ptr<Model>barrierModel_;
+	float barrierThreshold_ = 1.0f;
 
 	ParticleSystem* particle_;
 	EmitterSphere emitter_{};

@@ -123,6 +123,7 @@ void Player::Update() {
 		break;
 	}
 	
+	
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimPlayer()) {
 		if (enemy_->isAttack()) {
@@ -145,12 +146,16 @@ void Player::Update() {
 		behaviorRequest_ = Behavior::kDead;
 	}
 
+	//ダメージの色
 	damageModel_->SetColor({ 1.f,1.f,1.f,alpha_ });
-
+	//αの変更
 	if (alpha_ > 0.0f) {
 		alpha_ -= 0.08f;
 		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
 	}
+
+	//barrierの中にいるか
+	BarrierRange();
 
 	// 回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -581,7 +586,6 @@ void Player::DeadUpdata() {
 	}
 };
 
-
 // 親子関係
 void Player::Relationship() {
 	worldTransformHead_.matWorld_ = Math::Multiply(
@@ -733,6 +737,33 @@ void Player::OnCollision(Collider* collider) {
 		}
 	}
 
+	
+}
+
+void Player::BarrierRange(){
+	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial) {
+		//プレイヤーの円
+		Circle p;
+		p.center = Vector2{ worldTransformBase_.translate.x,worldTransformBase_.translate.z };
+		p.radius = 1.0f;
+
+		//barrierの円
+		Circle b;
+		b.center = Vector2{ barrierPos_.x, barrierPos_.z };
+		b.radius = 7.0f;
+
+		if (!Math::CircleColiision(p, b) && alpha_ <= 0.0f) {
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				hp_ -= 20;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/20.png");
+			}
+		}
+	}
 
 }
 

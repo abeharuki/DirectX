@@ -32,11 +32,11 @@ void LoadScene::Update() {
 }
 
 void LoadScene::RenderDirect() {
-
-}
-
-void LoadScene::Draw() {
 	backSprite_->Draw(uv);
 	nowLoadingSprite_->Draw(uv);
 	loadSprite_->Draw(uv);
+}
+
+void LoadScene::Draw() {
+	
 }

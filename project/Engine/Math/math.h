@@ -112,6 +112,11 @@ struct sphere {
 	float radius;   // 半径
 };
 
+struct Circle {
+	Vector2 center;
+	float radius;
+};
+
 struct Color {
 	Vector3 rgb;
 	float a;
@@ -301,6 +306,21 @@ public:
 	static float Dot(const Vector3& v1, const Vector3& v2);
 
 	static void UpdateCircularMotion3D(float& posX, float& posZ, float centerX, float centerZ, float radius, float& angle, float speed);
+
+	static bool CircleColiision(Circle circleA, Circle circleB) {
+		double a;
+		double b;
+		double c;
+
+		a = double(circleB.center.x - circleA.center.x);
+		b = double(circleB.center.y - circleA.center.y);
+		c = sqrt(a * a + b * b);
+		if (c <= circleA.radius + circleB.radius) {
+			return true;
+		}
+
+		return false;
+	}
 
 	// 正規化
 	static Vector3 Normalize(const Vector3& v);

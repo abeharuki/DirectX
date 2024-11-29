@@ -239,7 +239,27 @@ void Renju::MoveUpdate() {
 					state_ = CharacterState::Unique;
 				}
 			}
+		}
 
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2 && enemy_->GetBehavior() == Behavior::kAttack) {
+			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+			if (length >= minDistance_ * 3.f) {
+				state_ = CharacterState::Unique;
+			}
+			else {
+				const float kSpeed = 0.06f;
+				// 敵の位置から自分の位置への方向ベクトルを計算
+				Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
+
+				// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+				Math::Normalize(direction);   // 正規化して単位ベクトルにする
+				direction *= -1.0f; // 反転して反対方向に進む
+
+				// 速度を設定
+				velocity_ = direction * kSpeed;
+				worldTransformBase_.translate -= velocity_;
+				worldTransformBase_.translate.y = 0;
+			}
 		}
 
 		if (Input::PushKey(DIK_U)) {
@@ -247,7 +267,7 @@ void Renju::MoveUpdate() {
 		}
 	}
 	else {
-		RunAway();
+		TankRunAway();
 	}
 	
 
@@ -479,7 +499,7 @@ void Renju::DeadUpdate() {
 	ImGui::End();
 }
 
-void Renju::RunAway()
+void Renju::TankRunAway()
 {
 	if (barrier_) {
 		// 追従対象からロックオン対象へのベクトル
@@ -511,13 +531,13 @@ void Renju::RunAway()
 		// 速度を設定
 		velocity_ = direction * kSpeed;
 
-		if (worldTransformBase_.translate.x == tankPos_.x - (velocity_.x * 8.0f) ||
-			worldTransformBase_.translate.z == tankPos_.z - (velocity_.z * 8.0f)) {
+		if (Math::isWithinRange(worldTransformBase_.translate.x,(tankPos_.x - (velocity_.x * 5.0f)),2.0f) &&
+			Math::isWithinRange(worldTransformBase_.translate.z,(tankPos_.z - (velocity_.z * 5.0f)),2.0f)) {
 			animationNumber_ = standby;
 		}
 		else {
 			animationNumber_ = run;
-			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_ - (velocity_ * 8.0f), 0.05f);
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_ - (velocity_ * 5.0f), 0.05f);
 			worldTransformBase_.translate.y = 0;
 		}
 

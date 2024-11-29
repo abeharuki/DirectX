@@ -10,6 +10,7 @@
 #include "Editor/editor.h"
 #include <AnimationManager.h>
 #include <ParticleSystem.h>
+#include "EnemyHenchman.h"
 
 enum AnimationNumber {
 	dashAttack,//ダッシュ攻撃
@@ -37,6 +38,7 @@ enum class BehaviorAttack {
 	kThrowing,//投擲攻撃
 	kGround,//地面を殴る攻撃
 	kSpecial,//必殺技(体力が半分以下になった時に発動)
+	kSpecial2,//必殺技(体力が半分以下になった時に発動)
 };
 
 class Enemy : public Collider {
@@ -88,6 +90,8 @@ public: // メンバ関数
 	}
 	Collider* GetCollider(int i) { return colliderManager_[i].get(); }
 	Collider* GetRockCollider() { return colliderRockManager_.get(); }
+	// 敵リストの取得
+	const std::list<EnemyHenchman*>& GetEnemys() const { return henchmans_; }
 	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }
 	WorldTransform& GetWorldTransformRock() { return worldTransformRock_; }
 	WorldTransform& GetWorldTransformArea() { return worldTransformArea_; }
@@ -103,10 +107,7 @@ public: // メンバ関数
 	bool isAttack() { return isAttack_; };
 	bool isClear() { return clear_; };
 	bool IsAreaDraw() { return areaDraw_; }
-
-	bool IsBehaberAttack() {
-		return  behaviorAttack_;
-	}
+	bool IsBehaberAttack() {return  behaviorAttack_;}
 
 	/*-----セッター-----*/
 	void SetHP(float hp) { hp_ = hp; }
@@ -124,6 +125,8 @@ public: // メンバ関数
 	void SetHealerPos(Vector3 pos) { healerPos_ = pos; };
 	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; };
 	void SetTankPos(Vector3 pos) { tankPos_ = pos; };
+	void SetTankRotation(Vector3 rotation) { tankRotation_ = rotation; };
+	void SethmansRenjuPos(Vector3 pos) { hmansRenjuPos_ = pos; }
 	void SetIsDeadPlayer(bool flag) { isDeadPlayer_ = flag; }
 	void SetIsDeadHealer(bool flag) { isDeadHealer_ = flag; }
 	void SetIsDeadRenju(bool flag) { isDeadRenju_ = flag; }
@@ -166,9 +169,12 @@ private:
 	//スタン中
 	void StanInitialize();
 	void StanUpdata();
-	//必殺技
+	//必殺技1
 	void SpecialInitialize();
 	void SpecialUpdata();
+	//必殺技2
+	void Special2Initialize();
+	void Special2Updata();
 
 	// パーツ親子関係
 	void Relationship();
@@ -185,11 +191,15 @@ private: // メンバ変数
 	std::unique_ptr<ColliderManager> colliderManager_[15] = {};//衝撃波用の当たり判定
 	std::unique_ptr<ColliderManager> colliderRockManager_ = {};//投擲用
 
-	//std::vector<ParticleSystem*> particle_;
+	std::vector<ParticleSystem*> particle_;
 	std::vector<EmitterSphere> emitter_{};
+	std::vector<AccelerationField> accelerationFiled_{};
+	Vector3 accelerationVelo_[5];
+	Vector3 filedPos_{};
 
 	//アニメーション
 	Animations* animation_;
+	Animations* animation2_;
 	int animationNumber_;
 
 	std::unique_ptr<Model> impactModel_;//衝撃波
@@ -197,14 +207,19 @@ private: // メンバ変数
 	std::unique_ptr<Model> circleAreaModel_;//投擲攻撃エリア
 	std::unique_ptr<Model> sterModel_[3];//混乱時の星
 
+	std::list<EnemyHenchman*> henchmans_;//子分
+	Vector3 hmansRenjuPos_;
+
 	//攻撃範囲の座標とフラグ
 	Vector3 areaPos_;
 	bool areaDraw_;
 
+	//posとrotation
 	Vector3 playerPos_ = {};
 	Vector3 healerPos_ = {};
 	Vector3 renjuPos_ = {};
 	Vector3 tankPos_ = {};
+	Vector3 tankRotation_ = {};
 	bool isDeadPlayer_ = false;
 	bool isDeadHealer_ = false;
 	bool isDeadRenju_ = false;

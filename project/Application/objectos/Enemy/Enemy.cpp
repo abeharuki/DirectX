@@ -8,6 +8,7 @@ void Enemy::Initialize() {
 
 
 	animation_ = AnimationManager::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf");
+	animation2_ = AnimationManager::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf");
 	impactModel_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj", "resources/white.png"));
 	areaModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/red_.png"));
 	circleAreaModel_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj", "resources/Enemy/red_.png"));
@@ -72,21 +73,33 @@ void Enemy::Initialize() {
 
 
 	emitter_.resize(5);
-	//particle_.resize(5);
+	accelerationFiled_.resize(5);
+	particle_.resize(5);
 	for (int i = 0; i < 5; ++i) {
 		emitter_[i] = {
-		.translate{0,0,0},
-		.count{50},
-		.frequency{1.0f},
-		.frequencyTime{0.0f},
-		.scaleRange{.min{0.2f,0.2f,0.0f},.max{0.2f,0.2f,0.0f}},
-		.translateRange{.min{-0.1f,-0.1f,0.f},.max{0.1f,0.1f,0.f}},
-		.colorRange{.min{0.5f,1,1.0f},.max{0.5f,1,1.0f}},
+		.translate{0,1,0},
+		.count{25},
+		.frequency{0.075f},
+		.frequencyTime{0.5f},
+		.scaleRange{.min{1.f,1.f,1.f},.max{1.f,1.f,1.f}},
+		.translateRange{.min{0.f,0.f,0.f},.max{0.f,0.f,0.f}},
+		.colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
 		.alphaRange{.min{1.0f},.max{1.0f}},
-		.lifeTimeRange{.min{0.1f},.max{0.2f}},
-		.velocityRange{.min{-0.4f,0.1f,-0.4f},.max{0.4f,0.1f,0.4f}},
+		.lifeTimeRange{.min{3.f},.max{3.f}},
+		.velocityRange{.min{-0.6f,0.f,-0.6f},.max{0.6f,0.f,0.6f}},
 		};
-		//particle_[i] = ParticleManager::Create("resources/particle/circle.png", 15 + (i + 1));
+
+		accelerationFiled_[i] = {
+			.acceleration{0.f,0.f,0.f},
+			.translate{0.f,1.f,0.f},
+			.min{-3.f,-3.f,-3.f},
+			.max{3.f,3.f,3.f},
+		};
+
+		
+		
+
+		particle_[i] = ParticleManager::Create("resources/particle/circle.png", 15 + (i + 1));
 	}
 
 	AABB aabbSize{ .min{-3.0f,-2.0f,-2.0f},.max{3.0f,8.0f,2.0f} };
@@ -97,8 +110,6 @@ void Enemy::Initialize() {
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
 	
-	
-
 }
 
 void Enemy::Update() {
@@ -147,7 +158,25 @@ void Enemy::Update() {
 		break;
 	}
 
+	// デスフラグが立った弾を削除
+	henchmans_.remove_if([](EnemyHenchman* enemy) {
+		if (enemy->IsDead()) {
+			
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+
+	for (EnemyHenchman* enemy : henchmans_) {
+		enemy->SetRenjuPos(hmansRenjuPos_);
+		enemy->Update();
+	}
 	
+	for (int i = 0; i < 5; ++i) {
+		//particle_[i]->Update();
+	}
+
 
 	//アニメーションの更新
 	animation_->Update(animationNumber_);
@@ -173,6 +202,10 @@ void Enemy::Update() {
 		attackRequest_ = BehaviorAttack::kSpecial;
 	}
 
+	if (Input::PressKey(DIK_5)) {
+		attackRequest_ = BehaviorAttack::kSpecial2;
+	}
+
 	ImGui::Begin("EnemyRock");
 	ImGui::SliderFloat3("pos", &worldTransformRock_.translate.x, -150.0f, 150.0f);
 	ImGui::End();
@@ -193,8 +226,7 @@ void Enemy::Update() {
 void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
 	if (animationNumber_ == groundAttack && isAttack_ == true) {
-		impactModel_->Draw(worldTransformImpact_, camera, true);
-
+		//impactModel_->Draw(worldTransformImpact_, camera, true);
 	}
 
 	if (areaDraw_) {
@@ -212,6 +244,14 @@ void Enemy::Draw(const ViewProjection& camera) {
 		}
 	}
 	
+	for (EnemyHenchman* enemy : henchmans_) {
+		enemy->Draw(camera);
+	}
+
+	for (int i = 0; i < 5; ++i) {
+		particle_[i]->Draw(camera);
+	}
+
 	RenderCollisionBounds(worldTransformBody_, camera);
 
 	
@@ -336,7 +376,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 	//1,4
-	int num = RandomGenerator::GetRandomInt(1, 6);
+	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (hp_ <= 400 && specialCount_ == 2 && !special_) {
 		num = 7;
 	}
@@ -352,11 +392,14 @@ void Enemy::AttackInitialize() {
 	else if (num == 3) {
 		attackRequest_ = BehaviorAttack::kThrowing;
 	}
-	else if (num >= 4 && num <= 6) {
+	else if (num >= 4 && num <= 5) {
 		attackRequest_ = BehaviorAttack::kGround;
 	}
 	else if (num == 7) {
 		attackRequest_ = BehaviorAttack::kSpecial;
+	}
+	else if (num == 8) {
+		attackRequest_ = BehaviorAttack::kSpecial2;
 	}
 	
 	
@@ -385,6 +428,9 @@ void Enemy::AttackUpdata() {
 		case BehaviorAttack::kSpecial:
 			SpecialInitialize();
 			break;
+		case BehaviorAttack::kSpecial2:
+			Special2Initialize();
+			break;
 		}
 
 		// 振る舞いリセット
@@ -406,6 +452,9 @@ void Enemy::AttackUpdata() {
 		break;
 	case BehaviorAttack::kSpecial:
 		SpecialUpdata();
+		break; 
+	case BehaviorAttack::kSpecial2:
+		Special2Updata();
 		break;
 	}
 }
@@ -870,25 +919,72 @@ void Enemy::SpecialInitialize() {
 	animationNumber_ = groundAttack;
 	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
-	moveTime_ = 60;
+	moveTime_ = 60 * 10;
+
 	InitializeImpact();
 }
 void Enemy::SpecialUpdata() {
-	if (animation_->GetAnimationTimer() >= 1.6f) {
-		isAttack_ = true;
-		worldTransformImpact_.scale += Vector3(4.0f, 0.0f, 2.0f);
-		UpdataImpact();
-		if (worldTransformImpact_.scale.x > 100) {
-			worldTransformImpact_.scale = { 1.0f,1.0f,1.0f };
-			InitializeImpact();
-			isAttack_ = false;
-			behaviorRequest_ = Behavior::kRoot;
-
+	--moveTime_;
+	//max5
+	for (int i = 0; i < 1; ++i) {
+		if (i % 2 == 0) {
+			accelerationVelo_[i] = { 10.f,0.f,0.f };
 		}
-		
+		else {
+			accelerationVelo_[i] = { -10.f,0.f,0.f };
+		}
+		filedPos_ = { 0.f,0.f,5.f };
+		emitter_[i].translate = { worldTransformBase_.translate.x,1.f,worldTransformBase_.translate.z };
+		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(tankRotation_.y);
+		accelerationVelo_[i] = Math::TransformNormal(accelerationVelo_[i], rotateMatrix);
+		filedPos_ = Math::TransformNormal(filedPos_, rotateMatrix);
+		accelerationFiled_[i].acceleration = accelerationVelo_[i];
+		accelerationFiled_[i].translate = tankPos_ + filedPos_;
+
+		particle_[i]->SetEmitter(emitter_[i]);
+		particle_[i]->SetAccelerationFiled(accelerationFiled_[i]);
+		if (isAttack_) {
+			particle_[i]->Update();
+		}
+	}
+
+	if (moveTime_ <= 400) {
+		isAttack_ = true;
+	}
+
+	if (moveTime_ <= 0) {
+		behaviorRequest_ = Behavior::kRoot;
+		isAttack_ = false;
 	}
 }
 
+void Enemy::Special2Initialize()
+{
+	--specialCount_;
+	animationNumber_ = threat;
+	animation_->SetLoop(false);
+	animation_->SetpreAnimationTimer(0.0f);
+	moveTime_ = 60*2;
+}
+void Enemy::Special2Updata()
+{
+	--moveTime_;
+	if (moveTime_ <= 0) {
+		behaviorRequest_ = Behavior::kRoot;
+	}
+	else {
+		animation2_->Update(4);
+		if (moveTime_ % 10 == 0) {
+			// 敵を生成、初期化
+			EnemyHenchman* newEnemy = new EnemyHenchman();
+			newEnemy->Init(animation2_, Vector3{ worldTransformBase_.translate.x + RandomGenerator::GetRandomFloat(-10.0f, 10.0f),-1.0f,
+				worldTransformBase_.translate.z + RandomGenerator::GetRandomFloat(-10.0f, 10.0f) });
+
+
+			henchmans_.push_back(newEnemy);
+		}	
+	}
+}
 
 //スタン
 void Enemy::StanInitialize() {

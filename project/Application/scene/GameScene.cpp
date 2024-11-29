@@ -75,7 +75,7 @@ void GameScene::Initialize() {
 
 	characters = {healerManager_->GetHealer(), renjuManager_->GetRenju(),tankManager_->GetTank()};
 
-	
+	PostEffect::GetInstance()->isBloom(true);
 }
 
 void GameScene::Update() {
@@ -97,6 +97,9 @@ void GameScene::Update() {
 
 	healerManager_->GetHealer()->SetBarrier(tankManager_->GetTank()->GetBarrier());
 	renjuManager_->GetRenju()->SetBarrier(tankManager_->GetTank()->GetBarrier());
+
+	//各キャラの情報の取得
+	playerManager_->GetPlayer()->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
 
 	//敵の情報取得
 	playerManager_->GetPlayer()->SetEnemy(enemyManager_->GetEnemy());
@@ -193,6 +196,13 @@ void GameScene::Update() {
 		enemyManager_->SetRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
 		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
 	}
+	//必殺技の時tankだけposを受け取る
+	if (enemyManager_->GetEnemy()->GetBehavior() == Behavior::kAttack && enemyManager_->GetEnemy()->GetBehaviorAttack() == BehaviorAttack::kSpecial) {
+		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
+	}
+	
+	enemyManager_->GetEnemy()->SetTankRotation(tankManager_->GetTank()->GetWorldTransform().rotate);
+	enemyManager_->GetEnemy()->SethmansRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
 
 	//tankのスタン攻撃の受け取り
 	if (tankManager_->GetTank()->GetStanAttack()) {
@@ -245,18 +255,22 @@ void GameScene::Draw() {
 	//地面
 	loader_->Draw(viewProjection_, true);
 	
-	//敵
-	enemyManager_->Draw(viewProjection_);
-	// タンク
-	tankManager_->Draw(viewProjection_);
-	// ヒーラー
-	healerManager_->Draw(viewProjection_);
-	// レンジャー
-	renjuManager_->Draw(viewProjection_);
-	//プレイヤー
-	if (!playerManager_->GetPlayer()->IsDash()) {
+	
+	
+	if (playerManager_->GetPlayer()->IsDash() || (playerManager_->GetPlayer()->GameStart() && !cameraDirection_) || (tankManager_->GetTank()->GetBarrier() || tankManager_->GetTank()->GetBarrierThreshold() < 1)) {
+		//敵
+		enemyManager_->Draw(viewProjection_);
+		// タンク
+		tankManager_->Draw(viewProjection_);
+		// ヒーラー
+		healerManager_->Draw(viewProjection_);
+		// レンジャー
+		renjuManager_->Draw(viewProjection_);
+		//プレイヤー
 		playerManager_->Draw(viewProjection_);
 	}
+
+	tankManager_->GetTank()->BarrierDraw(viewProjection_);
 
 	//コマンド
 	if (battle_) {
@@ -270,17 +284,20 @@ void GameScene::Draw() {
 #pragma region 前景スプライト描画
 	// 前景スプライト描画前処理
 	Sprite::PreDraw();
+	if (playerManager_->GetPlayer()->IsDash() || (playerManager_->GetPlayer()->GameStart() && !cameraDirection_)) {
+		enemyManager_->DrawUI();
+		playerManager_->DrawUI();
+		for (auto* character : characters) {
+			character->DrawUI();
+		}
 
-	enemyManager_->DrawUI();
-	playerManager_->DrawUI();
-	for (auto* character : characters) {
-		character->DrawUI();
+		//コマンド
+		if (battle_) {
+			command_->DrawUI();
+		}
 	}
 
-	//コマンド
-	if (battle_) {
-		command_->DrawUI();
-	}
+	
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -289,8 +306,30 @@ void GameScene::Draw() {
 
 void GameScene::RenderDirect() {
 	
-	if (playerManager_->GetPlayer()->IsDash()) {
-		playerManager_->Draw(viewProjection_);
+	if (!playerManager_->GetPlayer()->IsDash() && (!playerManager_->GetPlayer()->GameStart() || cameraDirection_)) {
+		if (!tankManager_->GetTank()->GetBarrier()) {
+			//敵
+			enemyManager_->Draw(viewProjection_);
+			// タンク
+			tankManager_->Draw(viewProjection_);
+			// ヒーラー
+			healerManager_->Draw(viewProjection_);
+			// レンジャー
+			renjuManager_->Draw(viewProjection_);
+			//プレイヤー
+			playerManager_->Draw(viewProjection_);
+		}
+		
+		enemyManager_->DrawUI();
+		playerManager_->DrawUI();
+		for (auto* character : characters) {
+			character->DrawUI();
+		}
+
+		//コマンド
+		if (battle_) {
+			command_->DrawUI();
+		}
 	}
 	
 	spriteBack_->Draw();
@@ -424,6 +463,9 @@ void GameScene::CheckAllCollision() {
 		collisionManager_->SetColliderList(bullet);
 	}
 	
+	for (EnemyHenchman* enemy : enemyManager_->GetEnemy()->GetEnemys()) {
+		collisionManager_->SetColliderList(enemy);
+	}
 
 	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
 		collisionManager_->SetColliderList(loader_->GetCollider(i));

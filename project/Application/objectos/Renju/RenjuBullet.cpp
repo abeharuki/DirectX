@@ -28,7 +28,6 @@ void RenjuBullet::Initialize(
 		shockwave_[i]->SetBlendMode(BlendMode::kNormal);
 		shockwave_[i]->IsGradient(true);
 	
-		
 		worldTransformShockwave_[i].Initialize();
 		worldTransformShockwave_[i].translate = position;
 		worldTransformShockwave_[i].scale = { 0.f,0.f,0.f };//Vector3{ 5.f,5.f,5.f} - (1.5f * i);

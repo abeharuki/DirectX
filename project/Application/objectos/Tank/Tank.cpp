@@ -9,11 +9,11 @@ Tank::~Tank() {
 
 void Tank::Initialize(Animations* animation, std::string skillName) {
 	BaseCharacter::Initialize(animation, skillName);
-	shield_.reset(Model::CreateModelFromObj("resources/Tank/shield.obj", "resources/white.png"));
-
-	worldTransformShield_.Initialize();
-	worldTransformShield_.translate = { 0.0f,1.f,0.45f };
-	worldTransformShield_.rotate.y = 3.1415f;
+	barrierModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj", "resources/Tank/b.png"));
+	barrierModel_->SetBlendMode(BlendMode::kNormal);
+	barrierModel_->SetColor({ 0.0f,1.0f,1.0f,0.3f });
+	worldTransformBarrier_.Initialize();
+	worldTransformBarrier_.scale = { 7.f,7.f,7.f };
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -71,23 +71,21 @@ void Tank::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 	
-	
-
-
 	Relationship();
 	BaseCharacter::Update();
-	worldTransformShield_.TransferMatrix();
+	worldTransformBarrier_.UpdateMatrix();
 	if (behaviorTree_) {
 		behaviorTree_->Update();
 	}
 
 
 	particle_->SetTranslate(worldTransformBase_.translate);
+	barrierModel_->SetThreshold(barrierThreshold_);
 
 	ImGui::Begin("Tank");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("shieldpos", &worldTransformShield_.translate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("shieldrotate", &worldTransformShield_.rotate.x, -10.0f, 10.0f);
+	ImGui::SliderFloat3("shieldpos", &worldTransformBarrier_.translate.x, -10.0f, 10.0f);
+	ImGui::SliderFloat3("shieldrotate", &worldTransformBarrier_.rotate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("enemypos", &enemy_->GetWorldTransformArea().translate.x, -10.0f, 10.0f);
 	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
 	ImGui::Text("%d", fireTimer_);
@@ -108,10 +106,7 @@ void Tank::Update() {
 
 void Tank::Draw(const ViewProjection& camera) {
 	BaseCharacter::Draw(camera);
-	
-	if (barrier_) {
-		shield_->Draw(worldTransformShield_, camera, true);
-	}
+
 	particle_->Draw(camera);
 	
 	RenderCollisionBounds(worldTransformBody_, camera);
@@ -119,6 +114,14 @@ void Tank::Draw(const ViewProjection& camera) {
 
 void Tank::NoDepthDraw(const ViewProjection& camera){
 	BaseCharacter::NoDepthDraw(camera);
+}
+
+void Tank::BarrierDraw(const ViewProjection& camera)
+{
+	if (barrier_ || barrierThreshold_ < 1) {
+		barrierModel_->Draw(worldTransformBarrier_, camera, false);
+	}
+	
 }
 
 // 移動
@@ -138,6 +141,10 @@ void Tank::MoveUpdate() {
 
 	if (Input::PressKey(DIK_T)) {
 		//state_ = NextState("Move", Output3);
+	}
+
+	if (barrierThreshold_ < 1) {
+		barrierThreshold_ += 0.03f;
 	}
 
 };
@@ -216,9 +223,12 @@ void Tank::UniqueInitialize(){
 	fireTimer_ = 40;
 	stanAttack_ = false;
 	barrier_ = false;
+	barrierThreshold_ = 1.0f;
 }
 void Tank::UniqueUpdate(){
-	particle_->Update();
+	//particle_->Update();
+	worldTransformBarrier_.translate = worldTransformBase_.translate;
+	
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
@@ -248,11 +258,13 @@ void Tank::UniqueUpdate(){
 		barrier_ = false;
 		animationNumber_ = run;
 	}
-
+	
 	if (barrier_) {
-
+		barrierThreshold_ -= 0.01f;
+		
 		if (enemy_->GetBehavior() != Behavior::kAttack) {
 			state_ = NextState("Attack", Output1);//スキルに変えておく
+			barrierThreshold_ = 0.0f;
 		}
 	}
 	else {
@@ -327,12 +339,7 @@ void Tank::DeadUpdate() {
 }
 
 void Tank::Relationship() {
-	BaseCharacter::Relationship();
-
-	worldTransformShield_.matWorld_ = Math::Multiply(
-		Math::MakeAffineMatrix(
-			worldTransformShield_.scale, worldTransformShield_.rotate, worldTransformShield_.translate),
-		worldTransformBase_.matWorld_);
+	BaseCharacter::Relationship();	
 }
 
 // 衝突を検出したら呼び出されるコールバック関数
@@ -378,6 +385,16 @@ void Tank::OnCollision(Collider* collider) {
 
 		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
 	}	
+}
+
+Vector3 Tank::GetBarrierWorldPos(){
+	// ワールド座標を入れる関数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransformBarrier_.matWorld_.m[3][0];
+	worldPos.y = worldTransformBarrier_.matWorld_.m[3][1];
+	worldPos.z = worldTransformBarrier_.matWorld_.m[3][2];
+	return worldPos;
 }
 
 

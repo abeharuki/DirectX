@@ -59,7 +59,7 @@ void DebugScene::Initialize() {
 	worldTransformSter_[1].Initialize();
 	sprite_.reset(Sprite::Create("resources/DDS/cat.dds"));
 
-	//rockModel_.reset(Model::CreateModelFromObj("resources/Tank/b.png"));
+	rockModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj","resources/Tank/b.png"));
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 	model_.reset(Model::CreateFromNoDepthObj("resources/particle/scalePlane.obj", "resources/Enemy/white.png"));
 	//model_->SetMaskTexture("shockwave.png");
@@ -71,7 +71,7 @@ void DebugScene::Initialize() {
 	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));*/
 
 	emitter_ = {
-		.translate = {0,3,0},
+		.translate = {0,1,0},
 		.count{50},
 		.frequency{0.075f},
 		.frequencyTime{0.5f},
@@ -132,9 +132,9 @@ void DebugScene::Update() {
 	gravityFiled_.min = emitter_.translateRange.min;
 	gravityFiled_.max = emitter_.translateRange.max;
 	gravityFiled_.translate = emitter_.translate;
-	accelerationFiled_.min = emitter_.translateRange.min;
-	accelerationFiled_.max = emitter_.translateRange.max;
-	accelerationFiled_.translate = emitter_.translate;
+	accelerationFiled_.min = Vector3{-5.0f,-5.0f,-5.0f};
+	accelerationFiled_.max = Vector3{5.0f,5.0f,5.0f};
+	
 	particle_->SetEmitter(emitter_);
 	particle_->SetAccelerationFiled(accelerationFiled_);
 	particle_->SetGravityFiled(gravityFiled_);
@@ -198,9 +198,9 @@ void DebugScene::Update() {
 	//animeDissolve_.isGradient = isAnimeDissolve_;
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
-	model_->SetThreshold(animeDissolve_.threshold);
-	model_->SetMaskUV(maskUV_);
-	model_->IsGradient(true);
+	rockModel_->SetThreshold(animeDissolve_.threshold);
+	rockModel_->SetMaskUV(maskUV_);
+	rockModel_->IsGradient(true);
 	/*animation_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
 	animation_->SetEnvironment(env_, true);*/
@@ -258,6 +258,7 @@ void DebugScene::Update() {
 		ImGui::SliderFloat3("scaleAlpha", &emitter_.endScale.x, 0.0f, 3.0f);
 
 		ImGui::SliderFloat3("Acceleration", &accelerationFiled_.acceleration.x, 0.0f, 3.0f);
+		ImGui::SliderFloat3("AccelerationPos", &accelerationFiled_.translate.x, -2.f, 2.f);
 		ImGui::SliderFloat("GravityStrength", &gravityFiled_.strength, 0.0f, 10.0f);
 		ImGui::SliderFloat("GravityStop", &gravityFiled_.stopDistance, 0.0f, 10.0f);
 		

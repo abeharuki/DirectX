@@ -132,7 +132,7 @@ public:
 
 		lightData->environment_.environment = environment;
 	}
-
+	//ディゾルブの許可
 	void IsGradient(bool flag) { lightData->dissolve_.isGradient = flag; }
 	void SetThreshold(float num) { lightData->dissolve_.threshold = num; }
 	void SetEdgeColor(Vector3 color) { lightData->dissolve_.edgeColor = color; }
