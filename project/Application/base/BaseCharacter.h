@@ -70,6 +70,8 @@ public:
     void SetGameStart(bool flag) { gameStart_ = flag; animationNumber_ = standby;}
     void SetBattleStart(bool flag) { battleStart_ = flag;}
     void SetBarrier(bool barrier) { barrier_ = barrier; }
+    void SetBarrierPos(Vector3 pos) { barrierPos_ = pos; }
+
 
     // パーツ親子関係
     virtual void Relationship();
@@ -89,6 +91,8 @@ public:
     void searchTarget();//敵との距離感
     //敵の視野内にいるかどうか
     void IsVisibleToEnemy();
+    //
+    void BarrierRange();
     
     //次の状態遷移をノードから検索
     CharacterState NextState(std::string name, int outputNum);
@@ -152,6 +156,7 @@ protected:
 
     // 敵を探すフラグ
     bool searchTarget_ = false;
+    Vector3 randPos_;
 
     //ノードエディター
     Editor::NodeEditor editor_;
@@ -208,5 +213,7 @@ protected:
 
     //barrier展開の確認
     bool barrier_ = false;
+    //barrierのポジション
+    Vector3 barrierPos_;
 };
 

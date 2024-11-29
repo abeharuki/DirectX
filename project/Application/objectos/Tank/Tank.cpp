@@ -227,7 +227,10 @@ void Tank::UniqueInitialize(){
 }
 void Tank::UniqueUpdate(){
 	//particle_->Update();
-	worldTransformBarrier_.translate = worldTransformBase_.translate;
+	if (barrierThreshold_ == 1.0f) {
+		worldTransformBarrier_.translate = worldTransformBase_.translate;
+	}
+	
 	
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
@@ -269,7 +272,7 @@ void Tank::UniqueUpdate(){
 	}
 	else {
 
-		const float kSpeed = 0.06f;
+		const float kSpeed = 0.03f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
 

@@ -125,8 +125,15 @@ void PlayerManager::Update() {
 
 	spriteHpSize_.x = player_->GetHp();
 	spriteMpSize_.x = player_->GetMp();
-	spriteHP_->SetSize(spriteHpSize_);
-	spriteMP_->SetSize(spriteMpSize_);
+	if (spriteHpSize_.x >= 0) {
+		spriteHP_->SetSize(spriteHpSize_);
+	}
+	if (spriteMpSize_.x > 0) {
+		spriteMP_->SetSize(spriteMpSize_);
+		
+	}
+	
+	
 
 	//HP,MP表示の計算
 	if (spriteHpSize_.x < 100.0f) {

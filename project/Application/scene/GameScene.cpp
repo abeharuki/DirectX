@@ -84,8 +84,6 @@ void GameScene::Update() {
 	Fade();
 	BattleBegin();
 	
-
-	
 	//当たり判定
 	CheckAllCollision();
 
@@ -132,8 +130,11 @@ void GameScene::Update() {
 		if (playerManager_->GetPlayer()->GetHp() <= 0) {
 			character->Dissolve();
 		}
+		character->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
 	}
 
+	healerManager_->GetHealer()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
+	renjuManager_->GetRenju()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
 	//各キャラの更新
 	if (!enemyManager_->IsClear()) {
 		healerManager_->Update();

@@ -119,7 +119,6 @@ void Player::Update() {
 		break;
 	case Behavior::kDead:
 		DeadUpdata();
-
 		break;
 	}
 
@@ -142,6 +141,12 @@ void Player::Update() {
 
 	if (hp_ <= 0) {
 		behaviorRequest_ = Behavior::kDead;
+		isOver_ = true;
+	}
+
+	if (hp_ >= 20) {
+		//barrierの中にいるか
+		BarrierRange();
 	}
 
 	//ダメージの色
@@ -152,8 +157,7 @@ void Player::Update() {
 		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
 	}
 
-	//barrierの中にいるか
-	BarrierRange();
+	
 
 	// 回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -575,8 +579,9 @@ void Player::DeadInitilize() {
 	isDead_ = true;
 };
 void Player::DeadUpdata() {
+	hp_ = 0.0f;
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-	threshold_ += 0.004f;
+	threshold_ += 0.04f;
 	animation_->SetThreshold(threshold_);
 	if (threshold_ >= 0.7f) {
 		isOver_ = true;

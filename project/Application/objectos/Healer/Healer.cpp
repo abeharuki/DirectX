@@ -198,7 +198,7 @@ void Healer::MoveInitialize() {
 };
 void Healer::MoveUpdate() {
 
-	if (!barrier_) {
+	if (!barrier_ || barrierThreshold_ > 0.1f) {
 		BaseCharacter::MoveUpdate();
 
 		//味方の体力全員が50以下なら全体回復
@@ -517,7 +517,7 @@ void Healer::DeadUpdate() {
 void Healer::TankRunAway()
 {
 
-	if (barrier_ && barrierThreshold_ <= 0.5f) {
+	if (barrier_ && barrierThreshold_ <= 0.0f) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = pos[2] - GetWorldPosition();
 
@@ -536,7 +536,7 @@ void Healer::TankRunAway()
 				: -std::numbers::pi_v<float> / 2.0f;
 		}
 
-		const float kSpeed = 0.06f;
+		const float kSpeed = 0.04f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = pos[2] - enemy_->GetWorldTransform().translate;
 

@@ -227,7 +227,7 @@ void Renju::MoveInitialize() {
 	BaseCharacter::MoveInitialize();
 };
 void Renju::MoveUpdate() {
-	if (!barrier_) {
+	if (!barrier_ || barrierThreshold_ > 0.1f) {
 		BaseCharacter::MoveUpdate();
 
 		//スキル
@@ -501,7 +501,7 @@ void Renju::DeadUpdate() {
 
 void Renju::TankRunAway()
 {
-	if (barrier_ && barrierThreshold_ <= 0.5f) {
+	if (!barrier_ || barrierThreshold_ <= 0.0f) {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = tankPos_ - GetWorldPosition();
 
@@ -520,7 +520,7 @@ void Renju::TankRunAway()
 				: -std::numbers::pi_v<float> / 2.0f;
 		}
 
-		const float kSpeed = 0.06f;
+		const float kSpeed = 0.04f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = tankPos_ - enemy_->GetWorldTransform().translate;
 
@@ -531,8 +531,8 @@ void Renju::TankRunAway()
 		// 速度を設定
 		velocity_ = direction * kSpeed;
 
-		if (Math::isWithinRange(worldTransformBase_.translate.x,(tankPos_.x - (velocity_.x * 5.0f)),2.0f) &&
-			Math::isWithinRange(worldTransformBase_.translate.z,(tankPos_.z - (velocity_.z * 5.0f)),2.0f)) {
+		if (Math::isWithinRange(worldTransformBase_.translate.x,(tankPos_.x - (velocity_.x * 6.0f)),2.0f) &&
+			Math::isWithinRange(worldTransformBase_.translate.z,(tankPos_.z - (velocity_.z * 6.0f)),2.0f)) {
 			animationNumber_ = standby;
 		}
 		else {

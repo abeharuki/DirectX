@@ -109,6 +109,9 @@ void BaseCharacter::Update(){
 		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
 	}
 
+	//barrierの中にいるか
+	BarrierRange();
+
 	// 回転
 	worldTransformBase_.rotate.y =Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 	animation_->SetFlameTimer(flameTime_);
@@ -207,6 +210,7 @@ void BaseCharacter::DrawUI(){
 
 void BaseCharacter::MoveInitialize()
 {
+	randPos_ = Vector3{ RandomGenerator::GetRandomFloat(-10.f, 10.f),0,RandomGenerator::GetRandomFloat(-10.f, 10.f) };
 	worldTransformBase_.translate.y = 0.0f;
 	velocity_ = { 0.0f,0.0f,0.0f };
 	searchTarget_ = false;
@@ -290,7 +294,7 @@ void BaseCharacter::JumpInitialize()
 	worldTransformBase_.translate.y = 0.0f;
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
-	velocity_.y = kJumpFirstSpeed;
+	velocity_ = { 0.f,kJumpFirstSpeed,0.f };
 	animationNumber_ = jump;
 	flameTime_ = 30.0f;
 	animation_->SetAnimationTimer(0.5f, flameTime_);
@@ -458,7 +462,7 @@ void BaseCharacter::searchTarget()
 		if (minDistance_ * distance_ <= enemylength_) {
 			if (state_ != CharacterState::Jumping) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash || !enemy_->IsBehaberAttack()) {
-					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.02f);
+					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition() + randPos_, 0.02f);
 					animationNumber_ = run;
 				}
 				if (velocity_.y == 0.0f) {
@@ -524,6 +528,33 @@ void BaseCharacter::IsVisibleToEnemy()
 
 		}
 	}
+}
+
+void BaseCharacter::BarrierRange(){
+	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial) {
+		//プレイヤーの円
+		Circle p;
+		p.center = Vector2{ worldTransformBase_.translate.x,worldTransformBase_.translate.z };
+		p.radius = 1.0f;
+
+		//barrierの円
+		Circle b;
+		b.center = Vector2{ barrierPos_.x, barrierPos_.z };
+		b.radius = 7.0f;
+
+		if (!Math::CircleColiision(p, b) && alpha_ <= 0.0f) {
+			isHit_ = true;
+
+			if (isHit_ != preHit_) {
+				hp_ -= 20;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/20.png");
+			}
+		}
+	}
+
 }
 
 void BaseCharacter::RunAway()

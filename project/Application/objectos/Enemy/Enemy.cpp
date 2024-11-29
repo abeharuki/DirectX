@@ -228,7 +228,7 @@ void Enemy::Update() {
 void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
 	if (animationNumber_ == groundAttack && isAttack_ == true) {
-		//impactModel_->Draw(worldTransformImpact_, camera, true);
+		impactModel_->Draw(worldTransformImpact_, camera, true);
 	}
 
 	if (areaDraw_) {
@@ -926,7 +926,7 @@ void Enemy::SpecialInitialize() {
 void Enemy::SpecialUpdata() {
 	--moveTime_;
 	//max5
-	for (int i = 0; i < 1; ++i) {
+	for (int i = 0; i < 5; ++i) {
 		if (i % 2 == 0) {
 			accelerationVelo_[i] = { 10.f,0.f,0.f };
 		}
@@ -948,7 +948,7 @@ void Enemy::SpecialUpdata() {
 		}
 	}
 
-	if (moveTime_ <= 320) {
+	if (moveTime_ <= 200 && !isAttack_) {
 		isAttack_ = true;
 	}
 
