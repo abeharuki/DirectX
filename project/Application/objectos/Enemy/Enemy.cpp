@@ -916,11 +916,11 @@ void Enemy::GroundAttackUpdata() {
 void Enemy::SpecialInitialize() {
 	--specialCount_;
 	worldTransformImpact_.translate = worldTransformBase_.translate;
-	animationNumber_ = groundAttack;
+	animationNumber_ = threat;
 	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
 	moveTime_ = 60 * 7;
-
+	animation_->SetFlameTimer(100.0f);
 	InitializeImpact();
 }
 void Enemy::SpecialUpdata() {
@@ -948,11 +948,14 @@ void Enemy::SpecialUpdata() {
 		}
 	}
 
-	if (moveTime_ <= 200 && !isAttack_) {
+	if (moveTime_ <= 180 && !isAttack_) {
+	
 		isAttack_ = true;
+		animationNumber_ = breathAttack;
 	}
 
 	if (moveTime_ <= 0) {
+		
 		behaviorRequest_ = Behavior::kRoot;
 		isAttack_ = false;
 	}

@@ -13,6 +13,7 @@
 #include "EnemyHenchman.h"
 
 enum AnimationNumber {
+	breathAttack,//ブレス攻撃
 	dashAttack,//ダッシュ攻撃
 	death,//死亡
 	groundAttack,//地面を殴る攻撃
