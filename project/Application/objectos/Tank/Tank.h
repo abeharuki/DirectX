@@ -38,9 +38,13 @@ public: // メンバ関数
 	void AttackInitialize() override;
 	void AttackUpdate() override;
 
-	//味方の回復
+	//barrierの展開
 	void UniqueInitialize() override;
 	void UniqueUpdate() override;
+
+	//ブレス攻撃の回避
+	void BreathInitialize() override;
+	void BreathUpdate() override;
 
 	//死亡
 	void DeadInitialize() override;

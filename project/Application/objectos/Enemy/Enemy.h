@@ -38,7 +38,7 @@ enum class BehaviorAttack {
 	kDash, // ダッシュ攻撃
 	kThrowing,//投擲攻撃
 	kGround,//地面を殴る攻撃
-	kSpecial,//必殺技(体力が半分以下になった時に発動)
+	kBreath,//必殺技(体力が半分以下になった時に発動)
 	kSpecial2,//必殺技(体力が半分以下になった時に発動)
 };
 

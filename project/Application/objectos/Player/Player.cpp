@@ -744,7 +744,7 @@ void Player::OnCollision(Collider* collider) {
 }
 
 void Player::BarrierRange(){
-	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial) {
+	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
 		//プレイヤーの円
 		Circle p;
 		p.center = Vector2{ worldTransformBase_.translate.x,worldTransformBase_.translate.z };

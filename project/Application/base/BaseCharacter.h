@@ -37,6 +37,10 @@ public:
     virtual void DeadInitialize();
     virtual void DeadUpdate() = 0;//純粋仮想関数
 
+    //敵のブレス攻撃の時の行動
+    virtual void BreathInitialize();
+    virtual void BreathUpdate();
+
     virtual void OnCollision(Collider* collider) override;
 
     /*---------------------状態遷移関連---------------------*/
@@ -93,8 +97,8 @@ public:
     void IsVisibleToEnemy();
     //barrierの範囲内か
     void BarrierRange();
-    //敵の大技をよける
-    void TankRunAway();
+    //弓キャラを守る
+    void ProtectRenju();
 
     //次の状態遷移をノードから検索
     CharacterState NextState(std::string name, int outputNum);

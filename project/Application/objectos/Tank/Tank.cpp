@@ -136,15 +136,10 @@ void Tank::MoveUpdate() {
 	
 	BaseCharacter::MoveUpdate();
 
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial && enemy_->GetBehavior() == Behavior::kAttack && mp_ >= 20) {
-		state_ = CharacterState::Unique;
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath && enemy_->GetBehavior() == Behavior::kAttack && mp_ >= 20) {
+		state_ = CharacterState::Breath;
 	}
 	
-
-	if (Input::PressKey(DIK_T)) {
-		//state_ = NextState("Move", Output3);
-	}
-
 	if (barrierThreshold_ < 1) {
 		barrierThreshold_ += 0.03f;
 	}
@@ -293,6 +288,12 @@ void Tank::UniqueUpdate(){
 
 }
 
+void Tank::BreathInitialize(){
+	BaseCharacter::BreathInitialize();
+}
+void Tank::BreathUpdate() {
+	state_ = CharacterState::Unique;
+}
 
 void Tank::DeadInitialize() {
 	//復活時間

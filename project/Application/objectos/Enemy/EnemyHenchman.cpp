@@ -100,6 +100,22 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 		worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
 
 	}
+	//ヒーラーとの押し出し処理
+	if (collider->GetCollisionAttribute() == kCollisionAttributeHealer) {
+		hit_ = true;
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
+			.orientations{
+				 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+				 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+				 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+			},
+			.size{collider->GetOBB().size}
+		};
+		worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
+
+	}
+	//タンクとの押し出し処理
 	if (collider->GetCollisionAttribute() == kCollisionAttributeTank) {
 		hit_ = true;
 		OBB obb = {

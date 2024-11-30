@@ -21,7 +21,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/arrow.obj", "resources/Renju/bow.png"));
 	bowModel_.reset(Model::CreateModelFromObj("resources/Renju/bow.obj", "resources/Renju/bow.png"));
 
-	
+
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformBody_.TransferMatrix();
@@ -88,8 +88,8 @@ void Renju::Update() {
 	preHitPlayer_ = isHitPlayer_;
 	isHitPlayer_ = false;
 
-	
-	
+
+
 	Relationship();
 
 	BaseCharacter::Update();
@@ -97,8 +97,8 @@ void Renju::Update() {
 	worldTransformBow_.TransferMatrix();
 	worldTransformArrow_.TransferMatrix();
 
-	
-	
+
+
 
 	if (behaviorTree_) {
 		behaviorTree_->Update();
@@ -123,27 +123,27 @@ void Renju::Update() {
 		}
 	}
 
-	
+
 
 	// デスフラグが立った弾を削除
 	bullets_.remove_if([](RenjuBullet* bullet) {
 		if (bullet->IsDead()) {
-			
+
 			delete bullet;
 			return true;
 		}
 		return false;
-	});
+		});
 
 	for (RenjuBullet* bullet : bullets_) {
 
 		bullet->Update();
 	}
 
-	
-	
 
-	
+
+
+
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("RenjuHp", &hp_, 1.0f);
 	ImGui::End();
@@ -155,7 +155,7 @@ void Renju::Update() {
 	ImGui::DragFloat3("rotate", &worldTransformArrow_.rotate.x, 0.1f);
 
 	if (ImGui::TreeNode("Particle")) {
-		
+
 		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
 		ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);
 		ImGui::DragFloat3("Pos", &emitter_.translate.x, 0.1f);
@@ -208,11 +208,11 @@ void Renju::Draw(const ViewProjection& camera) {
 	if (GetDrawWepon()) {
 		bowModel_->Draw(GetWorldTransformBow(), camera, true);
 	}
-	
+
 	if (skill_) {
 		particle_->Draw(camera);
 	}
-	
+
 
 	RenderCollisionBounds(worldTransformBody_, camera);
 
@@ -227,49 +227,44 @@ void Renju::MoveInitialize() {
 	BaseCharacter::MoveInitialize();
 };
 void Renju::MoveUpdate() {
-	if (!barrier_ || barrierThreshold_ > 0.1f) {
-		BaseCharacter::MoveUpdate();
 
-		//スキル
-		if (mp_ >= 20 && enemy_->IsBehaviorRequest()) {
-			if (enemy_->GetBehavior() != enemy_->GetBehaviorRequest() && enemy_->GetBehaviorRequest() != Behavior::kAttack) {
-				// 敵の座標までの距離
-				float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-				if (length >= minDistance_ * 1.5f) {
-					state_ = CharacterState::Unique;
-				}
-			}
-		}
+	BaseCharacter::MoveUpdate();
 
-		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2 && enemy_->GetBehavior() == Behavior::kAttack) {
+	//スキル
+	if (mp_ >= 20 && enemy_->IsBehaviorRequest()) {
+		if (enemy_->GetBehavior() != enemy_->GetBehaviorRequest() && enemy_->GetBehaviorRequest() != Behavior::kAttack) {
+			// 敵の座標までの距離
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-			if (length >= minDistance_ * 3.f) {
+			if (length >= minDistance_ * 1.5f) {
 				state_ = CharacterState::Unique;
 			}
-			else {
-				const float kSpeed = 0.06f;
-				// 敵の位置から自分の位置への方向ベクトルを計算
-				Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
-
-				// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
-				Math::Normalize(direction);   // 正規化して単位ベクトルにする
-				direction *= -1.0f; // 反転して反対方向に進む
-
-				// 速度を設定
-				velocity_ = direction * kSpeed;
-				worldTransformBase_.translate -= velocity_;
-				worldTransformBase_.translate.y = 0;
-			}
 		}
+	}
 
-		if (Input::PushKey(DIK_U)) {
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2 && enemy_->GetBehavior() == Behavior::kAttack) {
+		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+		if (length >= minDistance_ * 3.f) {
 			state_ = CharacterState::Unique;
 		}
+		else {
+			const float kSpeed = 0.06f;
+			// 敵の位置から自分の位置への方向ベクトルを計算
+			Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
+
+			// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+			Math::Normalize(direction);   // 正規化して単位ベクトルにする
+			direction *= -1.0f; // 反転して反対方向に進む
+
+			// 速度を設定
+			velocity_ = direction * kSpeed;
+			worldTransformBase_.translate -= velocity_;
+			worldTransformBase_.translate.y = 0;
+		}
 	}
-	else {
-		TankRunAway();
+
+	if (Input::PushKey(DIK_U)) {
+		state_ = CharacterState::Unique;
 	}
-	
 
 };
 
@@ -352,7 +347,7 @@ void Renju::AttackUpdate() {
 		}
 	}
 	else {
-	
+
 		const float kSpeed = 0.04f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
@@ -379,19 +374,19 @@ void Renju::UniqueInitialize() {
 	isAttack_ = true;
 	mp_ -= 10;
 	animation_->SetLoop(false);
-	fireTimer_ =60;
+	fireTimer_ = 60;
 	flameTime_ = 60.0f;
 	emitter_.velocityRange = { .min{0,0,0},.max{0.f,0.f,0.f} };
 	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} },
-	filed_.strength = 1.f;
+		filed_.strength = 1.f;
 	animationNumber_ = animeAttack;
 }
 void Renju::UniqueUpdate() {
 	emitter_.translate = { worldTransformBow_.matWorld_.m[3][0],worldTransformBow_.matWorld_.m[3][1] ,worldTransformBow_.matWorld_.m[3][2] };
-	
+
 	if (isAttack_) {
 		--fireTimer_;
-		
+
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
@@ -412,7 +407,7 @@ void Renju::UniqueUpdate() {
 		//チャージ中アニメーションを止める
 		if (fireTimer_ >= 1 && fireTimer_ <= 48) {
 			//fireTimer_ = 48;
-			
+
 			animation_->Stop(true);
 			filed_.min = emitter_.translateRange.min;
 			filed_.max = emitter_.translateRange.max;
@@ -423,10 +418,10 @@ void Renju::UniqueUpdate() {
 			particle_->SetGravityFiled(filed_);
 			particle_->Update();
 		}
-		
+
 
 		if (fireTimer_ <= 0) {
-			
+
 			animation_->Stop(false);
 			// 弾の速度
 			const float kBulletSpeed = 3.f;
@@ -441,15 +436,23 @@ void Renju::UniqueUpdate() {
 				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
 				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity, skill_);
 
-			
+
 			bullets_.push_back(newBullet);
-		
+
 			coolTime_ = 60;
 			filed_.strength = 0.0f;
 			state_ = NextState("Skill", Output1);
 		}
 	}
-	
+
+}
+
+//ブレス攻撃の回避
+void Renju::BreathInitialize() {
+	BaseCharacter::BreathInitialize();
+}
+void Renju::BreathUpdate() {
+	BaseCharacter::BreathUpdate();
 }
 
 void Renju::DeadInitialize() {

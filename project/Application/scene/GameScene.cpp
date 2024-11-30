@@ -198,7 +198,7 @@ void GameScene::Update() {
 		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
 	}
 	//必殺技の時tankだけposを受け取る
-	if (enemyManager_->GetEnemy()->GetBehavior() == Behavior::kAttack && enemyManager_->GetEnemy()->GetBehaviorAttack() == BehaviorAttack::kSpecial) {
+	if (enemyManager_->GetEnemy()->GetBehavior() == Behavior::kAttack && enemyManager_->GetEnemy()->GetBehaviorAttack() == BehaviorAttack::kBreath) {
 		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
 	}
 	

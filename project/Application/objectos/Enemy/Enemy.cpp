@@ -374,8 +374,8 @@ void Enemy::MoveUpdata() {
 void Enemy::AttackInitialize() {
 	//1,4
 	int num = RandomGenerator::GetRandomInt(1, 5);
-	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kSpecial && GetBehaviorAttack() != BehaviorAttack::kSpecial2) {
-		num = 7;
+	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kSpecial2) {
+		//num = 7;
 	}
 	
 	if (num == 1) {
@@ -391,7 +391,7 @@ void Enemy::AttackInitialize() {
 		attackRequest_ = BehaviorAttack::kGround;
 	}
 	else if (num == 7) {
-		attackRequest_ = BehaviorAttack::kSpecial;
+		attackRequest_ = BehaviorAttack::kBreath;
 	}
 	else if (num == 8) {
 		attackRequest_ = BehaviorAttack::kSpecial2;
@@ -420,7 +420,7 @@ void Enemy::AttackUpdata() {
 		case BehaviorAttack::kGround:
 			GroundAttackInitialize();
 			break; 
-		case BehaviorAttack::kSpecial:
+		case BehaviorAttack::kBreath:
 			SpecialBreathInit();
 			break;
 		case BehaviorAttack::kSpecial2:
@@ -445,7 +445,7 @@ void Enemy::AttackUpdata() {
 	case BehaviorAttack::kGround:
 		GroundAttackUpdata();
 		break;
-	case BehaviorAttack::kSpecial:
+	case BehaviorAttack::kBreath:
 		SpecialBreathUpdata();
 		break; 
 	case BehaviorAttack::kSpecial2:
@@ -963,7 +963,7 @@ void Enemy::Special2Init()
 	animationNumber_ = threat;
 	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
-	moveTime_ = 60*2;
+	moveTime_ = 60*10;
 }
 void Enemy::Special2Updata()
 {

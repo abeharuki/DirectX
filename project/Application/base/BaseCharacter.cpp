@@ -210,7 +210,7 @@ void BaseCharacter::DrawUI(){
 
 void BaseCharacter::MoveInitialize()
 {
-	randPos_ = Vector3{ RandomGenerator::GetRandomFloat(-10.f, 10.f),0,RandomGenerator::GetRandomFloat(-10.f, 10.f) };
+	randPos_ = Vector3{ RandomGenerator::GetRandomFloat(-8.f, 8.f),0,RandomGenerator::GetRandomFloat(-8.f, 8.f) };
 	worldTransformBase_.translate.y = 0.0f;
 	velocity_ = { 0.0f,0.0f,0.0f };
 	searchTarget_ = false;
@@ -286,6 +286,11 @@ void BaseCharacter::MoveUpdate(){
 		}
 
 	}
+
+	//ブレス攻撃
+	if(barrier_ && barrierThreshold_ <= 0.0f) {
+		state_ = CharacterState::Breath;
+	}
 }
 
 void BaseCharacter::JumpInitialize()
@@ -360,6 +365,56 @@ void BaseCharacter::AttackUpdate()
 		followPlayer_ = true;
 		searchTarget_ = false;
 		animation_->SetLoop(true);
+	}
+}
+
+void BaseCharacter::BreathInitialize(){
+	velocity_ = { 0.0f,0.0f,0.0f };
+	isAttack_ = false;
+}
+void BaseCharacter::BreathUpdate(){
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = tankPos_ - GetWorldPosition();
+
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+					? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				: -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		const float kSpeed = 0.04f;
+		// 敵の位置から自分の位置への方向ベクトルを計算
+		Vector3 direction = tankPos_ - enemy_->GetWorldTransform().translate;
+
+		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+		Math::Normalize(direction);   // 正規化して単位ベクトルにする
+		direction *= -1.0f; // 反転して反対方向に進む
+
+		// 速度を設定
+		velocity_ = direction * kSpeed;
+
+		if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (velocity_.x * 6.0f)), 2.0f) &&
+			Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (velocity_.z * 6.0f)), 2.0f)) {
+			animationNumber_ = standby;
+		}
+		else {
+			animationNumber_ = run;
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_ - (velocity_ * 5.0f), 0.05f);
+			worldTransformBase_.translate.y = 0;
+		}
+
+	
+	if (!barrier_ || barrierThreshold_ > 0.1f){
+		state_ = CharacterState::Moveing;
 	}
 }
 
@@ -531,7 +586,7 @@ void BaseCharacter::IsVisibleToEnemy()
 }
 
 void BaseCharacter::BarrierRange(){
-	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial) {
+	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
 		//プレイヤーの円
 		Circle p;
 		p.center = Vector2{ worldTransformBase_.translate.x,worldTransformBase_.translate.z };
@@ -557,48 +612,9 @@ void BaseCharacter::BarrierRange(){
 
 }
 
-void BaseCharacter::TankRunAway(){
-	if (!barrier_ || barrierThreshold_ <= 0.0f) {
-		// 追従対象からロックオン対象へのベクトル
-		Vector3 sub = tankPos_ - GetWorldPosition();
+void BaseCharacter::ProtectRenju()
+{
 
-		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
-
-		const float kSpeed = 0.04f;
-		// 敵の位置から自分の位置への方向ベクトルを計算
-		Vector3 direction = tankPos_ - enemy_->GetWorldTransform().translate;
-
-		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
-		Math::Normalize(direction);   // 正規化して単位ベクトルにする
-		direction *= -1.0f; // 反転して反対方向に進む
-
-		// 速度を設定
-		velocity_ = direction * kSpeed;
-
-		if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (velocity_.x * 6.0f)), 2.0f) &&
-			Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (velocity_.z * 6.0f)), 2.0f)) {
-			animationNumber_ = standby;
-		}
-		else {
-			animationNumber_ = run;
-			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_ - (velocity_ * 5.0f), 0.05f);
-			worldTransformBase_.translate.y = 0;
-		}
-
-	}
 }
 
 void BaseCharacter::RunAway()
@@ -723,6 +739,7 @@ bool BaseCharacter::GetAimCharacter()
 	}
 	
 }
+
 
 void BaseCharacter::OnCollision(Collider* collider)
 {

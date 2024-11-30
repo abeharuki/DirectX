@@ -41,6 +41,10 @@ public: // メンバ関数
 	void UniqueInitialize() override;
 	void UniqueUpdate() override;
 
+	//ブレス攻撃の回避
+	void BreathInitialize() override;
+	void BreathUpdate() override;
+
 	//死亡
 	void DeadInitialize() override;
 	void DeadUpdate() override;
