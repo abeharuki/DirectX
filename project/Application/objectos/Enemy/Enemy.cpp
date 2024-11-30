@@ -173,9 +173,7 @@ void Enemy::Update() {
 		enemy->Update();
 	}
 	
-	for (int i = 0; i < 5; ++i) {
-		//particle_[i]->Update();
-	}
+	
 
 	//必殺技を打てる回数を増やす
 	AddSpecialCount();
@@ -200,11 +198,8 @@ void Enemy::Update() {
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
 	}
 
-	if (Input::PressKey(DIK_4)) {
-		attackRequest_ = BehaviorAttack::kSpecial;
-	}
 
-	if (Input::PressKey(DIK_5)) {
+	if (Input::PressKey(DIK_4)) {
 		attackRequest_ = BehaviorAttack::kSpecial2;
 	}
 
@@ -912,7 +907,7 @@ void Enemy::GroundAttackUpdata() {
 
 }
 
-//必殺技
+//ブレス必殺技
 void Enemy::SpecialBreathInit() {
 	--specialCount_;
 	worldTransformImpact_.translate = worldTransformBase_.translate;
@@ -961,6 +956,7 @@ void Enemy::SpecialBreathUpdata() {
 	}
 }
 
+//
 void Enemy::Special2Init()
 {
 	--specialCount_;

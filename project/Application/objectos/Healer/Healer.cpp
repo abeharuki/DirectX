@@ -362,9 +362,9 @@ void Healer::UniqueUpdate() {
 		--coolTime_;
 		particle_[0]->SetTranslate(worldTransformBase_.translate);
 		particle_[0]->Update();
-		particle_[1]->SetTranslate(pos[0]);//player
-		particle_[2]->SetTranslate(pos[1]);//renju
-		particle_[3]->SetTranslate(pos[2]);//tank
+		particle_[1]->SetTranslate(playerPos_);//player
+		particle_[2]->SetTranslate(renjuPos_);//renju
+		particle_[3]->SetTranslate(tankPos_);//tank
 		particle_[4]->SetTranslate(worldTransformBase_.translate);//healer
 	}
 	else {
@@ -403,13 +403,13 @@ void Healer::UniqueUpdate() {
 
 
 	//回復数値の設定
-	worldTransformHeal_[player].translate = { pos[0].x,pos[0].y + 2.0f,pos[0].z };
+	worldTransformHeal_[player].translate = { playerPos_.x,playerPos_.y + 2.0f,playerPos_.z };
 	healNumMove_[player] = { worldTransformHeal_[player].translate.x ,worldTransformHeal_[player].translate.y + 2.0f,worldTransformHeal_[player].translate.z };
 
-	worldTransformHeal_[renju].translate = { pos[1].x,pos[1].y + 2.0f,pos[1].z };
+	worldTransformHeal_[renju].translate = { renjuPos_.x,renjuPos_.y + 2.0f,renjuPos_.z };
 	healNumMove_[renju] = { worldTransformHeal_[renju].translate.x ,worldTransformHeal_[renju].translate.y + 2.0f,worldTransformHeal_[renju].translate.z };
 
-	worldTransformHeal_[tank].translate = { pos[2].x,pos[2].y + 2.0f,pos[2].z };
+	worldTransformHeal_[tank].translate = { tankPos_.x,tankPos_.y + 2.0f,tankPos_.z };
 	healNumMove_[tank] = { worldTransformHeal_[tank].translate.x ,worldTransformHeal_[tank].translate.y + 2.0f,worldTransformHeal_[tank].translate.z };
 
 	worldTransformHeal_[healer].translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
@@ -514,56 +514,6 @@ void Healer::DeadUpdate() {
 
 }
 
-void Healer::TankRunAway()
-{
-
-	if (barrier_ && barrierThreshold_ <= 0.0f) {
-		// 追従対象からロックオン対象へのベクトル
-		Vector3 sub = pos[2] - GetWorldPosition();
-
-		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
-
-		const float kSpeed = 0.04f;
-		// 敵の位置から自分の位置への方向ベクトルを計算
-		Vector3 direction = pos[2] - enemy_->GetWorldTransform().translate;
-
-		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
-		Math::Normalize(direction);   // 正規化して単位ベクトルにする
-		direction *= -1.0f; // 反転して反対方向に進む
-
-		// 速度を設定
-		velocity_ = direction * kSpeed;
-
-		if (Math::isWithinRange(worldTransformBase_.translate.x, (pos[2].x - (velocity_.x * 5.0f)), 2.0f) &&
-			Math::isWithinRange(worldTransformBase_.translate.z,(pos[2].z - (velocity_.z * 5.0f)),2.0f)) {
-			animationNumber_ = standby;
-		}
-		else {
-			animationNumber_ = run;
-			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, pos[2] - (velocity_ * 5.0f), 0.05f);
-			worldTransformBase_.translate.y = 0;
-		}
-
-	}
-	
-
-
-
-}
-
 // 親子関係
 void Healer::Relationship() {
 
@@ -578,12 +528,12 @@ void Healer::Relationship() {
 	worldTransformMagicCircle_[0].translate.x = worldTransformBase_.translate.x;
 	worldTransformMagicCircle_[0].translate.z = worldTransformBase_.translate.z;
 
-	worldTransformMagicCircle_[1].translate.x = pos[0].x;
-	worldTransformMagicCircle_[1].translate.z = pos[0].z;
-	worldTransformMagicCircle_[2].translate.x = pos[1].x;
-	worldTransformMagicCircle_[2].translate.z = pos[1].z;
-	worldTransformMagicCircle_[3].translate.x = pos[2].x;
-	worldTransformMagicCircle_[3].translate.z = pos[2].z;
+	worldTransformMagicCircle_[1].translate.x = playerPos_.x;
+	worldTransformMagicCircle_[1].translate.z = playerPos_.z;
+	worldTransformMagicCircle_[2].translate.x = renjuPos_.x;
+	worldTransformMagicCircle_[2].translate.z = renjuPos_.z;
+	worldTransformMagicCircle_[3].translate.x = tankPos_.x;
+	worldTransformMagicCircle_[3].translate.z = tankPos_.z;
 
 
 	for (int i = 0; i < 4; ++i) {

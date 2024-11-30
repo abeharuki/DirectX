@@ -557,6 +557,50 @@ void BaseCharacter::BarrierRange(){
 
 }
 
+void BaseCharacter::TankRunAway(){
+	if (!barrier_ || barrierThreshold_ <= 0.0f) {
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = tankPos_ - GetWorldPosition();
+
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+					? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				: -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		const float kSpeed = 0.04f;
+		// 敵の位置から自分の位置への方向ベクトルを計算
+		Vector3 direction = tankPos_ - enemy_->GetWorldTransform().translate;
+
+		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+		Math::Normalize(direction);   // 正規化して単位ベクトルにする
+		direction *= -1.0f; // 反転して反対方向に進む
+
+		// 速度を設定
+		velocity_ = direction * kSpeed;
+
+		if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (velocity_.x * 6.0f)), 2.0f) &&
+			Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (velocity_.z * 6.0f)), 2.0f)) {
+			animationNumber_ = standby;
+		}
+		else {
+			animationNumber_ = run;
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_ - (velocity_ * 5.0f), 0.05f);
+			worldTransformBase_.translate.y = 0;
+		}
+
+	}
+}
+
 void BaseCharacter::RunAway()
 {
 	animationNumber_ = run;
@@ -644,7 +688,7 @@ void BaseCharacter::InitializePerCharacter()
 		}
 	}
 	else if (className_ == "Tank") {
-		skillName_ = "Stan";
+		skillName_ = "Barrier";
 		spriteName_.reset(Sprite::Create("resources/Tank/tank.png"));
 		spriteNumP_.reset(Sprite::Create("resources/character/2P.png"));
 		spriteHP_->SetPosition(Vector2{ 1106.0f,475.0f });

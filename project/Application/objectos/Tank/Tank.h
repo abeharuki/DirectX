@@ -78,8 +78,7 @@ private: // メンバ変数
 	//ビヘイビアツリー
 	BehaviorTree<Tank>* behaviorTree_;
 	std::unique_ptr<Model>barrierModel_;
-	float barrierThreshold_ = 1.0f;
-
+	
 	ParticleSystem* particle_;
 	EmitterSphere emitter_{};
 	

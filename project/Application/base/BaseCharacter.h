@@ -91,9 +91,11 @@ public:
     void searchTarget();//敵との距離感
     //敵の視野内にいるかどうか
     void IsVisibleToEnemy();
-    //
+    //barrierの範囲内か
     void BarrierRange();
-    
+    //敵の大技をよける
+    void TankRunAway();
+
     //次の状態遷移をノードから検索
     CharacterState NextState(std::string name, int outputNum);
 private:
@@ -197,6 +199,9 @@ protected:
     Vector3 velocity_ = {};
 
     Vector3 playerPos_;
+    //タンクのpos(タンク以外のキャラがbarrierの中に入るときに必要)
+    Vector3 tankPos_;
+
     //作戦
     bool operation_;
 
@@ -215,5 +220,9 @@ protected:
     bool barrier_ = false;
     //barrierのポジション
     Vector3 barrierPos_;
+    //
+    float barrierThreshold_;
+
+  
 };
 

@@ -46,9 +46,6 @@ public: // メンバ関数
 	void DeadInitialize() override;
 	void DeadUpdate() override;
 
-	//敵の大技をよける
-	void TankRunAway();
-
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
 
@@ -103,9 +100,6 @@ private: // メンバ変数
 	//攻撃フラグ
 	bool hitBullet_ = false;
 
-	//タンクのpos;
-	Vector3 tankPos_;
-
 	//弾
 	std::list<RenjuBullet*> bullets_;
 	// 攻撃時間
@@ -120,5 +114,4 @@ private: // メンバ変数
 	bool preHitPlayer_ = false;
 	bool skill_ = false;
 
-	float barrierThreshold_;
 };

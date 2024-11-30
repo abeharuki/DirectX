@@ -45,9 +45,6 @@ public: // メンバ関数
 	void DeadInitialize() override;
 	void DeadUpdate() override;
 
-	//敵の大技をよける
-	void TankRunAway();
-
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
 
@@ -75,9 +72,8 @@ public: // メンバ関数
 	void SetBarrierThreshold(float threshold) { barrierThreshold_ = threshold; }
 	//座標の受け取り
 	void SetPos(Vector3 renjuPos, Vector3 tankPos) {
-		pos[0] = playerPos_;
-		pos[1] = renjuPos;
-		pos[2] = tankPos;
+		renjuPos_ = renjuPos;
+		tankPos_ = tankPos;
 	}
 	//味方キャラのHpの受け取り
 	void SetHp(Vector3 hp) { 
@@ -110,7 +106,7 @@ private: // メンバ変数
 	std::unique_ptr<Model> magicCircle_[4];
 	std::unique_ptr<Model> healModel_[4];
 	float t_[4];//ディゾルブ
-	Vector3 pos[3];
+	Vector3 renjuPos_;;
 	float healAlph_[4];
 	Vector3 healNumMove_[4];
 
@@ -155,7 +151,4 @@ private: // メンバ変数
 	float playerHp_;
 	float renjuHp_;
 	float tankHp_;
-
-	//
-	float barrierThreshold_;
 };

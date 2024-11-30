@@ -37,6 +37,8 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	particle_ = ParticleManager::Create("resources/particle/circle.png", 10);
 	particle_->SetEmitter(emitter_);
 
+	barrierThreshold_ = 1.0f;
+
 	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);
 	
