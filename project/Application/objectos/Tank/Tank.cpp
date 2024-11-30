@@ -295,6 +295,16 @@ void Tank::BreathUpdate() {
 	state_ = CharacterState::Unique;
 }
 
+void Tank::ProtectInitialize()
+{
+	BaseCharacter::ProtectInitialize();
+}
+
+void Tank::ProtectUpdate()
+{
+	BaseCharacter::ProtectUpdate();
+}
+
 void Tank::DeadInitialize() {
 	//復活時間
 	revivalCount_ = 0;

@@ -26,7 +26,7 @@ void EnemyHenchman::Update(){
 	}
 	
 	worldTransform_.rotate.y = Math::LerpShortAngle(worldTransform_.rotate.y, destinationAngleY_, 0.2f);
-	if (!hit_) {
+	if (hit_) {
 		
 	}
 	followRenju();

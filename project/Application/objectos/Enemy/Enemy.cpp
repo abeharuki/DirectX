@@ -263,6 +263,7 @@ void Enemy::MoveInitialize() {
 	aimRenju_ = false;
 	aimTank_  = false;
 	behaviorAttack_ = false;
+	special_ = false;
 	animationNumber_ = standby;
 	animation_->SetLoop(true);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
@@ -964,6 +965,7 @@ void Enemy::Special2Init()
 	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
 	moveTime_ = 60*10;
+	special_ = true;
 }
 void Enemy::Special2Updata()
 {

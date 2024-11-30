@@ -470,6 +470,14 @@ void Healer::BreathUpdate() {
 	BaseCharacter::BreathUpdate();
 }
 
+void Healer::ProtectInitialize(){
+	BaseCharacter::ProtectInitialize();
+}
+
+void Healer::ProtectUpdate(){
+	BaseCharacter::ProtectUpdate();
+}
+
 void Healer::DeadInitialize() {
 	//復活時間
 	revivalCount_ = 0;
@@ -518,7 +526,6 @@ void Healer::DeadUpdate() {
 	ImGui::End();
 
 }
-
 // 親子関係
 void Healer::Relationship() {
 

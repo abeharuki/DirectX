@@ -335,6 +335,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\BehaviorTree\ActionNodes\DeadActionNode.h" />
     <ClInclude Include="Application\BehaviorTree\ActionNodes\JumpActionNode.h" />
     <ClInclude Include="Application\BehaviorTree\ActionNodes\MoveActionNode.h" />
+    <ClInclude Include="Application\BehaviorTree\ActionNodes\ProtectActionNode.h" />
     <ClInclude Include="Application\BehaviorTree\ActionNodes\UniqueActionNode.h" />
     <ClInclude Include="Application\BehaviorTree\BehaviorTree.h" />
     <ClInclude Include="Application\BehaviorTree\BehaviorTreeNode.h" />

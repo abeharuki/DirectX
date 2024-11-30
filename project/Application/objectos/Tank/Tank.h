@@ -46,6 +46,10 @@ public: // メンバ関数
 	void BreathInitialize() override;
 	void BreathUpdate() override;
 
+	//味方AIを守る動き
+	void ProtectInitialize() override;
+	void ProtectUpdate() override;
+
 	//死亡
 	void DeadInitialize() override;
 	void DeadUpdate() override;
@@ -70,7 +74,10 @@ public: // メンバ関数
 		//shield_->DirectionalLightDraw(directionLight);
 	}
 
-	
+	//味方AIのpos
+	void SetPos(Vector3 renjuPos) {
+		renjuPos_ = renjuPos;
+	}
 
 private:
 	// パーツ親子関係

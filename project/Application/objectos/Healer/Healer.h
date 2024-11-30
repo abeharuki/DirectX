@@ -45,6 +45,10 @@ public: // メンバ関数
 	void BreathInitialize() override;
 	void BreathUpdate() override;
 
+	//味方AIを守る動き
+	void ProtectInitialize() override;
+	void ProtectUpdate() override;
+
 	//死亡
 	void DeadInitialize() override;
 	void DeadUpdate() override;
@@ -74,7 +78,7 @@ public: // メンバ関数
 
 	/*--------このクラス特有の関数-------*/
 	void SetBarrierThreshold(float threshold) { barrierThreshold_ = threshold; }
-	//座標の受け取り
+	//味方AI座標の受け取り
 	void SetPos(Vector3 renjuPos, Vector3 tankPos) {
 		renjuPos_ = renjuPos;
 		tankPos_ = tankPos;
@@ -110,7 +114,6 @@ private: // メンバ変数
 	std::unique_ptr<Model> magicCircle_[4];
 	std::unique_ptr<Model> healModel_[4];
 	float t_[4];//ディゾルブ
-	Vector3 renjuPos_;;
 	float healAlph_[4];
 	Vector3 healNumMove_[4];
 

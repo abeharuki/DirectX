@@ -455,6 +455,57 @@ void Renju::BreathUpdate() {
 	BaseCharacter::BreathUpdate();
 }
 
+void Renju::ProtectInitialize(){
+	BaseCharacter::ProtectInitialize();
+	coolTime_ = 60;
+}
+
+void Renju::ProtectUpdate(){
+	--coolTime_;
+
+	if (coolTime_ > 0) {
+		// 追従対象からロックオン対象へのベクトル
+		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
+
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ =
+				(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
+		}
+
+		const float kSpeed = 0.02f;
+		// 敵の位置から自分の位置への方向ベクトルを計算
+		Vector3 direction = enemy_->GetWorldTransform().translate - worldTransformBase_.translate;
+
+		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+		Math::Normalize(direction);   // 正規化して単位ベクトルにする
+		direction *= -1.0f; // 反転して反対方向に進む
+
+		Vector3 randPos = { 2.f,0.f,0.f };
+		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
+		randPos = Math::TransformNormal(randPos, rotateMatrix);
+
+		// 速度を設定
+		velocity_ = (direction + randPos_) * kSpeed;
+
+		worldTransformBase_.translate += velocity_;
+	}
+	else {
+		state_ = CharacterState::Unique;
+	}
+	
+
+	
+}
+
 void Renju::DeadInitialize() {
 	//復活時間
 	revivalCount_ = 0;

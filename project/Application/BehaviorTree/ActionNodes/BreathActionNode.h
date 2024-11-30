@@ -15,7 +15,7 @@ public:
     }
 
     void Initialize() override {
-        // MoveActionNode の初期化処理を実装
+        // BreathActionNode の初期化処理を実装
         if (this->character_->GetState() == CharacterState::Breath) {
             this->character_->BreathInitialize();
         }

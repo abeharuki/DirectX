@@ -112,6 +112,7 @@ public: // メンバ関数
 	bool isClear() { return clear_; };
 	bool IsAreaDraw() { return areaDraw_; }
 	bool IsBehaberAttack() {return  behaviorAttack_;}
+	bool IsSpecial() { return special_;}
 
 	/*-----セッター-----*/
 	void SetHP(float hp) { hp_ = hp; }

@@ -131,6 +131,11 @@ void GameScene::Update() {
 			character->Dissolve();
 		}
 		character->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
+		if (enemyManager_->GetEnemy()->IsSpecial()) {
+			for (EnemyHenchman* enemy : enemyManager_->GetEnemy()->GetEnemys()) {
+				character->SetHenchmanPos(enemy->GetWorldPosition());
+			}
+		}
 	}
 
 	healerManager_->GetHealer()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
@@ -145,7 +150,6 @@ void GameScene::Update() {
 
 	//魔法陣に使う座標の受け取り
 	healerManager_->GetHealer()->SetPos( renjuManager_->GetRenju()->GetWorldPosition(), tankManager_->GetTank()->GetWorldPosition());
-
 	//回復
 	if (healerManager_->GetHealer()->GetHeal()) {
 		//全体回復
@@ -201,14 +205,12 @@ void GameScene::Update() {
 	if (enemyManager_->GetEnemy()->GetBehavior() == Behavior::kAttack && enemyManager_->GetEnemy()->GetBehaviorAttack() == BehaviorAttack::kBreath) {
 		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
 	}
-	
+	//ブレスパーティクルのフィールド用
 	enemyManager_->GetEnemy()->SetTankRotation(tankManager_->GetTank()->GetWorldTransform().rotate);
 	enemyManager_->GetEnemy()->SethmansRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
 
-	//tankのスタン攻撃の受け取り
-	if (tankManager_->GetTank()->GetStanAttack()) {
-		enemyManager_->GetEnemy()->StanBehavior();
-	}
+	//レンジャーを守るためのpos
+	tankManager_->GetTank()->SetPos(renjuManager_->GetRenju()->GetWorldPosition());
 
 	//攻撃の受け取り
 	if (healerManager_->IsAttack()) {enemyManager_->OnHealerCollision();}
@@ -242,8 +244,6 @@ void GameScene::Update() {
 	
 	loader_->SetLight(directionLight_);
 
-	
-	
 }
 
 void GameScene::Draw() {

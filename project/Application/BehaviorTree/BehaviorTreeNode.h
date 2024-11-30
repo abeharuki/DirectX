@@ -6,6 +6,7 @@ enum class CharacterState {
     Jumping,
     Unique,
     Breath,
+    Protect,
     Dead
 };
 

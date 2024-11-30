@@ -1,7 +1,7 @@
 #include "BaseCharacter.h"
 
 
-void BaseCharacter::Initialize(Animations* animation, std::string className){
+void BaseCharacter::Initialize(Animations* animation, std::string className) {
 	className_ = className;
 	animation_ = animation;
 	animationNumber_ = standby;
@@ -16,10 +16,10 @@ void BaseCharacter::Initialize(Animations* animation, std::string className){
 	spriteHPG_.reset(Sprite::Create("resources/character/HPG.png"));
 	spriteMP_.reset(Sprite::Create("resources/Player/MP.png"));
 	spriteMPG_.reset(Sprite::Create("resources/character/HPG.png"));
-	
+
 	spriteH_.reset(Sprite::Create("resources/character/H.png"));
 	spriteM_.reset(Sprite::Create("resources/character/M.png"));
-	
+
 
 	for (int i = 0; i < 3; ++i) {
 		HPnum_[i].reset(Sprite::Create("resources/character/0.png"));
@@ -30,7 +30,7 @@ void BaseCharacter::Initialize(Animations* animation, std::string className){
 
 	HPnum_[2]->SetTexture("resources/character/1.png");
 	MPnum_[2]->SetTexture("resources/character/1.png");
-	
+
 	spriteHPG_->SetSize(Vector2{ 100.0f,10.0f });
 	spriteMPG_->SetSize(Vector2{ 100.0f,10.0f });
 	spriteH_->SetSize(Vector2{ 35.0f,35.0f });
@@ -47,15 +47,15 @@ void BaseCharacter::Initialize(Animations* animation, std::string className){
 	worldTransformNum_.Initialize();
 	worldTransformShadow_.Initialize();
 	worldTransformShadow_.rotate = { -1.571f,0.0f,0.0f };
-	if (className != "Tank") {worldTransformShadow_.scale = { 1.8f,1.8f,1.0f };}
+	if (className != "Tank") { worldTransformShadow_.scale = { 1.8f,1.8f,1.0f }; }
 	else { worldTransformShadow_.scale = { 2.2f,2.2f,1.0f }; }
 	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
 	alpha_ = 0.0f;
 
-	
+
 }
 
-void BaseCharacter::Update(){
+void BaseCharacter::Update() {
 
 	//影の計算
 	shadowColor_.w = 1 - (worldTransformBase_.translate.y / 3.9f);
@@ -83,7 +83,7 @@ void BaseCharacter::Update(){
 				state_ = CharacterState::Dead;
 			}
 		}
-		
+
 	}
 
 	//各キャラの処理にしないといけない
@@ -113,15 +113,15 @@ void BaseCharacter::Update(){
 	BarrierRange();
 
 	// 回転
-	worldTransformBase_.rotate.y =Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 	animation_->SetFlameTimer(flameTime_);
 	animation_->Update(animationNumber_);
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.TransferMatrix();
 	worldTransformNum_.TransferMatrix();
 
-	spriteHP_->SetSize({hp_,10.f});
-	spriteMP_->SetSize({ mp_,10.f});
+	spriteHP_->SetSize({ hp_,10.f });
+	spriteMP_->SetSize({ mp_,10.f });
 	//HP,MP表示の計算
 	if (hp_ < 100.0f) {
 		int HPnum = int(hp_);
@@ -174,18 +174,18 @@ void BaseCharacter::Update(){
 	}
 
 
-	
+
 }
 
-void BaseCharacter::Draw(const ViewProjection& camera){
+void BaseCharacter::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
 	shadowModel_->Draw(worldTransformShadow_, camera, false);
 }
-void BaseCharacter::NoDepthDraw(const ViewProjection& camera){
+void BaseCharacter::NoDepthDraw(const ViewProjection& camera) {
 	damageModel_->Draw(worldTransformNum_, camera, false);
 }
 
-void BaseCharacter::DrawUI(){
+void BaseCharacter::DrawUI() {
 	spriteHPG_->Draw();
 	spriteHP_->Draw();
 	spriteMPG_->Draw();
@@ -220,8 +220,9 @@ void BaseCharacter::MoveInitialize()
 	animation_->SetLoop(true);
 	flameTime_ = 30.0f;
 	animationNumber_ = standby;
+
 }
-void BaseCharacter::MoveUpdate(){
+void BaseCharacter::MoveUpdate() {
 
 
 	--coolTime_;
@@ -254,7 +255,7 @@ void BaseCharacter::MoveUpdate(){
 	}
 	IsVisibleToEnemy();
 
-	
+
 
 
 	//敵の攻撃が終わったらまたジャンプできるように設定
@@ -288,8 +289,16 @@ void BaseCharacter::MoveUpdate(){
 	}
 
 	//ブレス攻撃
-	if(barrier_ && barrierThreshold_ <= 0.0f) {
+	if (barrier_ && barrierThreshold_ <= 0.0f) {
 		state_ = CharacterState::Breath;
+	}
+
+	//
+	if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2) {
+		if (henchmanPos_.size() >= 1) {
+			state_ = CharacterState::Protect;
+		}
+
 	}
 }
 
@@ -368,53 +377,103 @@ void BaseCharacter::AttackUpdate()
 	}
 }
 
-void BaseCharacter::BreathInitialize(){
+void BaseCharacter::BreathInitialize() {
 	velocity_ = { 0.0f,0.0f,0.0f };
 	isAttack_ = false;
 }
-void BaseCharacter::BreathUpdate(){
-		// 追従対象からロックオン対象へのベクトル
-		Vector3 sub = tankPos_ - GetWorldPosition();
+void BaseCharacter::BreathUpdate() {
+	// 追従対象からロックオン対象へのベクトル
+	Vector3 sub = tankPos_ - GetWorldPosition();
 
-		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+	// y軸周りの回転
+	if (sub.z != 0.0) {
+		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
 
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
+		if (sub.z < 0.0) {
+			destinationAngleY_ = (sub.x >= 0.0)
+				? std::numbers::pi_v<float> -destinationAngleY_
+				: -std::numbers::pi_v<float> -destinationAngleY_;
+		}
+	}
+	else {
+		destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			: -std::numbers::pi_v<float> / 2.0f;
+	}
+
+	const float kSpeed = 0.04f;
+	// 敵の位置から自分の位置への方向ベクトルを計算
+	Vector3 direction = tankPos_ - enemy_->GetWorldTransform().translate;
+
+	// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
+	Math::Normalize(direction);   // 正規化して単位ベクトルにする
+	direction *= -1.0f; // 反転して反対方向に進む
+
+	// 速度を設定
+	velocity_ = direction * kSpeed;
+
+	if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (velocity_.x * 6.0f)), 2.0f) &&
+		Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (velocity_.z * 6.0f)), 2.0f)) {
+		animationNumber_ = standby;
+	}
+	else {
+		animationNumber_ = run;
+		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_ - (velocity_ * 5.0f), 0.1f);
+		worldTransformBase_.translate.y = 0;
+	}
+
+
+	if (!barrier_ || barrierThreshold_ > 0.1f) {
+		state_ = CharacterState::Moveing;
+	}
+}
+
+void BaseCharacter::ProtectInitialize()
+{
+	velocity_ = { 0.0f,0.0f,0.0f };
+	isAttack_ = false;
+
+}
+void BaseCharacter::ProtectUpdate()
+{
+	for (int i = 0; i < henchmanPos_.size(); ++i) {
+		if (i == 0) {
+			henchmanDist_ = henchmanPos_[i];
+		}
+		else {
+			float distanceToNowDist = GetDistanceSquared(renjuPos_, henchmanDist_);
+			float distanceToHench = GetDistanceSquared(renjuPos_, henchmanPos_[i]);
+			//今追いかけている子分より更にレンジャーに近い子分がいたらそっちを追いかける
+			if (distanceToNowDist > distanceToHench) {
+				henchmanDist_ = henchmanPos_[i];
 			}
 		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
+	}
+
+	//一番近い子分の方を向く// 追従対象からロックオン対象へのベクトル
+	Vector3 sub = henchmanDist_ - GetWorldPosition();
+
+	// y軸周りの回転
+	if (sub.z != 0.0) {
+		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+		if (sub.z < 0.0) {
+			destinationAngleY_ = (sub.x >= 0.0)
+				? std::numbers::pi_v<float> -destinationAngleY_
+				: -std::numbers::pi_v<float> -destinationAngleY_;
 		}
+	}
+	else {
+		destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			: -std::numbers::pi_v<float> / 2.0f;
+	}
 
-		const float kSpeed = 0.04f;
-		// 敵の位置から自分の位置への方向ベクトルを計算
-		Vector3 direction = tankPos_ - enemy_->GetWorldTransform().translate;
 
-		// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
-		Math::Normalize(direction);   // 正規化して単位ベクトルにする
-		direction *= -1.0f; // 反転して反対方向に進む
+	worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, henchmanDist_, 0.1f);
+	worldTransformBase_.translate.y = 0.0f;
 
-		// 速度を設定
-		velocity_ = direction * kSpeed;
-
-		if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (velocity_.x * 6.0f)), 2.0f) &&
-			Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (velocity_.z * 6.0f)), 2.0f)) {
-			animationNumber_ = standby;
-		}
-		else {
-			animationNumber_ = run;
-			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_ - (velocity_ * 5.0f), 0.05f);
-			worldTransformBase_.translate.y = 0;
-		}
-
-	
-	if (!barrier_ || barrierThreshold_ > 0.1f){
+	if (enemy_->GetBehavior() != Behavior::kAttack) {
 		state_ = CharacterState::Moveing;
+		henchmanPos_.clear();
 	}
 }
 
@@ -445,7 +504,7 @@ void BaseCharacter::Relationship()
 void BaseCharacter::followPlayer()
 {
 	if (followPlayer_ && state_ != CharacterState::Unique) {
-		
+
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = playerPos_ - GetWorldPosition();
 
@@ -585,7 +644,7 @@ void BaseCharacter::IsVisibleToEnemy()
 	}
 }
 
-void BaseCharacter::BarrierRange(){
+void BaseCharacter::BarrierRange() {
 	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
 		//プレイヤーの円
 		Circle p;
@@ -609,11 +668,6 @@ void BaseCharacter::BarrierRange(){
 			}
 		}
 	}
-
-}
-
-void BaseCharacter::ProtectRenju()
-{
 
 }
 
@@ -661,6 +715,12 @@ CharacterState BaseCharacter::NextState(std::string name, int outputNum)
 	}
 	else if (linkedNode.name == "Dead") {
 		return CharacterState::Dead;
+	}
+	else if (linkedNode.name == "Breath") {
+		return CharacterState::Breath;
+	}
+	else if (linkedNode.name == "Protect") {
+		return CharacterState::Protect;
 	}
 	else {
 		return CharacterState::Moveing; // デフォルトの状態
@@ -720,7 +780,7 @@ void BaseCharacter::InitializePerCharacter()
 			MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,480.0f });
 		}
 	}
-	
+
 }
 
 bool BaseCharacter::GetAimCharacter()
@@ -737,7 +797,14 @@ bool BaseCharacter::GetAimCharacter()
 	else {
 		return false;
 	}
-	
+
+}
+
+float BaseCharacter::GetDistanceSquared(const Vector3& a, const Vector3& b)
+{
+	return (b.x - a.x) * (b.x - a.x) +
+		(b.y - a.y) * (b.y - a.y) +
+		(b.z - a.z) * (b.z - a.z);
 }
 
 
@@ -820,6 +887,12 @@ void BaseCharacter::OnCollision(Collider* collider)
 		};
 		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
 	}
+
+	//子分に当たった時の処理
+	if (collider->GetCollisionAttribute() == kCollisionAttributeHenchman) {
+
+	}
+
 	worldTransformBase_.UpdateMatrix();
 }
 

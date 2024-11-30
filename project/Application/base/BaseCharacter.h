@@ -41,6 +41,10 @@ public:
     virtual void BreathInitialize();
     virtual void BreathUpdate();
 
+    //味方AIを守る動き
+    virtual void ProtectInitialize();
+    virtual void ProtectUpdate();
+
     virtual void OnCollision(Collider* collider) override;
 
     /*---------------------状態遷移関連---------------------*/
@@ -75,7 +79,7 @@ public:
     void SetBattleStart(bool flag) { battleStart_ = flag;}
     void SetBarrier(bool barrier) { barrier_ = barrier; }
     void SetBarrierPos(Vector3 pos) { barrierPos_ = pos; }
-
+    void SetHenchmanPos(Vector3 pos) {henchmanPos_.push_back(pos);};
 
     // パーツ親子関係
     virtual void Relationship();
@@ -97,8 +101,7 @@ public:
     void IsVisibleToEnemy();
     //barrierの範囲内か
     void BarrierRange();
-    //弓キャラを守る
-    void ProtectRenju();
+    
 
     //次の状態遷移をノードから検索
     CharacterState NextState(std::string name, int outputNum);
@@ -108,6 +111,9 @@ private:
 
     //敵がどのキャラを狙っているか
     bool GetAimCharacter();
+
+    //目的の場所までの距離
+    float GetDistanceSquared(const Vector3& a,const Vector3& b);
 
 protected:
     //状態遷移
@@ -205,6 +211,8 @@ protected:
     Vector3 playerPos_;
     //タンクのpos(タンク以外のキャラがbarrierの中に入るときに必要)
     Vector3 tankPos_;
+    //レンジャーのpos(レンジャー以外のキャラがレンジャーを守るときに必要)
+    Vector3 renjuPos_;
 
     //作戦
     bool operation_;
@@ -227,6 +235,9 @@ protected:
     //
     float barrierThreshold_;
 
-  
+    //敵子分のposを格納
+    std::vector<Vector3> henchmanPos_;
+    //レンジャーとの距離が最も近い子分のpos
+    Vector3 henchmanDist_;
 };
 
