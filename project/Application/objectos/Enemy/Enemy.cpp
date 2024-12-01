@@ -202,7 +202,7 @@ void Enemy::Update() {
 
 
 	if (Input::PressKey(DIK_4)) {
-		attackRequest_ = BehaviorAttack::kSpecial2;
+		attackRequest_ = BehaviorAttack::kHenchman;
 	}
 
 	ImGui::Begin("EnemyRock");
@@ -377,7 +377,7 @@ void Enemy::MoveUpdata() {
 void Enemy::AttackInitialize() {
 	//1,4
 	int num = RandomGenerator::GetRandomInt(1, 5);
-	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kSpecial2) {
+	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 		num = 8;
 	}
 	
@@ -397,7 +397,7 @@ void Enemy::AttackInitialize() {
 		attackRequest_ = BehaviorAttack::kBreath;
 	}
 	else if (num == 8) {
-		attackRequest_ = BehaviorAttack::kSpecial2;
+		attackRequest_ = BehaviorAttack::kHenchman;
 	}
 	
 	
@@ -426,7 +426,7 @@ void Enemy::AttackUpdata() {
 		case BehaviorAttack::kBreath:
 			SpecialBreathInit();
 			break;
-		case BehaviorAttack::kSpecial2:
+		case BehaviorAttack::kHenchman:
 			Special2Init();
 			break;
 		}
@@ -451,7 +451,7 @@ void Enemy::AttackUpdata() {
 	case BehaviorAttack::kBreath:
 		SpecialBreathUpdata();
 		break; 
-	case BehaviorAttack::kSpecial2:
+	case BehaviorAttack::kHenchman:
 		Special2Updata();
 		break;
 	}

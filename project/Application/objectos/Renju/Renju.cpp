@@ -228,6 +228,10 @@ void Renju::MoveInitialize() {
 };
 void Renju::MoveUpdate() {
 
+	if (coolTime_ <= 0 && special_) {
+		special_ = false;
+	}
+
 	BaseCharacter::MoveUpdate();
 
 	//スキル
@@ -241,7 +245,9 @@ void Renju::MoveUpdate() {
 		}
 	}
 
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2 && enemy_->GetBehavior() == Behavior::kAttack) {
+	
+
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetBehavior() == Behavior::kAttack && !special_) {
 		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 		if (length >= minDistance_ * 3.f) {
 			state_ = CharacterState::Unique;
@@ -262,9 +268,7 @@ void Renju::MoveUpdate() {
 		}
 	}
 
-	if (Input::PushKey(DIK_U)) {
-		state_ = CharacterState::Unique;
-	}
+	
 
 };
 
@@ -374,8 +378,9 @@ void Renju::UniqueInitialize() {
 	isAttack_ = true;
 	mp_ -= 10;
 	animation_->SetLoop(false);
-	if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2) {
+	if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
 		fireTimer_ = 60 * 9;
+		special_ = true;
 	}
 	else {
 		fireTimer_ = 60;

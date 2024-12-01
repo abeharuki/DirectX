@@ -39,7 +39,7 @@ enum class BehaviorAttack {
 	kThrowing,//投擲攻撃
 	kGround,//地面を殴る攻撃
 	kBreath,//必殺技(体力が半分以下になった時に発動)
-	kSpecial2,//必殺技(体力が半分以下になった時に発動)
+	kHenchman,//必殺技(体力が半分以下になった時に発動)
 };
 
 class Enemy : public Collider {

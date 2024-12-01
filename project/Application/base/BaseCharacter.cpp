@@ -296,7 +296,7 @@ void BaseCharacter::MoveUpdate() {
 
 	//弓キャラを守る
 	if (className_ != "Renju") {
-		if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2 && state_ != CharacterState::Protect) {
+		if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && state_ != CharacterState::Protect) {
 			if (henchmans_.size() >= 1) {
 				henchmanSearch_ = true;
 				state_ = CharacterState::Protect;
