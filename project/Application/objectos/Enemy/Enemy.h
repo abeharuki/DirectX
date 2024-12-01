@@ -137,7 +137,7 @@ public: // メンバ関数
 	void SetIsDeadRenju(bool flag) { isDeadRenju_ = flag; }
 	void SetIsDeadTank(bool flag) { isDeadTank_ = flag; }
 	void SetBattleStart(bool flag) { battleStart_ = flag;}
-
+	void SetRenjuSpecial(bool flag) { renjuSpecial_ = flag; }
 	void SetDead(bool dead) {
 		if (dead) {
 			behaviorRequest_ = Behavior::kDead;
@@ -290,4 +290,6 @@ private: // メンバ変数
 	bool special_ = false;
 	//必殺技を打てる回数
 	int specialCount_ = 1;
+	//レンジャーの必殺攻撃を食らったかどうか
+	bool renjuSpecial_ = false;
 };

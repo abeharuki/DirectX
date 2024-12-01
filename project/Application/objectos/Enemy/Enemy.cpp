@@ -266,6 +266,7 @@ void Enemy::MoveInitialize() {
 	aimTank_  = false;
 	behaviorAttack_ = false;
 	special_ = false;
+	renjuSpecial_ = false;
 	animationNumber_ = standby;
 	animation_->SetLoop(true);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
@@ -989,6 +990,11 @@ void Enemy::Special2Updata()
 			henchmans_.push_back(newEnemy);
 		}	
 	}
+
+	if(renjuSpecial_){
+		behaviorRequest_ = Behavior::kRoot;
+	}
+
 }
 
 //スタン

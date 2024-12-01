@@ -284,6 +284,7 @@ void Renju::JumpUpdate() {
 void Renju::AttackInitialize() {
 	BaseCharacter::AttackInitialize();
 	skill_ = false;
+	special_ = false;
 	fireTimer_ = 20;
 	flameTime_ = 60.0f;
 	worldTransformArrow_.rotate = { -0.3f,0.0f,1.3f };
@@ -384,6 +385,7 @@ void Renju::UniqueInitialize() {
 	}
 	else {
 		fireTimer_ = 60;
+		special_ = false;
 	}
 
 	flameTime_ = 60.0f;
@@ -586,6 +588,19 @@ void Renju::OnCollision(Collider* collider) {
 
 	BaseCharacter::OnCollision(collider);
 
+	if (collider->GetCollisionAttribute() == kCollisionAttributeHenchman) {
+		isHit_ = true;
+
+		if (isHit_ != preHit_) {
+			if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+				hp_ -= 10.0f;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/10.png");
+			}
+		}
+	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer ||
 		collider->GetCollisionAttribute() == kCollisionAttributeHealer ||

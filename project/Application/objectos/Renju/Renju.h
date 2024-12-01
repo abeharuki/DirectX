@@ -18,7 +18,7 @@ class Renju : public BaseCharacter {
 
 public: // メンバ関数
 	~Renju() override;
-	
+
 	void Initialize(Animations* animation, std::string skillName) override;
 
 	void Update() override;
@@ -61,6 +61,7 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformBow() { return worldTransformBow_; }
 	// 弾リストの取得
 	const std::list<RenjuBullet*>& GetBullets() const { return bullets_; }
+	bool GetSpecial() {return special_;}
 	bool GetHitBullet() { return hitBullet_; }
 	bool GetSkill() { return skill_; }
 	/*-----セッター-----*/
@@ -71,6 +72,7 @@ public: // メンバ関数
 			hp_ += heal;
 		}
 	}
+
 
 	void SetLight(DirectionLight directionLight)override { 
 		BaseCharacter::SetLight(directionLight); 
@@ -112,6 +114,7 @@ private: // メンバ変数
 	std::list<RenjuBullet*> bullets_;
 	// 攻撃時間
 	int fireTimer_ = 20;
+	//子分を出してくる攻撃を止める
 	bool special_ = false;
 
 	//復活時間

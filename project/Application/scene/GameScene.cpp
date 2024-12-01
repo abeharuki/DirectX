@@ -217,8 +217,10 @@ void GameScene::Update() {
 	if (healerManager_->IsAttack()) {enemyManager_->OnHealerCollision();}
 	if (tankManager_->IsAttack()) {enemyManager_->OnTankCollision();}
 	if (playerManager_->IsAttack()) {enemyManager_->OnCollision();}
-	if (renjuManager_->GetRenju()->GetHitBullet()) {enemyManager_->OnRenjuCollision(renjuManager_->GetRenju()->GetSkill());}
-	
+	if (renjuManager_->GetRenju()->GetHitBullet()) {
+		enemyManager_->OnRenjuCollision(renjuManager_->GetRenju()->GetSkill());
+		enemyManager_->GetEnemy()->SetRenjuSpecial(renjuManager_->GetRenju()->GetSpecial());
+	}
 	skydome_->Update();
 	loader_->Update();
 
