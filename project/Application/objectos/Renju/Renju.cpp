@@ -228,7 +228,8 @@ void Renju::MoveInitialize() {
 };
 void Renju::MoveUpdate() {
 
-	if (coolTime_ <= 0 && special_) {
+
+	if (enemy_->GetBehavior() != Behavior::kAttack) {
 		special_ = false;
 	}
 
@@ -241,16 +242,17 @@ void Renju::MoveUpdate() {
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 			if (length >= minDistance_ * 1.5f) {
 				state_ = CharacterState::Unique;
+				special_ = false;
 			}
 		}
 	}
 
 	
-
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetBehavior() == Behavior::kAttack && !special_) {
+	//子分を出す攻撃かどうか
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetBehavior() == Behavior::kAttack && !special_ && mp_ >=20) {
 		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 		if (length >= minDistance_ * 3.f) {
-			state_ = CharacterState::Unique;
+			state_ = CharacterState::Protect;
 		}
 		else {
 			const float kSpeed = 0.06f;
@@ -379,16 +381,9 @@ void Renju::UniqueInitialize() {
 	isAttack_ = true;
 	mp_ -= 10;
 	animation_->SetLoop(false);
-	if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
-		fireTimer_ = 60 * 9;
-		special_ = true;
-	}
-	else {
-		fireTimer_ = 60;
-		special_ = false;
-	}
-
+	fireTimer_ = 60;
 	flameTime_ = 60.0f;
+	specialTimer_ = 60 * 8;
 	emitter_.velocityRange = { .min{0,0,0},.max{0.f,0.f,0.f} };
 	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} },
 		filed_.strength = 1.f;
@@ -398,6 +393,7 @@ void Renju::UniqueUpdate() {
 	emitter_.translate = { worldTransformBow_.matWorld_.m[3][0],worldTransformBow_.matWorld_.m[3][1] ,worldTransformBow_.matWorld_.m[3][2] };
 
 	if (isAttack_) {
+		
 		--fireTimer_;
 
 		// 追従対象からロックオン対象へのベクトル
@@ -419,7 +415,10 @@ void Renju::UniqueUpdate() {
 
 		//チャージ中アニメーションを止める
 		if (fireTimer_ >= 1 && fireTimer_ <= 48) {
-			//fireTimer_ = 48;
+			if (special_ && specialTimer_ >= 0) {
+				--specialTimer_;
+				fireTimer_ = 48;
+			}
 
 			animation_->Stop(true);
 			filed_.min = emitter_.translateRange.min;
@@ -512,6 +511,8 @@ void Renju::ProtectUpdate(){
 		worldTransformBase_.translate += velocity_;
 	}
 	else {
+		mp_ -= 10;
+		special_ = true;
 		state_ = CharacterState::Unique;
 	}
 	
@@ -592,7 +593,7 @@ void Renju::OnCollision(Collider* collider) {
 		isHit_ = true;
 
 		if (isHit_ != preHit_) {
-			if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+			if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
 				hp_ -= 10.0f;
 				alpha_ = 2.0f;
 				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };

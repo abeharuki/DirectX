@@ -151,6 +151,11 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 		
 	}
 	
+	//レンジャーに当たったら消す
+	if (collider->GetCollisionAttribute() == kCollisionAttributeRenju) {
+		dead_ = true;
+	}
+
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		enemyHit_ = true;
 	}

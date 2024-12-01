@@ -116,6 +116,7 @@ private: // メンバ変数
 	int fireTimer_ = 20;
 	//子分を出してくる攻撃を止める
 	bool special_ = false;
+	int specialTimer_ = 60 * 8;
 
 	//復活時間
 	int revivalCount_ = 0;
