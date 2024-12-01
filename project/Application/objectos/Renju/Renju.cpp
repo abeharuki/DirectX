@@ -133,7 +133,7 @@ void Renju::Update() {
 			return true;
 		}
 		return false;
-		});
+	});
 
 	for (RenjuBullet* bullet : bullets_) {
 
@@ -374,7 +374,13 @@ void Renju::UniqueInitialize() {
 	isAttack_ = true;
 	mp_ -= 10;
 	animation_->SetLoop(false);
-	fireTimer_ = 60;
+	if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2) {
+		fireTimer_ = 60 * 9;
+	}
+	else {
+		fireTimer_ = 60;
+	}
+
 	flameTime_ = 60.0f;
 	emitter_.velocityRange = { .min{0,0,0},.max{0.f,0.f,0.f} };
 	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} },
@@ -457,7 +463,7 @@ void Renju::BreathUpdate() {
 
 void Renju::ProtectInitialize(){
 	BaseCharacter::ProtectInitialize();
-	coolTime_ = 60;
+	coolTime_ = 30;
 }
 
 void Renju::ProtectUpdate(){
@@ -481,7 +487,7 @@ void Renju::ProtectUpdate(){
 				(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
 		}
 
-		const float kSpeed = 0.02f;
+		const float kSpeed = 0.001f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = enemy_->GetWorldTransform().translate - worldTransformBase_.translate;
 
@@ -489,7 +495,7 @@ void Renju::ProtectUpdate(){
 		Math::Normalize(direction);   // 正規化して単位ベクトルにする
 		direction *= -1.0f; // 反転して反対方向に進む
 
-		Vector3 randPos = { 2.f,0.f,0.f };
+		Vector3 randPos = { 0.5f,0.f,0.f };
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
 		randPos = Math::TransformNormal(randPos, rotateMatrix);
 

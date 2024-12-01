@@ -4,7 +4,7 @@ void WorldTransform::Initialize() {
 	matWorld_ = Math::MakeIdentity4x4();
 	CreateConstBuffer();
 	Map();
-	TransferMatrix();
+	UpdateMatrix();
 }
 
 void WorldTransform::CreateConstBuffer() {

@@ -112,7 +112,8 @@ private: // メンバ変数
 	std::list<RenjuBullet*> bullets_;
 	// 攻撃時間
 	int fireTimer_ = 20;
-	
+	bool 
+
 
 	//復活時間
 	int revivalCount_ = 0;

@@ -51,7 +51,7 @@ void BaseCharacter::Initialize(Animations* animation, std::string className) {
 	else { worldTransformShadow_.scale = { 2.2f,2.2f,1.0f }; }
 	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
 	alpha_ = 0.0f;
-
+	//henchmans_.clear();
 
 }
 
@@ -59,10 +59,11 @@ void BaseCharacter::Update() {
 
 	//影の計算
 	shadowColor_.w = 1 - (worldTransformBase_.translate.y / 3.9f);
-
 	shadowModel_->SetColor(shadowColor_);
 	worldTransformShadow_.translate = { worldTransformBase_.translate.x,0.1f,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
+
+
 
 	//体力がなくなあったら強制的に死亡に状態遷移
 	if (hp_ <= 0) {
@@ -293,13 +294,16 @@ void BaseCharacter::MoveUpdate() {
 		state_ = CharacterState::Breath;
 	}
 
-	//
-	if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2) {
-		if (henchmanPos_.size() >= 1) {
-			state_ = CharacterState::Protect;
+	//弓キャラを守る
+	if (className_ != "Renju") {
+		if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kSpecial2 && state_ != CharacterState::Protect) {
+			if (henchmans_.size() >= 1) {
+				henchmanSearch_ = true;
+				state_ = CharacterState::Protect;
+			}
 		}
-
 	}
+
 }
 
 void BaseCharacter::JumpInitialize()
@@ -431,23 +435,55 @@ void BaseCharacter::ProtectInitialize()
 {
 	velocity_ = { 0.0f,0.0f,0.0f };
 	isAttack_ = false;
-
+	animationNumber_ = run;
 }
 void BaseCharacter::ProtectUpdate()
 {
-	for (int i = 0; i < henchmanPos_.size(); ++i) {
-		if (i == 0) {
-			henchmanDist_ = henchmanPos_[i];
+
+	henchmanNum_ = 0;
+	for (EnemyHenchman* enemy : henchmans_) {
+		if (!enemy->IsDead()) {
+			henchmanDist_ = enemy->GetPos();
+			henchmanSearch_ = false;
 		}
-		else {
-			float distanceToNowDist = GetDistanceSquared(renjuPos_, henchmanDist_);
-			float distanceToHench = GetDistanceSquared(renjuPos_, henchmanPos_[i]);
-			//今追いかけている子分より更にレンジャーに近い子分がいたらそっちを追いかける
-			if (distanceToNowDist > distanceToHench) {
-				henchmanDist_ = henchmanPos_[i];
+	}
+
+
+
+	if (className_ == "Tank") {
+		for (EnemyHenchman* enemy : henchmans_) {
+			if (!enemy->IsDead() && !enemy->IsHitEnemy() && enemy) {
+				if (enemy->GetPos().y >= 0) {
+					float distanceToNowDist = GetDistanceSquared(renjuPos_, henchmanDist_);
+					float distanceToHench = GetDistanceSquared(renjuPos_, enemy->GetPos());
+					//今追いかけている子分より更にレンジャーに近い子分がいたらそっちを追いかける
+					if (distanceToNowDist > distanceToHench) {
+						henchmanDist_ = enemy->GetPos();
+					}
+				}
+			}
+
+		}
+
+	}
+	else {
+		
+		for (EnemyHenchman* enemy : henchmans_) {
+
+			if (!enemy->IsDead() && !enemy->IsHitEnemy() && enemy) {
+				if (enemy->GetPos().y >= 0) {
+					float distanceToNowDist = GetDistanceSquared(worldTransformBase_.translate, henchmanDist_);
+					float distanceToHench = GetDistanceSquared(worldTransformBase_.translate, enemy->GetPos());
+					//今追いかけている子分より更に自分に近い子分がいたらそっちを追いかける
+					if (distanceToNowDist > distanceToHench) {
+						henchmanDist_ = enemy->GetPos();
+					}
+				}
 			}
 		}
 	}
+
+
 
 	//一番近い子分の方を向く// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = henchmanDist_ - GetWorldPosition();
@@ -467,13 +503,17 @@ void BaseCharacter::ProtectUpdate()
 			: -std::numbers::pi_v<float> / 2.0f;
 	}
 
+	const float kSpeed = 0.1f;
+	Vector3 direction = sub;
 
-	worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, henchmanDist_, 0.1f);
+	velocity_ = Math::Normalize(direction) * kSpeed;
+
+	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0.0f;
 
 	if (enemy_->GetBehavior() != Behavior::kAttack) {
 		state_ = CharacterState::Moveing;
-		henchmanPos_.clear();
+		
 	}
 }
 
@@ -811,6 +851,9 @@ float BaseCharacter::GetDistanceSquared(const Vector3& a, const Vector3& b)
 void BaseCharacter::OnCollision(Collider* collider)
 {
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+
+		henchmanSearch_ = true;
+
 		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			if (enemy_->isAttack()) {
 
@@ -890,7 +933,7 @@ void BaseCharacter::OnCollision(Collider* collider)
 
 	//子分に当たった時の処理
 	if (collider->GetCollisionAttribute() == kCollisionAttributeHenchman) {
-
+		henchmanSearch_ = true;
 	}
 
 	worldTransformBase_.UpdateMatrix();

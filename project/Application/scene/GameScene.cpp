@@ -133,7 +133,7 @@ void GameScene::Update() {
 		character->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
 		if (enemyManager_->GetEnemy()->IsSpecial()) {
 			for (EnemyHenchman* enemy : enemyManager_->GetEnemy()->GetEnemys()) {
-				character->SetHenchmanPos(enemy->GetWorldPosition());
+				character->SetHenchman(enemy);
 			}
 		}
 	}
@@ -142,9 +142,10 @@ void GameScene::Update() {
 	renjuManager_->GetRenju()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
 	//各キャラの更新
 	if (!enemyManager_->IsClear()) {
+		tankManager_->Update();
 		healerManager_->Update();
 		renjuManager_->Update();
-		tankManager_->Update();
+		
 		renjuManager_->GetRenju()->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
 	}
 

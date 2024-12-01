@@ -79,7 +79,7 @@ public:
     void SetBattleStart(bool flag) { battleStart_ = flag;}
     void SetBarrier(bool barrier) { barrier_ = barrier; }
     void SetBarrierPos(Vector3 pos) { barrierPos_ = pos; }
-    void SetHenchmanPos(Vector3 pos) {henchmanPos_.push_back(pos);};
+    void SetHenchman(EnemyHenchman* henchman){ henchmans_.push_back(henchman); }
 
     // パーツ親子関係
     virtual void Relationship();
@@ -236,8 +236,11 @@ protected:
     float barrierThreshold_;
 
     //敵子分のposを格納
-    std::vector<Vector3> henchmanPos_;
+    std::list<EnemyHenchman*> henchmans_;
     //レンジャーとの距離が最も近い子分のpos
     Vector3 henchmanDist_;
+    int henchmanNum_;
+    bool henchmanSearch_ = false;
+  
 };
 

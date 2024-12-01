@@ -21,8 +21,6 @@ void Framework::Update() {
 
 void Framework::Draw() {
 
-	
-
 	Engine::RenderPreDraw();
 	sceneManager_->Draw();
 	Engine::RenderPostDraw();

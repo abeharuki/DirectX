@@ -8,7 +8,7 @@ void Enemy::Initialize() {
 
 
 	animation_ = AnimationManager::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf");
-	animation2_ = AnimationManager::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf");
+	henchman_ = AnimationManager::Create("resources/Enemy", "Atlas_Monsters.png", "Alien2.gltf");
 	impactModel_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj", "resources/white.png"));
 	areaModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/red_.png"));
 	circleAreaModel_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj", "resources/Enemy/red_.png"));
@@ -102,6 +102,8 @@ void Enemy::Initialize() {
 		particle_[i] = ParticleManager::Create("resources/particle/circle.png", 15 + (i + 1));
 	}
 
+	//henchmans_.clear();
+
 	AABB aabbSize{ .min{-3.0f,-2.0f,-2.0f},.max{3.0f,8.0f,2.0f} };
 	OBB obb = Math::ConvertAABBToOBB(aabbSize);
 	obb.center = { 0.0f,4.0f,0.0f };
@@ -158,7 +160,7 @@ void Enemy::Update() {
 		break;
 	}
 
-	// デスフラグが立った弾を削除
+	// デスフラグが立った子分を削除
 	henchmans_.remove_if([](EnemyHenchman* enemy) {
 		if (enemy->IsDead()) {
 			
@@ -376,7 +378,7 @@ void Enemy::AttackInitialize() {
 	//1,4
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kSpecial2) {
-		//num = 7;
+		num = 8;
 	}
 	
 	if (num == 1) {
@@ -964,6 +966,7 @@ void Enemy::Special2Init()
 	animationNumber_ = threat;
 	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
+	
 	moveTime_ = 60*10;
 	special_ = true;
 }
@@ -974,12 +977,13 @@ void Enemy::Special2Updata()
 		behaviorRequest_ = Behavior::kRoot;
 	}
 	else {
-		animation2_->Update(4);
-		if (moveTime_ % 10 == 0) {
+		henchman_->Update(4);
+		if (moveTime_  % 10 == 0) {
 			// 敵を生成、初期化
 			EnemyHenchman* newEnemy = new EnemyHenchman();
-			newEnemy->Init(animation2_, Vector3{ worldTransformBase_.translate.x + RandomGenerator::GetRandomFloat(-10.0f, 10.0f),-1.0f,
-				worldTransformBase_.translate.z + RandomGenerator::GetRandomFloat(-10.0f, 10.0f) });
+			newEnemy->Init(henchman_, Vector3{ worldTransformBase_.translate.x + RandomGenerator::GetRandomFloat(-15.0f, 15.0f),-1.0f,
+				worldTransformBase_.translate.z + RandomGenerator::GetRandomFloat(-15.0f, 15.0f) }
+			);
 
 
 			henchmans_.push_back(newEnemy);

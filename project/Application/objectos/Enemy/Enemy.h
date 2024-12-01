@@ -204,7 +204,7 @@ private: // メンバ変数
 
 	//アニメーション
 	Animations* animation_;
-	Animations* animation2_;
+	Animations* henchman_;
 	int animationNumber_;
 
 	std::unique_ptr<Model> impactModel_;//衝撃波
@@ -288,6 +288,6 @@ private: // メンバ変数
 
 	//必殺技フラグ
 	bool special_ = false;
-	//発作つ技を打てる回数
+	//必殺技を打てる回数
 	int specialCount_ = 1;
 };

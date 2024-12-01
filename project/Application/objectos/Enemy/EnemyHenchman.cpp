@@ -2,8 +2,12 @@
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 
+EnemyHenchman::~EnemyHenchman(){
+}
+
 void EnemyHenchman::Init(Animations* animation,Vector3 pos)
 {
+
 	worldTransform_.Initialize();
 	worldTransform_.translate = pos;
 	animation_ = animation;
@@ -24,12 +28,15 @@ void EnemyHenchman::Update(){
 	if (time_ <= 0) {
 		dead_ = true;
 	}
-	
+	hit_ = false;
+	enemyHit_ = false;
+
 	worldTransform_.rotate.y = Math::LerpShortAngle(worldTransform_.rotate.y, destinationAngleY_, 0.2f);
-	if (hit_) {
-		
+	if (!hit_) {
+		followRenju();
 	}
-	followRenju();
+	
+	
 	if (worldTransform_.translate.x == renjuPos_.x || worldTransform_.translate.z == renjuPos_.z) {
 		dead_ = true;
 	}
@@ -47,6 +54,7 @@ void EnemyHenchman::followRenju(){
 
 	if (worldTransform_.translate.y < 0) {
 		worldTransform_.translate.y += 0.1f;
+		worldTransform_.rotate.y += 0.01f;
 	}
 	else {
 		// 追従対象からロックオン対象へのベクトル
@@ -67,7 +75,12 @@ void EnemyHenchman::followRenju(){
 				: -std::numbers::pi_v<float> / 2.0f;
 		}
 
-		worldTransform_.translate = Math::Lerp(worldTransform_.translate, renjuPos_, 0.005f);
+		const float kSpeed = 0.08f;
+		Vector3 direction = sub;
+
+		velocity_ = Math::Normalize(direction) * kSpeed;
+
+		worldTransform_.translate += velocity_;
 		worldTransform_.translate.y = 0.0f;
 	}
 }
@@ -84,7 +97,7 @@ const Vector3 EnemyHenchman::GetWorldPosition() const{
 }
 
 void EnemyHenchman::OnCollision(Collider* collider) {
-	hit_ = false;
+	
 	//プレイヤーとの押し出し処理
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {
 		hit_ = true;
@@ -98,7 +111,9 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 			.size{collider->GetOBB().size}
 		};
 		worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
-
+		if (worldTransform_.translate.y >= 0) {
+			dead_ = true;
+		}
 	}
 	//ヒーラーとの押し出し処理
 	if (collider->GetCollisionAttribute() == kCollisionAttributeHealer) {
@@ -113,7 +128,9 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 			.size{collider->GetOBB().size}
 		};
 		worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
-
+		if (worldTransform_.translate.y >= 0) {
+			dead_ = true;
+		}
 	}
 	//タンクとの押し出し処理
 	if (collider->GetCollisionAttribute() == kCollisionAttributeTank) {
@@ -128,9 +145,15 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 			.size{collider->GetOBB().size}
 		};
 		worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb)*0.3f;
-
+		if (worldTransform_.translate.y >= 0) {
+			dead_ = true;
+		}
+		
 	}
 	
+	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
+		enemyHit_ = true;
+	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
 
