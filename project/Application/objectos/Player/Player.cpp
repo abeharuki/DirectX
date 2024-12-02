@@ -50,6 +50,10 @@ void Player::Initialize() {
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionMaskPlayer);
+
+	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetAnimationTimer(0.0f, 0.0f);
+	animation_->Update(animationNumber_);
 }
 
 void Player::Update() {

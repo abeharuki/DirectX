@@ -58,15 +58,23 @@ namespace Editor
 				if (ImGui::RadioButton("QuadrupleOutput Node", selected_type == NodeType::QuadrupleOutputNode))
 					selected_type = NodeType::QuadrupleOutputNode;
 				ImGui::SameLine();
+				if (ImGui::RadioButton("QuintupleOutput Node", selected_type == NodeType::QuintupleOutputNode))
+					selected_type = NodeType::QuintupleOutputNode;
+				ImGui::SameLine();
+				if (ImGui::RadioButton("SextupleOutput Node", selected_type == NodeType::SextupleOutputNode))
+					selected_type = NodeType::SextupleOutputNode;
+				ImGui::SameLine();
 				if (ImGui::RadioButton("NoOutput Node", selected_type == NodeType::NoOutputNode))
 					selected_type = NodeType::NoOutputNode;
 
-
+				// 出力ポート数を設定
 				if (selected_type != NodeType::NoOutputNode) {
 					int outputCount = (selected_type == NodeType::BasicNode) ? 1 :
-						(selected_type == NodeType::DoubleOutputNode ? 2 :
-							(selected_type == NodeType::TripleOutputNode ? 3 :
-								(selected_type == NodeType::QuadrupleOutputNode ? 4 : 0)));
+						(selected_type == NodeType::DoubleOutputNode) ? 2 :
+						(selected_type == NodeType::TripleOutputNode) ? 3 :
+						(selected_type == NodeType::QuadrupleOutputNode) ? 4 :
+						(selected_type == NodeType::QuintupleOutputNode) ? 5 :
+						(selected_type == NodeType::SextupleOutputNode) ? 6 : 0;
 
 					outputNames.resize(outputCount); // 出力名のベクターをサイズ変更
 
@@ -80,6 +88,7 @@ namespace Editor
 					}
 				}
 
+			
 
 				if (ImGui::Button("Create Node"))
 				{
@@ -122,6 +131,8 @@ namespace Editor
 					node.type == NodeType::DoubleOutputNode ? "Double Output" :
 					node.type == NodeType::TripleOutputNode ? "Triple Output" :
 					node.type == NodeType::QuadrupleOutputNode ? "Quadruple Output" :
+					node.type == NodeType::QuintupleOutputNode ? "Quintuple Output" :
+					node.type == NodeType::SextupleOutputNode ? "Sextuple Output" :
 					"No Output");
 				ImNodes::EndNodeTitleBar();
 
@@ -132,7 +143,16 @@ namespace Editor
 
 				// NodeTypeによる出力属性の条件分岐
 				if (node.type != NodeType::NoOutputNode) {
-					for (int i = 0; i < (node.type == NodeType::QuadrupleOutputNode ? 4 : (node.type == NodeType::TripleOutputNode ? 3 : (node.type == NodeType::DoubleOutputNode ? 2 : 1))); ++i) {
+					// 出力ポート数を計算
+					int outputCount = (node.type == NodeType::BasicNode) ? 1 :
+						(node.type == NodeType::DoubleOutputNode) ? 2 :
+						(node.type == NodeType::TripleOutputNode) ? 3 :
+						(node.type == NodeType::QuadrupleOutputNode) ? 4 :
+						(node.type == NodeType::QuintupleOutputNode) ? 5 :
+						(node.type == NodeType::SextupleOutputNode) ? 6 : 0;
+
+
+					for (int i = 0; i < outputCount; ++i) {
 						ImNodes::BeginOutputAttribute((node.id << 24) + i);
 						float textWidth = ImGui::CalcTextSize(node.outputNames.size() > i ? node.outputNames[i].c_str() : ("output " + std::to_string(i + 1)).c_str()).x;
 						ImGui::Indent(maxOutputWidth - textWidth + 20.0f); // +20.0fは追加の余白

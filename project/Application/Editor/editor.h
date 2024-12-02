@@ -18,6 +18,8 @@ enum OutputNum
 	Output2, // 2出力ポート
 	Output3, // 3出力ポート
 	Output4, // 4出力ポート
+	Output5, // 5出力ポート
+	Output6, // 6出力ポート
 };
 
 namespace Editor
@@ -28,6 +30,8 @@ namespace Editor
 		DoubleOutputNode, // 2出力ポート
 		TripleOutputNode, // 3出力ポート
 		QuadrupleOutputNode, // 4出力ポート
+		QuintupleOutputNode, // 5出力ポート
+		SextupleOutputNode,  // 6出力ポート
 		NoOutputNode      // 0出力ポート
 	};
 
