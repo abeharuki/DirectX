@@ -31,6 +31,7 @@ void Enemy::Initialize() {
 	areaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	//circleAreaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	animationNumber_ = standby;
+	
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate.z = 10.0f;
@@ -190,7 +191,8 @@ void Enemy::Update() {
 	
 	barrierModel_->SetThreshold(barrierThreshold_);
 	
-	
+	//必殺技を打てる回数を増やす
+	AddSpecialCount();
 	//アニメーションの更新
 	animation_->Update(animationNumber_);
 	//親子関係
@@ -288,8 +290,7 @@ void Enemy::MoveInitialize() {
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 	num_ = RandomGenerator::GetRandomInt(player, tank);
 	
-	//必殺技を打てる回数を増やす
-	AddSpecialCount();
+	
 
 };
 void Enemy::MoveUpdata() {
@@ -1079,14 +1080,19 @@ void Enemy::DeadInitilize() {
 	animationNumber_ = death;
 	animation_->SetAnimationTimer(0.f, 0.f);
 	animation_->SetLoop(false);
+
 }
 void Enemy::DeadUpdata() {
-	
+
+	//バリアのディゾルブを消す
+	if (barrierThreshold_ <= 1.f) {
+		barrierThreshold_ += 0.01f;
+	}
 
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
 	threshold_ += 0.001f;
 	animation_->SetThreshold(threshold_);
-	if (animation_->GetAnimationTimer() >= 4.0f) {
+	if (animation_->GetAnimationTimer() >= 5.0f) {
 		clear_ = true;
 	}
 
@@ -1134,20 +1140,10 @@ const Vector3 Enemy::GetWorldPosition() const {
 void Enemy::StanBehavior() { behaviorRequest_ = Behavior::kStan; }
 void Enemy::AddSpecialCount()
 {
-	
-	if (Math::isWithinRange(hp_, 600, 25) && specialCount_ == 0) {
+	//体力が100で割り切れてカウントが0の時追加
+	if (int(hp_) % 50 == 0 && specialCount_ == 0 && hp_ != 800) {
 		++specialCount_;
 	}
-	if (Math::isWithinRange(hp_, 400, 25) && specialCount_ == 0) {
-		++specialCount_;
-	}
-	if (Math::isWithinRange(hp_, 200, 25) && specialCount_ == 0) {
-		++specialCount_;
-	}
-	if (Math::isWithinRange(hp_, 100, 25) && specialCount_ == 0) {
-		++specialCount_;
-	}
-
 };
 Enemy::~Enemy() {}
 

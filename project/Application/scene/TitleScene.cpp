@@ -40,7 +40,7 @@ void TitleScene::Initialize() {
 	// 敵
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize();
-	enemyManager_->Update();
+	
 	// タンク
 	tankManager_ = std::make_unique<TankManager>();
 	tankManager_->Initialize();
