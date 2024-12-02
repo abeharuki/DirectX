@@ -111,7 +111,10 @@ void BaseCharacter::Update() {
 				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/50.png");
 				//失敗したら強制的に状態遷移
-				state_ = CharacterState::Moveing;
+				if (!isDead_) {
+					state_ = CharacterState::Moveing;
+				}
+				
 			}
 		}
 	}

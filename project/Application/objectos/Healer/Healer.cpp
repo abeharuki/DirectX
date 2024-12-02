@@ -473,7 +473,6 @@ void Healer::BreathUpdate() {
 void Healer::ProtectInitialize(){
 	BaseCharacter::ProtectInitialize();
 }
-
 void Healer::ProtectUpdate(){
 	BaseCharacter::ProtectUpdate();
 }

@@ -212,11 +212,6 @@ void Enemy::Update() {
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
 	}
 
-
-	if (Input::PressKey(DIK_4)) {
-		attackRequest_ = BehaviorAttack::kHenchman;
-	}
-
 	ImGui::Begin("EnemyRock");
 	ImGui::SliderFloat3("pos", &worldTransformRock_.translate.x, -150.0f, 150.0f);
 	ImGui::End();
@@ -409,7 +404,7 @@ void Enemy::AttackInitialize() {
 	//1,4
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
-		num = RandomGenerator::GetRandomInt(7, 9);
+		num = RandomGenerator::GetRandomInt(7, 8);
 	}
 	
 	if (num == 1) {
@@ -1082,7 +1077,7 @@ void Enemy::StanUpdata() {
 
 void Enemy::DeadInitilize() {
 	animationNumber_ = death;
-	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetAnimationTimer(0.f, 0.f);
 	animation_->SetLoop(false);
 }
 void Enemy::DeadUpdata() {
@@ -1091,7 +1086,7 @@ void Enemy::DeadUpdata() {
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
 	threshold_ += 0.001f;
 	animation_->SetThreshold(threshold_);
-	if (animation_->GetAnimationTimer() >= 5.0f) {
+	if (animation_->GetAnimationTimer() >= 4.0f) {
 		clear_ = true;
 	}
 
