@@ -184,7 +184,7 @@ void Renju::Update() {
 
 	ImGui::End();
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 
 	editor_.show("RenjuNode");
 	editor_.save("Renju");

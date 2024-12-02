@@ -131,7 +131,7 @@ void Engine::PreDraw() {
 }
 
 void Engine::PostDraw() {
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	// ImGui描画
 	imguiManager->Draw();
 #endif 

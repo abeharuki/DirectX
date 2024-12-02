@@ -157,7 +157,7 @@ void Healer::Update() {
 	ImGui::DragFloat("magicCirecle", &t_[0], 0.01f);
 	ImGui::End();
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 
 	editor_.show("HealerNode");
 	editor_.save("Healer");

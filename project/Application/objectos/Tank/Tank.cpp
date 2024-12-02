@@ -98,7 +98,7 @@ void Tank::Update() {
 	ImGui::DragFloat("TankHp", &hp_, 1.0f);
 	ImGui::End();
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 
 	editor_.show("TankNode");
 	editor_.save("Tank");

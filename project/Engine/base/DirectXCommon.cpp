@@ -221,7 +221,7 @@ int32_t DirectXCommon::GetBackBufferHeight() const { return backBufferHeight_; }
 void DirectXCommon::InitializeDXGIDevice() {
 	HRESULT hr_ = S_FALSE;
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ComPtr<ID3D12Debug1> debugController;
 
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
@@ -277,7 +277,7 @@ void DirectXCommon::InitializeDXGIDevice() {
 	assert(device_ != nullptr);
 	Utility::Log("Complete create D3D12Device!!!\n");
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ID3D12InfoQueue* infoQueue = nullptr;
 	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
 		// やばいエラー時に止まる
