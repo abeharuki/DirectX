@@ -398,8 +398,10 @@ void Tank::OnCollision(Collider* collider) {
 			allyVelocity.z = -kSpeed;
 		}
 
-
-		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
+		if (state_ != CharacterState::Unique) {
+			worldTransformBase_.translate += allyVelocity;
+		}
+		
 	}	
 }
 

@@ -236,7 +236,7 @@ void Renju::MoveUpdate() {
 	BaseCharacter::MoveUpdate();
 
 	//スキル
-	if (mp_ >= 20 && enemy_->IsBehaviorRequest()) {
+	if (mp_ >= 10 && enemy_->IsBehaviorRequest() && coolTime_ < 10.f) {
 		if (enemy_->GetBehavior() != enemy_->GetBehaviorRequest() && enemy_->GetBehaviorRequest() != Behavior::kAttack && enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 			// 敵の座標までの距離
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));

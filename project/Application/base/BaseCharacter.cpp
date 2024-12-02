@@ -177,6 +177,7 @@ void BaseCharacter::Update() {
 	}
 
 
+	//色の設定
 	if (hp_ < 20) {
 		hpColor_ = { 5.0f,0.0f,0.0f,1.0f };
 		hpNumColor_ = { 5.0f,0.0f,0.0f,1.0f };
@@ -184,6 +185,7 @@ void BaseCharacter::Update() {
 	}
 	else if (hp_ <= 50) {
 		hpNumColor_ = { 1.0f,0.2f,0.0f,1.0f };
+		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
 	else {
 		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
@@ -420,7 +422,7 @@ void BaseCharacter::BreathUpdate() {
 			: -std::numbers::pi_v<float> / 2.0f;
 	}
 
-	const float kSpeed = 0.04f;
+	
 	// 敵の位置から自分の位置への方向ベクトルを計算
 	Vector3 direction = tankPos_ - enemy_->GetWorldTransform().translate;
 
@@ -428,16 +430,21 @@ void BaseCharacter::BreathUpdate() {
 	Math::Normalize(direction);   // 正規化して単位ベクトルにする
 	direction *= -1.0f; // 反転して反対方向に進む
 
-	// 速度を設定
-	velocity_ = direction * kSpeed;
+	
 
-	if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (velocity_.x * 6.0f)), 2.0f) &&
-		Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (velocity_.z * 6.0f)), 2.0f)) {
+	const float kSpeed = 0.3f;
+	Vector3 directionTank = (tankPos_ - direction) - GetWorldPosition();
+
+	velocity_ = Math::Normalize(directionTank) * kSpeed;
+
+
+	if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (direction.x*0.3f)), 2.0f) &&
+		Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (direction.z*0.3f)), 2.0f)) {
 		animationNumber_ = standby;
 	}
 	else {
 		animationNumber_ = run;
-		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_ - (velocity_ * 5.0f), 0.1f);
+		worldTransformBase_.translate += velocity_;
 		worldTransformBase_.translate.y = 0;
 	}
 

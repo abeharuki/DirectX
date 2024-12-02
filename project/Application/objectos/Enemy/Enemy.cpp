@@ -409,7 +409,7 @@ void Enemy::AttackInitialize() {
 	//1,4
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
-		num = RandomGenerator::GetRandomInt(7, 8);
+		num = RandomGenerator::GetRandomInt(7, 9);
 	}
 	
 	if (num == 1) {
@@ -425,10 +425,11 @@ void Enemy::AttackInitialize() {
 		attackRequest_ = BehaviorAttack::kGround;
 	}
 	else if (num == 7) {
-		attackRequest_ = BehaviorAttack::kBreath;
-	}
-	else if (num == 8) {
 		attackRequest_ = BehaviorAttack::kHenchman;
+		
+	}
+	else if (num <= 8) {
+		attackRequest_ = BehaviorAttack::kBreath;
 	}
 	
 	behaviorAttack_ = true;
@@ -665,7 +666,7 @@ void Enemy::DashAttackUpdata() {
 		}
 
 
-		velocity_ = { 0.0f,0.0f,7.0f };
+		velocity_ = { 0.0f,0.0f,6.0f };
 
 
 	}
@@ -689,7 +690,7 @@ void Enemy::DashAttackUpdata() {
 	// 追従対象からロックオン対象へのベクトル
 	if (isAttack_) {
 
-		worldTransformBase_.translate = worldTransformBase_.translate + velocity_;
+		worldTransformBase_.translate += velocity_;
 
 	}
 
@@ -1081,6 +1082,7 @@ void Enemy::StanUpdata() {
 
 void Enemy::DeadInitilize() {
 	animationNumber_ = death;
+	animation_->SetpreAnimationTimer(0.0f);
 	animation_->SetLoop(false);
 }
 void Enemy::DeadUpdata() {

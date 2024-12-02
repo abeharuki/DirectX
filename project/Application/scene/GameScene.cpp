@@ -140,17 +140,10 @@ void GameScene::Update() {
 
 	healerManager_->GetHealer()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
 	renjuManager_->GetRenju()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
-	//各キャラの更新
-	if (!enemyManager_->IsClear()) {
-		tankManager_->Update();
-		healerManager_->Update();
-		renjuManager_->Update();
-		
-		renjuManager_->GetRenju()->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
-	}
+
 
 	//魔法陣に使う座標の受け取り
-	healerManager_->GetHealer()->SetPos( renjuManager_->GetRenju()->GetWorldPosition(), tankManager_->GetTank()->GetWorldPosition());
+	healerManager_->GetHealer()->SetPos(renjuManager_->GetRenju()->GetWorldPosition(), tankManager_->GetTank()->GetWorldPosition());
 	//回復
 	if (healerManager_->GetHealer()->GetHeal()) {
 		//全体回復
@@ -188,7 +181,15 @@ void GameScene::Update() {
 	//hp情報の取得
 	healerManager_->GetHealer()->SetHp({ playerManager_->GetPlayer()->GetHp(),renjuManager_->GetRenju()->GetHp(),tankManager_->GetTank()->GetHp() });
 
-	
+
+	//各キャラの更新
+	if (!enemyManager_->IsClear()) {
+		tankManager_->Update();
+		renjuManager_->Update();
+		healerManager_->Update();
+		renjuManager_->GetRenju()->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
+	}
+
 	//生存しているかどうか
 	enemyManager_->GetEnemy()->SetIsDeadPlayer(playerManager_->GetPlayer()->GetIsDead());
 	enemyManager_->GetEnemy()->SetIsDeadHealer(healerManager_->GetHealer()->IsDead());
