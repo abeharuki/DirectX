@@ -53,6 +53,9 @@ void BaseCharacter::Initialize(Animations* animation, std::string className) {
 	alpha_ = 0.0f;
 	//henchmans_.clear();
 
+	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetAnimationTimer(0.0f, 0.0f);
+	animation_->Update(animationNumber_);
 }
 
 void BaseCharacter::Update() {
@@ -204,7 +207,10 @@ void BaseCharacter::Draw(const ViewProjection& camera) {
 	shadowModel_->Draw(worldTransformShadow_, camera, false);
 }
 void BaseCharacter::NoDepthDraw(const ViewProjection& camera) {
-	damageModel_->Draw(worldTransformNum_, camera, false);
+	if (!isDead_) {
+		damageModel_->Draw(worldTransformNum_, camera, false);
+	}
+	
 }
 
 void BaseCharacter::DrawUI() {

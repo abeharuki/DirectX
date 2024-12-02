@@ -80,7 +80,7 @@ private:
 	float alpha_;
 
 	float a_;
-
+	std::vector<BaseCharacter*> characters;
 	//ノードエディター
 	Editor::NodeEditor editor_;
 };

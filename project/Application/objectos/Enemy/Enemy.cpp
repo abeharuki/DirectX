@@ -124,6 +124,9 @@ void Enemy::Initialize() {
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
 	
+	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetAnimationTimer(0.0f, 0.0f);
+	animation_->Update(animationNumber_);
 }
 
 void Enemy::Update() {
@@ -191,8 +194,7 @@ void Enemy::Update() {
 	
 	barrierModel_->SetThreshold(barrierThreshold_);
 	
-	//必殺技を打てる回数を増やす
-	AddSpecialCount();
+	
 	//アニメーションの更新
 	animation_->Update(animationNumber_);
 	//親子関係
@@ -300,6 +302,9 @@ void Enemy::MoveUpdata() {
 			animation_->SetpreAnimationTimer(0.0f);
 		}
 	}
+
+	//必殺技を打てる回数を増やす
+	AddSpecialCount();
 
 	//バリアのディゾルブを消す
 	if (barrierThreshold_ <= 1.f) {
@@ -1141,7 +1146,7 @@ void Enemy::StanBehavior() { behaviorRequest_ = Behavior::kStan; }
 void Enemy::AddSpecialCount()
 {
 	//体力が100で割り切れてカウントが0の時追加
-	if (int(hp_) % 50 == 0 && specialCount_ == 0 && hp_ != 800) {
+	if (int(hp_) % 50 == 0 && specialCount_ == 0 && hp_ != 800 && hp_ != 0) {
 		++specialCount_;
 	}
 };

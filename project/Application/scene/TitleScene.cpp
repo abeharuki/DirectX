@@ -96,6 +96,8 @@ void TitleScene::Update() {
 	
 
 	enemyManager_->Update();
+	
+
 
 	Fade();
 	cameraMove();

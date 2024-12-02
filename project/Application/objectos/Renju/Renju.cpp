@@ -100,9 +100,7 @@ void Renju::Update() {
 
 
 
-	if (behaviorTree_) {
-		behaviorTree_->Update();
-	}
+	
 
 	hitBullet_ = false;
 	for (RenjuBullet* bullet : bullets_) {
@@ -140,7 +138,9 @@ void Renju::Update() {
 		bullet->Update();
 	}
 
-
+	if (behaviorTree_) {
+		behaviorTree_->Update();
+	}
 
 
 
