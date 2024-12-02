@@ -59,8 +59,8 @@ void DebugScene::Initialize() {
 	worldTransformSter_[1].Initialize();
 	sprite_.reset(Sprite::Create("resources/DDS/cat.dds"));
 
-	rockModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj","resources/white.png"));
-	rockModel_->SetMaskTexture("barrier.png");
+	sphereModel_.reset(Sphere::CreateSphere("resources/white.png"));
+	sphereModel_->SetMaskTexture("barrier.png");
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 	model_.reset(Model::CreateFromNoDepthObj("resources/particle/scalePlane.obj", "resources/Enemy/white.png"));
 	//model_->SetMaskTexture("shockwave.png");
@@ -86,7 +86,7 @@ void DebugScene::Initialize() {
 	};
 	
 	particle_ = ParticleManager::Create("resources/particle/circle.png",8);
-	//particle_->SetModel("particle/", "scalePlane.obj");
+	//particle_->SetModel("particle", "scalePlane.obj");
 
 	//追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
@@ -127,7 +127,7 @@ void DebugScene::Update() {
 	animation_->SetFlameTimer(animaflame_);*/
 	//model_->DirectionalLightDraw(directionLight_);
 	model_->SetColor({ modelColor_ });
-	rockModel_->SetColor({ modelColor_ });
+	sphereModel_->SetColor({ modelColor_ });
 	emitter_.count = particleCount_;
 	emitter_.isScaleChanging = scaleFlag_;
 	gravityFiled_.min = emitter_.translateRange.min;
@@ -165,7 +165,7 @@ void DebugScene::Update() {
 
 	model_->SetBlendMode(blendMode_);
 	particle_->SetBlendMode(blendMode_);
-	rockModel_->SetBlendMode(blendMode_);
+	sphereModel_->SetBlendMode(blendMode_);
 	worldTransformModel_.scale = Vector3{ 6.f,6.f,6.f };
 	
 
@@ -199,10 +199,10 @@ void DebugScene::Update() {
 	//animeDissolve_.isGradient = isAnimeDissolve_;
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
-	rockModel_->SetThreshold(animeDissolve_.threshold);
-	rockModel_->SetMaskUV(maskUV_);
-	rockModel_->SetEdgeColor(animeDissolve_.edgeColor);
-	rockModel_->IsGradient(true);
+	sphereModel_->SetThreshold(animeDissolve_.threshold);
+	sphereModel_->SetMaskUV(maskUV_);
+	sphereModel_->SetEdgeColor(animeDissolve_.edgeColor);
+	sphereModel_->IsGradient(true);
 	/*animation_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
 	animation_->SetEnvironment(env_, true);*/
@@ -416,7 +416,7 @@ void DebugScene::Draw() {
 	skybox_->Draw(worldTransformSkybox_, viewProjection_);
 	loader_->Draw(viewProjection_, true);
 	particle_->Draw(viewProjection_);
-	rockModel_->Draw(worldTransformModel_, viewProjection_,false);
+	sphereModel_->Draw(worldTransformModel_, viewProjection_,false);
 	//model_->Draw(worldTransformModel_, viewProjection_, false);
 	
 	/*ster_[0]->Draw(worldTransformSter_[0],viewProjection_,true);

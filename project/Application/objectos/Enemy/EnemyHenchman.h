@@ -25,11 +25,14 @@ public:
 	bool IsDead() { return dead_; }
 	bool IsHitEnemy() { return enemyHit_; }
 
+	void SetSpacal(bool flag) { specal_ = flag; }
+
 	//当たりは判定
 	void OnCollision(Collider* collider) override;
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransform_; }
 	Vector3 GetPos() {return worldTransform_.translate;}
+
 
 private:
 	WorldTransform worldTransform_;
@@ -44,6 +47,8 @@ private:
 	float destinationAngleY_;
 	bool hit_;
 	bool enemyHit_;
+	bool specal_;
+	float thre_ = 0.0f;
 };
 
 

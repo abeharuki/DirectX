@@ -94,8 +94,24 @@ void BaseCharacter::Update() {
 			if (isHit_ != preHit_) {
 				hp_ -= 10;
 				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
 				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/10.png");
+			}
+		}
+	}
+
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+		if (enemy_->isAttack()) {
+			isHit_ = true;
+			if (isHit_ != preHit_) {
+				hp_ -= 50;
+				alpha_ = 2.0f;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				damageModel_->SetTexture("character/50.png");
+				//失敗したら強制的に状態遷移
+				state_ = CharacterState::Moveing;
 			}
 		}
 	}

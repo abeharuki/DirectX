@@ -184,14 +184,23 @@ void Sphere::CreateVertexResource() {
 	lightData->directionLight_.intensity = 1.0f;
 	lightData->dissolve_.threshold = 0.0f;
 	lightData->dissolve_.edgeColor = { 1.0f,0.4f,0.3f };
-	lightData->dissolve_.isEnble = true;
+	lightData->dissolve_.isGradient = false;
+
+	// UVTransform用の行列
+	Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(Vector3{ 2,2,0 }, Vector3{ 0,0,0 }, Vector3{ 0,0,0 });
+	lightData->dissolve_.uvTransform = uvTransformMatrix;
 };
 
 void Sphere::SetColor(Vector4 color) {
 	materialData_->SetColor(color);
 }
 
-void Sphere::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
+void Sphere::SetBlendMode(BlendMode blendMode) {
+	if (blendMode_ != blendMode) {
+		blendMode_ = blendMode;
+		sPipeline();
+	}
+}
 
 void Sphere::SetShininess(float i) { materialData_->SetShininess(i); }
 

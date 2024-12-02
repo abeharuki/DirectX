@@ -383,17 +383,20 @@ void Renju::UniqueInitialize() {
 	animation_->SetLoop(false);
 	fireTimer_ = 60;
 	flameTime_ = 60.0f;
-	specialTimer_ = 60 * 8;
+	specialTimer_ = 60 * 7;
 	emitter_.velocityRange = { .min{0,0,0},.max{0.f,0.f,0.f} };
-	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} },
-		filed_.strength = 1.f;
+	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} };
+	filed_.strength = 1.f;
 	animationNumber_ = animeAttack;
 }
 void Renju::UniqueUpdate() {
 	emitter_.translate = { worldTransformBow_.matWorld_.m[3][0],worldTransformBow_.matWorld_.m[3][1] ,worldTransformBow_.matWorld_.m[3][2] };
 
 	if (isAttack_) {
-		
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->isAttack()) {
+			special_ = false;
+		}
+
 		--fireTimer_;
 
 		// 追従対象からロックオン対象へのベクトル
@@ -596,6 +599,7 @@ void Renju::OnCollision(Collider* collider) {
 			if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
 				hp_ -= 10.0f;
 				alpha_ = 2.0f;
+				specialTimer_ += 30;
 				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
 				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/10.png");

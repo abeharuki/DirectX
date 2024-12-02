@@ -87,7 +87,19 @@ public:
 	void SetThreshold(float num) { lightData->dissolve_.threshold = num; }
 	void SetEdgeColor(Vector3 color) { lightData->dissolve_.edgeColor = color; }
 	void SetMaskTexture(const std::string& texturePath);
-
+	//ディゾルブの許可
+	void IsGradient(bool flag) { lightData->dissolve_.isGradient = flag; }
+	void SetMaskUV(Transform& uvTransform) {
+		// UVTransform用の行列
+		Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
+			{
+				uvTransform.scale.x + 1,
+				uvTransform.scale.y + 1,
+				uvTransform.scale.z + 1,
+			},
+			uvTransform.rotate, uvTransform.translate);
+		lightData->dissolve_.uvTransform = uvTransformMatrix;
+	}
 private:
 	TextureManager* textureManager_;
 	uint32_t texture_;

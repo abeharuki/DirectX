@@ -133,10 +133,10 @@ void ParticleSystem::SetTexture(const std::string& filename) {
 }
 
 void ParticleSystem::SetModel(const std::string& filename,const std::string& path) {
-	modelData = ModelManager::LoadObjFile("resources/" + filename + path);
+	modelData = ModelManager::LoadObjFile("resources/" + filename +"/" + path);
 	if (modelData.material.textureFilePath != "") {
-		TextureManager::GetInstance()->Load("resources/" + filename + modelData.material.textureFilePath);
-		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/" + filename + modelData.material.textureFilePath);
+		TextureManager::GetInstance()->Load("resources/" + filename +"/" + modelData.material.textureFilePath);
+		texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/" + filename+ "/" + modelData.material.textureFilePath);
 	}
 	CreateVertexResource();
 }

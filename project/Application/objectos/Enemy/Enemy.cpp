@@ -183,6 +183,7 @@ void Enemy::Update() {
 
 	for (EnemyHenchman* enemy : henchmans_) {
 		enemy->SetRenjuPos(hmansRenjuPos_);
+		enemy->SetSpacal(special_);
 		enemy->Update();
 	}
 	
@@ -291,6 +292,7 @@ void Enemy::MoveInitialize() {
 	animation_->SetLoop(true);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 	num_ = RandomGenerator::GetRandomInt(player, tank);
+	
 	//必殺技を打てる回数を増やす
 	AddSpecialCount();
 
@@ -305,7 +307,7 @@ void Enemy::MoveUpdata() {
 
 	//バリアのディゾルブを消す
 	if (barrierThreshold_ <= 1.f) {
-		barrierThreshold_ += 0.05f;
+		barrierThreshold_ += 0.01f;
 	}
 
 	--time_;
@@ -407,7 +409,7 @@ void Enemy::AttackInitialize() {
 	//1,4
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
-		num = 8;
+		num = RandomGenerator::GetRandomInt(7, 8);
 	}
 	
 	if (num == 1) {
@@ -429,8 +431,6 @@ void Enemy::AttackInitialize() {
 		attackRequest_ = BehaviorAttack::kHenchman;
 	}
 	
-	
-
 	behaviorAttack_ = true;
 }
 void Enemy::AttackUpdata() {
@@ -999,15 +999,33 @@ void Enemy::SpecialHenchmanInit()
 	moveTime_ = 60*10;
 	special_ = true;
 	barrierThreshold_ = 1.0f;
+	isAttack_ = false;
 	worldTransformBarrier_.rotate.y = 0.0f;
+	worldTransformBarrier_.scale = { 7.5f,7.5f,7.5f };
 }
 void Enemy::SpecialHenchmanUpdata()
 {
 	--moveTime_;
+	
+	henchman_->Update(4);
 	if (moveTime_ <= 0) {
-		behaviorRequest_ = Behavior::kRoot;
+		if (barrierThreshold_ > 0.0f ) {
+			barrierThreshold_ -= 0.01f;
+		}
+		else {
+			isAttack_ = true;
+			worldTransformBarrier_.scale += Vector3{ 2.f,2.f,2.f };
+		}
+
+		if (worldTransformBarrier_.scale.x >= 100.0f) {
+			behaviorRequest_ = Behavior::kRoot;
+		}
+
+		
 	}
 	else {
+
+		
 		if(barrierThreshold_ > 0.6f){
 			barrierThreshold_ -= 0.01f;
 		}
@@ -1015,7 +1033,7 @@ void Enemy::SpecialHenchmanUpdata()
 		worldTransformBarrier_.translate.y = 6.f;
 		worldTransformBarrier_.rotate.y += 0.01f;
 		
-		henchman_->Update(4);
+		
 		
 		if (moveTime_  % 10 == 0) {
 			// 敵を生成、初期化
@@ -1027,11 +1045,15 @@ void Enemy::SpecialHenchmanUpdata()
 
 			henchmans_.push_back(newEnemy);
 		}	
+
+
+		if (renjuSpecial_) {
+			behaviorRequest_ = Behavior::kRoot;
+		}
+
 	}
 
-	if(renjuSpecial_){
-		behaviorRequest_ = Behavior::kRoot;
-	}
+	
 
 }
 
