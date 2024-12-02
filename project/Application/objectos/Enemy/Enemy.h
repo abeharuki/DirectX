@@ -64,6 +64,7 @@ public: // メンバ関数
 	void Draw(const ViewProjection& camera);
 	//デプスがないオブジェクトの描画
 	void NotDepthDraw(const ViewProjection& camera);
+	void BarrierDraw(const  ViewProjection& camera);
 
 	//当たりは判定
 	void OnCollision(Collider* collider) override;
@@ -85,6 +86,8 @@ public: // メンバ関数
 		}
 		return Behavior::kRoot;
 	}
+
+	float GetThreshold() { return barrierThreshold_; }
 
 	bool IsBehaviorRequest(){
 		if (behaviorRequest_) {
@@ -120,7 +123,7 @@ public: // メンバ関数
 		animation_->DirectionalLightDraw(directionLight);
 		impactModel_->DirectionalLightDraw(directionLight);
 		for (int i = 0; i < 3; ++i) {
-			sterModel_[i]->DirectionalLightDraw(directionLight);
+			//sterModel_[i]->DirectionalLightDraw(directionLight);
 		}
 	}
 
@@ -178,8 +181,8 @@ private:
 	void SpecialBreathInit();
 	void SpecialBreathUpdata();
 	//必殺技2
-	void Special2Init();
-	void Special2Updata();
+	void SpecialHenchmanInit();
+	void SpecialHenchmanUpdata();
 
 	// パーツ親子関係
 	void Relationship();
@@ -192,7 +195,8 @@ private: // メンバ変数
 	WorldTransform worldTransformArea_;
 	WorldTransform worldTransformCircleArea_;
 	WorldTransform worldTransformColliderImpact_[15];//衝撃波の座標
-	WorldTransform worldTransformSter_[3];
+	WorldTransform worldTransformBarrier_;
+	//WorldTransform worldTransformSter_[3];
 	std::unique_ptr<ColliderManager> colliderManager_[15] = {};//衝撃波用の当たり判定
 	std::unique_ptr<ColliderManager> colliderRockManager_ = {};//投擲用
 
@@ -210,7 +214,8 @@ private: // メンバ変数
 	std::unique_ptr<Model> impactModel_;//衝撃波
 	std::unique_ptr<Model> areaModel_;//ダッシュ攻撃エリア
 	std::unique_ptr<Model> circleAreaModel_;//投擲攻撃エリア
-	std::unique_ptr<Model> sterModel_[3];//混乱時の星
+	std::unique_ptr<Model> barrierModel_;//バリアモデル
+	//std::unique_ptr<Model> sterModel_[3];//混乱時の星
 
 	std::list<EnemyHenchman*> henchmans_;//子分
 	Vector3 hmansRenjuPos_;
@@ -292,4 +297,10 @@ private: // メンバ変数
 	int specialCount_ = 1;
 	//レンジャーの必殺攻撃を食らったかどうか
 	bool renjuSpecial_ = false;
+
+	//barrier展開の確認
+	bool barrier_ = false;
+	//ディゾルブ
+	float barrierThreshold_ = 1.f;
+	Transform maskUV_;
 };

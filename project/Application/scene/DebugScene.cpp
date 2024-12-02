@@ -52,14 +52,15 @@ void DebugScene::Initialize() {
 	worldTransformCollider2_.Initialize();
 	worldTransformCollider3_.Initialize();
 	worldTransformModel_.Initialize();
-	worldTransformModel_.rotate.x = 1.6f;
+	
 	worldTransformModel_.translate.y = 3.f;
 	worldTransformModel_.scale = { 1.f,1.f,1.f };
 	worldTransformSter_[0].Initialize();
 	worldTransformSter_[1].Initialize();
 	sprite_.reset(Sprite::Create("resources/DDS/cat.dds"));
 
-	rockModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj","resources/Tank/b.png"));
+	rockModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj","resources/white.png"));
+	rockModel_->SetMaskTexture("barrier.png");
 	skybox_.reset(Skybox::Create("resources/skydome/skyCube.dds"));
 	model_.reset(Model::CreateFromNoDepthObj("resources/particle/scalePlane.obj", "resources/Enemy/white.png"));
 	//model_->SetMaskTexture("shockwave.png");
@@ -112,9 +113,9 @@ void DebugScene::Initialize() {
 	angle_[2] = 4.0f;
 
 	blendNum_ = 2;
-	maskUV_.scale = { 1.f,1.f,1.f };
-	animeDissolve_.threshold = 0.3f;
-	modelColor_ = { 0.7f,0.0f,1.0f,1.0f };
+	maskUV_.scale = { -1.f,4.f,1.f };
+	animeDissolve_.threshold = 0.55f;
+	modelColor_ = { 1.0f,0.0f,1.0f,1.0f };
 
 }
 
@@ -134,7 +135,7 @@ void DebugScene::Update() {
 	gravityFiled_.translate = emitter_.translate;
 	accelerationFiled_.min = Vector3{-5.0f,-5.0f,-5.0f};
 	accelerationFiled_.max = Vector3{5.0f,5.0f,5.0f};
-	
+	worldTransformModel_.rotate.y += 0.01f;
 	particle_->SetEmitter(emitter_);
 	particle_->SetAccelerationFiled(accelerationFiled_);
 	particle_->SetGravityFiled(gravityFiled_);
@@ -200,6 +201,7 @@ void DebugScene::Update() {
 	bloom_.isEnble = postEffects[8];
 	rockModel_->SetThreshold(animeDissolve_.threshold);
 	rockModel_->SetMaskUV(maskUV_);
+	rockModel_->SetEdgeColor(animeDissolve_.edgeColor);
 	rockModel_->IsGradient(true);
 	/*animation_->SetThreshold(animeDissolve_.threshold);
 	animation_->SetEdgeColor(dissolve_.edgeColor);
@@ -286,6 +288,7 @@ void DebugScene::Update() {
 		ImGui::DragFloat3("MaskRotate", &maskUV_.rotate.x, 0.01f);
 		ImGui::DragFloat3("MaskSize", &maskUV_.scale.x, 0.1f);
 
+		ImGui::DragFloat3("EdgeColor", &animeDissolve_.edgeColor.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Thresholed", &animeDissolve_.threshold, 0.0f, 1.0f);
 		ImGui::Checkbox("ShockWave", &shockwaveflag_);
 		ImGui::TreePop();

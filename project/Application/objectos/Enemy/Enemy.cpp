@@ -13,10 +13,21 @@ void Enemy::Initialize() {
 	areaModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/red_.png"));
 	circleAreaModel_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj", "resources/Enemy/red_.png"));
 	for (int i = 0; i < 3; ++i) {
-		sterModel_[i].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
-		worldTransformSter_[i].Initialize();
-		worldTransformSter_[i].translate.y = 12.0f;
+		//sterModel_[i].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
+		/*worldTransformSter_[i].Initialize();
+		worldTransformSter_[i].translate.y = 12.0f;*/
 	}
+
+	worldTransformBarrier_.Initialize();
+	
+	worldTransformBarrier_.scale = { 7.5f,7.5f,7.5f };
+	barrierModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj", "resources/white.png"));
+	barrierModel_->SetMaskTexture("barrier.png");
+	barrierModel_->SetBlendMode(BlendMode::kAdd);
+	maskUV_.scale = { -1.f,4.f,1.f };
+	barrierModel_->SetMaskUV(maskUV_);
+	barrierModel_->SetColor({ 1.0f,0.0f,1.0f,1.0f });
+
 	areaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	//circleAreaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	animationNumber_ = standby;
@@ -176,9 +187,8 @@ void Enemy::Update() {
 	}
 	
 	
-
-	//必殺技を打てる回数を増やす
-	AddSpecialCount();
+	barrierModel_->SetThreshold(barrierThreshold_);
+	
 	
 	//アニメーションの更新
 	animation_->Update(animationNumber_);
@@ -192,8 +202,9 @@ void Enemy::Update() {
 	worldTransformImpact_.UpdateMatrix();
 	worldTransformArea_.UpdateMatrix();
 	worldTransformCircleArea_.UpdateMatrix();
+	worldTransformBarrier_.UpdateMatrix();
 	for (int i = 0; i < 3; ++i) {
-		worldTransformSter_[i].UpdateMatrix();
+		//worldTransformSter_[i].UpdateMatrix();
 	}
 	for (int i = 0; i < 15; ++i) {
 		worldTransformColliderImpact_[i].UpdateMatrix();
@@ -211,7 +222,8 @@ void Enemy::Update() {
 
 	ImGui::Begin("Enemy");
 	animation_->AnimationDebug();
-	ImGui::SliderFloat3("pos", &worldTransformBody_.translate.x, -2.0f, 2.0f);
+	ImGui::SliderFloat3("pos", &worldTransformBarrier_.translate.x, 0.0f, 10.0f);
+	ImGui::SliderFloat3("Scale", &worldTransformBarrier_.scale.x, 0.0f, 10.0f);
 	ImGui::DragFloat3("rotato", &worldTransformBody_.rotate.x, 1.0f);
 	ImGui::DragFloat3("rotatoBase", &worldTransformBase_.rotate.x, 0.1f);
 	ImGui::DragFloat3("Area", &worldTransformArea_.translate.x, 0.1f);
@@ -239,7 +251,7 @@ void Enemy::Draw(const ViewProjection& camera) {
 	
 	if (behavior_ == Behavior::kStan) {
 		for (int i = 0; i < 3; ++i) {
-			sterModel_[i]->Draw(worldTransformSter_[i], camera, true);
+			//sterModel_[i]->Draw(worldTransformSter_[i], camera, true);
 		}
 	}
 	
@@ -256,6 +268,13 @@ void Enemy::Draw(const ViewProjection& camera) {
 	
 }
 
+void Enemy::BarrierDraw(const ViewProjection& camera){
+	if (barrier_ || barrierThreshold_ < 1) {
+		barrierModel_->Draw(worldTransformBarrier_, camera, false);
+	}
+	
+}
+
 //移動
 void Enemy::MoveInitialize() {
 	time_ = 60;
@@ -267,10 +286,14 @@ void Enemy::MoveInitialize() {
 	behaviorAttack_ = false;
 	special_ = false;
 	renjuSpecial_ = false;
+	barrier_ = false;
 	animationNumber_ = standby;
 	animation_->SetLoop(true);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 	num_ = RandomGenerator::GetRandomInt(player, tank);
+	//必殺技を打てる回数を増やす
+	AddSpecialCount();
+
 };
 void Enemy::MoveUpdata() {
 	if (animationNumber_ == threat) {
@@ -278,6 +301,11 @@ void Enemy::MoveUpdata() {
 			behaviorRequest_ = Behavior::kRoot;
 			animation_->SetpreAnimationTimer(0.0f);
 		}
+	}
+
+	//バリアのディゾルブを消す
+	if (barrierThreshold_ <= 1.f) {
+		barrierThreshold_ += 0.05f;
 	}
 
 	--time_;
@@ -428,7 +456,7 @@ void Enemy::AttackUpdata() {
 			SpecialBreathInit();
 			break;
 		case BehaviorAttack::kHenchman:
-			Special2Init();
+			SpecialHenchmanInit();
 			break;
 		}
 
@@ -453,7 +481,7 @@ void Enemy::AttackUpdata() {
 		SpecialBreathUpdata();
 		break; 
 	case BehaviorAttack::kHenchman:
-		Special2Updata();
+		SpecialHenchmanUpdata();
 		break;
 	}
 }
@@ -960,25 +988,35 @@ void Enemy::SpecialBreathUpdata() {
 	}
 }
 
-//
-void Enemy::Special2Init()
+//子分を出す攻撃
+void Enemy::SpecialHenchmanInit()
 {
 	--specialCount_;
 	animationNumber_ = threat;
 	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
-	
+	barrier_ = true;
 	moveTime_ = 60*10;
 	special_ = true;
+	barrierThreshold_ = 1.0f;
+	worldTransformBarrier_.rotate.y = 0.0f;
 }
-void Enemy::Special2Updata()
+void Enemy::SpecialHenchmanUpdata()
 {
 	--moveTime_;
 	if (moveTime_ <= 0) {
 		behaviorRequest_ = Behavior::kRoot;
 	}
 	else {
+		if(barrierThreshold_ > 0.6f){
+			barrierThreshold_ -= 0.01f;
+		}
+		worldTransformBarrier_.translate = worldTransformBase_.translate;
+		worldTransformBarrier_.translate.y = 6.f;
+		worldTransformBarrier_.rotate.y += 0.01f;
+		
 		henchman_->Update(4);
+		
 		if (moveTime_  % 10 == 0) {
 			// 敵を生成、初期化
 			EnemyHenchman* newEnemy = new EnemyHenchman();
@@ -1009,7 +1047,7 @@ void Enemy::StanInitialize() {
 void Enemy::StanUpdata() {
 	--time_;
 	for (int i = 0; i < 3; ++i) {
-		Math::UpdateCircularMotion3D(worldTransformSter_[i].translate.x, worldTransformSter_[i].translate.z, worldTransformBase_.translate.x, worldTransformBase_.translate.z - 2, 2.0f, sterAngle_[i], 0.1f);
+		//Math::UpdateCircularMotion3D(worldTransformSter_[i].translate.x, worldTransformSter_[i].translate.z, worldTransformBase_.translate.x, worldTransformBase_.translate.z - 2, 2.0f, sterAngle_[i], 0.1f);
 	}
 
 

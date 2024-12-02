@@ -147,14 +147,24 @@ void EnemyManager::OnCollision() {
 	isHit_ = true;
 	if (isHit_ != preHit_) {
 		
-		HpTransform_.scale.x -= 20.0f;
+		if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetThreshold() <= 0.8f) {
+			damageNumModel_[playerNum]->SetTexture("Enemy/num/0.png");
+		}
+		else {
+			damageNumModel_[playerNum]->SetTexture("Enemy/num/20.png");
+
+			HpTransform_.scale.x -= 20.0f;
+			
+		}
+
 		playerNumAlpha_ = 2.0f;
 
-		worldTransformNum_[playerNum].translate.x = enemy_->GetWorldPosition().x +  RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
-		worldTransformNum_[playerNum].translate.z = enemy_->GetWorldPosition().z +  RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
+		worldTransformNum_[playerNum].translate.x = enemy_->GetWorldPosition().x + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
+		worldTransformNum_[playerNum].translate.z = enemy_->GetWorldPosition().z + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
 		worldTransformNum_[playerNum].translate.y = RandomGenerator::GetRandomFloat(3.0f, 6.0f);
 		playerNumMove_ = { worldTransformNum_[playerNum].translate.x ,worldTransformNum_[playerNum].translate.y + 2.0f,worldTransformNum_[playerNum].translate.z };
 
+		
 	}
 
 	if (HpTransform_.scale.x <= 0) {
@@ -165,8 +175,19 @@ void EnemyManager::OnCollision() {
 
 void EnemyManager::OnHealerCollision() {
 	isHitH_ = true;
+	
+
 	if (isHitH_ != preHitH_) {
-		HpTransform_.scale.x -= 10.0f;
+		if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetThreshold() <= 0.8f) {
+			damageNumModel_[healerNum]->SetTexture("Enemy/num/0.png");
+
+		}
+		else {
+			damageNumModel_[healerNum]->SetTexture("Enemy/num/10.png");
+
+			HpTransform_.scale.x -= 10.0f;
+			
+		}
 		healerNumAlpha_ = 2.0f;
 		worldTransformNum_[healerNum].translate.x = enemy_->GetWorldPosition().x + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
 		worldTransformNum_[healerNum].translate.z = enemy_->GetWorldPosition().z + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
@@ -181,8 +202,18 @@ void EnemyManager::OnHealerCollision() {
 };
 void EnemyManager::OnTankCollision() {
 	isHitT_ = true;
+
+	
+
 	if (isHitT_ != preHitT_) {
-		HpTransform_.scale.x -= 10.0f;
+		if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetThreshold() <= 0.8f) {
+			damageNumModel_[tankNum]->SetTexture("Enemy/num/0.png");
+		}
+		else {
+			damageNumModel_[tankNum]->SetTexture("Enemy/num/10.png");
+
+			HpTransform_.scale.x -= 10.0f;
+		}
 		tankNumAlpha_ = 2.0f;
 		worldTransformNum_[tankNum].translate.x = enemy_->GetWorldPosition().x + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
 		worldTransformNum_[tankNum].translate.z = enemy_->GetWorldPosition().z + RandomGenerator::GetRandomFloat(-3.0f, 3.0f);
@@ -203,8 +234,16 @@ void EnemyManager::OnRenjuCollision(bool skill) {
 			damageNumModel_[renjuNum]->SetTexture("Enemy/num/30.png");
 		}
 		else {
-			HpTransform_.scale.x -= 20.0f;
-			damageNumModel_[renjuNum]->SetTexture("Enemy/num/20.png");
+			if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetThreshold() <= 0.8f) {
+				damageNumModel_[renjuNum]->SetTexture("Enemy/num/0.png");
+			}
+			else {
+				damageNumModel_[renjuNum]->SetTexture("Enemy/num/20.png");
+				HpTransform_.scale.x -= 20.0f;
+				
+			}
+
+			
 		}
 		
 		renjuNumAlpha_ = 2.0f;

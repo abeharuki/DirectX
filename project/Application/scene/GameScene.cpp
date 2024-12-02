@@ -274,6 +274,8 @@ void GameScene::Draw() {
 		playerManager_->Draw(viewProjection_);
 	}
 
+	//バリアの描画
+	enemyManager_->GetEnemy()->BarrierDraw(viewProjection_);
 	tankManager_->GetTank()->BarrierDraw(viewProjection_);
 
 	//コマンド
