@@ -75,6 +75,13 @@ public: // メンバ関数
 	//必殺技を打てる回数を増やす
 	void AddSpecialCount();
 
+	//パーティクルを止める
+	void StopParticle() {
+		for (int i = 0; i < 5; ++i) {
+			particle_[i]->StopParticle();
+		}
+	}
+
 	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
@@ -294,7 +301,7 @@ private: // メンバ変数
 	//必殺技フラグ
 	bool special_ = false;
 	//必殺技を打てる回数
-	int specialCount_ = 0;
+	int specialCount_ = 1;
 	//レンジャーの必殺攻撃を食らったかどうか
 	bool renjuSpecial_ = false;
 

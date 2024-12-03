@@ -110,8 +110,9 @@ void Enemy::Initialize() {
 
 		
 		
-
+		
 		particle_[i] = ParticleManager::Create("resources/particle/circle.png", 15 + (i + 1));
+		
 	}
 
 	//henchmans_.clear();
@@ -124,9 +125,10 @@ void Enemy::Initialize() {
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
 	
+	animation_->Update(animationNumber_);
 	animation_->SetpreAnimationTimer(0.0f);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
-	animation_->Update(animationNumber_);
+	
 }
 
 void Enemy::Update() {
@@ -410,7 +412,7 @@ void Enemy::AttackInitialize() {
 	//1,4
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
-		num = RandomGenerator::GetRandomInt(7, 8);
+		num = RandomGenerator::GetRandomInt(8, 8);
 	}
 	
 	if (num == 1) {
@@ -984,6 +986,9 @@ void Enemy::SpecialBreathUpdata() {
 	}
 
 	if (moveTime_ <= 0) {
+		for (int i = 0; i < 5; ++i) {
+			particle_[i]->StopParticle();
+		}
 		
 		behaviorRequest_ = Behavior::kRoot;
 		isAttack_ = false;

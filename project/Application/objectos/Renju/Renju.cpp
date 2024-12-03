@@ -474,7 +474,6 @@ void Renju::ProtectInitialize(){
 	BaseCharacter::ProtectInitialize();
 	coolTime_ = 30;
 }
-
 void Renju::ProtectUpdate(){
 	--coolTime_;
 

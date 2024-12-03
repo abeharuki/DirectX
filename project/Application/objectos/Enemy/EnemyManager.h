@@ -25,6 +25,8 @@ public:
 	//ビルボードの計算
 	void Billboard();
 
+	void Stop() { enemy_->StopParticle(); }
+
 	/*-----ゲッター-----*/
 	Enemy* GetEnemy() { return enemy_.get(); };
 	bool IsAttack() { return enemy_->isAttack(); }

@@ -92,6 +92,9 @@ void GameScene::Update() {
 		enemyManager_->Update();
 
 	}
+	else {
+		enemyManager_->Stop();
+	}
 
 	healerManager_->GetHealer()->SetBarrier(tankManager_->GetTank()->GetBarrier());
 	renjuManager_->GetRenju()->SetBarrier(tankManager_->GetTank()->GetBarrier());
@@ -144,6 +147,7 @@ void GameScene::Update() {
 
 	//魔法陣に使う座標の受け取り
 	healerManager_->GetHealer()->SetPos(renjuManager_->GetRenju()->GetWorldPosition(), tankManager_->GetTank()->GetWorldPosition());
+	renjuManager_->GetRenju()->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
 	//回復
 	if (healerManager_->GetHealer()->GetHeal()) {
 		//全体回復
@@ -187,7 +191,7 @@ void GameScene::Update() {
 		tankManager_->Update();
 		renjuManager_->Update();
 		healerManager_->Update();
-		renjuManager_->GetRenju()->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
+		
 	}
 
 	//生存しているかどうか

@@ -442,13 +442,13 @@ void BaseCharacter::BreathUpdate() {
 	
 
 	const float kSpeed = 0.3f;
-	Vector3 directionTank = (tankPos_ - direction) - GetWorldPosition();
+	Vector3 directionTank = (tankPos_ -(direction * 0.3f)) - GetWorldPosition();
 
 	velocity_ = Math::Normalize(directionTank) * kSpeed;
 
-
-	if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (direction.x*0.3f)), 2.0f) &&
-		Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (direction.z*0.3f)), 2.0f)) {
+	
+	if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (direction.x * 0.3f)), 2.f) &&
+		Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (direction.z * 0.3f)), 2.f)) {
 		animationNumber_ = standby;
 	}
 	else {
@@ -575,7 +575,7 @@ void BaseCharacter::Relationship()
 
 void BaseCharacter::followPlayer()
 {
-	if (followPlayer_ && state_ != CharacterState::Unique) {
+	if (followPlayer_ && state_ != CharacterState::Unique && state_ != CharacterState::Breath) {
 
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = playerPos_ - GetWorldPosition();
@@ -601,8 +601,12 @@ void BaseCharacter::followPlayer()
 		// 距離条件チェック
 		if (minDistance_ <= length) {
 			drawWepon_ = false;
-			worldTransformBase_.translate =
-				Math::Lerp(worldTransformBase_.translate, playerPos_, 0.02f);
+			const float kSpeed = 0.3f;
+			Vector3 direction = sub;
+
+			velocity_ = Math::Normalize(direction) * kSpeed;
+
+			worldTransformBase_.translate += velocity_;
 			animationNumber_ = run;
 			if (velocity_.y == 0.0f) {
 				worldTransformBase_.translate.y = 0.0f;
@@ -624,7 +628,7 @@ void BaseCharacter::Dissolve()
 
 void BaseCharacter::searchTarget()
 {
-	if (!followPlayer_ && searchTarget_) {
+	if (!followPlayer_ && searchTarget_ && state_ != CharacterState::Breath) {
 		drawWepon_ = false;
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
@@ -648,7 +652,12 @@ void BaseCharacter::searchTarget()
 		if (minDistance_ * distance_ <= enemylength_) {
 			if (state_ != CharacterState::Jumping) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash || !enemy_->IsBehaberAttack()) {
-					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition() + randPos_, 0.02f);
+					const float kSpeed = 0.3f;
+					Vector3 direction = sub;
+
+					velocity_ = Math::Normalize(direction) * kSpeed;
+
+					worldTransformBase_.translate += velocity_;
 					animationNumber_ = run;
 				}
 				if (velocity_.y == 0.0f) {
