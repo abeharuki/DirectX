@@ -238,6 +238,7 @@ void DebugScene::Update() {
 	ImGui::Begin("Setting");
 	ImGui::Text("Angle%f", angle_[0]);
 	if (ImGui::TreeNode("Particle")) {
+		ImGui::Text("ParticleTime", &particle_);
 		ImGui::Checkbox("ParticleFlag", &particleFlag_);
 		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
 		ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);

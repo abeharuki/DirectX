@@ -623,7 +623,7 @@ void BaseCharacter::Dissolve()
 {
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
 	threshold_ += 0.004f;
-	animation_->SetThreshold(threshold_);
+	//animation_->SetThreshold(threshold_);
 }
 
 void BaseCharacter::searchTarget()

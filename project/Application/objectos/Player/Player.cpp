@@ -156,9 +156,8 @@ void Player::Update() {
 		isOver_ = true;
 	}
 
-	if (hp_ <= 0) {
+	if (hp_ <= 0 && behavior_ != Behavior::kDead) {
 		behaviorRequest_ = Behavior::kDead;
-		isOver_ = true;
 	}
 
 	if (hp_ >= 20) {
@@ -186,7 +185,7 @@ void Player::Update() {
 	worldTransformHammer_.TransferMatrix();
 	worldTransformNum_.TransferMatrix();
 
-	animation_->SetThreshold(threshold_);
+	//animation_->SetThreshold(threshold_);
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
 	ImGui::SliderFloat3("NumPos", &worldTransformNum_.translate.x, -10.0f, 10.0f);
@@ -604,9 +603,9 @@ void Player::DeadInitilize() {
 void Player::DeadUpdata() {
 	hp_ = 0.0f;
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-	threshold_ += 0.04f;
-	animation_->SetThreshold(threshold_);
-	if (threshold_ >= 0.7f) {
+	threshold_ += 0.005f;
+	//animation_->SetThreshold(threshold_);
+	if (threshold_ >= 1.0f) {
 		isOver_ = true;
 
 	}

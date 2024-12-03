@@ -14,6 +14,7 @@ void ClearScene::Initialize() {
 	isFadeOut_ = false;
 	isFede_ = false;
 
+	PostEffect::GetInstance()->isOutLine(false);
 	PostEffect::GetInstance()->isRadialBlur(false);
 }
 

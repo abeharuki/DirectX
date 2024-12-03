@@ -986,6 +986,9 @@ void Enemy::SpecialBreathUpdata() {
 	}
 
 	if (moveTime_ <= 0) {
+		for (int i = 0; i < 5; ++i) {
+			particle_[i]->StopParticle();
+		}
 		behaviorRequest_ = Behavior::kRoot;
 		isAttack_ = false;
 	}

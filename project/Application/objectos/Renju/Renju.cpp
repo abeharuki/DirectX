@@ -456,6 +456,7 @@ void Renju::UniqueUpdate() {
 
 			coolTime_ = 60;
 			filed_.strength = 0.0f;
+			particle_->StopParticle();
 			state_ = NextState("Skill", Output1);
 		}
 	}
