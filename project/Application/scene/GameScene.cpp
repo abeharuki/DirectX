@@ -67,6 +67,9 @@ void GameScene::Initialize() {
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 
+	//バトルのフラグ
+	battle_ = false;
+
 	//ラジアルブラー
 	radialBlur_.isEnble = false;
 	radialBlur_.blurWidth = 0.01f;
@@ -444,6 +447,7 @@ void GameScene::BattleBegin(){
 		if (followCamera_->GetViewProjection().translation_.z <= -49.9f) {
 			battle_ = true;
 			command_->SetTaskType(TaskType::kInitial);
+			command_->SetOperatin(false);
 		}
 	}
 	

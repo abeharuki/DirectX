@@ -1,5 +1,6 @@
 #include "ClearScene.h"
 #include "Framework/SceneManager.h"
+#include <PostEffects/PostEffect.h>
 
 void ClearScene::Initialize() {
 	spriteClear_.reset(Sprite::Create("resources/clear.png"));
@@ -12,6 +13,8 @@ void ClearScene::Initialize() {
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 	isFede_ = false;
+
+	PostEffect::GetInstance()->isRadialBlur(false);
 }
 
 void ClearScene::Update() {
@@ -25,13 +28,9 @@ void ClearScene::Update() {
 }
 
 void ClearScene::Draw() {
-	Transform uv;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f, 0.0f };
-	spriteClear_->Draw(uv);
-	spritePushA_->Draw(uv);
-	spriteBack_->Draw(uv);
+	spriteClear_->Draw();
+	spritePushA_->Draw();
+	spriteBack_->Draw();
 }
 
 void ClearScene::RenderDirect() {

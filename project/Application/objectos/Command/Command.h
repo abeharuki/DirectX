@@ -51,6 +51,7 @@ public:
 
 	//作戦フラグ
 	bool GetOperatin() { return follow_; }
+	void SetOperatin(bool flag) { follow_ = flag; }
 
 	//プレイヤーの状態
 	void  SetBehavior(bool flag) { behaviorRoot_ = flag; }

@@ -433,7 +433,13 @@ void Player::MoveUpdata() {
 				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
 					: -std::numbers::pi_v<float> / 2.0f;
 			}
-			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.07f);
+
+			const float kSpeed = 1.f;
+			Vector3 direction = sub;
+
+			velocity_ = Math::Normalize(direction) * kSpeed;
+
+			worldTransformBase_.translate += velocity_;
 
 
 			if (length < 5) {

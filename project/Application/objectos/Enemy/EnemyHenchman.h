@@ -20,35 +20,45 @@ public:
 	void Update();
 	void Draw(const ViewProjection& camera);
 
+	//レンジャーに向かって動く
 	void followRenju();
-	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; }
-	bool IsDead() { return dead_; }
-	bool IsHitEnemy() { return enemyHit_; }
-
-	void SetSpacal(bool flag) { specal_ = flag; }
 
 	//当たりは判定
 	void OnCollision(Collider* collider) override;
+
+	/*-----------ゲッター-----------*/
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransform_; }
-	Vector3 GetPos() {return worldTransform_.translate;}
+	Vector3 GetPos() { return worldTransform_.translate; }
+	bool IsDead() { return dead_; }
+	bool IsHitEnemy() { return enemyHit_; }
 
+	/*------------セッター---------*/
+	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; }
+	void SetSpacal(bool flag) { specal_ = flag; }
 
 private:
 	WorldTransform worldTransform_;
 	Animations* animation_;
 
-	bool dead_;
+	
 	Vector3 renjuPos_;
 	Vector3 velocity_;
 
-	int time_ = 60 * 4;
-
+	//対象の方を向くための角度
 	float destinationAngleY_;
+	//ヒット確認
 	bool hit_;
 	bool enemyHit_;
+
+	//必殺技フラグ受け取り用
 	bool specal_;
+
+	//ディゾルブ用
 	float thre_ = 0.0f;
+
+	//死亡フラグ
+	bool dead_;
 };
 
 

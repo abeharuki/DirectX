@@ -1,7 +1,6 @@
 #include "OverScene.h"
 #include "Framework/SceneManager.h"
 #include <PostEffects/PostEffect.h>
-#include <ParticleManager.h>
 
 void OverScene::Initialize() {
 	spriteOver_.reset(Sprite::Create("resources/over.png"));
@@ -16,29 +15,26 @@ void OverScene::Initialize() {
 	isFede_ = false;
 
 	PostEffect::GetInstance()->isGrayscale(true);
+	PostEffect::GetInstance()->isRadialBlur(false);
 
-	viewProjection_.Initialize();
+	/*viewProjection_.Initialize();
 	viewProjection_.rotation_.x = 0.28f;
-	viewProjection_.translation_ = { 0.0f, 3.0f, -9.0f };
+	viewProjection_.translation_ = { 0.0f, 3.0f, -9.0f };*/
 }
 
 void OverScene::Update() {
 	
 	Fade();
-	viewProjection_.UpdateMatrix();
+	//viewProjection_.UpdateMatrix();
 	if (isFede_) {
 		SceneManager::GetInstance()->ChangeScene("TitleScene");
 	}
 }
 
 void OverScene::Draw() {
-	Transform uv;
-	uv.scale = { 0.0f, 0.0f, 0.0f };
-	uv.rotate = { 0.0f, 0.0f, 0.0f };
-	uv.translate = { 0.0f, 0.0f, 0.0f };
-	spriteOver_->Draw(uv);
-	spritePushA_->Draw(uv);
-	spriteBack_->Draw(uv);
+	spriteOver_->Draw();
+	spritePushA_->Draw();
+	spriteBack_->Draw();
 	
 }
 
