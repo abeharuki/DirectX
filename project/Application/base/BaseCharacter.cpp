@@ -608,9 +608,7 @@ void BaseCharacter::followPlayer()
 
 			worldTransformBase_.translate += velocity_;
 			animationNumber_ = run;
-			if (velocity_.y == 0.0f) {
-				worldTransformBase_.translate.y = 0.0f;
-			}
+			worldTransformBase_.translate.y = 0.0f;
 		}
 		else {
 			followPlayer_ = false;
@@ -659,10 +657,9 @@ void BaseCharacter::searchTarget()
 
 					worldTransformBase_.translate += velocity_;
 					animationNumber_ = run;
-				}
-				if (velocity_.y == 0.0f) {
 					worldTransformBase_.translate.y = 0.0f;
 				}
+			
 			}
 
 		}

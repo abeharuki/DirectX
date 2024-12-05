@@ -97,6 +97,7 @@ public: // メンバ関数
 	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }
 	bool IsOver() { return isOver_; }
+	bool IsDead() { return isDead_; }
 	bool IsOuto() { return auto_; }
 	float GetHp() { return hp_; }
 	float GetMp() { return mp_; }

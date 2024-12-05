@@ -91,11 +91,8 @@ void GameScene::Update() {
 	CheckAllCollision();
 
 	//敵の更新
-	if (!playerManager_->IsOver()) {
-		enemyManager_->Update();
-
-	}
-	else {
+	enemyManager_->Update();
+	if (playerManager_->GetPlayer()->IsDead()) {
 		enemyManager_->Stop();
 	}
 
