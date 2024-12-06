@@ -238,7 +238,7 @@ void Enemy::Update() {
 
 void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
-	if (animationNumber_ == groundAttack && isAttack_ == true) {
+	if (attack_==BehaviorAttack::kGround && isAttack_ == true) {
 		impactModel_->Draw(worldTransformImpact_, camera, true);
 	}
 
@@ -294,8 +294,6 @@ void Enemy::MoveInitialize() {
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 	num_ = RandomGenerator::GetRandomInt(player, tank);
 	
-	
-
 };
 void Enemy::MoveUpdata() {
 	if (animationNumber_ == threat) {
@@ -412,7 +410,7 @@ void Enemy::AttackInitialize() {
 	//1,5
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
-		num = RandomGenerator::GetRandomInt(8, 9);//max9
+		num = RandomGenerator::GetRandomInt(7, 9);//max9
 	}
 	
 	if (num == 1) {
@@ -924,8 +922,8 @@ void Enemy::GroundAttackInitialize() {
 	worldTransformImpact_.translate = worldTransformBase_.translate;
 	isAttack_ = false;
 	animationNumber_ = groundAttack;
-	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetLoop(false);
 	InitializeImpact();
 };
 void Enemy::GroundAttackUpdata() {
@@ -948,8 +946,8 @@ void Enemy::SpecialBreathInit() {
 	--specialCount_;
 	worldTransformImpact_.translate = worldTransformBase_.translate;
 	animationNumber_ = threat;
-	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetLoop(false);
 	moveTime_ = 60 * 7;
 	animation_->SetFlameTimer(100.0f);
 	InitializeImpact();
@@ -999,8 +997,8 @@ void Enemy::SpecialHenchmanInit()
 {
 	--specialCount_;
 	animationNumber_ = threat;
-	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetLoop(false);
 	barrier_ = true;
 	moveTime_ = 60*10;
 	special_ = true;

@@ -189,7 +189,7 @@ void GameScene::Update() {
 	//各キャラの更新
 	if (!enemyManager_->IsClear()) {
 		tankManager_->Update();
-		//renjuManager_->Update();
+		renjuManager_->Update();
 		healerManager_->Update();
 		
 	}

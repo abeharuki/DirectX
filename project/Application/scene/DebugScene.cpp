@@ -234,9 +234,9 @@ void DebugScene::Update() {
 	posteffect->SetHsv(hsv_);
 	CheckAllCollision();
 
-	editor_.load("Tank");
-	editor_.show("TankNode");
-	editor_.save("Tank");
+	editor_.load("Renju");
+	editor_.show("RenjuNode");
+	editor_.save("Renju");
 
 	//particle_->DebugParameter();
 	ImGui::Begin("Setting");
