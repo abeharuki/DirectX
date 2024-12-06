@@ -71,21 +71,13 @@ void BaseCharacter::Update() {
 	//体力がなくなあったら強制的に死亡に状態遷移
 	if (hp_ <= 0) {
 		hp_ = 0;
-		if (className_ != "Renju") {
-			if (NextState("Move", Output4) == CharacterState::Dead ||
-				NextState("Attack", Output3) == CharacterState::Dead ||
-				NextState("Jump", Output2) == CharacterState::Dead ||
-				NextState(skillName_, Output2) == CharacterState::Dead) {
-				state_ = CharacterState::Dead;
-			}
-		}
-		else {
-			if (NextState("Move", Output3) == CharacterState::Dead ||
-				NextState("Attack", Output3) == CharacterState::Dead ||
-				NextState("Jump", Output2) == CharacterState::Dead ||
-				NextState(skillName_, Output2) == CharacterState::Dead) {
-				state_ = CharacterState::Dead;
-			}
+		if (NextState("Move", Output6) == CharacterState::Dead ||
+			NextState("Attack", Output3) == CharacterState::Dead ||
+			NextState("Jump", Output2) == CharacterState::Dead ||
+			NextState(skillName_, Output2) == CharacterState::Dead||
+			NextState("Barrier", Output2) == CharacterState::Dead || 
+			NextState("Protect", Output2) == CharacterState::Dead ) {
+			state_ = CharacterState::Dead;
 		}
 
 	}
@@ -115,7 +107,11 @@ void BaseCharacter::Update() {
 				damageModel_->SetTexture("character/50.png");
 				//失敗したら強制的に状態遷移
 				if (!isDead_) {
-					state_ = CharacterState::Moveing;
+					if(className_ != "Renju")
+					state_ = NextState("Protect", Output1);
+				}
+				else {
+					state_ = NextState(skillName_, Output1);
 				}
 				
 			}
@@ -318,7 +314,7 @@ void BaseCharacter::MoveUpdate() {
 
 	//ブレス攻撃
 	if (barrier_ && barrierThreshold_ <= 0.0f) {
-		state_ = CharacterState::Breath;
+		state_ = NextState("Move", Output4);
 	}
 
 	//弓キャラを守る
@@ -326,7 +322,7 @@ void BaseCharacter::MoveUpdate() {
 		if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && state_ != CharacterState::Protect) {
 			if (henchmans_.size() >= 1) {
 				henchmanSearch_ = true;
-				state_ = CharacterState::Protect;
+				state_ = NextState("Move", Output5);
 			}
 		}
 	}
@@ -459,7 +455,7 @@ void BaseCharacter::BreathUpdate() {
 
 
 	if (!barrier_ || barrierThreshold_ > 0.1f) {
-		state_ = CharacterState::Moveing;
+		state_ = NextState("Breath", Output1);
 	}
 }
 
@@ -544,7 +540,7 @@ void BaseCharacter::ProtectUpdate()
 	worldTransformBase_.translate.y = 0.0f;
 
 	if (enemy_->GetBehavior() != Behavior::kAttack) {
-		state_ = CharacterState::Moveing;
+		state_ = NextState("Protect", Output1);
 		
 	}
 }

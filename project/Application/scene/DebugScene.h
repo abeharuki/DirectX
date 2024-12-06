@@ -109,4 +109,6 @@ private:
 	BlendMode blendMode_ = BlendMode::kNormal;
 	int blendNum_;
 	bool shockwaveflag_;
+
+	Editor::NodeEditor editor_;
 };

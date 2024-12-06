@@ -153,7 +153,7 @@ void Player::Update() {
 	}
 
 	if (Input::PushKey(DIK_O)) {
-		isOver_ = true;
+		//isOver_ = true;
 	}
 
 	if (hp_ <= 0 && behavior_ != Behavior::kDead) {

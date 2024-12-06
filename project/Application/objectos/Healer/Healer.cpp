@@ -566,7 +566,7 @@ void Healer::OnCollision(Collider* collider) {
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (!followPlayer_ && searchTarget_) {
 			if (coolTime_ <= 0) {
-				state_ = CharacterState::Attacking;
+				state_ = NextState("Move", Output1);
 			}
 		}
 	}

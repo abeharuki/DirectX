@@ -155,13 +155,13 @@ void TitleScene::Draw() {
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
 
-	spriteTitle_->Draw();
-	spritePushA_->Draw();
+	
 	
 }
 
 void TitleScene::RenderDirect() {
-	
+	spriteTitle_->Draw();
+	spritePushA_->Draw();
 	spriteBack_->Draw();
 }
 

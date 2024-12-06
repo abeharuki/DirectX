@@ -234,6 +234,10 @@ void DebugScene::Update() {
 	posteffect->SetHsv(hsv_);
 	CheckAllCollision();
 
+	editor_.load("Healer");
+	editor_.show("HealerNode");
+	editor_.save("Healer");
+
 	//particle_->DebugParameter();
 	ImGui::Begin("Setting");
 	ImGui::Text("Angle%f", angle_[0]);
