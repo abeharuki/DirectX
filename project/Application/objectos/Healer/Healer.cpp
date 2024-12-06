@@ -203,14 +203,14 @@ void Healer::MoveUpdate() {
 
 	//味方の体力全員が50以下なら全体回復
 	//味方の体力が誰か20以下なら回復
-	if ((playerHp_ <= 20 && playerHp_ > 0) || (renjuHp_ <= 20 && renjuHp_ > 0) || (tankHp_ <= 20 && tankHp_ > 0) || (hp_ <= 20 && hp_ > 0)) {
+	if ((playerHp_ <= 30 && playerHp_ > 0) || (renjuHp_ <= 30 && renjuHp_ > 0) || (tankHp_ <= 30 && tankHp_ > 0) || (hp_ <= 30 && hp_ > 0)) {
 		if (mp_ >= 10) {
 			oneHeal_ = true;
 			state_ = NextState("Move", Output3);
 		}
 
 	}
-	else if (playerHp_ < 50 && renjuHp_ < 50 && tankHp_ < 50 && hp_ < 50) {
+	else if (playerHp_ <= 50 && renjuHp_ <= 50 && tankHp_ <= 50 && hp_ <= 50) {
 		if (mp_ >= 20) {
 			allHeal_ = true;
 			state_ = NextState("Move", Output3);
