@@ -234,9 +234,9 @@ void DebugScene::Update() {
 	posteffect->SetHsv(hsv_);
 	CheckAllCollision();
 
-	editor_.load("Healer");
-	editor_.show("HealerNode");
-	editor_.save("Healer");
+	editor_.load("Tank");
+	editor_.show("TankNode");
+	editor_.save("Tank");
 
 	//particle_->DebugParameter();
 	ImGui::Begin("Setting");

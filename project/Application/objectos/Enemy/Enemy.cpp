@@ -412,7 +412,7 @@ void Enemy::AttackInitialize() {
 	//1,5
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
-		num = RandomGenerator::GetRandomInt(7, 9);//max9
+		num = RandomGenerator::GetRandomInt(8, 9);//max9
 	}
 	
 	if (num == 1) {

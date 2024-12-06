@@ -838,7 +838,7 @@ void BaseCharacter::InitializePerCharacter()
 		}
 	}
 	else if (className_ == "Tank") {
-		skillName_ = "Barrier";
+		skillName_ = "Skill";
 		spriteName_.reset(Sprite::Create("resources/Tank/tank.png"));
 		spriteNumP_.reset(Sprite::Create("resources/character/2P.png"));
 		spriteHP_->SetPosition(Vector2{ 1106.0f,475.0f });
