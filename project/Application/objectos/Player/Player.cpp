@@ -433,7 +433,7 @@ void Player::MoveUpdata() {
 					: -std::numbers::pi_v<float> / 2.0f;
 			}
 
-			const float kSpeed = 1.f;
+			const float kSpeed = 0.7f;
 			Vector3 direction = sub;
 
 			velocity_ = Math::Normalize(direction) * kSpeed;
