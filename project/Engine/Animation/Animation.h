@@ -69,7 +69,7 @@ struct SkinningInformation {
 
 
 /**
- * @file Animation.h 
+ * @file Animation
  * @brief アニメーション処理とレンダリングを管理するクラス
  * @details このクラスは3Dアニメーションの処理、スキンニング、ライティング、シェーダーの管理など、ゲームやシミュレーションで使用されるアニメーション全体の管理
  */

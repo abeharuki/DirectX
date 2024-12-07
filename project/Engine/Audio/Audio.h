@@ -18,7 +18,7 @@
 #pragma comment (lib,"xaudio2.lib")
 
 /**
- * @file Audio.h
+ * @file Audio
  * @brief 音声の読み込み、再生、停止を管理するクラス
  * WAVやMP3ファイルを扱い、音声データのロード、再生、リソース管理を行う
  */

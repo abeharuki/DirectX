@@ -2,7 +2,7 @@
 #include "../BehaviorTreeNode.h"
 
 /**
- * @class ActionNode.h
+ * @class ActionNode
  * @brief キャラクターに関連するアクションを実行するノード（テンプレートクラス）
  */
 template<typename CharacterType>

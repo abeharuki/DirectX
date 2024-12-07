@@ -3,6 +3,10 @@
 #include "AbstractSceneFactory.h"
 #include <imgui.h>
 
+/**
+ * @class SceneManager
+ * @brief シーンの管理と遷移を担当するシングルトンクラス
+ */
 class SceneManager {
 public:
 	static SceneManager* GetInstance();

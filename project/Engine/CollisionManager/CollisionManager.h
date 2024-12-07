@@ -2,7 +2,10 @@
 #include "Collider.h"
 #include <list>
 
-
+/**
+ * @class CollisionManager
+ * @brief 衝突判定を管理するクラス
+ */
 class CollisionManager
 {
 public:

@@ -2,6 +2,10 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+/**
+ * @class GpuResource
+ * @brief GPUリソースを管理する基底クラス
+ */
 class GpuResource
 {
 	friend class CommandContext;

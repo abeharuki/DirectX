@@ -18,7 +18,10 @@
 #include "ModelManager.h"
 #include "base/ColorBuffer.h"
 
-
+/**
+ * @struct OutLineStyle
+ * @brief OutLineエフェクトの設定を管理する構造体
+ */
 struct OutLineStyle {
 	
 	int32_t isEnable;
@@ -28,7 +31,10 @@ struct OutLineStyle {
 	
 };
 
-
+/**
+ * @class outLine
+ * @brief outLineエフェクトを適用するクラス
+ */
 class OutLine
 {
 public:

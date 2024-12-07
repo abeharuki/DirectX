@@ -3,7 +3,7 @@
 #include <vector>
 
 /**
- * @class CompositeNode.h
+ * @class CompositeNode
  * @brief 複数の子ノードを持つビヘイビアツリーのノード
  */
 class CompositeNode : public BehaviorTreeNode {

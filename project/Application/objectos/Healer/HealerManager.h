@@ -4,7 +4,7 @@
 #include <ParticleSystem.h>
 
 /**
- * @file HealerManager.h
+ * @file HealerManager
  * @brief ヒーラーキャラクターを管理するクラス
  */
 class HealerManager {

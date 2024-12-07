@@ -4,7 +4,7 @@
 #include <Sprite.h>
 
 /**
- * @file ClearScene.h
+ * @file ClearScene
  * @brief ゲームクリアシーンを管理するクラス
  */
 class ClearScene : public IScene {

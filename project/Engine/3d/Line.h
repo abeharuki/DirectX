@@ -16,7 +16,7 @@
 
 
 /**
- * @file Line.h
+ * @file Line
  * @brief 線の描画や管理を行うクラス
  */
 class Line {

@@ -9,7 +9,7 @@
 #include "TextureManeger.h"
 
 /**
- * @file Material.h
+ * @file Material
  * @brief マテリアルの情報を管理するクラス
  */
 class Material

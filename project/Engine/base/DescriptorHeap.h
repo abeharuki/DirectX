@@ -3,6 +3,10 @@
 #include <cstdint>
 #include <wrl.h>
 
+/**
+ * @class DescriptorHeap
+ * @brief Direct12ディスクリプタヒープを管理するクラス
+ */
 class DescriptorHeap
 {
 public:

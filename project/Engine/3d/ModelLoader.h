@@ -8,7 +8,7 @@
 #include <ParticleSystem.h>
 
 /**
- * @class ModelLoader.h
+ * @class ModelLoader
  * @brief Blenderをステージエディターして読み込み管理するクラス
  */
 class ModelLoader {

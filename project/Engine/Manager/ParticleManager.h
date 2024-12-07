@@ -1,6 +1,10 @@
 #pragma once
 #include "Particle/ParticleSystem.h"
 
+/**
+ * @struct ParticleId
+ * @brief パーティクルシステムを一意に識別するための識別子構造体
+ */
 struct ParticleId {
 	std::string name;
 	uint32_t Id;
@@ -11,6 +15,10 @@ struct ParticleId {
 	}
 };
 
+/**
+ * @class ParticleManager
+ * @brief パーティクルシステムの管理を行うクラス
+ */
 class ParticleManager {
 public:
 	static ParticleManager* GetInstance();

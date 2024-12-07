@@ -25,7 +25,7 @@ enum class NodeStatus {
 };
 
 /**
-* @class BehaviorTreeNode.h
+* @class BehaviorTreeNode
 * @brief ビヘイビアツリーのノードを表す基底クラス
 */
 class BehaviorTreeNode {

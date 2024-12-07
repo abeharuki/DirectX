@@ -14,12 +14,20 @@
 #include "ModelManager.h"
 #include "base/ColorBuffer.h"
 
+/**
+ * @struct Blur
+ * @brief GasianBlurエフェクトの設定を管理する構造体
+ */
 struct Blur {
 	float stepWidth;
 	float sigma;
 	int32_t isEnble;
 };
 
+/**
+ * @class GasianBlur
+ * @brief GasianBlurエフェクトを適用するクラス
+ */
 class GasianBlur {
 public:
 

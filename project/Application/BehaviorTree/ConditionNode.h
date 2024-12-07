@@ -2,7 +2,7 @@
 #include "BehaviorTreeNode.h"
 
 /**
- * @class ConditionNode.h
+ * @class ConditionNode
  * @brief 条件を評価するビヘイビアツリーのノード
  */
 class ConditionNode : public BehaviorTreeNode {

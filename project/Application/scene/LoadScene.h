@@ -9,7 +9,7 @@
 #include <numbers>
 
 /**
- * @file LaoadScene.h
+ * @file LaoadScene
  * @brief ゲームのロードシーンを管理するクラス
  */
 class LoadScene : public IScene {

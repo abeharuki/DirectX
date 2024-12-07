@@ -2,6 +2,10 @@
 
 class SceneManager;
 
+/**
+ * @class IScene
+ * @brief ゲームのシーンを表現するインターフェース
+ */
 class IScene {
 
 public:

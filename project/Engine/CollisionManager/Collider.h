@@ -3,12 +3,20 @@
 #include "Math/math.h"
 #include <LineBox.h>
 
+/**
+ * @enum Primitive
+ * @brief 衝突判定に使用するプリミティブの種類を表す列挙型
+ */
 enum class Primitive {
 	kAABB,
 	kOBB,
 	kSphere,
 };
 
+/**
+ * @class Collider
+ * @brief 基本的な衝突判定用のクラス
+ */
 class Collider
 {
 public:

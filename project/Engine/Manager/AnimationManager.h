@@ -1,6 +1,11 @@
 #pragma once
 #include "Animation/Animation.h"
 
+/**
+ * @class AnimationManager
+ * @brief アニメーションの管理を行うシングルトン
+ * アニメーションの作成、管理、ライフサイクルを担当するクラス
+ */
 class AnimationManager {
 public:
 	static AnimationManager* GetInstance();

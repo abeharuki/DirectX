@@ -2,7 +2,7 @@
 #include "ActionNode.h"
 
 /**
- * @class DeadActionNode.h
+ * @class DeadActionNode
  * @brief キャラクターの死亡アクションを処理するビヘイビアツリーのアクションノード
  */
 template<typename CharacterType>

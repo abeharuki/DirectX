@@ -5,7 +5,7 @@
 #include <variant>
 
 /**
- * @file GlobalVariables.h
+ * @file GlobalVariables
  * @brief グローバル変数を管理するクラス
  * @brief このクラスは現在使用されていません。
  */

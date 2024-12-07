@@ -12,6 +12,10 @@
 class WinApp;
 class DirectXCommon;
 
+/**
+ * @class ImGuiManager
+ * @brief ImGui を使用した GUI の管理クラス
+ */
 class ImGuiManager {
 public:
 	static ImGuiManager* GetInstance();

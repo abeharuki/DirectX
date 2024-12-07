@@ -17,7 +17,7 @@
 #include "Manager/ParticleManager.h"
 
 /**
- * @file DebugScene.h
+ * @file DebugScene
  * @brief デバックをするためのクラス
  */
 class DebugScene: public IScene {

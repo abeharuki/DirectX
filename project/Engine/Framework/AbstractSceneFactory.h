@@ -2,6 +2,10 @@
 #include "IScene.h"
 #include <string>
 
+/**
+ * @class AbstractSceneFactory
+ * @brief シーンを生成するための抽象クラス
+ */
 class AbstractSceneFactory {
 public:
 	//仮想デストラクタ

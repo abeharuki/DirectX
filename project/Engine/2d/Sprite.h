@@ -17,7 +17,7 @@
 #include "GraphicsPipeline.h"
 
 /**
- * @file Sprite.h
+ * @file Sprite
  * @brief 2Dスプライトの描画や管理を行うクラス
  */
 class Sprite {

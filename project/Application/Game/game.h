@@ -3,7 +3,7 @@
 #include "SceneFactory.h"
 
 /**
- * @file game.h
+ * @file game
  * @brief ゲーム全体を管理するクラス
  */
 class Game : public Framework {

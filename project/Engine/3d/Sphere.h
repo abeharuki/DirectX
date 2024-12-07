@@ -18,7 +18,7 @@
 #include "PostEffects/Dissolve.h"
 
 /**
- * @file Sphere.h
+ * @file Sphere
  * @brief 球体モデルを管理するクラス
  */
 class Sphere {

@@ -14,6 +14,10 @@
 #include "ModelManager.h"
 #include "base/ColorBuffer.h"
 
+/**
+ * @struct BloomStyle
+ * @brief Bloomエフェクトの設定を管理する構造体
+ */
 struct BloomStyle {
 	float stepWidth;
 	float sigma;
@@ -22,6 +26,10 @@ struct BloomStyle {
 	int32_t isEnble;
 };
 
+/**
+ * @class Bloom
+ * @brief Bloomエフェクトを適用するクラス
+ */
 class Bloom {
 public:
 

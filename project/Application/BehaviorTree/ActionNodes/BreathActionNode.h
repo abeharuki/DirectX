@@ -2,7 +2,7 @@
 #include "ActionNode.h"
 
 /**
- * @class BreathActionNode.h
+ * @class BreathActionNode
  * @brief キャラクターの敵がブレス攻撃をしてきたときのアクションを処理するビヘイビアツリーのアクションノード
  */
 template<typename CharacterType>

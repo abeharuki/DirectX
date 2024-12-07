@@ -2,7 +2,7 @@
 #include "ActionNode.h"
 
 /**
- * @class JumpActionNode.h
+ * @class JumpActionNode
  * @brief キャラクターのジャンプアクションを処理するビヘイビアツリーのアクションノード
  */
 template<typename CharacterType>

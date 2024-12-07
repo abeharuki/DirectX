@@ -18,7 +18,7 @@
 #include <ViewProjection.h>
 
 /**
- * @file Skybox.h
+ * @file Skybox
  * @brief 3Dシーンの背景として使用するスカイボックスを管理するクラス
  */
 class Skybox {

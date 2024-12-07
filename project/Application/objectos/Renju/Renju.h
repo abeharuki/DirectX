@@ -12,7 +12,7 @@
 #include "RenjuBullet.h"
 
 /**
- * @file Renju.h
+ * @file Renju
  * @brief レンジャーキャラクターを制御するクラス
  */
 class Renju : public BaseCharacter {

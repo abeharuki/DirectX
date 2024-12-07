@@ -2,7 +2,10 @@
 #include "CollisionManager/Collider.h"
 
 
-
+/**
+ * @class ColliderManager
+ * @brief 複数のコライダーの管理と衝突判定を行うクラス
+ */
 class ColliderManager :public Collider {
 public:
 

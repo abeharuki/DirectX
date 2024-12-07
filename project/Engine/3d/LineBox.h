@@ -16,7 +16,7 @@
 #include <Line.h>
 
 /**
- * @file Line.h
+ * @file Line
  * @brief フレームだけのボックスの描画や管理を行うクラス
  */
 class LineBox {

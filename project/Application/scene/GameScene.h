@@ -18,7 +18,7 @@
 #include "BaseCharacter.h"
 
 /**
- * @file GameScene.h
+ * @file GameScene
  * @brief ゲームプレイを管理するクラス
  */
 class GameScene : public IScene {

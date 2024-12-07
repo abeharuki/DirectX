@@ -4,7 +4,7 @@
 #include <Sphere.h>
 
 /**
- * @file EnemyManager.h
+ * @file EnemyManager
  * @brief 敵キャラクターを管理するクラス
  */
 class EnemyManager {

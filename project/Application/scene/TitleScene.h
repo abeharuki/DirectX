@@ -14,7 +14,7 @@
 
 
 /**
- * @file TitleScene.h
+ * @file TitleScene
  * @brief ゲームのタイトルシーンを管理するクラス
  */
 class TitleScene : public IScene {

@@ -13,7 +13,7 @@
 #include "ActionNodes/ProtectActionNode.h"
 
 /**
- * @file BehaviorTree.h
+ * @file BehaviorTree
  * @brief キャラクターの行動を管理するビヘイビアツリークラス
  */
 template <typename CharacterType>

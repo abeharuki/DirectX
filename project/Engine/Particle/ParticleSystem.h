@@ -12,6 +12,10 @@
 #include <WorldTransform.h>
 #include <LineBox.h>
 
+/**
+ * @struct Range
+ * @brief 3D範囲を表す構造体
+ */
 struct Range
 {
 	Vector3 min;
@@ -20,6 +24,10 @@ struct Range
 	float padding2;
 };
 
+/**
+ * @struct Range1d
+ * @brief 1D範囲を表す構造体
+ */
 struct Range1d
 {
 	float min;
@@ -27,6 +35,10 @@ struct Range1d
 	float padding[2];
 };
 
+/**
+ * @struct EmitterSphere
+ * @brief パーティクルの発生を制御するエミッターデータ
+ */
 struct EmitterSphere {
 	Vector3 translate;//位置
 	float radius;//射出半径
@@ -46,6 +58,10 @@ struct EmitterSphere {
 	Range velocityRange;
 };
 
+/**
+ * @class ParticleSystem
+ * @brief パーティクルシステムを管理するクラス
+ */
 class ParticleSystem {
 public: // 静的メンバ変数
 	// デスクリプタサイズ

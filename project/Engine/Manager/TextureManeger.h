@@ -4,6 +4,10 @@
 #include "Engine.h"
 #include <DirectXTex.h>
 
+/**
+ * @class TextureManager
+ * @brief テクスチャの読み込みと管理を行うクラス
+ */
 class TextureManager {
 public:
 	

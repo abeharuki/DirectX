@@ -6,6 +6,10 @@
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
 
+/**
+ * @class Engine
+ * @brief ゲームエンジンの中心となるクラス
+ */
 class Engine {
 public:
 	static Engine* GetInstance();

@@ -12,7 +12,7 @@
 #include <UploadBuffer.h>
 
 /**
- * @file Mesh.h
+ * @file Mesh
  * @brief 3Dメッシュデータを管理するクラス
  */
 class Mesh

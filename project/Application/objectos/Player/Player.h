@@ -14,7 +14,7 @@
 #include "Enemy/Enemy.h"
 
 /**
- * @file Player.h
+ * @file Player
  * @brief プレイヤーが操作するキャラクターを制御するクラス
  */
 class Player : public Collider {

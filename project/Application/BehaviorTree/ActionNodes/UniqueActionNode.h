@@ -2,7 +2,7 @@
 #include "ActionNode.h"
 
 /**
- * @class UniqeActionNode.h
+ * @class UniqeActionNode
  * @brief キャラクターのスキルアクションを処理するビヘイビアツリーのアクションノード
  */
 template<typename CharacterType>

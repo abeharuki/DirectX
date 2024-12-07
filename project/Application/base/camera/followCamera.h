@@ -7,7 +7,7 @@
 #include <memory>
 
 /**
- * @file followCamera.h
+ * @file followCamera
  * @brief 追従するカメラを管理するクラス
  */
 class FollowCamera {

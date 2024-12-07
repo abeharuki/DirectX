@@ -5,7 +5,7 @@
 #include <list>
 
 /**
- * @file Skydome.h
+ * @file Skydome
  * @brief スカイドームを管理するクラス
  */
 class Skydome {

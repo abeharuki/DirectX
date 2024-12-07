@@ -20,11 +20,19 @@
 #include "GasianBlur.h"
 #include "Bloom.h"
 
+/**
+ * @struct Grayscale
+ * @brief GrayScaleエフェクトの設定を管理する構造体
+ */
 struct Grayscale {
 	int32_t isEnable;
 	float padding[3];
 };
 
+/**
+ * @struct Vignetting
+ * @brief Vignettingエフェクトの設定を管理する構造体
+ */
 struct Vignetting {
 	int32_t isEnable;
 	Vector3 color;
@@ -32,6 +40,10 @@ struct Vignetting {
 	float padding[3];
 };
 
+/**
+ * @struct Gaussian
+ * @brief Gaussianエフェクトの設定を管理する構造体
+ */
 struct Gaussian
 {
 	int32_t isEnable;
@@ -39,6 +51,10 @@ struct Gaussian
 	float padding[2];
 };
 
+/**
+ * @struct RadialBlur
+ * @brief RadialBlurエフェクトの設定を管理する構造体
+ */
 struct RadialBlur {
 	Vector2 center;
 	float blurWidth;
@@ -47,12 +63,20 @@ struct RadialBlur {
 	float padding[3];
 };
 
+/**
+ * @struct Random
+ * @brief Randomエフェクトの設定を管理する構造体
+ */
 struct Random {
 	float time;
 	int32_t isEnble;
 	float padding[2];
 };
 
+/**
+ * @struct HSVMaterial
+ * @brief HSVMaterialエフェクトの設定を管理する構造体
+ */
 struct HSVMaterial
 {
 	float hue;
@@ -60,6 +84,10 @@ struct HSVMaterial
 	float value;
 };
 
+/**
+ * @struct PostEffects
+ * @brief ポストエフェクトに関連する設定データを保持する構造体
+ */
 struct PostEffects {
 	Grayscale grayscal;
 	Vignetting vignetting;
@@ -69,7 +97,10 @@ struct PostEffects {
 	HSVMaterial material;
 };
 
-
+/**
+ * @class PostEffect
+ * @brief ポストエフェクトの管理と適用を行うクラス
+ */
 class PostEffect
 {
 public:

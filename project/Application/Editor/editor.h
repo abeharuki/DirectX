@@ -24,7 +24,7 @@ enum OutputNum
 
 
 /**
- * @file editor.h
+ * @file editor
  * @brief ノードエディタを管理するクラス
  */
 

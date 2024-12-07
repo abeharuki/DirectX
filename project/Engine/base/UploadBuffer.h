@@ -1,6 +1,10 @@
 #pragma once
 #include "GpuResource.h"
 
+/**
+ * @class UploadBuffer
+ * @brief GPUへのアップロード用バッファを管理するクラス
+ */
 class UploadBuffer : public GpuResource
 {
 public:

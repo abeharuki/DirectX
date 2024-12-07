@@ -32,7 +32,7 @@ struct WritingStyle {
 };
 
 /**
- * @file Model.h
+ * @file Model
  * @brief 3Dモデルの描画・管理を行うクラス
  */
 class Model {

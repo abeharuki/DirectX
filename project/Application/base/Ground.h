@@ -4,7 +4,7 @@
 #include <list>
 
 /**
- * @file Ground.h
+ * @file Ground
  * @brief ゲームのフィールドを管理するクラス
  * @brief このクラスは現在使用されていません。
  */

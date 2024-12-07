@@ -2,6 +2,10 @@
 #include <cmath>
 #include <limits>
 
+/**
+ * @struct Quaternion
+ * @brief 4次元のベクトルによる回転を表現するクォータニオン
+ */
 struct Quaternion
 {
 	float x;

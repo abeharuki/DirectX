@@ -3,6 +3,10 @@
 #include "DescriptorHandle.h"
 #include <cstdint>
 
+/**
+ * @class ColorBuffer
+ * @brief GPUリソースとしての色バッファを管理するクラス
+ */
 class ColorBuffer : public GpuResource
 {
 public:

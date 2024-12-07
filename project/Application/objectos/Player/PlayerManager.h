@@ -5,7 +5,7 @@
 #include <Animation/Animation.h>
 
 /**
- * @file PlayerManager.h
+ * @file PlayerManager
  * @brief プレイヤーが操作するキャラクターを管理するクラス
  */
 class PlayerManager {

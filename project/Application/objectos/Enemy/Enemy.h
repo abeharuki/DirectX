@@ -43,7 +43,7 @@ enum class BehaviorAttack {
 };
 
 /**
- * @file Enemy.h
+ * @file Enemy
  * @brief 敵キャラクターを制御するクラス
  */
 class Enemy : public Collider {

@@ -123,7 +123,6 @@ struct Color {
 };
 
 
-
 struct MaterialD {
 	Color color;
 	int32_t enableLighting;
@@ -289,6 +288,10 @@ struct PerFrame{
 	float deltaTime;
 };
 
+/**
+ * @class Math.h
+ * @brief 数学的な計算やベクトル・行列操作を提供するクラス
+ */
 class Math {
 public:
 

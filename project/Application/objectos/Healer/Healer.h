@@ -12,7 +12,7 @@
 
 
 /**
- * @file Healer.h
+ * @file Healer
  * @brief ヒーラーキャラクターを制御するクラス
  */
 class Healer : public BaseCharacter {

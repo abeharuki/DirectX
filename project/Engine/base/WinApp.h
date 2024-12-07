@@ -2,6 +2,10 @@
 #include <Windows.h>
 #include <cstdint>
 
+/**
+ * @class WinApp
+ * @brief Windowsアプリケーションのウィンドウ管理を行うクラス
+ */
 class WinApp {
 public:
 	// ウィンドウサイズ

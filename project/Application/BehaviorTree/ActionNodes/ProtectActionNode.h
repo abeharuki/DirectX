@@ -2,7 +2,7 @@
 #include "ActionNode.h"
 
 /**
- * @class ProtectActionNode.h
+ * @class ProtectActionNode
  * @brief キャラクターの敵から味方を守るアクションを処理するビヘイビアツリーのアクションノード
  */
 template<typename CharacterType>

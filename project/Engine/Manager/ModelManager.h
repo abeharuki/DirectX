@@ -17,6 +17,10 @@
 #include <DirectXTex.h>
 #include <json.hpp>
 
+/**
+ * @struct ColliderData
+ * @brief コライダーに関するデータを格納する構造体
+ */
 struct ColliderData {
 	std::string typeName;
 	Vector3 center;
@@ -24,6 +28,10 @@ struct ColliderData {
 	float radius;
 };
 
+/**
+ * @struct Scene
+ * @brief シーン内のオブジェクトデータを管理する構造体
+ */
 struct Scene {
 	struct ObjectData {
 		std::string filename;
@@ -35,7 +43,10 @@ struct Scene {
 	std::vector<ObjectData> objects;
 };
 
-
+/**
+ * @class ModelManager
+ * @brief モデルの読み込みや管理を担当するクラス
+ */
 class ModelManager {
 public:
 	static ModelManager* GetInstance();

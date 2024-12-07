@@ -3,7 +3,10 @@
 #include "SceneManager.h"
 #include "PostEffects/PostEffect.h"
 
-
+/**
+ * @class Framework
+ * @brief ゲームアプリケーションのフレームワークを提供するクラス
+ */
 class Framework {
 public:
 	

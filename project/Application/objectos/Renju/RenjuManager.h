@@ -4,7 +4,7 @@
 #include <ParticleSystem.h>
 
 /**
- * @file RenjuManager.h
+ * @file RenjuManager
  * @brief レンジャーキャラクターを管理するクラス
  */
 class RenjuManager {

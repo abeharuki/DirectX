@@ -7,7 +7,7 @@
 #include <numbers>
 
 /**
- * @file BaseCharacter.h
+ * @file BaseCharacter
  * @brief 味方AIの基底クラス
  */
 class BaseCharacter : public Collider {

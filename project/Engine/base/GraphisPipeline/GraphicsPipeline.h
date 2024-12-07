@@ -7,6 +7,10 @@
 #include <d3dx12.h>
 #include "DirectXCommon.h"
 
+/**
+ * @enum BlendMode
+ * @brief 描画時に使用するブレンドモードを定義する列挙型
+ */
 enum class BlendMode {
 	kNone,
 	kNormal,   //!< 通常αブレンド。デフォルト。 Src * SrcA + Dest * (1 - SrcA)
@@ -17,12 +21,19 @@ enum class BlendMode {
 	kCountOfBlendMode, //!< ブレンドモード数。指定はしない
 };
 
+/**
+ * @enum Pipeline
+ * @brief 使用するパイプラインの種類を定義する列挙型
+ */
 enum class Pipeline {
 	kNormal,
 	kParticle,
-
 };
 
+/**
+ * @class GraphicsPipeline
+ * @brief グラフィックスパイプラインとシェーダーを管理するクラス
+ */
 class GraphicsPipeline {
 public:
 	//	シングルトンインスタンス

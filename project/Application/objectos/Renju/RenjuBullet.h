@@ -3,7 +3,7 @@
 #include <Model.h>
 
 /**
- * @file RenjuManager.h
+ * @file RenjuManager
  * @brief レンジャーが打つ矢を制御するクラス
  */
 class RenjuBullet : public Collider {

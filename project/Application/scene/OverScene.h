@@ -6,7 +6,7 @@
 
 
 /**
- * @file OverScene.h
+ * @file OverScene
  * @brief ゲームオーバーシーンの管理をするクラス
  */
 class OverScene : public IScene {

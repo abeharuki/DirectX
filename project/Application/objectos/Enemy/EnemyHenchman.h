@@ -12,7 +12,7 @@
 
 
 /**
- * @file EnemyHenchman.h
+ * @file EnemyHenchman
  * @brief 敵が出す子分キャラクターを制御するクラス
  */
 class EnemyHenchman : public Collider {

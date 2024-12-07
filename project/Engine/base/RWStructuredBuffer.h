@@ -3,6 +3,10 @@
 #include "DescriptorHandle.h"
 #include <cstdint>
 
+/**
+ * @class RWStructuredBuffer
+ * @brief 領域を読み書き可能な構造体バッファを管理するクラス
+ */
 class RWStructuredBuffer : public GpuResource
 {
 public:

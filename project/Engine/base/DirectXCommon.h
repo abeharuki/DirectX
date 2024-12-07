@@ -20,9 +20,10 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
-/// <summary>
-/// DirectX汎用
-/// </summary>
+/**
+ * @class DirectXCommon
+ * @brief DirectX 12 に関する基本的な初期化、レンダリング、リソース管理などを行うクラス
+ */
 class DirectXCommon {
 public: // メンバ関数
 	/// <summary>

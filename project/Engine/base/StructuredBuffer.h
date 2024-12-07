@@ -3,6 +3,10 @@
 #include "DescriptorHandle.h"
 #include <cstdint>
 
+/**
+ * @class StructuredBuffer
+ * @brief 構造体バッファ（読み取り専用）を管理するクラス
+ */
 class StructuredBuffer : public GpuResource
 {
 public:

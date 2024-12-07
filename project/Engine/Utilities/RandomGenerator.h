@@ -2,6 +2,10 @@
 #pragma once
 #include <random>
 
+/**
+ * @class RandomGenerator
+ * @brief ランダム数を生成するクラス
+ */
 class RandomGenerator {
 public:
 	static void Initialize();

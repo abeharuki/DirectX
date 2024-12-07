@@ -14,6 +14,10 @@
 #include "ModelManager.h"
 #include "base/ColorBuffer.h"
 
+/**
+ * @struct DissolveStyle
+ * @brief Dissolveエフェクトの設定を管理する構造体
+ */
 struct DissolveStyle {
 	Matrix4x4 uvTransform;
 	float threshold;
@@ -23,6 +27,10 @@ struct DissolveStyle {
 	float pading[2];
 };
 
+/**
+ * @class Dissolve
+ * @brief Dissolveエフェクトを適用するクラス
+ */
 class Dissolve {
 public:
 

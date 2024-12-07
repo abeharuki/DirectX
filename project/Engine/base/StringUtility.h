@@ -1,7 +1,10 @@
 #pragma once
 #include <string>
 
-
+/**
+ * @class Utility
+ * @brief 文字列変換およびロギング機能を提供するクラス
+ */
 class Utility {
 public:
 	// string -> wstring

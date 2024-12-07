@@ -8,7 +8,7 @@
 #include "DebugScene.h"
 
 /**
- * @file SceneFactory.h
+ * @file SceneFactory
  * @brief シーン生成を管理するファクトリクラス 
  */
 class SceneFactory : public AbstractSceneFactory {

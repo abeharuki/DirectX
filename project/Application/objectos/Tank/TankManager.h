@@ -4,7 +4,7 @@
 #include <ParticleSystem.h>
 
 /**
- * @file TankManager.h
+ * @file TankManager
  * @brief タンクキャラクターを管理するクラス
  */
 class TankManager {

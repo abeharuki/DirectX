@@ -30,7 +30,7 @@ enum AttackType {
 };
 
 /**
- * @file Command.h
+ * @file Command
  * @brief プレーヤーが動かすコマンドUIを管理するクラス
  */
 class Command {

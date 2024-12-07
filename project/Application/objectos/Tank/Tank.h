@@ -12,7 +12,7 @@
 
 
 /**
- * @file Tank.h
+ * @file Tank
  * @brief タンクキャラクターを制御するクラス
  */
 class Tank : public BaseCharacter {
