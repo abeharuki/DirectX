@@ -434,7 +434,7 @@ void Renju::UniqueUpdate() {
 			particle_->Update();
 		}
 
-
+		//チャージが終わったら
 		if (fireTimer_ <= 0) {
 
 			animation_->Stop(false);
@@ -454,6 +454,7 @@ void Renju::UniqueUpdate() {
 
 			bullets_.push_back(newBullet);
 
+			//元に戻して状態遷移
 			coolTime_ = 60;
 			filed_.strength = 0.0f;
 			particle_->StopParticle();

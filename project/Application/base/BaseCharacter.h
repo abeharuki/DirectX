@@ -146,6 +146,7 @@ protected:
 
     //ダメージ表示
     WorldTransform worldTransformNum_;
+    //ダメージのモデル
     std::unique_ptr<Model> damageModel_;
     float alpha_;
     Vector3 numMove_;

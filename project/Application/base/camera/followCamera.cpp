@@ -85,6 +85,7 @@ void FollowCamera::Update() {
 }
 void FollowCamera::TitleUpdate() {
 
+	//対象を中心にカメラを回転
 	destinationAngleY_ += 0.002f;
 
 
@@ -184,6 +185,7 @@ void FollowCamera::ApplyGlobalVariables() {
 
 void FollowCamera::CameraDirection(){
 
+	//時間と距離に応じてカメラを動かす
 	if (viewProjection_.translation_.x >= -0.1f&& moveTime_ > 0) {
 		--moveTime_;
 		moveToEnemy_ = false;
@@ -194,9 +196,11 @@ void FollowCamera::CameraDirection(){
 		moveToPlayer_ = true;
 	}
 
+	//敵によって行く
 	if (moveToEnemy_) {
 		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 0.0f,6.0f,-15.0f }, 0.05f);
 	}
+	//プレイヤーによって行く
 	if (moveToPlayer_) {
 		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 3.f,4.f,-50.0f }, 0.08f);
 	}

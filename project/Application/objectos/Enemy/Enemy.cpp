@@ -407,9 +407,10 @@ void Enemy::MoveUpdata() {
 };
 
 void Enemy::AttackInitialize() {
-	//1,5
+	//1～5の番号で攻撃の抽選
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
+		//7～9の番号で必殺技の抽選
 		num = RandomGenerator::GetRandomInt(7, 9);//max9
 	}
 	
@@ -492,20 +493,20 @@ void Enemy::AttackUpdata() {
 void Enemy::NomalAttackInitialize() {
 	//対象が死んでいたらもう一回抽選
 	while (true) {
-		num_ = RandomGenerator::GetRandomInt(1, 4);
-		if (num_ == 1) {
+		num_ = RandomGenerator::GetRandomInt(0, 3);
+		if (num_ == player) {
 			aimPlayer_ = true;
 			break;
 		}
-		else if (!isDeadHealer_ && num_ == 2) {
+		else if (!isDeadHealer_ && num_ == healer) {
 			aimHealer_ = true;
 			break;
 		}
-		else if (!isDeadRenju_ && num_ == 3) {
+		else if (!isDeadRenju_ && num_ == renju) {
 			aimRenju_ = true;
 			break;
 		}
-		else if (!isDeadTank_ && num_ == 4) {
+		else if (!isDeadTank_ && num_ == tank) {
 			aimTank_ = true;
 			break;
 		}
@@ -517,29 +518,33 @@ void Enemy::NomalAttackInitialize() {
 void Enemy::NomalAttackUpdata() {
 	velocity_ = { 0.0f,0.0f,1.0f };
 	if (!behaviorAttack_) {
+		//対象まで近づいていく
 		velocity_ = Math::Normalize(velocity_);
 		velocity_ = Math::Multiply(2.0f, velocity_);
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		velocity_ = Math::Multiply(0.35f, velocity_);
 		Vector3 targetPos = {};
-		if (num_ == 1) {
+		//番号で対象を識別
+		if (num_ == player) {
 			sub = playerPos_ - GetWorldPosition();
 			targetPos = playerPos_;
 		}
-		if (num_ == 2) {
+		if (num_ == healer) {
 			sub = healerPos_ - GetWorldPosition();
 			targetPos = healerPos_;
 		}
-		if (num_ == 3) {
+		if (num_ == renju) {
 			sub = renjuPos_ - GetWorldPosition();
 			targetPos = renjuPos_;
 		}
-		if (num_ == 4) {
+		if (num_ == tank) {
 			sub = tankPos_ - GetWorldPosition();
 			targetPos = tankPos_;
 		}
-		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, velocity_);
+
+		worldTransformBase_.translate += velocity_;
+		//目的付近まで来たら攻撃
 		if (Math::isWithinRange(worldTransformBase_.translate.x, targetPos.x, 2) && Math::isWithinRange(worldTransformBase_.translate.z, targetPos.z, 2)) {
 			behaviorAttack_ = true;
 
@@ -587,17 +592,17 @@ void Enemy::NomalAttackUpdata() {
 void Enemy::DashAttackInitialize() {
 	//対象が死んでいたらもう一回抽選
 	while (true) {
-		num_ = RandomGenerator::GetRandomInt(1, 4);
-		if (num_ == 1) {
+		num_ = RandomGenerator::GetRandomInt(0, 3);
+		if (num_ == player) {
 			break;
 		}
-		else if (!isDeadHealer_ && num_ == 2) {
+		else if (!isDeadHealer_ && num_ == healer) {
 			break;
 		}
-		else if (!isDeadRenju_ && num_ == 3) {
+		else if (!isDeadRenju_ && num_ == renju) {
 			break;
 		}
-		else if (!isDeadTank_ && num_ == 4) {
+		else if (!isDeadTank_ && num_ == tank) {
 			break;
 		}
 	}
@@ -628,7 +633,7 @@ void Enemy::DashAttackUpdata() {
 
 	if (time_ < 20) {
 		if (!isAttack_) {
-
+			//攻撃準備
 			animation_->SetLoop(true);
 			animationNumber_ = dashAttack;
 			isAttack_ = true;
@@ -639,16 +644,17 @@ void Enemy::DashAttackUpdata() {
 		}
 	}
 	else {
-		if (num_ == 1) {
+		//対象の方を向く
+		if (num_ == player) {
 			sub = playerPos_ - GetWorldPosition();
 		}
-		if (num_ == 2) {
+		if (num_ == healer) {
 			sub = healerPos_ - GetWorldPosition();
 		}
-		if (num_ == 3) {
+		if (num_ == renju) {
 			sub = renjuPos_ - GetWorldPosition();
 		}
-		if (num_ == 4) {
+		if (num_ == tank) {
 			sub = tankPos_ - GetWorldPosition();
 		}
 		// y軸周りの回転
@@ -677,6 +683,7 @@ void Enemy::DashAttackUpdata() {
 	worldTransformArea_.rotate.y = worldTransformBase_.rotate.y;
 
 	if (!isAttack_) {
+		//攻撃範囲の更新
 		if (time_ > 40) {
 			areaPos_.z = 1.0f;
 			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformArea_.rotate.y);
@@ -719,17 +726,17 @@ void Enemy::ThrowingAttackInitialize() {
 	animation_->SetLoop(false);
 	//対象が死んでいたらもう一回抽選
 	while (true) {
-		num_ = RandomGenerator::GetRandomInt(1, 4);
-		if (num_ == 1) {
+		num_ = RandomGenerator::GetRandomInt(0, 3);
+		if (num_ == player) {
 			break;
 		}
-		else if (!isDeadHealer_ && num_ == 2) {
+		else if (!isDeadHealer_ && num_ == healer) {
 			break;
 		}
-		else if (!isDeadRenju_ && num_ == 3) {
+		else if (!isDeadRenju_ && num_ == renju) {
 			break;
 		}
-		else if (!isDeadTank_ && num_ == 4) {
+		else if (!isDeadTank_ && num_ == tank) {
 			break;
 		}
 	}
@@ -738,7 +745,7 @@ void Enemy::ThrowingAttackUpdata() {
 	if (!isAttack_) {
 
 
-		if (num_ == 1) {
+		if (num_ == player) {
 			sub = playerPos_ - GetWorldPosition();
 			worldTransformCircleArea_.translate = { playerPos_.x,0.1f,playerPos_.z };
 			// y軸周りの回転
@@ -757,7 +764,7 @@ void Enemy::ThrowingAttackUpdata() {
 			}
 
 		}
-		else if (num_ == 2) {
+		else if (num_ == healer) {
 			sub = healerPos_ - GetWorldPosition();
 			worldTransformCircleArea_.translate = { healerPos_ .x,0.1f, healerPos_.z };
 			// y軸周りの回転
@@ -776,7 +783,7 @@ void Enemy::ThrowingAttackUpdata() {
 			}
 
 		}
-		else if (num_ == 3) {
+		else if (num_ == renju) {
 			sub = renjuPos_ - GetWorldPosition();
 			worldTransformCircleArea_.translate = { renjuPos_.x,0.1f,renjuPos_.z };
 			// y軸周りの回転
@@ -796,7 +803,7 @@ void Enemy::ThrowingAttackUpdata() {
 
 
 		}
-		else if (num_ == 4) {
+		else if (num_ == tank) {
 			sub = tankPos_ - GetWorldPosition();
 			worldTransformCircleArea_.translate = { tankPos_.x,0.1f,tankPos_.z };
 			// y軸周りの回転
@@ -848,22 +855,30 @@ void Enemy::ThrowingAttackUpdata() {
 		// 回転
 		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
-		if (num_ == 1) {
+		//対象に位置に投擲
+		if (num_ == player) {
 			sub = playerPos_ - worldTransformRock_.GetWorldPos();
-			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, playerPos_, 0.2f);
+			
+		
 		}
-		else if (num_ == 2) {
+		else if (num_ == healer) {
 			sub = healerPos_ - worldTransformRock_.GetWorldPos();
-			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, healerPos_, 0.2f);
+			
 		}
-		else if (num_ == 3) {
+		else if (num_ == renju) {
 			sub = renjuPos_ - worldTransformRock_.GetWorldPos();
-			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, renjuPos_, 0.2f);
+			
 		}
-		else if (num_ == 4) {
+		else if (num_ == tank) {
 			sub = tankPos_ - worldTransformRock_.GetWorldPos();
-			worldTransformRock_.translate = Math::Lerp(worldTransformRock_.translate, tankPos_, 0.2f);
+			
 		}
+
+		const float kSpeed = 0.5f;
+		Vector3 direction = sub;
+
+		Vector3 velocity = Math::Normalize(direction) * kSpeed;
+		worldTransformRock_.translate += velocity;
 	}
 
 	if (worldTransformRock_.translate.y <= 0.6f && isAttack_) {
@@ -878,7 +893,7 @@ void Enemy::ThrowingAttackUpdata() {
 //地面を殴る攻撃の衝撃波
 void Enemy::InitializeImpact() {
 
-
+	//各衝撃波の初期化
 	for (int i = 0; i < 15; ++i) {
 		if (i == 0) {
 			worldTransformColliderImpact_[i].rotate = { 0.0f,0.2f,0.0f };
@@ -894,6 +909,7 @@ void Enemy::InitializeImpact() {
 
 }
 void Enemy::UpdataImpact() {
+	//各衝撃波の更新
 	worldTransformColliderImpact_[0].translate += {0.12f, 0.0f, 0.6f};
 	worldTransformColliderImpact_[1].translate += {0.35f, 0.0f, 0.5f};
 	worldTransformColliderImpact_[2].translate += {0.53f, 0.0f, 0.31f};
@@ -930,9 +946,11 @@ void Enemy::GroundAttackUpdata() {
 	if (animation_->GetAnimationTimer() >= 1.6f) {
 		isAttack_ = true;
 		worldTransformImpact_.scale += Vector3(2.0f, 0.0f, 2.0f);
+		//衝撃波の更新
 		UpdataImpact();
 		if (worldTransformImpact_.scale.x > 100) {
 			worldTransformImpact_.scale = { 1.0f,1.0f,1.0f };
+			//衝撃波の初期化
 			InitializeImpact();
 			behaviorRequest_ = Behavior::kRoot;
 
@@ -955,6 +973,7 @@ void Enemy::SpecialBreathInit() {
 void Enemy::SpecialBreathUpdata() {
 	--moveTime_;
 	//max5
+	//パーティクルの更新と設定
 	for (int i = 0; i < 5; ++i) {
 		if (i % 2 == 0) {
 			accelerationVelo_[i] = { 10.f,0.f,0.f };
@@ -977,6 +996,7 @@ void Enemy::SpecialBreathUpdata() {
 		}
 	}
 
+	//既定の時間になったら攻撃開始
 	if (moveTime_ <= 180 && !isAttack_) {
 	
 		isAttack_ = true;
@@ -1012,6 +1032,7 @@ void Enemy::SpecialHenchmanUpdata()
 	--moveTime_;
 	
 	henchman_->Update(4);
+	//チャージタイム
 	if (moveTime_ <= 0) {
 		if (barrierThreshold_ > 0.0f ) {
 			barrierThreshold_ -= 0.01f;
@@ -1038,7 +1059,7 @@ void Enemy::SpecialHenchmanUpdata()
 		worldTransformBarrier_.rotate.y += 0.01f;
 		
 		
-		
+		//敵の追加
 		if (moveTime_  % 10 == 0) {
 			// 敵を生成、初期化
 			EnemyHenchman* newEnemy = new EnemyHenchman();
@@ -1050,7 +1071,7 @@ void Enemy::SpecialHenchmanUpdata()
 			henchmans_.push_back(newEnemy);
 		}	
 
-
+		//弓キャラの必殺技食らったら状態遷移
 		if (renjuSpecial_) {
 			behaviorRequest_ = Behavior::kRoot;
 		}

@@ -259,6 +259,7 @@ void Tank::UniqueUpdate(){
 		animationNumber_ = run;
 	}
 	
+	//バリアを展開
 	if (barrier_) {
 		barrierThreshold_ -= 0.01f;
 		

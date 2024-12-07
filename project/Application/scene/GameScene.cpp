@@ -166,16 +166,16 @@ void GameScene::Update() {
 		}
 		//個人回復
 		if (healerManager_->GetHealer()->GetOneHeal()) {
-			if (playerManager_->GetPlayer()->GetHp() <= 20 && playerManager_->GetPlayer()->GetHp() >= 1) {
+			if (playerManager_->GetPlayer()->GetHp() <= 30 && playerManager_->GetPlayer()->GetHp() >= 1) {
 				playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
-			else if (healerManager_->GetHealer()->GetHp() <= 20 && !healerManager_->GetHealer()->IsDead()) {
+			else if (healerManager_->GetHealer()->GetHp() <= 30 && !healerManager_->GetHealer()->IsDead()) {
 				healerManager_->GetHealer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
-			else if (renjuManager_->GetRenju()->GetHp() <= 20 && !renjuManager_->GetRenju()->IsDead()) {
+			else if (renjuManager_->GetRenju()->GetHp() <= 30 && !renjuManager_->GetRenju()->IsDead()) {
 				renjuManager_->GetRenju()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
-			else if (tankManager_->GetTank()->GetHp() <= 20 && !tankManager_->GetTank()->IsDead()) {
+			else if (tankManager_->GetTank()->GetHp() <= 30 && !tankManager_->GetTank()->IsDead()) {
 				tankManager_->GetTank()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
 
@@ -183,8 +183,10 @@ void GameScene::Update() {
 	}
 
 	//hp情報の取得
-	healerManager_->GetHealer()->SetHp({ playerManager_->GetPlayer()->GetHp(),renjuManager_->GetRenju()->GetHp(),tankManager_->GetTank()->GetHp() });
-
+	if (healerManager_->GetHealer()->GetState() != CharacterState::Unique) {
+		healerManager_->GetHealer()->SetHp({ playerManager_->GetPlayer()->GetHp(),renjuManager_->GetRenju()->GetHp(),tankManager_->GetTank()->GetHp() });
+	}
+	
 
 	//各キャラの更新
 	if (!enemyManager_->IsClear()) {

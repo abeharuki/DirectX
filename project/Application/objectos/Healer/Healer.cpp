@@ -317,6 +317,7 @@ void Healer::UniqueUpdate() {
 		animationNumber_ = run;
 	}
 
+	//全体ヒールかどうか
 	if (healAnimation_) {
 		if (allHeal_) {
 			if (t_[healer] > 0) {
@@ -334,19 +335,19 @@ void Healer::UniqueUpdate() {
 		else {
 			if (t_[healer] > 0) {
 				t_[healer] -= 0.02f;
-				if (hp_ <= 20) {
+				if (hp_ <= 30) {
 					worldTransformHeal_[healer].scale = { 0.5f,0.5f,0.5f };
 				}
 
-				if (playerHp_ <= 20) {
+				if (playerHp_ <= 30) {
 					t_[player] -= 0.02f;
 					worldTransformHeal_[player].scale = { 0.5f,0.5f,0.5f };
 				}
-				if (renjuHp_ <= 20) {
+				if (renjuHp_ <= 30) {
 					t_[renju] -= 0.02f;
 					worldTransformHeal_[renju].scale = { 0.5f,0.5f,0.5f };
 				}
-				if (tankHp_ <= 20) {
+				if (tankHp_ <= 30) {
 					t_[tank] -= 0.02f;
 					worldTransformHeal_[tank].scale = { 0.5f,0.5f,0.5f };
 				}
@@ -434,16 +435,16 @@ void Healer::UniqueUpdate() {
 			}
 		}
 		else {
-			if (playerHp_ <= 20) {
+			if (playerHp_ <= 30) {
 				particle_[1]->Update();
 			}
-			if (hp_ <= 20) {
+			if (hp_ <= 30) {
 				particle_[4]->Update();
 			}
-			if (renjuHp_ <= 20) {
+			if (renjuHp_ <= 30) {
 				particle_[2]->Update();
 			}
-			if (tankHp_ <= 20) {
+			if (tankHp_ <= 30) {
 				particle_[3]->Update();
 			}
 		}

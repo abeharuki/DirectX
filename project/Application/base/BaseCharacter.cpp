@@ -442,7 +442,7 @@ void BaseCharacter::BreathUpdate() {
 
 	velocity_ = Math::Normalize(directionTank) * kSpeed;
 
-	
+	//目的の場所までこれたか
 	if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (direction.x * 0.3f)), 2.f) &&
 		Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (direction.z * 0.3f)), 2.f)) {
 		animationNumber_ = standby;
@@ -477,8 +477,9 @@ void BaseCharacter::ProtectUpdate()
 	}
 
 
-
+	//キャラ後tのに動き方を変える
 	if (className_ == "Tank") {
+		//レンジャーから最も近い敵を倒す
 		for (EnemyHenchman* enemy : henchmans_) {
 			if (!enemy->IsDead() && !enemy->IsHitEnemy() && enemy) {
 				if (enemy->GetPos().y >= 0) {
@@ -495,7 +496,7 @@ void BaseCharacter::ProtectUpdate()
 
 	}
 	else {
-		
+		//自分から最も近い敵を倒す
 		for (EnemyHenchman* enemy : henchmans_) {
 
 			if (!enemy->IsDead() && !enemy->IsHitEnemy() && enemy) {
@@ -660,6 +661,7 @@ void BaseCharacter::searchTarget()
 
 		}
 		else {
+			//攻撃アクションに移行
 			drawWepon_ = true;
 			animationNumber_ = standby;
 			if (coolTime_ <= 0 && !isArea_ && enemy_->GetBehavior() != Behavior::kDead) {
@@ -719,6 +721,7 @@ void BaseCharacter::IsVisibleToEnemy()
 }
 
 void BaseCharacter::BarrierRange() {
+	//バリアの範囲内にいるか
 	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
 		//プレイヤーの円
 		Circle p;
@@ -748,6 +751,7 @@ void BaseCharacter::BarrierRange() {
 void BaseCharacter::RunAway()
 {
 	animationNumber_ = run;
+	//敵の攻撃範囲からどちらに逃げる方が早く範囲外に出れるか
 	if (enemy_->GetWorldPosition().z > worldTransformBase_.translate.z) {
 		if (enemy_->GetWorldPosition().x > worldTransformBase_.translate.x) {
 			velocity_ = { -1.0f,0.0f,-1.5f };
@@ -803,6 +807,7 @@ CharacterState BaseCharacter::NextState(std::string name, int outputNum)
 
 void BaseCharacter::InitializePerCharacter()
 {
+
 	if (className_ == "Healer") {
 		skillName_ = "Heal";
 		spriteNumP_.reset(Sprite::Create("resources/character/4P.png"));
@@ -884,6 +889,7 @@ float BaseCharacter::GetDistanceSquared(const Vector3& a, const Vector3& b)
 
 void BaseCharacter::OnCollision(Collider* collider)
 {
+	//敵との当たり判定
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 
 		henchmanSearch_ = true;
@@ -923,6 +929,7 @@ void BaseCharacter::OnCollision(Collider* collider)
 		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb);
 	}
 
+	//敵の攻撃との当たり判定
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
 		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kGround) {
 
@@ -951,6 +958,7 @@ void BaseCharacter::OnCollision(Collider* collider)
 		}
 	}
 
+	//壁との当たり判定
 	if (collider->GetCollisionAttribute() == kCollisionAttributeLoderWall) {
 		OBB obb = {
 			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
