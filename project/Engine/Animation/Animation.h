@@ -16,7 +16,10 @@
 #include "ImGuiManager.h"
 #include <PostEffects/Dissolve.h>
 
-
+/**
+ * @brief アニメーションのキーフレームを表す構造体
+ * @tparam tValue キーフレームで保持するデータ型
+ */
 template<typename tValue>
 struct Keyframe {
 	float time;
@@ -26,31 +29,50 @@ struct Keyframe {
 using KeyframeVector3 = Keyframe<Vector3>;
 using KeyframeQuaternion = Keyframe<Quaternion>;
 
-
+/**
+ * @brief アニメーションのカーブ（補間）のためのキーフレームを保持する構造体
+ * @tparam tValue キーフレームで保持するデータ型（位置、回転、スケールなど）
+ * @details アニメーションの進行に合わせて、時間ごとの値を補間するためのキーフレームを格納
+ */
 template<typename tValue>
 struct AnimationCurve {
 	std::vector<Keyframe<tValue>> keyframes;
 };
 
+/**
+ * @brief ノードに関連するアニメーションデータを保持する構造体
+ * @details ノードの位置、回転、スケールのアニメーションを表現するための構造体
+ */
 struct NodeAnimation {
 	AnimationCurve<Vector3> translate;
 	AnimationCurve<Quaternion> rotate;
 	AnimationCurve<Vector3> scale;
 };
 
+/**
+ * @brief アニメーション全体のデータを管理する構造体
+ * @details アニメーションの全体的な情報（尺）と、各ノードのアニメーション情報（位置、回転、スケール）を保持
+ */
 struct Animation {
 	float duration;//アニメーション全体の尺
 	//NodeAniamtionの集合,Node名でひけるようにしておく
 	std::map<std::string, NodeAnimation> nodeAnimations;
 };
 
+/**
+ * @brief スキニングに関する情報を保持する構造体
+ * @details スキニング（頂点の変形）に必要な情報を保持するための構造体
+ */
 struct SkinningInformation {
 	uint32_t numVertices;
 };
 
-Animation LoadAnimationFile(const std::string& directorPath, const std::string& filename);
 
-
+/**
+ * @file Animation.h 
+ * @brief アニメーション処理とレンダリングを管理するクラス
+ * @details このクラスは3Dアニメーションの処理、スキンニング、ライティング、シェーダーの管理など、ゲームやシミュレーションで使用されるアニメーション全体の管理
+ */
 class Animations {
 public: // 静的メンバ変数
 

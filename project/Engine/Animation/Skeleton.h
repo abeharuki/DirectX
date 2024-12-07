@@ -6,7 +6,11 @@
 #include <array>
 #include <optional>
 
-
+/**
+ * @brief 1つのジョイントを表す構造体
+ * @details ジョイントは、スケルトンの1部であり、トランスフォーム情報、ローカル行列、スケルトン空間での変換行列を持っている
+ * 子ジョイントのインデックスリストと、親ジョイントのインデックスも保持します。
+ */
 struct Joint {
 	QuaternionTransform transform;//Transform情報
 	Matrix4x4 locaalMatrix;//localMatrix
@@ -17,6 +21,10 @@ struct Joint {
 	std::optional<int32_t>parent;//親JointのIndex
 };
 
+/**
+ * @brief スケルトン全体を表す構造体
+ * @details スケルトンは、ジョイントの集合体であり、親子関係やジョイント名などを管理します。
+ */
 struct Skeleton {
 	int32_t root;
 	std::map<std::string, int32_t>jointMap;//Joint名とIndexの辞書

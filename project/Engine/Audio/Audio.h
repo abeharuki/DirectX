@@ -17,6 +17,11 @@
 #pragma comment (lib,"mfuuid.lib")
 #pragma comment (lib,"xaudio2.lib")
 
+/**
+ * @file Audio.h
+ * @brief 音声の読み込み、再生、停止を管理するクラス
+ * WAVやMP3ファイルを扱い、音声データのロード、再生、リソース管理を行う
+ */
 class Audio {
 public:
 	// 音声データの最大数
@@ -139,6 +144,11 @@ private:
 	uint32_t audioHandle_ = uint32_t(-1);
 	uint32_t voiceHandle_ = uint32_t(-1);
 };
+
+/**
+* @struct AudioHelper
+* @brief 音声ファイルの読み込みと再生を簡略化するためのヘルパークラス
+*/
 struct AudioHelper {
 	AudioHelper() = default;
 	AudioHelper(const AudioHelper&) = default;
