@@ -2,6 +2,8 @@
 ## タイトル
 「DRAPONQUEST」<br>
 <img src="https://github.com/user-attachments/assets/06c14d46-c4b2-478c-aeef-557a9d589e8c" alt="DRAPONQUEST" width="500" /><br>
+
+[![DebugBuild](https://github.com/abeharuki/DirectX/actions/workflows/DebugBuild.yml/badge.svg)](https://github.com/abeharuki/DirectX/actions/workflows/DebugBuild.yml)
 ## 概要
 今の作品を作ろうと思った経緯は、人と一緒にゲームをするのも好きなのですが、
 ドラゴンズドグマやドラクエ10のようなcpuと一緒に戦うゲームが、
@@ -24,7 +26,7 @@
 <br><br>
 さらに細かい進捗は下記のURLから確認できます。<br>
 
-  [作品動画はこちら](https://youtu.be/Y7S-no2YfIU)<br>[ポートフォリオはこちら](https://drive.google.com/file/d/15fuHKKvBRsdOitzPX2uTvESjmbHBkNvG/view?usp=drive_link)
+  [作品動画はこちら](https://youtu.be/Y7S-no2YfIU)<br>[ポートフォリオはこちら](https://drive.google.com/file/d/15fuHKKvBRsdOitzPX2uTvESjmbHBkNvG/view?usp=drive_link)<br>
 
 
 # エンジン
