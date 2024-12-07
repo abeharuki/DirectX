@@ -17,6 +17,10 @@
 #include "GraphicsPipeline.h"
 #include <ViewProjection.h>
 
+/**
+ * @file Skybox.h
+ * @brief 3Dシーンの背景として使用するスカイボックスを管理するクラス
+ */
 class Skybox {
 public: // サブクラス
 	/// <summary>

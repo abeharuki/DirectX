@@ -17,6 +17,10 @@
 #include "GraphicsPipeline.h"
 #include "PostEffects/Dissolve.h"
 
+/**
+ * @file Sphere.h
+ * @brief 球体モデルを管理するクラス
+ */
 class Sphere {
 	// 静的メンバ変数
 public:

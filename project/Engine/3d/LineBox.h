@@ -15,6 +15,10 @@
 #include "GraphicsPipeline.h"
 #include <Line.h>
 
+/**
+ * @file Line.h
+ * @brief フレームだけのボックスの描画や管理を行うクラス
+ */
 class LineBox {
 public:
 	/// <summary>

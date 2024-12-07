@@ -4,13 +4,21 @@
 #include <d3d12.h>
 #include <wrl.h>
 
-// 定数バッファ用データ構造体
+
+/**
+ * @struct ConstBufferDataViewProjection
+ * @brief 定数バッファ用データ構造体
+ */
 struct ConstBufferDataViewProjection {
 	Matrix4x4 view;       // ワールド → ビュー変換行列
 	Matrix4x4 projection; // ビュー → プロジェクション変換行列
 	Vector3 cameraPos;    // カメラ座標（ワールド座標）
 };
 
+/**
+ * @struct ViewProjection
+ * @brief ビュー行列と射影行列を管理する構造体
+ */
 struct ViewProjection {
 	// 定数バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> constBuff_;

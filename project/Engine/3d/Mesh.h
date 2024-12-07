@@ -11,6 +11,10 @@
 #include <StructuredBuffer.h>
 #include <UploadBuffer.h>
 
+/**
+ * @file Mesh.h
+ * @brief 3Dメッシュデータを管理するクラス
+ */
 class Mesh
 {
 public:

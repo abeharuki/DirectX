@@ -19,6 +19,10 @@
 #include <Skybox.h>
 #include <PostEffects/Dissolve.h>
 
+/**
+ * @struct WritingStyle
+ * @brief ライティングやディゾルブに関連するスタイル情報をまとめた構造体
+ */
 struct WritingStyle {
 	DirectionLight directionLight_;
 	PointLight pointLight_;
@@ -27,6 +31,10 @@ struct WritingStyle {
 	DissolveStyle dissolve_;
 };
 
+/**
+ * @file Model.h
+ * @brief 3Dモデルの描画・管理を行うクラス
+ */
 class Model {
 public: // 静的メンバ変数
 	

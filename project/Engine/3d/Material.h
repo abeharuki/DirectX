@@ -8,6 +8,10 @@
 #include "WinApp.h"
 #include "TextureManeger.h"
 
+/**
+ * @file Material.h
+ * @brief マテリアルの情報を管理するクラス
+ */
 class Material
 {
 public:

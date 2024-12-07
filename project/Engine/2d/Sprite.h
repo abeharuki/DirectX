@@ -16,6 +16,10 @@
 #include <imgui.h>
 #include "GraphicsPipeline.h"
 
+/**
+ * @file Sprite.h
+ * @brief 2Dスプライトの描画や管理を行うクラス
+ */
 class Sprite {
 public: // サブクラス
 	/// <summary>

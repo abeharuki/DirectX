@@ -3,10 +3,19 @@
 #include "Math/math.h"
 #include "Mesh.h"
 
+/**
+ * @struct ConstBufferDataWorldTransform
+ * @brief ワールド変換に関連するデータを格納する構造体
+ */
 struct ConstBufferDataWorldTransform {
 	Matrix4x4 matWorld; // ローカル → ワールド変換行列
 	Matrix4x4 WorldInverseTranspose;//worldの逆行列
 };
+
+/**
+ * @struct WorldTransform
+ * @brief オブジェクトのワールド変換情報を管理する構造体
+ */
 struct WorldTransform {
 	// 定数バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> constBuff_;

@@ -14,6 +14,11 @@
 #include "ViewProjection.h"
 #include "GraphicsPipeline.h"
 
+
+/**
+ * @file Line.h
+ * @brief 線の描画や管理を行うクラス
+ */
 class Line {
 	// 静的メンバ変数
 public:

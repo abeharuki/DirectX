@@ -7,6 +7,10 @@
 #include "CollisionManager/ColliderManager.h"
 #include <ParticleSystem.h>
 
+/**
+ * @class ModelLoader.h
+ * @brief Blenderをステージエディターして読み込み管理するクラス
+ */
 class ModelLoader {
 public:
 	/// <summary>
