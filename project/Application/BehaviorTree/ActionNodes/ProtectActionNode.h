@@ -1,6 +1,10 @@
 #pragma once
 #include "ActionNode.h"
 
+/**
+ * @class ProtectActionNode.h
+ * @brief キャラクターの敵から味方を守るアクションを処理するビヘイビアツリーのアクションノード
+ */
 template<typename CharacterType>
 class ProtectActionNode : public ActionNode<CharacterType> {
 public:

@@ -3,7 +3,10 @@
 #include "Renju.h"
 #include <ParticleSystem.h>
 
-
+/**
+ * @file RenjuManager.h
+ * @brief レンジャーキャラクターを管理するクラス
+ */
 class RenjuManager {
 public:
 	void Initialize();

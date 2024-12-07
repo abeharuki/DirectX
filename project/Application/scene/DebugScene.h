@@ -16,6 +16,10 @@
 #include "CollisionManager/CollisionConfig.h"
 #include "Manager/ParticleManager.h"
 
+/**
+ * @file DebugScene.h
+ * @brief デバックをするためのクラス
+ */
 class DebugScene: public IScene {
 public:
 	void Initialize() override;

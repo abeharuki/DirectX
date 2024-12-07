@@ -1,6 +1,10 @@
 #pragma once
 #include "ActionNode.h"
 
+/**
+ * @class DeadActionNode.h
+ * @brief キャラクターの死亡アクションを処理するビヘイビアツリーのアクションノード
+ */
 template<typename CharacterType>
 class DeadActionNode : public ActionNode<CharacterType> {
 public:

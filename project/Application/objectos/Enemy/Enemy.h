@@ -42,6 +42,10 @@ enum class BehaviorAttack {
 	kHenchman,//必殺技(体力が半分以下になった時に発動)
 };
 
+/**
+ * @file Enemy.h
+ * @brief 敵キャラクターを制御するクラス
+ */
 class Enemy : public Collider {
 
 public: // メンバ関数

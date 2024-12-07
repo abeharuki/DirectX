@@ -17,9 +17,10 @@
 #include <ModelLoader.h>
 #include "BaseCharacter.h"
 
-/// <summary>
-/// ゲームシーン
-/// </summary>
+/**
+ * @file GameScene.h
+ * @brief ゲームプレイを管理するクラス
+ */
 class GameScene : public IScene {
 public: // メンバ関数
 	void Initialize() override;

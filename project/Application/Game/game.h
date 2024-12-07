@@ -2,6 +2,10 @@
 #include "Framework/Framework.h"
 #include "SceneFactory.h"
 
+/**
+ * @file game.h
+ * @brief ゲーム全体を管理するクラス
+ */
 class Game : public Framework {
 public:
 	/// <summary>

@@ -11,9 +11,10 @@
 #include "base/BaseCharacter.h"
 #include "RenjuBullet.h"
 
-/// <summary>
-/// ゲームシーン
-/// </summary>
+/**
+ * @file Renju.h
+ * @brief レンジャーキャラクターを制御するクラス
+ */
 class Renju : public BaseCharacter {
 
 public: // メンバ関数

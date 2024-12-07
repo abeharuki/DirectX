@@ -11,7 +11,10 @@
 #include <AnimationManager.h>
 
 
-
+/**
+ * @file EnemyHenchman.h
+ * @brief 敵が出す子分キャラクターを制御するクラス
+ */
 class EnemyHenchman : public Collider {
 public:
 	~EnemyHenchman();

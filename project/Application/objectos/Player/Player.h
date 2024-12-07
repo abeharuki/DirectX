@@ -13,6 +13,10 @@
 #include "Command/Command.h"
 #include "Enemy/Enemy.h"
 
+/**
+ * @file Player.h
+ * @brief プレイヤーが操作するキャラクターを制御するクラス
+ */
 class Player : public Collider {
 public:
 

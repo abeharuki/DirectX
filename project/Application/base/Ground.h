@@ -3,6 +3,11 @@
 #include "WorldTransform.h"
 #include <list>
 
+/**
+ * @file Ground.h
+ * @brief ゲームのフィールドを管理するクラス
+ * @brief このクラスは現在使用されていません。
+ */
 class Ground {
 public:
 	/// <summary>

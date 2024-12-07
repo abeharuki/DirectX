@@ -11,8 +11,12 @@
 #include <Renju/RenjuManager.h>
 #include "PostEffects/PostEffect.h"
 #include <ModelLoader.h>
-#include "Editor/editor.h"
 
+
+/**
+ * @file TitleScene.h
+ * @brief ゲームのタイトルシーンを管理するクラス
+ */
 class TitleScene : public IScene {
 public:
 	void Initialize() override;

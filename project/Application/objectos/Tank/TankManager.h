@@ -3,6 +3,10 @@
 #include "Tank.h"
 #include <ParticleSystem.h>
 
+/**
+ * @file TankManager.h
+ * @brief タンクキャラクターを管理するクラス
+ */
 class TankManager {
 public:
 	void Initialize();

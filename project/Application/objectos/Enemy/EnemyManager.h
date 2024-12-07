@@ -3,7 +3,10 @@
 #include "Model.h"
 #include <Sphere.h>
 
-
+/**
+ * @file EnemyManager.h
+ * @brief 敵キャラクターを管理するクラス
+ */
 class EnemyManager {
 public:
 	void Initialize();

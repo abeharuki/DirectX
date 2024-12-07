@@ -3,7 +3,10 @@
 #include "Input.h"
 #include <Sprite.h>
 
-
+/**
+ * @file Clear.h
+ * @brief ゲームクリアシーンを管理するクラス
+ */
 class ClearScene : public IScene {
 public:
 	void Initialize() override;

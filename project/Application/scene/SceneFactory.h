@@ -7,6 +7,10 @@
 #include "LoadScene.h"
 #include "DebugScene.h"
 
+/**
+ * @file SceneFactory.h
+ * @brief シーン生成を管理するファクトリクラス 
+ */
 class SceneFactory : public AbstractSceneFactory {
 public:
 	IScene* CreateScene(const std::string& sceneName) override;

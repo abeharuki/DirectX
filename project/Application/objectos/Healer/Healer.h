@@ -11,9 +11,10 @@
 #include "base/BaseCharacter.h"
 
 
-/// <summary>
-/// ゲームシーン
-/// </summary>
+/**
+ * @file Healer.h
+ * @brief ヒーラーキャラクターを制御するクラス
+ */
 class Healer : public BaseCharacter {
 
 public: // メンバ関数

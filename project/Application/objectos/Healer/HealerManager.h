@@ -3,6 +3,10 @@
 #include "Healer.h"
 #include <ParticleSystem.h>
 
+/**
+ * @file HealerManager.h
+ * @brief ヒーラーキャラクターを管理するクラス
+ */
 class HealerManager {
 public:
 	void Initialize();

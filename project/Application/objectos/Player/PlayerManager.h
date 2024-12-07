@@ -4,6 +4,10 @@
 #include <ParticleSystem.h>
 #include <Animation/Animation.h>
 
+/**
+ * @file PlayerManager.h
+ * @brief プレイヤーが操作するキャラクターを管理するクラス
+ */
 class PlayerManager {
 public:
 	void Initialize();

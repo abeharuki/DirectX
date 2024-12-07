@@ -22,6 +22,12 @@ enum OutputNum
 	Output6, // 6出力ポート
 };
 
+
+/**
+ * @file editor.h
+ * @brief ノードエディタを管理するクラス
+ */
+
 namespace Editor
 {
 	enum class NodeType

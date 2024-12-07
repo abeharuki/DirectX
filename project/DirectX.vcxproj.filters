@@ -438,17 +438,17 @@
     <ClCompile Include="Application\Editor\editor.cpp">
       <Filter>ソース ファイル\Application\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\base\UploadBuffer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Manager\ParticleManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Engine\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\UploadBuffer.cpp">
+      <Filter>ソース ファイル\Engine\base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Manager\AnimationManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Engine\Animation</Filter>
     </ClCompile>
     <ClCompile Include="Application\objectos\Enemy\EnemyHenchman.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Application\objects\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -800,22 +800,22 @@
       <Filter>ヘッダー ファイル\Application\Editor</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\UploadBuffer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Manager\ParticleManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Engine\base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Manager\AnimationManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Engine\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Application\objectos\Enemy\EnemyHenchman.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\objects\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Manager\ParticleManager.h">
+      <Filter>ヘッダー ファイル\Engine\particle</Filter>
     </ClInclude>
     <ClInclude Include="Application\BehaviorTree\ActionNodes\BreathActionNode.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\BehaviorTree\ActionNodes</Filter>
     </ClInclude>
     <ClInclude Include="Application\BehaviorTree\ActionNodes\ProtectActionNode.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Application\BehaviorTree\ActionNodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

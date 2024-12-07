@@ -2,6 +2,10 @@
 #include <CollisionManager/Collider.h>
 #include <Model.h>
 
+/**
+ * @file RenjuManager.h
+ * @brief レンジャーが打つ矢を制御するクラス
+ */
 class RenjuBullet : public Collider {
 public:
 

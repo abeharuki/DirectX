@@ -4,6 +4,11 @@
 #include <Sprite.h>
 #include <ParticleSystem.h>
 
+
+/**
+ * @file OverScene.h
+ * @brief ゲームオーバーシーンの管理をするクラス
+ */
 class OverScene : public IScene {
 public:
 	void Initialize() override;

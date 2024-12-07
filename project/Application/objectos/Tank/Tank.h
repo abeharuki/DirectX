@@ -11,9 +11,10 @@
 #include "base/BaseCharacter.h"
 
 
-/// <summary>
-/// ゲームシーン
-/// </summary>
+/**
+ * @file Tank.h
+ * @brief タンクキャラクターを制御するクラス
+ */
 class Tank : public BaseCharacter {
 
 public: // メンバ関数

@@ -2,6 +2,10 @@
 #include "BehaviorTreeNode.h"
 #include <vector>
 
+/**
+ * @class CompositeNode.h
+ * @brief 複数の子ノードを持つビヘイビアツリーのノード
+ */
 class CompositeNode : public BehaviorTreeNode {
 public:
     ~CompositeNode() override;

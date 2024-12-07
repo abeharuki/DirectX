@@ -1,6 +1,10 @@
 #pragma once
 #include "../BehaviorTreeNode.h"
 
+/**
+ * @class ActionNode.h
+ * @brief キャラクターに関連するアクションを実行するノード（テンプレートクラス）
+ */
 template<typename CharacterType>
 class ActionNode : public BehaviorTreeNode {
 public:

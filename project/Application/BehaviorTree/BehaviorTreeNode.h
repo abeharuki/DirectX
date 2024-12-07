@@ -1,5 +1,9 @@
 #pragma once
 
+/**
+ * @enum CharacterState
+ * @brief キャラクターの状態を表す列挙型
+ */
 enum class CharacterState {
     Attacking,
     Moveing,
@@ -10,12 +14,20 @@ enum class CharacterState {
     Dead
 };
 
+/**
+ * @enum NodeStatus
+ * @brief ビヘイビアツリーのノードの実行状態を表す列挙型
+ */
 enum class NodeStatus {
     SUCCESS,
     FAILURE,
     RUNNING
 };
 
+/**
+* @class BehaviorTreeNode.h
+* @brief ビヘイビアツリーのノードを表す基底クラス
+*/
 class BehaviorTreeNode {
 public:
     virtual ~BehaviorTreeNode() = default;

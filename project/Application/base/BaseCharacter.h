@@ -6,7 +6,10 @@
 #include <cassert>
 #include <numbers>
 
-
+/**
+ * @file BaseCharacter.h
+ * @brief 味方AIの基底クラス
+ */
 class BaseCharacter : public Collider {
 public:
     virtual ~BaseCharacter() = default;

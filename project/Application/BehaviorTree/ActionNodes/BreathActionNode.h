@@ -1,6 +1,10 @@
 #pragma once
 #include "ActionNode.h"
 
+/**
+ * @class BreathActionNode.h
+ * @brief キャラクターの敵がブレス攻撃をしてきたときのアクションを処理するビヘイビアツリーのアクションノード
+ */
 template<typename CharacterType>
 class BreathActionNode : public ActionNode<CharacterType> {
 public:

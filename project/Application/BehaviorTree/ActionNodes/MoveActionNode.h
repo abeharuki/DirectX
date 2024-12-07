@@ -1,6 +1,10 @@
 #pragma once
 #include "ActionNode.h"
 
+/**
+ * @class MoveActionNode.h
+ * @brief キャラクターの行動アクションを処理するビヘイビアツリーのアクションノード
+ */
 template<typename CharacterType>
 class MoveActionNode : public ActionNode<CharacterType> {
 public:

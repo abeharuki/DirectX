@@ -8,6 +8,10 @@
 #include <Model.h>
 #include <numbers>
 
+/**
+ * @file LaoadScene.h
+ * @brief ゲームのロードシーンを管理するクラス
+ */
 class LoadScene : public IScene {
 public:
 	void Initialize() override;

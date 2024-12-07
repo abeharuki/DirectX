@@ -4,6 +4,11 @@
 #include <string>
 #include <variant>
 
+/**
+ * @file GlobalVariables.h
+ * @brief グローバル変数を管理するクラス
+ * @brief このクラスは現在使用されていません。
+ */
 class GlobalVariables {
 public:
 	static GlobalVariables* GetInstance();

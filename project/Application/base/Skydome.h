@@ -4,6 +4,10 @@
 #include "WorldTransform.h"
 #include <list>
 
+/**
+ * @file Skydome.h
+ * @brief スカイドームを管理するクラス
+ */
 class Skydome {
 public:
 	/// <summary>

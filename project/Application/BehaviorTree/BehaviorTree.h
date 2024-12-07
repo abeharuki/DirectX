@@ -12,13 +12,17 @@
 #include "ActionNodes/BreathActionNode.h"
 #include "ActionNodes/ProtectActionNode.h"
 
+/**
+ * @file BehaviorTree.h
+ * @brief キャラクターの行動を管理するビヘイビアツリークラス
+ */
 template <typename CharacterType>
 class BehaviorTree {
 public:
     BehaviorTree(CharacterType* character);
     void Initialize();//BehaviorTreeの初期化
     void NodeInitialize();//各ノードの初期化
-    void Update();
+    void Update();//ルートノードから更新を実行し、各アクションを評価・実行
 
     // ノードを取得する
     std::vector<BehaviorTreeNode*> GetNodes() const;
@@ -26,8 +30,8 @@ public:
     SelectorNode* GetRootNode() const;
 
 private:
-    CharacterType* character_;
-    SelectorNode* rootNode_;
+    CharacterType* character_;  //対象となるキャラクター
+    SelectorNode* rootNode_; //ルートノード
     std::vector<BehaviorTreeNode*> nodes_;  // ノードのコレクション
 };
 

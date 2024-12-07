@@ -6,6 +6,10 @@
 #include <imgui.h>
 #include <memory>
 
+/**
+ * @file followCamera.h
+ * @brief 追従するカメラを管理するクラス
+ */
 class FollowCamera {
 public:
 	/// <summary>

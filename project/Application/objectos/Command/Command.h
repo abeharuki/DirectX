@@ -29,6 +29,10 @@ enum AttackType {
 	kAttackMax,
 };
 
+/**
+ * @file Command.h
+ * @brief プレーヤーが動かすコマンドUIを管理するクラス
+ */
 class Command {
 public:
 
