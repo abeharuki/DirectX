@@ -4,6 +4,7 @@
 <img src="https://github.com/user-attachments/assets/06c14d46-c4b2-478c-aeef-557a9d589e8c" alt="DRAPONQUEST" width="500" /><br>
 
 [![DebugBuild](https://github.com/abeharuki/DirectX/actions/workflows/DebugBuild.yml/badge.svg)](https://github.com/abeharuki/DirectX/actions/workflows/DebugBuild.yml)
+[![ReleaseBuild](https://github.com/abeharuki/DirectX/actions/workflows/ReleaseBuild.yml/badge.svg)](https://github.com/abeharuki/DirectX/actions/workflows/ReleaseBuild.yml)
 ## 概要
 今の作品を作ろうと思った経緯は、人と一緒にゲームをするのも好きなのですが、
 ドラゴンズドグマやドラクエ10のようなcpuと一緒に戦うゲームが、
