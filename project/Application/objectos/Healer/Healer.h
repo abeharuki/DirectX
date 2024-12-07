@@ -64,6 +64,9 @@ public: // メンバ関数
 	bool GetAllHeal() { return allHeal_; }
 	bool GetOneHeal() { return oneHeal_; }
 	float GetHealAmount() { return healAmount_; }
+	float GetPlayerHp() { return playerHp_; }
+	float GetRenjuHp() { return renjuHp_; }
+	float GetTankHp() { return tankHp_; }
 
 	/*-----セッター-----*/
 	void SetLight(DirectionLight directionLight) override{
@@ -113,6 +116,7 @@ private: // メンバ変数
 	};
 	//魔法陣
 	std::unique_ptr<Model> magicCircle_[4];
+	//回復数値
 	std::unique_ptr<Model> healModel_[4];
 	float t_[4];//ディゾルブ
 	float healAlph_[4];

@@ -116,12 +116,12 @@ void Healer::Update() {
 
 
 
-
+	//魔法陣の表示
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i]->SetThreshold(t_[i]);
 	}
 
-	//回復の表示
+	//回復数値の表示
 	for (int i = 0; i < 4; ++i) {
 		healModel_[i]->SetColor({ 1.f,1.f,1.f,healAlph_[i] });
 		if (healAlph_[i] > 0.0f) {
@@ -174,13 +174,13 @@ void Healer::Draw(const ViewProjection& camera) {
 
 	for (int i = 0; i < 4; ++i) {
 		magicCircle_[i]->Draw(worldTransformMagicCircle_[i], camera, true);
-
 	}
 
 	RenderCollisionBounds(worldTransformBody_, camera);
 }
 
 void Healer::NoDepthDraw(const ViewProjection& camera) {
+	//回復数値の描画
 	for (int i = 0; i < 4; ++i) {
 		healModel_[i]->Draw(worldTransformHeal_[i], camera, false);
 	}
@@ -204,14 +204,14 @@ void Healer::MoveUpdate() {
 	//味方の体力全員が50以下なら全体回復
 	//味方の体力が誰か20以下なら回復
 	if ((playerHp_ <= 30 && playerHp_ > 0) || (renjuHp_ <= 30 && renjuHp_ > 0) || (tankHp_ <= 30 && tankHp_ > 0) || (hp_ <= 30 && hp_ > 0)) {
-		if (mp_ >= 10) {
+		if (mp_ >= 10 && coolTime_ <= 20) {
 			oneHeal_ = true;
 			state_ = NextState("Move", Output3);
 		}
 
 	}
 	else if (playerHp_ <= 50 && renjuHp_ <= 50 && tankHp_ <= 50 && hp_ <= 50) {
-		if (mp_ >= 20) {
+		if (mp_ >= 20 && coolTime_ <= 20) {
 			allHeal_ = true;
 			state_ = NextState("Move", Output3);
 		}
@@ -275,6 +275,23 @@ void Healer::UniqueInitialize() {
 			healModel_[i]->SetTexture("character/H40.png");
 		}
 
+		for (int i = 0; i < 4; ++i) {
+			worldTransformMagicCircle_[i].scale = { 2.f,2.f,2.f };
+		}
+
+		if (hp_ <= 30) {
+			worldTransformHeal_[healer].scale = { 0.f,0.f,0.f };
+		}
+		if (playerHp_ <= 30) {
+			worldTransformHeal_[player].scale = { 0.f,0.f,0.f };
+		}
+		if (renjuHp_ <= 30) {
+			worldTransformHeal_[renju].scale = { 0.f,0.f,0.f };
+		}
+		if (tankHp_ <= 30) {
+			worldTransformHeal_[tank].scale = { 0.f,0.f,0.f };
+		}
+
 	}
 	//全員20回復
 	if (allHeal_) {
@@ -282,6 +299,7 @@ void Healer::UniqueInitialize() {
 		healAmount_ = 20;
 		for (int i = 0; i < 4; ++i) {
 			healModel_[i]->SetTexture("character/H20.png");
+			worldTransformHeal_[i].scale = { 0.f,0.f,0.f };
 		}
 
 	}
@@ -296,10 +314,7 @@ void Healer::UniqueInitialize() {
 		t_[i] = 0.8f;
 	}
 
-	for (int i = 0; i < 4; ++i) {
-		worldTransformMagicCircle_[i].scale = { 2.f,2.f,2.f };
-		worldTransformHeal_[i].scale = { 0.f,0.f,0.f };
-	}
+	
 
 }
 void Healer::UniqueUpdate() {
@@ -401,21 +416,28 @@ void Healer::UniqueUpdate() {
 
 
 	//回復数値の設定
-	worldTransformHeal_[player].translate = { playerPos_.x,playerPos_.y + 2.0f,playerPos_.z };
-	healNumMove_[player] = { worldTransformHeal_[player].translate.x ,worldTransformHeal_[player].translate.y + 2.0f,worldTransformHeal_[player].translate.z };
 
-	worldTransformHeal_[renju].translate = { renjuPos_.x,renjuPos_.y + 2.0f,renjuPos_.z };
-	healNumMove_[renju] = { worldTransformHeal_[renju].translate.x ,worldTransformHeal_[renju].translate.y + 2.0f,worldTransformHeal_[renju].translate.z };
+	if (hp_ <= 30) {
+		worldTransformHeal_[healer].translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+		healNumMove_[healer] = { worldTransformHeal_[healer].translate.x ,worldTransformHeal_[healer].translate.y + 2.0f,worldTransformHeal_[healer].translate.z };
 
-	worldTransformHeal_[tank].translate = { tankPos_.x,tankPos_.y + 2.0f,tankPos_.z };
-	healNumMove_[tank] = { worldTransformHeal_[tank].translate.x ,worldTransformHeal_[tank].translate.y + 2.0f,worldTransformHeal_[tank].translate.z };
+	}
+	if (playerHp_ <= 30) {
+		worldTransformHeal_[player].translate = { playerPos_.x,playerPos_.y + 2.0f,playerPos_.z };
+		healNumMove_[player] = { worldTransformHeal_[player].translate.x ,worldTransformHeal_[player].translate.y + 2.0f,worldTransformHeal_[player].translate.z };
 
-	worldTransformHeal_[healer].translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-	healNumMove_[healer] = { worldTransformHeal_[healer].translate.x ,worldTransformHeal_[healer].translate.y + 2.0f,worldTransformHeal_[healer].translate.z };
+	}
+	if (renjuHp_ <= 30) {
+		worldTransformHeal_[renju].translate = { renjuPos_.x,renjuPos_.y + 2.0f,renjuPos_.z };
+		healNumMove_[renju] = { worldTransformHeal_[renju].translate.x ,worldTransformHeal_[renju].translate.y + 2.0f,worldTransformHeal_[renju].translate.z };
 
+	}
+	if (tankHp_ <= 30) {
+		worldTransformHeal_[tank].translate = { tankPos_.x,tankPos_.y + 2.0f,tankPos_.z };
+		healNumMove_[tank] = { worldTransformHeal_[tank].translate.x ,worldTransformHeal_[tank].translate.y + 2.0f,worldTransformHeal_[tank].translate.z };
 
-
-
+	}
+	
 	if (coolTime_ < 5) {
 		for (int i = 0; i < 4; ++i) {
 			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale - 1.0f;
@@ -427,7 +449,7 @@ void Healer::UniqueUpdate() {
 		}
 	}
 
-
+	//パーティクルの更新
 	if (coolTime_ <= 1) {
 		if (allHeal_) {
 			for (int i = 0; i < 5; ++i) {
@@ -456,8 +478,24 @@ void Healer::UniqueUpdate() {
 		coolTime_ = 60;
 
 		for (int i = 0; i < 4; ++i) {
-			t_[i] = 0.8f;
-			healAlph_[i] = 2.0f;
+			
+			
+		}
+		if (playerHp_ <= 30) {
+			healAlph_[player] = 2.0f;
+			t_[player] = 0.8f;
+		}
+		if (hp_ <= 30) {
+			healAlph_[healer] = 2.0f;
+			t_[healer] = 0.8f;
+		}
+		if (renjuHp_ <= 30) {
+			healAlph_[renju] = 2.0f;
+			t_[renju] = 0.8f;
+		}
+		if (tankHp_ <= 30) {
+			healAlph_[tank] = 2.0f;
+			t_[tank] = 0.8f;
 		}
 
 	}
