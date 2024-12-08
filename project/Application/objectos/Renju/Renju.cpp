@@ -611,7 +611,7 @@ void Renju::OnCollision(Collider* collider) {
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer ||
 		collider->GetCollisionAttribute() == kCollisionAttributeHealer ||
 		collider->GetCollisionAttribute() == kCollisionAttributeTank) {
-		const float kSpeed = 0.01f;
+		const float kSpeed = 0.03f;
 		float subX = collider->GetWorldTransform().matWorld_.m[3][0] - GetWorldPosition().x;
 		float subZ = collider->GetWorldTransform().matWorld_.m[3][2] - GetWorldPosition().z;
 		if (subX < 0) {
@@ -629,7 +629,7 @@ void Renju::OnCollision(Collider* collider) {
 		}
 
 		//allyVelocity = Math::TransformNormal(allyVelocity, collider->GetWorldTransform().matWorld_);
-		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
+		worldTransformBase_.translate += allyVelocity;
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {
