@@ -71,7 +71,7 @@ public:
 	void RenderCollisionBounds(WorldTransform& world, const ViewProjection& camera) {
 		camera;
 		world;
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 		lineBox_->Draw(world, camera, false);
 		
 #endif // DEBUG

@@ -79,7 +79,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	.velocityRange{.min{0.f,0.1f,0.f},.max{0.f,0.4f,0.0f}},
 	};
 
-	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
+	AABB aabbSize{ .min{-0.7f,-0.0f,-0.4f},.max{0.7f,1.5f,0.4f} };
 	SetAABB(aabbSize);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 	SetCollisionAttribute(kCollisionAttributeHealer);
@@ -613,25 +613,20 @@ void Healer::OnCollision(Collider* collider) {
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer ||
 		collider->GetCollisionAttribute() == kCollisionAttributeRenju ||
 		collider->GetCollisionAttribute() == kCollisionAttributeTank) {
-		const float kSpeed = 0.01f;
-		float subX = collider->GetWorldTransform().matWorld_.m[3][0] - GetWorldPosition().x;
-		float subZ = collider->GetWorldTransform().matWorld_.m[3][2] - GetWorldPosition().z;
-		if (subX < 0) {
-			allyVelocity.x = kSpeed;
-		}
-		else {
-			allyVelocity.x = -kSpeed;
-		}
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
 
-		if (subZ < 0) {
-			allyVelocity.z = kSpeed;
+			.orientations{
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+			},
+			.size{collider->GetOBB().size}
+		};
+		if (state_ != CharacterState::Unique) {
+			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
+			worldTransformBase_.translate.y = 0.0f;
 		}
-		else {
-			allyVelocity.z = -kSpeed;
-		}
-
-		//allyVelocity = Math::TransformNormal(allyVelocity, collider->GetWorldTransform().matWorld_);
-		worldTransformBase_.translate = Math::Add(worldTransformBase_.translate, allyVelocity);
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {

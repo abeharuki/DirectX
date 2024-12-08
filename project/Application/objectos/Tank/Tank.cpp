@@ -39,7 +39,7 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 
 	barrierThreshold_ = 1.0f;
 
-	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
+	AABB aabbSize{ .min{-0.7f,-0.0f,-0.4f},.max{0.7f,1.5f,0.4f} };
 	SetAABB(aabbSize);
 	
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
@@ -129,6 +129,7 @@ void Tank::BarrierDraw(const ViewProjection& camera)
 // 移動
 void Tank::MoveInitialize() { 
 	BaseCharacter::MoveInitialize();
+	minDistance_ = 6.0f;
 	stanAttack_ = false;
 	barrier_ = false;
 };
@@ -379,28 +380,23 @@ void Tank::OnCollision(Collider* collider) {
 		isHitPlayer_ = true;
 	}
 
-	if (
+	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer||
 		collider->GetCollisionAttribute() == kCollisionAttributeHealer ||
 		collider->GetCollisionAttribute() == kCollisionAttributeRenju) {
-		const float kSpeed = 0.02f;
-		float subX = collider->GetWorldTransform().matWorld_.m[3][0] - GetWorldPosition().x;
-		float subZ = collider->GetWorldTransform().matWorld_.m[3][2] - GetWorldPosition().z;
-		if (subX <= 0) {
-			allyVelocity.x = kSpeed;
-		}
-		else {
-			allyVelocity.x = -kSpeed;
-		}
+		OBB obb = {
+			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
 
-		if (subZ <= 0) {
-			allyVelocity.z = kSpeed;
-		}
-		else {
-			allyVelocity.z = -kSpeed;
-		}
+			.orientations{
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
+			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
+			},
+			.size{collider->GetOBB().size}
+		};
 
 		if (state_ != CharacterState::Unique) {
-			worldTransformBase_.translate += allyVelocity;
+			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
+			worldTransformBase_.translate.y = 0.0f;
 		}
 		
 	}	
