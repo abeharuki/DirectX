@@ -9,8 +9,11 @@
  */
 class RenjuManager {
 public:
+	//キャラクターの生成
 	void Initialize();
+	//キャラクターの更新
 	void Update();
+	//キャラクターの描画
 	void Draw(const ViewProjection& camera);
 
 	/*-----ゲッター-----*/

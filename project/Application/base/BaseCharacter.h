@@ -14,40 +14,46 @@ class BaseCharacter : public Collider {
 public:
     virtual ~BaseCharacter() = default;
 
+    //各キャラクターの初期化
     virtual void Initialize(Animations* animation,std::string className);
+    //各キャラクターの更新
     virtual void Update();
+    //各キャラクターの描画
     virtual void Draw(const ViewProjection& camera);
+    //各キャラクターの深度値のないobjの描画
     virtual void NoDepthDraw(const ViewProjection& camera);
+    //各キャラクターのUI描画
     void DrawUI();
 
-    //移動
+    //移動の初期化・更新
     virtual void MoveInitialize();
     virtual void MoveUpdate();
 
-    //ジャンプ
+    //ジャンプの初期化・更新
     virtual void JumpInitialize();
     virtual void JumpUpdate();
 
-    //攻撃
+    //攻撃の初期化・更新
     virtual void AttackInitialize();
     virtual void AttackUpdate();
 
-    //スキル
+    //スキルの初期化・更新
     virtual void UniqueInitialize() = 0;//純粋仮想関数
     virtual void UniqueUpdate() = 0;//純粋仮想関数
 
-    //死亡
+    //死亡の初期化・更新
     virtual void DeadInitialize();
     virtual void DeadUpdate() = 0;//純粋仮想関数
 
-    //敵のブレス攻撃の時の行動
+    //敵のブレス攻撃の時の行動の初期化・更新
     virtual void BreathInitialize();
     virtual void BreathUpdate();
 
-    //味方AIを守る動き
+    //味方AIを守る動きの初期化・更新
     virtual void ProtectInitialize();
     virtual void ProtectUpdate();
 
+    //当たり判定
     virtual void OnCollision(Collider* collider) override;
 
     /*---------------------状態遷移関連---------------------*/

@@ -36,18 +36,13 @@ enum AttackType {
 class Command {
 public:
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
+	// コマンドUI初期化
 	void Initialize();
-
-	/// <summary>
-	/// 毎フレーム処理
-	/// </summary>
+	// 毎フレーム処理
 	void Update();
-
+	//コマンドの描画(今は使われていない)
 	void Draw(const ViewProjection& camera);
-
+	//コマンドUIの描画
 	void DrawUI();
 
 	//こうげきフラグ
@@ -63,23 +58,23 @@ public:
 	//状態の設定
 	void SetTaskType(TaskType num) { behaviorRequest_ = num; taskAnimation_ = true; }
 private:
-	//初期タスク
+	//初期タスクの初期化・更新・描画
 	void InitialInitialize();
 	void InitialUpdate();
 	void InitialTask();
-	//作戦タスク
+	//作戦タスク初期化・更新・描画
 	void OperationInitialize();
 	void OperationUpdate();
 	void OperationTask();
-	//呪文タスク
+	//呪文タスク初期化・更新・描画
 	void MagicInitialize();
 	void MagicUpdate();
 	void MagicTask();
-	//特技タスク
+	//特技タスク初期化・更新・描画
 	void SkillInitialize();
 	void SkillUpdate();
 	void SkillTask();
-	//道具タスク
+	//道具タスク初期化・更新・描画
 	void ToolInitialize();
 	void ToolUpdate();
 	void ToolTask();

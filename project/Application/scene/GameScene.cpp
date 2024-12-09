@@ -6,9 +6,7 @@
 #include <numbers>
 #include <PostEffects/PostEffect.h>
 
-GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
 
 void GameScene::Initialize() {
 

@@ -13,7 +13,7 @@
  */
 class SceneFactory : public AbstractSceneFactory {
 public:
+	//シーンの生成
 	IScene* CreateScene(const std::string& sceneName) override;
-
 
 };

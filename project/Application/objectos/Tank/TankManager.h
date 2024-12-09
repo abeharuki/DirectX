@@ -9,8 +9,11 @@
  */
 class TankManager {
 public:
+	//キャラクターの生成
 	void Initialize();
+	//キャラクターの更新
 	void Update();
+	//キャラクターの描画
 	void Draw(const ViewProjection& camera);
 
 	/*-----ゲッター-----*/
@@ -19,7 +22,5 @@ public:
 	
 
 private:
-	//std::unique_ptr<Animations>animation_;
 	std::unique_ptr<Tank> tank_;
-
 };

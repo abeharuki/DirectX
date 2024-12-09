@@ -20,38 +20,40 @@ class Renju : public BaseCharacter {
 public: // メンバ関数
 	~Renju() override;
 
+	//レンジャーの初期化
 	void Initialize(Animations* animation, std::string skillName) override;
-
+	//毎フレームの更新
 	void Update() override;
-
+	//レンジャーにかかわるobjの描画
 	void Draw(const ViewProjection& camera) override;
+	//深度値がないものの描画
 	void NoDepthDraw(const ViewProjection& camera) override;
 
-	// 移動
+	// 移動の初期化・更新
 	void MoveInitialize() override;
 	void MoveUpdate() override;
 
-	// ジャンプ
+	// ジャンプの初期化・更新
 	void JumpInitialize() override;
 	void JumpUpdate() override;
 
-	// 攻撃
+	// 攻撃の初期化・更新
 	void AttackInitialize() override;
 	void AttackUpdate() override;
 
-	//ため攻撃
+	//ため攻撃の初期化・更新
 	void UniqueInitialize() override;
 	void UniqueUpdate() override;
 
-	//ブレス攻撃の回避
+	//ブレス攻撃の回避の初期化・更新
 	void BreathInitialize() override;
 	void BreathUpdate() override;
 
-	//味方AIを守る動き
+	//味方AIを守る動きの初期化・更新
 	void ProtectInitialize() override;
 	void ProtectUpdate() override;
 
-	//死亡
+	//死亡の初期化・更新
 	void DeadInitialize() override;
 	void DeadUpdate() override;
 

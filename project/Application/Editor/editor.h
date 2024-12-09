@@ -79,6 +79,7 @@ namespace Editor
 		//引数のNodeNameのnum番目のoutputがつながっているノードを返す
 		Node GetLinkNode(const std::string& nodename, int outputnum);
 
+		// 状態に応じてノードの色を変更
 		void SetCurrentStateNode(int NodeId);
 
 	private:

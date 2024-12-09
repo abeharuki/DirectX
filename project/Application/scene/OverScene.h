@@ -11,12 +11,17 @@
  */
 class OverScene : public IScene {
 public:
+	//シーンの初期化
 	void Initialize() override;
+	//フレームごとの更新処理
 	void Update() override;
+	//シーンの描画
 	void Draw() override;
+	//ポストエフェクトのかからないオブジェクトの描画
 	void RenderDirect() override;
 
 private:
+	//フェードイン・フェードアウト
 	void Fade();
 private:
 	std::unique_ptr<Sprite> spriteOver_;

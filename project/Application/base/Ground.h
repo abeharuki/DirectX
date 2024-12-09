@@ -25,11 +25,13 @@ public:
 	/// </summary>
 	void Draw(ViewProjection viewprojection, bool light);
 
+	//model座標のゲッター
 	const WorldTransform& GetWorldTransform() {}
 
 	// ワールド座標を取得 地面
 	Vector3 GetWorldPosition();
 
+	//ライトのセッター
 	void SetLight(DirectionLight directionLight) { model_->DirectionalLightDraw(directionLight); }
 
 private:

@@ -10,9 +10,13 @@
  */
 class PlayerManager {
 public:
+	//キャラクターの生成
 	void Initialize();
+	//キャラクターの更新
 	void Update();
+	//キャラクターの描画
 	void Draw(const ViewProjection& camera);
+	//キャラクターUIの描画
 	void DrawUI();
 
 	// 衝突を検出したら呼び出されるコールバック関数

@@ -21,12 +21,17 @@ public:
 	/// 毎フレーム処理
 	/// </summary>
 	void Update();
+
+	//タイトルシーン時のカメラの更新
 	void TitleUpdate();
 
+	//カメラのターゲットの設定
 	void SetTarget(const WorldTransform* target);
 
+	//カメラ座標のゲッター
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
 
+	//カメラの向きのリセット
 	void Reset();
 
 	// 追従対象からのオフセット計算
@@ -39,6 +44,7 @@ public:
 	// 調整項目の適用
 	void ApplyGlobalVariables();
 
+	//アングルの初期化
 	void InitAngle(){
 		destinationAngleY_ = 0.0f;
 		destinationAngleX_ = 0.0f;
@@ -59,6 +65,7 @@ public:
 		interTarget_ = pos;
 	}
 
+	//敵をターゲットにしているかのフラグ受け取り
 	bool GetMoveToEnemy() { return moveToEnemy_; }
 	
 

@@ -14,13 +14,14 @@
  */
 class LoadScene : public IScene {
 public:
+	//シーンの初期化
 	void Initialize() override;
+	//フレームごとの更新処理
 	void Update() override;
+	//シーンの描画
 	void Draw() override;
+	//ポストエフェクトのかからないオブジェクトの描画
 	void RenderDirect() override;
-	//const char* items[3] = { "DirectionLight", "PointLight", "Item 3"};
-	//static const int currentItem = 0; // 初期選択アイテムのインデックス
-
 
 private: // 基本変数
 	// 光の数値

@@ -53,28 +53,20 @@ public:
 	static const std::array<ConstAttack, ComboNum> kConstAttacks_;
 
 public: // メンバ関数
-
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
 	~Player();
-
-
-	/// <summary>
-	/// 初期化
-	/// </summary>
+	//プレイヤーの初期化
 	void Initialize();
 
-	/// <summary>
-	/// 毎フレーム処理
-	/// </summary>
+	//毎フレームの更新
 	void Update();
 
+	//プレイヤーにかかわるobjの描画
 	void Draw(const ViewProjection& camera);
+	//深度値がないものの描画
 	void NoDepthDraw(const ViewProjection& camera);
 
 	
-	//位置の初期化
+	//位置のの初期化・更新
 	void InitPos();
 	void UpdatePos() {
 		worldTransformBase_.UpdateMatrix();
@@ -85,6 +77,7 @@ public: // メンバ関数
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
+	//味方が展開したバリアの中にいるか
 	void BarrierRange();
 
 	/*-----ゲッター-----*/
@@ -145,30 +138,31 @@ public: // メンバ関数
 	void SetTankDead(bool dead) { tankDead_ = dead; }
 	void SetRenjuDead(bool dead) { renjuDead_ = dead; }
 	void SetHealerDead(bool dead) { healerDead_ = dead; }
+	//バトル開始
 	void SetBattleStart(bool flag) { battleStart_ = flag; }
 	
 private:
-	// 移動
+	// 移動の初期化・更新
 	void MoveInitialize();
 	void MoveUpdata();
 
-	// ジャンプ
+	// ジャンプの初期化・更新
 	void JumpInitialize();
 	void JumpUpdata();
 
-	//ダッシュ
+	//ダッシュの初期化・更新
 	void DashInitialize();
 	void DashUpdata();
 
-	// ノックバック
+	// ノックバックの初期化・更新
 	void knockInitialize();
 	void knockUpdata();
 
-	//攻撃
+	//攻撃の初期化・更新
 	void AttackInitialize();
 	void AttackUpdata();
 
-	//死亡
+	//死亡の初期化・更新
 	void DeadInitilize();
 	void DeadUpdata();
 

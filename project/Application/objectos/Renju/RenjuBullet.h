@@ -9,17 +9,16 @@
 class RenjuBullet : public Collider {
 public:
 
+	//弾の初期化
 	void Initialize(
 		Model* model, Vector3& position, const Vector3& scale, const Vector3& rotation,
 		const Vector3& velocity,bool skill);
 
-
+	//弾の更新
 	void Update();
 
+	//弾の描画
 	void Draw(const ViewProjection& viewprojection);
-
-	bool IsDead() const { return isDead_; }
-	bool IsDraw() const { return Draw_; }
 	
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision(Collider* collider) override;
@@ -28,6 +27,8 @@ public:
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransform_; }
 
+	bool IsDead() const { return isDead_; }
+	bool IsDraw() const { return Draw_; }
 private:
 	WorldTransform worldTransform_;
 	WorldTransform worldTransformShockwave_[3];

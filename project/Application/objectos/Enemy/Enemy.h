@@ -49,25 +49,19 @@ enum class BehaviorAttack {
 class Enemy : public Collider {
 
 public: // メンバ関数
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
 	~Enemy();
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
+	//敵の初期化
 	void Initialize();
 
-	/// <summary>
-	/// 毎フレーム処理
-	/// </summary>
+	//毎フレームの更新
 	void Update();
 
-	//描画
+	//敵にかかわるobjの描画
 	void Draw(const ViewProjection& camera);
-	//デプスがないオブジェクトの描画
-	void NotDepthDraw(const ViewProjection& camera);
+	//深度値がないものの描画
+	void NoDepthDraw(const ViewProjection& camera);
+	//バリアの描画
 	void BarrierDraw(const  ViewProjection& camera);
 
 	//当たりは判定
@@ -97,7 +91,7 @@ public: // メンバ関数
 		}
 		return Behavior::kRoot;
 	}
-
+	//ディゾルブ
 	float GetThreshold() { return barrierThreshold_; }
 
 	bool IsBehaviorRequest(){
@@ -140,17 +134,22 @@ public: // メンバ関数
 
 	//アニメーションナンバー、フレームタイム、ループ
 	void SetAnimationNumber(int num, float flame,bool flag) { animationNumber_ = num; animation_->SetFlameTimer(flame); animation_->SetLoop(flag); }
+	//各キャラクターの座標
 	void SetPlayerPos(Vector3 pos) { playerPos_ = pos; };
 	void SetHealerPos(Vector3 pos) { healerPos_ = pos; };
 	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; };
 	void SetTankPos(Vector3 pos) { tankPos_ = pos; };
+	//タンクの回転
 	void SetTankRotation(Vector3 rotation) { tankRotation_ = rotation; };
 	void SethmansRenjuPos(Vector3 pos) { hmansRenjuPos_ = pos; }
+	//各キャラの死亡フラグ
 	void SetIsDeadPlayer(bool flag) { isDeadPlayer_ = flag; }
 	void SetIsDeadHealer(bool flag) { isDeadHealer_ = flag; }
 	void SetIsDeadRenju(bool flag) { isDeadRenju_ = flag; }
 	void SetIsDeadTank(bool flag) { isDeadTank_ = flag; }
+	//バトル開始
 	void SetBattleStart(bool flag) { battleStart_ = flag;}
+	//レンジャーのスキル
 	void SetRenjuSpecial(bool flag) { renjuSpecial_ = flag; }
 	void SetDead(bool dead) {
 		if (dead) {

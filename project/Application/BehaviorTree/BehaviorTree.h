@@ -35,11 +35,13 @@ private:
     std::vector<BehaviorTreeNode*> nodes_;  // ノードのコレクション
 };
 
+//ビヘイビアツリー初期化の呼び出し
 template <typename CharacterType>
 BehaviorTree<CharacterType>::BehaviorTree(CharacterType* character) : character_(character), rootNode_(nullptr) {
     Initialize();
 }
 
+//ビヘイビアツリーの初期化
 template <typename CharacterType>
 void BehaviorTree<CharacterType>::Initialize() {
     auto* moveActionNode = new MoveActionNode<CharacterType>(character_);
@@ -71,6 +73,7 @@ void BehaviorTree<CharacterType>::Initialize() {
 
 }
 
+//ノードの初期化
 template <typename CharacterType>
 void BehaviorTree<CharacterType>::NodeInitialize() {
     if (rootNode_) {
@@ -78,6 +81,7 @@ void BehaviorTree<CharacterType>::NodeInitialize() {
     }
 }
 
+//ノードの更新
 template <typename CharacterType>
 void BehaviorTree<CharacterType>::Update() {
     if (rootNode_) {

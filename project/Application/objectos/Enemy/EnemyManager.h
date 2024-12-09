@@ -9,11 +9,15 @@
  */
 class EnemyManager {
 public:
+	//キャラクターの生成
 	void Initialize();
+	//キャラクターの更新
 	void Update();
+	//キャラクターの描画
 	void Draw(const ViewProjection& camera);
+	//深度値のないものの描画
 	void NoDepthDraw(const ViewProjection& camera);
-	
+	//キャラクターUIの描画
 	void DrawUI();
 
 	//ダメージ数値のアニメーション
@@ -28,6 +32,7 @@ public:
 	//ビルボードの計算
 	void Billboard();
 
+	//パーティクルを強制的に止める
 	void Stop() { enemy_->StopParticle(); }
 
 	/*-----ゲッター-----*/

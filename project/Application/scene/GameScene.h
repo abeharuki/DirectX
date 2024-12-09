@@ -23,20 +23,17 @@
  */
 class GameScene : public IScene {
 public: // メンバ関数
+	//シーンの初期化
 	void Initialize() override;
+	//フレームごとの更新処理
 	void Update() override;
+	//シーンの描画
 	void Draw() override;
+	//ポストエフェクトのかからないオブジェクトの描画
 	void RenderDirect() override;
 
-	GameScene();
-	~GameScene();
-
-	//static GameScene* GetInstance();
-	
-
-	
 private:
-	//シーン遷移
+	//フェードイン・フェードアウト
 	void Fade();
 
 	//バトル開始の演出

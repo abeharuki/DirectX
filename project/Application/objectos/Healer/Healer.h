@@ -19,26 +19,28 @@ class Healer : public BaseCharacter {
 
 public: // メンバ関数
 	~Healer() override;	
+	//ヒーラーの初期化
 	void Initialize(Animations* animation, std::string skillName) override;
-
+	//毎フレームの更新
 	void Update() override;
-
+	//ヒーラーにかかわるobjの描画
 	void Draw(const ViewProjection& camera) override;
+	//深度値がないものの描画
 	void NoDepthDraw(const ViewProjection& camera) override;
 
-	// 移動
+	// 移動の初期化・更新
 	void MoveInitialize() override;
 	void MoveUpdate() override;
 
-	// ジャンプ
+	// ジャンプの初期化・更新
 	void JumpInitialize() override;
 	void JumpUpdate() override;
 
-	// 攻撃
+	// 攻撃の初期化・更新
 	void AttackInitialize() override;
 	void AttackUpdate() override;
 
-	//味方の回復
+	//味方の回復の初期化・更新
 	void UniqueInitialize() override;
 	void UniqueUpdate() override;
 
@@ -46,11 +48,11 @@ public: // メンバ関数
 	void BreathInitialize() override;
 	void BreathUpdate() override;
 
-	//味方AIを守る動き
+	//味方AIを守る動きの初期化・更新
 	void ProtectInitialize() override;
 	void ProtectUpdate() override;
 
-	//死亡
+	//死亡の初期化・更新
 	void DeadInitialize() override;
 	void DeadUpdate() override;
 

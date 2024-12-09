@@ -18,9 +18,11 @@
 class EnemyHenchman : public Collider {
 public:
 	~EnemyHenchman();
-
+	//子分の初期化
 	void Init(Animations* animation,Vector3 pos);
+	//子分の更新
 	void Update();
+	//子分の描画
 	void Draw(const ViewProjection& camera);
 
 	//レンジャーに向かって動く

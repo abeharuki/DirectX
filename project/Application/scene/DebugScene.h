@@ -22,12 +22,19 @@
  */
 class DebugScene: public IScene {
 public:
+	//シーンの初期化
 	void Initialize() override;
+	//フレームごとの更新処理
 	void Update() override;
+	//シーンの描画
 	void Draw() override;
+	//ポストエフェクトのかからないオブジェクトの描画
 	void RenderDirect() override;
+	//カメラの動き処理
 	void CameraMove();
+	//カメラを動かすときの座標
 	Vector3 GetLocalPosition();
+	//当たり判定のチェック
 	void CheckAllCollision();
 private:
 	// 光の数値
