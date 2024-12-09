@@ -233,6 +233,8 @@ private: // メンバ変数
 	//攻撃範囲の座標とフラグ
 	Vector3 areaPos_;
 	bool areaDraw_;
+	//エリアのアルファ値
+	float areaAlpha_ = 0.5f;
 
 	//posとrotation
 	Vector3 playerPos_ = {};
@@ -290,7 +292,7 @@ private: // メンバ変数
 	//ディゾルブ
 	float threshold_ = 0.0f;
 
-	//シェイク
+	//シェイク(投擲の時の弾が震える演出で使う)
 	float shakeTimer_;
 	float randX = 0;
 	float randZ = 0;

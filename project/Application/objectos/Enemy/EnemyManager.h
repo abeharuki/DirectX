@@ -66,7 +66,6 @@ private:
 	ViewProjection camera_;
 
 	std::unique_ptr<Model> shadowModel_;
-	//std::unique_ptr<Model> rockModel_;
 	std::unique_ptr<Sphere> rockModel_;
 	std::unique_ptr<Model> bulletModel_;
 	//ダメージを食らったときのダメージ表示モデル

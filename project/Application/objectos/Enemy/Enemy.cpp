@@ -12,11 +12,10 @@ void Enemy::Initialize() {
 	impactModel_.reset(Model::CreateModelFromObj("resources/Enemy/impact.obj", "resources/white.png"));
 	areaModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Enemy/red_.png"));
 	circleAreaModel_.reset(Model::CreateModelFromObj("resources/Enemy/area.obj", "resources/Enemy/red_.png"));
-	for (int i = 0; i < 3; ++i) {
-		//sterModel_[i].reset(Model::CreateModelFromObj("resources/Enemy/ster.obj", "resources/Enemy/ster.png"));
-		/*worldTransformSter_[i].Initialize();
-		worldTransformSter_[i].translate.y = 12.0f;*/
-	}
+	areaModel_->SetBlendMode(BlendMode::kNormal);
+	circleAreaModel_->SetBlendMode(BlendMode::kNormal);
+	areaModel_->SetColor({ 1.f,1.f,1.f,areaAlpha_ });
+	circleAreaModel_->SetColor({ 1.f,1.f,1.f,areaAlpha_ });
 
 	worldTransformBarrier_.Initialize();
 	
