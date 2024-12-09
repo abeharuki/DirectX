@@ -243,21 +243,14 @@ void Healer::AttackUpdate() {
 	}
 
 	isAttack_ = false;
-	++workAttack_.attackParameter_;
-	uint32_t anticipationTime = 15;
-	uint32_t chargeTime = anticipationTime + 10;
-	uint32_t swingTime = anticipationTime + chargeTime + 5;
-
-	if (workAttack_.attackParameter_ >= chargeTime && workAttack_.attackParameter_ < swingTime) {
+	++attackParameter_;
+	if (attackParameter_ >= 25) {
 		isAttack_ = true;
 	}
 
-	// 攻撃の合計時間
-	uint32_t totalTime = anticipationTime + chargeTime + swingTime;
-
 	//攻撃が終わったら
-	if (workAttack_.attackParameter_ >= swingTime && workAttack_.attackParameter_ < totalTime) {
-		workAttack_.attackParameter_ = 0;
+	if (attackParameter_ >= 60) {
+		attackParameter_ = 0;
 		searchTarget_ = true;
 		coolTime_ = 60;
 		state_ = NextState("Attack", Output1);

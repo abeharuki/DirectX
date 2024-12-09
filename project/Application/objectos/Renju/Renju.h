@@ -106,9 +106,6 @@ private: // メンバ変数
 
 	//ビヘイビアツリー
 	BehaviorTree<Renju>* behaviorTree_;
-	
-	// 味方の押し出し処理
-	Vector3 allyVelocity;
 
 	//攻撃フラグ
 	bool hitBullet_ = false;

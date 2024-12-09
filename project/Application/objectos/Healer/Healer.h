@@ -131,22 +131,9 @@ private: // メンバ変数
 	//ビヘイビアツリー
 	BehaviorTree<Healer>* behaviorTree_;
 
-	// 攻撃用ワーク
-	struct WorkAttack {
-		uint32_t attackParameter_ = 0;
-		int32_t comboIndex = 0;
-		int32_t inComboPhase = 0;
-		bool comboNext = false;
-		bool isFinalAttack = false;
-	};
-
-	WorkAttack workAttack_;
 
 	// 攻撃の時間
-	const uint32_t behaviorAttackTime = 15;
-
-	// 味方の押し出し処理
-	Vector3 allyVelocity;
+	uint32_t attackParameter_ = 0;
 
 	//回復フラグ
 	bool allHeal_;//全体回復

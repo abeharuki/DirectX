@@ -250,7 +250,7 @@ void Tank::UniqueUpdate(){
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 
-	if (length >= minDistance_ * 2.0f) {
+	if (length >= minDistance_ * 3.0f) {
 		barrier_ = true;
 		animation_->SetLoop(false);
 		animationNumber_ = standby;
@@ -271,7 +271,7 @@ void Tank::UniqueUpdate(){
 	}
 	else {
 
-		const float kSpeed = 0.03f;
+		const float kSpeed = 0.04f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
 

@@ -238,7 +238,7 @@ void Enemy::Update() {
 
 void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
-	if (attack_==BehaviorAttack::kGround && isAttack_ == true) {
+	if (attack_==BehaviorAttack::kGround && behavior_ == Behavior::kAttack && isAttack_ == true) {
 		impactModel_->Draw(worldTransformImpact_, camera, true);
 	}
 

@@ -98,12 +98,6 @@ private: // メンバ変数
 	
 	ParticleSystem* particle_;
 	EmitterSphere emitter_{};
-	
-	// 味方の押し出し処理
-	Vector3 allyVelocity;
-
-	uint32_t nockTime_;
-	bool nockBack_;
 
 	//攻撃フラグ
 	bool stanAttack_ = false;

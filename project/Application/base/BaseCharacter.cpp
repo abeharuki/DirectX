@@ -288,7 +288,7 @@ void BaseCharacter::MoveUpdate() {
 	}
 
 	//地面をたたきつける攻撃が来たらジャンプする
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->GetBehavior() == Behavior::kAttack && enemy_->isAttack()) {
 		//ジャンプは敵の攻撃一回に対して一回まで
 		if (jumpCount_ == 1 && enemylength_ <= 35) {
 			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
