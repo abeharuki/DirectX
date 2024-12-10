@@ -96,15 +96,19 @@ public:
 	void Initialize(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
 	void Initialize(const std::string& directorPath,const std::string& motionPath);
 
-	//skinningAnimation
+	//毎フレームのskinningAnimation更新
 	void Update(const uint32_t animationNumber);
 
+	//GPU初期化
 	void ComputeParameter();
 
+	//描画
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool flag);
 
+	//アニメーションデバックImGui描画
 	void AnimationDebug();
 
+	//アニメーションの作成
 	static Animations* Create(const std::string& filename, const std::string& texturePath, const std::string& motionPath);
 	static Animations* Create(const std::string& filename, const std::string& motionPath);
 

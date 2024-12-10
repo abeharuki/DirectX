@@ -245,6 +245,6 @@ void Model::SetTexture(const std::string& path) {
 	
 }
 
-void Model::PostDraw() {}
+//void Model::PostDraw() {}
 
 

@@ -95,7 +95,7 @@ public:
 	void DirectionalLight(Vector4 color, Vector3 direction, float intensity);
 
 	
-	static void PostDraw();
+	//static void PostDraw();
 
 	
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);

@@ -285,11 +285,11 @@ void GameScene::Draw() {
 
 	//コマンド
 	if (battle_) {
-		command_->Draw(viewProjection_);
+		//command_->Draw(viewProjection_);
 	}
 	
 	// 3Dオブジェクト描画後処理
-	Model::PostDraw();
+	//Model::PostDraw();
 #pragma endregion
 
 #pragma region 前景スプライト描画

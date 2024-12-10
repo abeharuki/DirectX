@@ -23,9 +23,13 @@ public:
 	//初期化
 	void Initialize(const std::string& filename);
 
+	//毎フレームの更新
 	void Update();
+
+	//描画
 	void Draw(const ViewProjection& viewProjection, bool flag);
 
+	//削除
 	void Delete();
 
 	//色とアルファ値
@@ -39,9 +43,10 @@ public:
 	//映り込み度
 	void Environment(float environment, bool flag);
 
-
+	//モデルのゲッター
 	Model* GetModel(std::string name) { return models[name]; }
 
+	//テクスチャのセッター
 	void SetTexture(const std::string& filename);
 
 	//カメラ
@@ -52,6 +57,7 @@ public:
 	Collider* GetCollider(int i) { return colliderManager_[i]; }
 
 private:
+	//jsonファイルの読み込み
 	void LoadJsonObjFile(const std::string& filename);
 
 private:

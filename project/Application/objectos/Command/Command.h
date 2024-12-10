@@ -2,6 +2,63 @@
 #include <ViewProjection.h>
 #include <Sprite.h>
 
+// 定数をまとめる名前空間
+namespace CommandConstants {
+	// 矢印の初期位置と移動範囲
+	constexpr float kArrowInitialX = 31.0f;//矢印UIの初期化X座標
+	constexpr float kArrowInitialY = 469.0f;//矢印UIの初期化Y座標
+	constexpr float kChangeTaskInitializeX = 31.0f;//矢印UIのタスクが変わった時の初期化X座標
+	constexpr float kChangeTaskInitializeY = 510.0f;//矢印UIのタスクが変わった時の初期化Y座標
+	constexpr float kArrowMoveSpeed = 31.0f;//矢印の動くスピード
+	constexpr float kArrowMaxY = 593.0f;//矢印の最大Y座標
+	constexpr float kArrowMinY = 469.0f;//矢印の最小Y座標
+	constexpr float kArrowAnimationStartX = 30.0f;//矢印アニメーションの折り返し地点最小
+	constexpr float kArrowAnimationEndX = 40.0f;//矢印アニメーションの折り返し地点最大
+	constexpr float kOperationArrowMaxY = 572.0f;//作戦タスク時の矢印の最大Y座標
+	constexpr float kOperationArrowMinY = 510.0f;//作戦タスク時の矢印の最小Y座標
+
+	//各コマンドUIの初期化位置とサイズ
+	constexpr Vector2 kAttackPos = { 85.0f, 472.0f };//攻撃コマンドの座標
+	constexpr Vector2 kMagicPos = { 85.0f, 503.0f };//マジックコマンドの座標
+	constexpr Vector2 kSkillPos = { 85.0f, 534.0f };//スキルコマンドの座標
+	constexpr Vector2 kToolPos = { 85.0f, 565.0f };//アイテムコマンドの座標
+	constexpr Vector2 kOperationPos = { 85.0f, 596.0f };//作戦コマンドの座標
+	constexpr Vector2 kCommandSize = { 91.0f,46.0f };//コマンドのテクスチャのサイズ
+	constexpr Vector2 kChangeTaskCommand = { 85.0f, 472.0f };//タスクが切り替わった時のコマンド座標
+	constexpr Vector2 kTaskName = { 85.0f, 510.0f };//タスク名座標
+	//作戦コマンドでの各コマンドの座標
+	constexpr Vector2 kEscapCommand = { 85.0f, 541.0f };//逃げるコマンドの座標
+	constexpr Vector2 kReturnCommand = { 85.0f, 572.0f };//前のタスクに戻るコマンドの座標
+
+
+	// ボタンに対応する位置
+	constexpr float kAttackButtonY = 468.0f;//攻撃コマンドの決定座標
+	constexpr float kMagicButtonY = 499.0f;//マジックコマンドの決定座標
+	constexpr float kSkillButtonY = 531.0f;//スキルコマンドの決定座標
+	constexpr float kToolButtonY = 562.0f;//アイテムコマンドの決定座標
+	constexpr float kOperationButtonY = 593.0f;//作戦コマンドの決定座標
+	constexpr float kReturnToTaskButtonY = 510.0f;//元のタスクに戻るボタンの決定座標
+	// 作戦タスクのボタンに対応する位置
+	constexpr float kOperationAttackButtonY = 510.0f;//作戦コマンドの攻撃命令ボタン決定座標
+	constexpr float kOperationFollowButtonY = 541.0f;//作成コマンドのついてくる命令ボタン決定座標
+	constexpr float kOperationReturnToTaskButtonY = 572.0f;//元のタスクに戻るボタンの決定座標
+
+	// 背景タスクのサイズと位置
+	constexpr float kBackgroundTaskWidth = 200.0f;//タスクの横
+	constexpr float kBackgroundTaskHeight = 200.0f;//タスクの高さ
+	constexpr Vector2 kBackgroundTask1 = { 30.0f,450.0f };//タスク１の座標
+	constexpr Vector2 kBackgroundTask1Size = { 310.0f,200.0f };//タスク1のサイズ
+	constexpr Vector2 kBackgroundChangeTask1 = { 3.0f,450.0f };//タスク1のタスクが変わった時の座標
+	constexpr Vector2 kBackgroundTask2 = {77.0f,474.0f};//タスク2の座標
+	constexpr Vector2 kBackgroundTask2Size = { 167.0f,170.0f };//タスク２のサイズ
+	constexpr Vector2 kBackgroundTask3 = { 37.0f,457.0f };//タスク3の座標
+	constexpr Vector2 kBackgroundTask3Size = { 196.0f,200.0f };//タスク3のサイズ
+	constexpr Vector2 kBackgroundAnimationTaskPos = { 30.0f,665.0f };//タスクのアニメーションpos
+	constexpr float kBackgroundAnimationTaskSizeY = -199.9f;//タスクのアニメーションサイズ
+
+}
+
+
 enum priteType {
 	kFight,
 	kEscape,
@@ -41,7 +98,7 @@ public:
 	// 毎フレーム処理
 	void Update();
 	//コマンドの描画(今は使われていない)
-	void Draw(const ViewProjection& camera);
+	//void Draw(const ViewProjection& camera);
 	//コマンドUIの描画
 	void DrawUI();
 
@@ -107,7 +164,6 @@ private:
 	std::optional<TaskType> behaviorRequest_ = std::nullopt;
 
 	Vector3 arrowPos_;
-	int arrowMoveSpeed_ = 31;
 	bool arrowFlag_;
 
 	std::vector<Vector2> pos;
@@ -126,3 +182,4 @@ private:
 	//作戦フラグ
 	bool follow_ = true;
 };
+

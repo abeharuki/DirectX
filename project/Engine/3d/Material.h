@@ -15,9 +15,9 @@
 class Material
 {
 public:
-
+	//初期化
 	void Initialize();
-
+	//毎フレームの更新
 	void Update();
 
 	const Microsoft::WRL::ComPtr<ID3D12Resource> GetResource() const { return materialResorce_; }

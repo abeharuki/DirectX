@@ -18,20 +18,15 @@
 class Mesh
 {
 public:
-
+	//初期化
 	void Initialize(const MeshData& meshData, const bool skinFlag);
 
-
+	/*----------------ゲッター----------------*/
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView; };
-
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return indexBufferView; };
-
 	const size_t GetVerticesSize() const { return meshData_.vertices.size(); };
-
 	const size_t GetIndicesSize() const { return meshData_.indices.size(); };
-
 	const uint32_t GetMaterialIndex() const { return meshData_.materialIndex; };
-
 
 	RWStructuredBuffer* GetOutputVertex() const { return outputVertices_.get(); };
 	StructuredBuffer* GetInputVertex() const { return inputVertices_.get(); };
@@ -42,16 +37,22 @@ public:
 	static ID3D12Resource* CreateBufferResoure(ID3D12Device* device, size_t sizeInBytes);
 
 private:
+	//頂点バッファを作成
 	void CreateVertexBuffer(bool flag);
 
+	//インデックスバッファを作成
 	void CreateIndexBuffer();
 
+	//頂点入力用バッファを作成
 	void CreateInputVerticesBuffer();
 
+	//頂点出力用バッファを作成
 	void CreateOutputVerticesBuffer();
 
+	//頂点バッファビューを作成
 	void CreateVertexBufferView();
 
+	//スキニング用のバッファを作成
 	void CreateSkinningBuffer();
 
 private:

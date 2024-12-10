@@ -154,7 +154,7 @@ public: // メンバ関数
 
 
 	
-
+	//色
 	void SetColor(Vector4 color);
 
 	// ブレンドモード
