@@ -120,7 +120,7 @@ private: // メンバ変数
 	std::unique_ptr<Model> magicCircle_[4];
 	//回復数値
 	std::unique_ptr<Model> healModel_[4];
-	float t_[4];//ディゾルブ
+	float threshold_[4];//ディゾルブ
 	float healAlph_[4];
 	Vector3 healNumMove_[4];
 

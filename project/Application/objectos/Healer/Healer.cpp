@@ -35,7 +35,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 		worldTransformMagicCircle_[i].rotate.x = -1.571f;
 		worldTransformMagicCircle_[i].scale = { 2.0f,2.0f,2.0f };
 		worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
-		t_[i] = 0.8f;
+		threshold_[i] = 0.8f;
 	}
 
 
@@ -118,7 +118,7 @@ void Healer::Update() {
 
 	//魔法陣の表示
 	for (int i = 0; i < 4; ++i) {
-		magicCircle_[i]->SetThreshold(t_[i]);
+		magicCircle_[i]->SetThreshold(threshold_[i]);
 	}
 
 	//回復数値の表示
@@ -150,11 +150,11 @@ void Healer::Update() {
 
 	ImGui::Begin("Healer");
 	particle_[3]->DebugParameter();
-	ImGui::Text("%f", t_);
+	ImGui::Text("%f", threshold_);
 	ImGui::DragFloat3("translat", &worldTransformBase_.translate.x, 0.1f);
 	ImGui::DragFloat3("rotate", &worldTransformCane_.rotate.x, 0.1f);
 	ImGui::DragFloat3("scale", &worldTransformCane_.scale.x, 0.1f);
-	ImGui::DragFloat("magicCirecle", &t_[0], 0.01f);
+	ImGui::DragFloat("magicCirecle", &threshold_[0], 0.01f);
 	ImGui::End();
 
 #ifdef USE_IMGUI
@@ -304,7 +304,7 @@ void Healer::UniqueInitialize() {
 
 	coolTime_ = 60;
 	for (int i = 0; i < 4; ++i) {
-		t_[i] = 0.8f;
+		threshold_[i] = 0.8f;
 	}
 
 	
@@ -328,41 +328,41 @@ void Healer::UniqueUpdate() {
 	//全体ヒールかどうか
 	if (healAnimation_) {
 		if (allHeal_) {
-			if (t_[healer] > 0) {
+			if (threshold_[healer] > 0) {
 				for (int i = 0; i < 4; ++i) {
-					t_[i] -= 0.02f;
+					threshold_[i] -= 0.02f;
 					worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
 				}
 			}
 			else {
 				for (int i = 0; i < 4; ++i) {
-					t_[i] -= 0.0f;
+					threshold_[i] -= 0.0f;
 				}
 			}
 		}
 		else {
-			if (t_[healer] > 0) {
-				t_[healer] -= 0.02f;
+			if (threshold_[healer] > 0) {
+				threshold_[healer] -= 0.02f;
 				if (hp_ <= 30) {
 					worldTransformHeal_[healer].scale = { 0.5f,0.5f,0.5f };
 				}
 
 				if (playerHp_ <= 30) {
-					t_[player] -= 0.02f;
+					threshold_[player] -= 0.02f;
 					worldTransformHeal_[player].scale = { 0.5f,0.5f,0.5f };
 				}
 				if (renjuHp_ <= 30) {
-					t_[renju] -= 0.02f;
+					threshold_[renju] -= 0.02f;
 					worldTransformHeal_[renju].scale = { 0.5f,0.5f,0.5f };
 				}
 				if (tankHp_ <= 30) {
-					t_[tank] -= 0.02f;
+					threshold_[tank] -= 0.02f;
 					worldTransformHeal_[tank].scale = { 0.5f,0.5f,0.5f };
 				}
 
 			}
 			else {
-				t_[healer] = 0;
+				threshold_[healer] = 0;
 			}
 		}
 		--coolTime_;
@@ -476,19 +476,19 @@ void Healer::UniqueUpdate() {
 		}
 		if (playerHp_ <= 30) {
 			healAlph_[player] = 2.0f;
-			t_[player] = 0.8f;
+			threshold_[player] = 0.8f;
 		}
 		if (hp_ <= 30) {
 			healAlph_[healer] = 2.0f;
-			t_[healer] = 0.8f;
+			threshold_[healer] = 0.8f;
 		}
 		if (renjuHp_ <= 30) {
 			healAlph_[renju] = 2.0f;
-			t_[renju] = 0.8f;
+			threshold_[renju] = 0.8f;
 		}
 		if (tankHp_ <= 30) {
 			healAlph_[tank] = 2.0f;
-			t_[tank] = 0.8f;
+			threshold_[tank] = 0.8f;
 		}
 
 	}
