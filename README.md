@@ -57,7 +57,8 @@ DrectX12で自作しているエンジンです。2023年4月頃からエンジ�
   - ディゾルブ
   - トゥーンシェーダー など。<br>
    これらのシェーダーは、ドラクエ10の様なアニメ調の見た目に寄せるために実装しました。
- 
+
+## Windows SDKバージョン　10.0
 ## 外部ライブラリ
   - [DirextXTex](https://github.com/microsoft/DirectXTex/releases/tag/mar2023)
   - [assimp](https://github.com/assimp/assimp)
