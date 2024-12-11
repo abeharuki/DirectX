@@ -186,7 +186,7 @@ void FollowCamera::ApplyGlobalVariables() {
 void FollowCamera::CameraDirection(){
 
 	//時間と距離に応じてカメラを動かす
-	if (viewProjection_.translation_.x >= -0.1f&& moveTime_ > 0) {
+	if (viewProjection_.translation_.x >= CameraConstants::kMoveThresholdX && moveTime_ > 0) {
 		--moveTime_;
 		moveToEnemy_ = false;
 		
@@ -198,11 +198,11 @@ void FollowCamera::CameraDirection(){
 
 	//敵によって行く
 	if (moveToEnemy_) {
-		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 0.0f,6.0f,-15.0f }, 0.05f);
+		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, CameraConstants::kEnemyMoveTarget, CameraConstants::kMoveLerpRateToEnemy);
 	}
 	//プレイヤーによって行く
 	if (moveToPlayer_) {
-		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, { 3.f,4.f,-50.0f }, 0.08f);
+		viewProjection_.translation_ = Math::Lerp(viewProjection_.translation_, CameraConstants::kPlayerMoveTarget,CameraConstants::kMoveLerpRateToPlayer);
 	}
 
 	// ビュー行列の更新
