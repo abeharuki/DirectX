@@ -19,36 +19,34 @@ void Enemy::Initialize() {
 
 	worldTransformBarrier_.Initialize();
 	
-	worldTransformBarrier_.scale = { 7.5f,7.5f,7.5f };
+	worldTransformBarrier_.scale = EnemyConstants::kBarrierScale;
 	barrierModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj", "resources/white.png"));
 	barrierModel_->SetMaskTexture("barrier.png");
 	barrierModel_->SetBlendMode(BlendMode::kAdd);
-	maskUV_.scale = { -1.f,4.f,1.f };
+	maskUV_.scale = EnemyConstants::kBarrierMaskUVScale;
 	barrierModel_->SetMaskUV(maskUV_);
-	barrierModel_->SetColor({ 1.0f,0.0f,1.0f,1.0f });
+	barrierModel_->SetColor(EnemyConstants::kBarrierColor);
 
 	areaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
-	//circleAreaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
-	animationNumber_ = standby;
+	animationNumber_ = kStandby;
 	
 	// 初期化
 	worldTransformBase_.Initialize();
-	worldTransformBase_.translate.z = 10.0f;
-	worldTransformBase_.rotate.y = 1.57075f * 2;
+	worldTransformBase_.translate = EnemyConstants::kBaseTranslate;
+	worldTransformBase_.rotate = EnemyConstants::kBaseRotate;
 	worldTransformBody_.Initialize();
-	worldTransformBody_.scale = { 1.0f,1.0f,1.0f };
+	worldTransformBody_.scale = EnemyConstants::kBodyScale;
 	worldTransformRock_.Initialize();
-	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
-	worldTransformRock_.translate.z = -15000.0f;
+	worldTransformRock_.translate = EnemyConstants::kRockTranslate;
 	worldTransformArea_.Initialize();
-	worldTransformArea_.scale = { 4.0f,20.0f,1.0f };
-	worldTransformArea_.rotate = { -1.57f,0.0f,0.0f };
-	worldTransformArea_.translate.y = 0.1f;
+	worldTransformArea_.translate = EnemyConstants::kAreaTranslate;
+	worldTransformArea_.scale = EnemyConstants::kAreaScale;
+	worldTransformArea_.rotate = EnemyConstants::kAreaRotate;
 	worldTransformCircleArea_.Initialize();
-	worldTransformCircleArea_.scale = { 3.0f,3.0f,3.0f };
+	worldTransformCircleArea_.scale = EnemyConstants::kCircleAreaScale;
 	worldTransformImpact_.Initialize();
 	//衝撃波の当たり判定の設定
-	for (int i = 0; i < 15; ++i) {
+	for (int i = 0; i < EnemyConstants::kImpactColliderCount; ++i) {
 		worldTransformColliderImpact_[i].Initialize();
 		AABB aabb = { {-7.0f,-0.2f,-1 },{7.0f,0.2f,1} };
 		OBB obb = Math::ConvertAABBToOBB(aabb);
@@ -77,7 +75,7 @@ void Enemy::Initialize() {
 	worldTransformRock_.UpdateMatrix();
 
 	worldTransformImpact_.UpdateMatrix();
-	for (int i = 0; i < 15; ++i) {
+	for (int i = 0; i < EnemyConstants::kImpactColliderCount; ++i) {
 		worldTransformColliderImpact_[i].UpdateMatrix();
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
 	}
@@ -114,8 +112,6 @@ void Enemy::Initialize() {
 		
 	}
 
-	//henchmans_.clear();
-
 	AABB aabbSize{ .min{-3.0f,-2.0f,-2.0f},.max{3.0f,8.0f,2.0f} };
 	OBB obb = Math::ConvertAABBToOBB(aabbSize);
 	obb.center = { 0.0f,4.0f,0.0f };
@@ -145,9 +141,6 @@ void Enemy::Update() {
 		case Behavior::kAttack:
 			AttackInitialize();
 			break;
-		case Behavior::kStan:
-			StanInitialize();
-			break;
 		case Behavior::kDead:
 			DeadInitilize();
 			break;
@@ -167,9 +160,6 @@ void Enemy::Update() {
 		break;
 	case Behavior::kAttack:
 		AttackUpdata();
-		break;
-	case Behavior::kStan:
-		StanUpdata();
 		break;
 	case Behavior::kDead:
 		DeadUpdata();
@@ -209,13 +199,11 @@ void Enemy::Update() {
 	worldTransformArea_.UpdateMatrix();
 	worldTransformCircleArea_.UpdateMatrix();
 	worldTransformBarrier_.UpdateMatrix();
-	for (int i = 0; i < 3; ++i) {
-		//worldTransformSter_[i].UpdateMatrix();
-	}
-	for (int i = 0; i < 15; ++i) {
+	for (int i = 0; i < EnemyConstants::kImpactColliderCount; ++i) {
 		worldTransformColliderImpact_[i].UpdateMatrix();
 		colliderManager_[i]->SetWorldTransform(worldTransformColliderImpact_[i]);
 	}
+
 
 	ImGui::Begin("EnemyRock");
 	ImGui::SliderFloat3("pos", &worldTransformRock_.translate.x, -150.0f, 150.0f);
@@ -250,11 +238,6 @@ void Enemy::Draw(const ViewProjection& camera) {
 		}
 	}
 	
-	if (behavior_ == Behavior::kStan) {
-		for (int i = 0; i < 3; ++i) {
-			//sterModel_[i]->Draw(worldTransformSter_[i], camera, true);
-		}
-	}
 	
 	for (EnemyHenchman* enemy : henchmans_) {
 		enemy->Draw(camera);
@@ -278,7 +261,7 @@ void Enemy::BarrierDraw(const ViewProjection& camera){
 
 //移動
 void Enemy::MoveInitialize() {
-	time_ = 60;
+	time_ = EnemyConstants::kMoveInitTime;
 	isAttack_ = false;
 	aimPlayer_ = false;
 	aimHealer_ = false;
@@ -288,14 +271,14 @@ void Enemy::MoveInitialize() {
 	special_ = false;
 	renjuSpecial_ = false;
 	barrier_ = false;
-	animationNumber_ = standby;
+	animationNumber_ = kStandby;
 	animation_->SetLoop(true);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 	num_ = RandomGenerator::GetRandomInt(player, tank);
 	
 };
 void Enemy::MoveUpdata() {
-	if (animationNumber_ == threat) {
+	if (animationNumber_ == kThreat) {
 		if (animation_->GetAnimationTimer() >= 3.0f) {
 			behaviorRequest_ = Behavior::kRoot;
 			animation_->SetpreAnimationTimer(0.0f);
@@ -306,8 +289,8 @@ void Enemy::MoveUpdata() {
 	AddSpecialCount();
 
 	//バリアのディゾルブを消す
-	if (barrierThreshold_ <= 1.f) {
-		barrierThreshold_ += 0.01f;
+	if (barrierThreshold_ <= EnemyConstants::kBarrierThresholdStart) {
+		barrierThreshold_ += EnemyConstants::kBarrierThresholdIncrement;
 	}
 
 	--time_;
@@ -342,8 +325,8 @@ void Enemy::MoveUpdata() {
 		
 		if (length > 10) {
 			++moveTime_;
-			if (moveTime_ > 30) {
-				animationNumber_ = run;
+			if (moveTime_ > EnemyConstants::kMoveUpdateTime) {
+				animationNumber_ = kRun;
 				// y軸周りの回転
 				if (sub.z != 0.0) {
 					destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
@@ -379,7 +362,7 @@ void Enemy::MoveUpdata() {
 		}
 		else {
 			moveTime_ = 0;
-			animationNumber_ = standby;
+			animationNumber_ = kStandby;
 		}
 
 		
@@ -510,19 +493,19 @@ void Enemy::NomalAttackInitialize() {
 			break;
 		}
 	}
-	animationNumber_ = run;
+	animationNumber_ = kRun;
 	behaviorAttack_ = false;
-	time_ = 60 * 2;
+	time_ = EnemyConstants::kAttackInitTime;
 }
 void Enemy::NomalAttackUpdata() {
 	velocity_ = { 0.0f,0.0f,1.0f };
 	if (!behaviorAttack_) {
 		//対象まで近づいていく
 		velocity_ = Math::Normalize(velocity_);
-		velocity_ = Math::Multiply(2.0f, velocity_);
+		velocity_ = Math::Multiply(2.0f, velocity_); // ベース速度スケールをかける
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
-		velocity_ = Math::Multiply(0.35f, velocity_);
+		velocity_ = Math::Multiply(0.35f, velocity_);// 接近速度係数をかける
 		Vector3 targetPos = {};
 		//番号で対象を識別
 		if (num_ == player) {
@@ -565,13 +548,13 @@ void Enemy::NomalAttackUpdata() {
 		}
 	}
 	else {
-		animationNumber_ = nomalAttack;
+		animationNumber_ = kNomalAttack;
 		animation_->SetLoop(false);
 		--time_;
-		if (time_ <= 60 && time_ > 20) {
+		if (time_ <= EnemyConstants::kAttackStartTime && time_ > EnemyConstants::kAttackDuration) {
 			isAttack_ = true;
 		}
-		if (time_ <= 30) {
+		if (time_ <= EnemyConstants::kAttackEndTime) {
 			isAttack_ = false;
 		}
 		if (time_ <= 0) {
@@ -591,7 +574,7 @@ void Enemy::NomalAttackUpdata() {
 void Enemy::DashAttackInitialize() {
 	//対象が死んでいたらもう一回抽選
 	while (true) {
-		num_ = RandomGenerator::GetRandomInt(0, 3);
+		num_ = RandomGenerator::GetRandomInt(player, tank);
 		if (num_ == player) {
 			break;
 		}
@@ -606,38 +589,38 @@ void Enemy::DashAttackInitialize() {
 		}
 	}
 
-	time_ = 100;
+	time_ = EnemyConstants::kDashAttackInitTime;
 	animation_->SetLoop(false);
-	animation_->SetFlameTimer(40.0f);
-	if (isDeadHealer_ && num_ == 2) {
-		num_ = RandomGenerator::GetRandomInt(1, 4);
+	animation_->SetFlameTimer(EnemyConstants::kDashAttackFlameTimer);
+	if (isDeadHealer_ && num_ == healer) {
+		num_ = RandomGenerator::GetRandomInt(player, tank);
 	}
-	else if (isDeadRenju_ && num_ == 3) {
-		num_ = RandomGenerator::GetRandomInt(1, 4);
+	else if (isDeadRenju_ && num_ == renju) {
+		num_ = RandomGenerator::GetRandomInt(player, tank);
 	}
-	else if (isDeadTank_ && num_ == 4) {
-		num_ = RandomGenerator::GetRandomInt(1, 4);
+	else if (isDeadTank_ && num_ == tank) {
+		num_ = RandomGenerator::GetRandomInt(player, tank);
 	}
 }
 void Enemy::DashAttackUpdata() {
 	--time_;
-	if (!isAttack_ && time_ < 60) {
+	if (!isAttack_ && time_ < EnemyConstants::kDashAttackAreaShowTime) {
 		areaDraw_ = true;
 	}
 
 	areaPos_ = { 0.0f,0.0f,0.0f };
-	if (time_ < 40 && time_ > 20) {
-		animationNumber_ = runUp;
+	if (time_ < EnemyConstants::kDashAttackRunUpEndTime && time_ > EnemyConstants::kDashAttackRunUpStartTime) {
+		animationNumber_ = kRunUp;
 	}
 
-	if (time_ < 20) {
+	if (time_ < EnemyConstants::kDashAttackRunUpStartTime) {
 		if (!isAttack_) {
 			//攻撃準備
 			animation_->SetLoop(true);
-			animationNumber_ = dashAttack;
+			animationNumber_ = kDashAttack;
 			isAttack_ = true;
 			velocity_ = Math::Normalize(velocity_);
-			velocity_ = Math::Multiply(2.0f, velocity_);
+			velocity_ = Math::Multiply(2.0f, velocity_);// ダッシュ攻撃速度スケール
 			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
 			velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		}
@@ -672,7 +655,7 @@ void Enemy::DashAttackUpdata() {
 		}
 
 
-		velocity_ = { 0.0f,0.0f,6.0f };
+		velocity_ = { 0.0f,0.0f,EnemyConstants::kDashVeloZ};
 
 
 	}
@@ -683,7 +666,7 @@ void Enemy::DashAttackUpdata() {
 
 	if (!isAttack_) {
 		//攻撃範囲の更新
-		if (time_ > 40) {
+		if (time_ > EnemyConstants::kDashAttackRunUpEndTime) {
 			areaPos_.z = 1.0f;
 			Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformArea_.rotate.y);
 			areaPos_ = Math::Normalize(areaPos_);
@@ -702,7 +685,7 @@ void Enemy::DashAttackUpdata() {
 	}
 
 	if (time_ <= 0) {
-		worldTransformRock_.translate.z = 5;
+		//worldTransformRock_.translate.z = 5;
 		behaviorRequest_ = Behavior::kRoot;
 		areaDraw_ = false;
 	}
@@ -714,18 +697,18 @@ void Enemy::DashAttackUpdata() {
 //投擲攻撃
 void Enemy::ThrowingAttackInitialize() {
 	worldTransformRock_.translate = worldTransformBase_.translate;
-	worldTransformRock_.translate.y = 18.0f;
-	worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
-	shakeTimer_ = 60.0f;
+	worldTransformRock_.translate.y = EnemyConstants::kRockInitHeight;
+	worldTransformRock_.scale = EnemyConstants::kRockInitScale;
+	shakeTimer_ = EnemyConstants::kShakeTimerInit;
 	isAttack_ = false;
 	worldTransformBody_.rotate.x = 0.0f;
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 	animation_->SetpreAnimationTimer(0);
-	animationNumber_ = swing;
+	animationNumber_ = kSwing;
 	animation_->SetLoop(false);
 	//対象が死んでいたらもう一回抽選
 	while (true) {
-		num_ = RandomGenerator::GetRandomInt(0, 3);
+		num_ = RandomGenerator::GetRandomInt(player, tank);
 		if (num_ == player) {
 			break;
 		}
@@ -826,20 +809,20 @@ void Enemy::ThrowingAttackUpdata() {
 		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
 
-		if (worldTransformRock_.scale.x < 3.0f) {
+		if (worldTransformRock_.scale.x < EnemyConstants::kRockMaxScale.x) {
 
 			randX = RandomGenerator::GetRandomFloat(-0.1f, 0.1f);
 			randZ = RandomGenerator::GetRandomFloat(-0.1f, 0.1f);
 
 			worldTransformBody_.translate += Vector3{ randX, 0.0f, randZ };
 
-			worldTransformRock_.scale.x += 0.1f;
-			worldTransformRock_.scale.y += 0.1f;
-			worldTransformRock_.scale.z += 0.1f;
+			worldTransformRock_.scale.x += EnemyConstants::kRockScaleIncrement;
+			worldTransformRock_.scale.y += EnemyConstants::kRockScaleIncrement;
+			worldTransformRock_.scale.z += EnemyConstants::kRockScaleIncrement;
 		}
 		else {
 			--shakeTimer_;
-			worldTransformRock_.scale = { 3.0f, 3.0f, 3.0f };
+			worldTransformRock_.scale = EnemyConstants::kRockMaxScale;
 			areaDraw_ = true;
 			if (shakeTimer_ <= 0) {
 				isAttack_ = true;
@@ -873,14 +856,14 @@ void Enemy::ThrowingAttackUpdata() {
 			
 		}
 
-		const float kSpeed = 0.5f;
+		const float kThrowSpeed = 0.5f;// 投げる速度
 		Vector3 direction = sub;
 
-		Vector3 velocity = Math::Normalize(direction) * kSpeed;
+		Vector3 velocity = Math::Normalize(direction) * kThrowSpeed;
 		worldTransformRock_.translate += velocity;
 	}
 
-	if (worldTransformRock_.translate.y <= 0.6f && isAttack_) {
+	if (worldTransformRock_.translate.y <= EnemyConstants::kRockLandingHeight && isAttack_) {
 		worldTransformBody_.rotate.x = 0.0f;
 		worldTransformRock_.scale = { 0.0f, 0.0f, 0.0f };
 		areaDraw_ = false;
@@ -892,41 +875,27 @@ void Enemy::ThrowingAttackUpdata() {
 //地面を殴る攻撃の衝撃波
 void Enemy::InitializeImpact() {
 
-	//各衝撃波の初期化
-	for (int i = 0; i < 15; ++i) {
+	// 各衝撃波の初期化
+	for (int i = 0; i < EnemyConstants::kImpactColliderCount; ++i) {
 		if (i == 0) {
-			worldTransformColliderImpact_[i].rotate = { 0.0f,0.2f,0.0f };
+			worldTransformColliderImpact_[i].rotate = { 0.0f, EnemyConstants::kInitImpactRotationY, 0.0f };
 		}
 		else {
-			worldTransformColliderImpact_[i].rotate.y = worldTransformColliderImpact_[i - 1].rotate.y + 0.42f;
+			worldTransformColliderImpact_[i].rotate.y = worldTransformColliderImpact_[i - 1].rotate.y + EnemyConstants::kImpactRotationIncrement;
 		}
 		worldTransformColliderImpact_[i].translate = worldTransformImpact_.translate;
-		worldTransformColliderImpact_[i].scale.x = worldTransformImpact_.scale.x / 100.0f;
-		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / 100.0f;
+		worldTransformColliderImpact_[i].scale.x = worldTransformImpact_.scale.x / EnemyConstants::kImpactScaleDivisor;
+		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / EnemyConstants::kImpactScaleDivisor;
 	}
 
 
 }
 void Enemy::UpdataImpact() {
-	//各衝撃波の更新
-	worldTransformColliderImpact_[0].translate += {0.12f, 0.0f, 0.6f};
-	worldTransformColliderImpact_[1].translate += {0.35f, 0.0f, 0.5f};
-	worldTransformColliderImpact_[2].translate += {0.53f, 0.0f, 0.31f};
-	worldTransformColliderImpact_[3].translate += {0.625f, 0.0f, 0.06f};
-	worldTransformColliderImpact_[4].translate += {0.6f, 0.0f, -0.2f};
-	worldTransformColliderImpact_[5].translate += {0.46f, 0.0f, -0.41f};
-	worldTransformColliderImpact_[6].translate += {0.25f, 0.0f, -0.56f};
-	worldTransformColliderImpact_[7].translate += {-0.02f, 0.0f, -0.625f};
-	worldTransformColliderImpact_[8].translate += {-0.26f, 0.0f, -0.58f};
-	worldTransformColliderImpact_[9].translate += {-0.47f, 0.0f, -0.42f};
-	worldTransformColliderImpact_[10].translate += {-0.6f, 0.0f, -0.2f};
-	worldTransformColliderImpact_[11].translate += {-0.63f, 0.0f, 0.07f};
-	worldTransformColliderImpact_[12].translate += {-0.55f, 0.0f, 0.31f};
-	worldTransformColliderImpact_[13].translate += {-0.38f, 0.0f, 0.51f};
-	worldTransformColliderImpact_[14].translate += {-0.15f, 0.0f, 0.61f};
-	for (int i = 0; i < 15; ++i) {
-		worldTransformColliderImpact_[i].scale.x = worldTransformImpact_.scale.x / 100.0f;
-		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / 100.0f;
+	// 各衝撃波の更新
+	for (int i = 0; i < EnemyConstants::kImpactColliderCount; ++i) {
+		worldTransformColliderImpact_[i].translate += { EnemyConstants::kImpactTranslationX[i], EnemyConstants::kImpactTranslationY, EnemyConstants::kImpactTranslationZ[i] };
+		worldTransformColliderImpact_[i].scale.x = worldTransformImpact_.scale.x / EnemyConstants::kImpactScaleDivisor;
+		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / EnemyConstants::kImpactScaleDivisor;
 	}
 
 
@@ -936,23 +905,25 @@ void Enemy::UpdataImpact() {
 void Enemy::GroundAttackInitialize() {
 	worldTransformImpact_.translate = worldTransformBase_.translate;
 	isAttack_ = false;
-	animationNumber_ = groundAttack;
+	animationNumber_ = kGroundAttack;
 	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetAnimationTimer(0.0f, 0.0f);
 	animation_->SetLoop(false);
 	InitializeImpact();
 };
 void Enemy::GroundAttackUpdata() {
-	if (animation_->GetAnimationTimer() >= 1.6f) {
+	if (animation_->GetAnimationTimer() >= EnemyConstants::kGroundAttackAnimationTime) {
 		isAttack_ = true;
-		worldTransformImpact_.scale += Vector3(2.0f, 0.0f, 2.0f);
-		//衝撃波の更新
+		worldTransformImpact_.scale += Vector3(EnemyConstants::kGroundImpactScaleIncrement, 0.0f, EnemyConstants::kGroundImpactScaleIncrement);
+
+		// 衝撃波の更新
 		UpdataImpact();
-		if (worldTransformImpact_.scale.x > 100) {
-			worldTransformImpact_.scale = { 1.0f,1.0f,1.0f };
-			//衝撃波の初期化
+
+		if (worldTransformImpact_.scale.x > EnemyConstants::kGroundImpactMaxScale) {
+			worldTransformImpact_.scale = {0.0f,0.0f,0.0f};
+			// 衝撃波の初期化
 			InitializeImpact();
 			behaviorRequest_ = Behavior::kRoot;
-
 		}
 	}
 
@@ -962,10 +933,10 @@ void Enemy::GroundAttackUpdata() {
 void Enemy::SpecialBreathInit() {
 	--specialCount_;
 	worldTransformImpact_.translate = worldTransformBase_.translate;
-	animationNumber_ = threat;
+	animationNumber_ = kThreat;
 	animation_->SetpreAnimationTimer(0.0f);
 	animation_->SetLoop(false);
-	moveTime_ = 60 * 7;
+	moveTime_ = EnemyConstants::kSpecialBreathMoveTime;
 	animation_->SetFlameTimer(100.0f);
 	InitializeImpact();
 }
@@ -975,10 +946,10 @@ void Enemy::SpecialBreathUpdata() {
 	//パーティクルの更新と設定
 	for (int i = 0; i < 5; ++i) {
 		if (i % 2 == 0) {
-			accelerationVelo_[i] = { 10.f,0.f,0.f };
+			accelerationVelo_[i] = { EnemyConstants::kAccelerationValue,0.f,0.f };
 		}
 		else {
-			accelerationVelo_[i] = { -10.f,0.f,0.f };
+			accelerationVelo_[i] = { -EnemyConstants::kAccelerationValue,0.f,0.f };
 		}
 		filedPos_ = { 0.f,0.f,5.f };
 		emitter_[i].translate = { worldTransformBase_.translate.x,1.f,worldTransformBase_.translate.z };
@@ -996,10 +967,10 @@ void Enemy::SpecialBreathUpdata() {
 	}
 
 	//既定の時間になったら攻撃開始
-	if (moveTime_ <= 180 && !isAttack_) {
+	if (moveTime_ <= EnemyConstants::kSpecialBreathAttackStartTime && !isAttack_) {
 	
 		isAttack_ = true;
-		animationNumber_ = breathAttack;
+		animationNumber_ = kBreathAttack;
 	}
 
 	if (moveTime_ <= 0) {
@@ -1015,16 +986,16 @@ void Enemy::SpecialBreathUpdata() {
 void Enemy::SpecialHenchmanInit()
 {
 	--specialCount_;
-	animationNumber_ = threat;
+	animationNumber_ = kThreat;
 	animation_->SetpreAnimationTimer(0.0f);
 	animation_->SetLoop(false);
 	barrier_ = true;
-	moveTime_ = 60*10;
+	moveTime_ = EnemyConstants::kSpecialHenchmanMoveTime;
 	special_ = true;
-	barrierThreshold_ = 1.0f;
+	barrierThreshold_ = EnemyConstants::kBarrierInitThreshold;
 	isAttack_ = false;
 	worldTransformBarrier_.rotate.y = 0.0f;
-	worldTransformBarrier_.scale = { 7.5f,7.5f,7.5f };
+	worldTransformBarrier_.scale = EnemyConstants::kBarrierScale;
 }
 void Enemy::SpecialHenchmanUpdata()
 {
@@ -1038,10 +1009,10 @@ void Enemy::SpecialHenchmanUpdata()
 		}
 		else {
 			isAttack_ = true;
-			worldTransformBarrier_.scale += Vector3{ 2.f,2.f,2.f };
+			worldTransformBarrier_.scale += EnemyConstants::kBarrierScaleIncrease;
 		}
 
-		if (worldTransformBarrier_.scale.x >= 100.0f) {
+		if (worldTransformBarrier_.scale.x >= EnemyConstants::kBarrierMaxScale) {
 			behaviorRequest_ = Behavior::kRoot;
 		}
 
@@ -1051,19 +1022,19 @@ void Enemy::SpecialHenchmanUpdata()
 
 		
 		if(barrierThreshold_ > 0.6f){
-			barrierThreshold_ -= 0.01f;
+			barrierThreshold_ -= 0.01f;//バリアを徐々に描画していく
 		}
 		worldTransformBarrier_.translate = worldTransformBase_.translate;
-		worldTransformBarrier_.translate.y = 6.f;
-		worldTransformBarrier_.rotate.y += 0.01f;
+		worldTransformBarrier_.translate.y = EnemyConstants::kBarrierYTranslate;
+		worldTransformBarrier_.rotate.y += EnemyConstants::kBarrierRotateSpeed;
 		
 		
 		//敵の追加
-		if (moveTime_  % 10 == 0) {
+		if (moveTime_  % EnemyConstants::kEnemySpawnInterval == 0) {
 			// 敵を生成、初期化
 			EnemyHenchman* newEnemy = new EnemyHenchman();
-			newEnemy->Init(henchman_, Vector3{ worldTransformBase_.translate.x + RandomGenerator::GetRandomFloat(-15.0f, 15.0f),-1.0f,
-				worldTransformBase_.translate.z + RandomGenerator::GetRandomFloat(-15.0f, 15.0f) }
+			newEnemy->Init(henchman_, Vector3{ worldTransformBase_.translate.x + RandomGenerator::GetRandomFloat(-EnemyConstants::kEnemyHenchmanSpawnRange, EnemyConstants::kEnemyHenchmanSpawnRange),EnemyConstants::kEnemyHenchmanSpawnYOffset,
+				worldTransformBase_.translate.z + RandomGenerator::GetRandomFloat(-EnemyConstants::kEnemyHenchmanSpawnRange, EnemyConstants::kEnemyHenchmanSpawnRange) }
 			);
 
 
@@ -1081,45 +1052,23 @@ void Enemy::SpecialHenchmanUpdata()
 
 }
 
-//スタン
-void Enemy::StanInitialize() {
-	sterAngle_[0] = 0.0f;
-	sterAngle_[1] = 2.0f;
-	sterAngle_[2] = 4.0f;
-	animationNumber_ = standby;
-
-	time_ = 60 * 3;
-}
-void Enemy::StanUpdata() {
-	--time_;
-	for (int i = 0; i < 3; ++i) {
-		//Math::UpdateCircularMotion3D(worldTransformSter_[i].translate.x, worldTransformSter_[i].translate.z, worldTransformBase_.translate.x, worldTransformBase_.translate.z - 2, 2.0f, sterAngle_[i], 0.1f);
-	}
-
-
-	if (time_ <= 0) {
-		behaviorRequest_ = Behavior::kRoot;
-	}
-}
-
-
 void Enemy::DeadInitilize() {
-	animationNumber_ = death;
+	animationNumber_ = kDeath;
 	animation_->SetAnimationTimer(0.f, 0.f);
 	animation_->SetLoop(false);
-
+	animation_->SetEdgeColor(EnemyConstants::kEdgeColor);
 }
 void Enemy::DeadUpdata() {
 
 	//バリアのディゾルブを消す
 	if (barrierThreshold_ <= 1.f) {
-		barrierThreshold_ += 0.01f;
+		barrierThreshold_ += EnemyConstants::kBarrierThresholdIncreaseRate;
 	}
 
-	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-	threshold_ += 0.001f;
+	
+	threshold_ += EnemyConstants::kThresholdIncreaseRate;
 	animation_->SetThreshold(threshold_);
-	if (animation_->GetAnimationTimer() >= 5.0f) {
+	if (animation_->GetAnimationTimer() >= EnemyConstants::kAnimationEndTime) {
 		clear_ = true;
 	}
 
@@ -1164,11 +1113,10 @@ const Vector3 Enemy::GetWorldPosition() const {
 	worldPos.z = worldTransformBase_.matWorld_.m[3][2];
 	return worldPos;
 }
-void Enemy::StanBehavior() { behaviorRequest_ = Behavior::kStan; }
 void Enemy::AddSpecialCount()
 {
 	//体力が100で割り切れてカウントが0の時追加
-	if (int(hp_) % 50 == 0 && specialCount_ == 0 && hp_ != 800 && hp_ != 0) {
+	if (int(hp_) % EnemyConstants::kHpThreshold == 0 && specialCount_ == 0 && hp_ != EnemyConstants::kMaxHp && hp_ != 0) {
 		++specialCount_;
 	}
 };

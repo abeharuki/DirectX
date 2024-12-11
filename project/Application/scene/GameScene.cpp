@@ -188,7 +188,7 @@ void GameScene::Update() {
 	
 
 	//各キャラの更新
-	if (!enemyManager_->IsClear()) {
+	if (!enemyManager_->IsClear()&&!playerManager_->GetPlayer()->IsDead()) {
 		tankManager_->Update();
 		renjuManager_->Update();
 		healerManager_->Update();
@@ -439,7 +439,7 @@ void GameScene::BattleBegin(){
 	if (cameraDirection_ && !battle_) {
 		followCamera_->CameraDirection();
 		if (!followCamera_->GetMoveToEnemy()) {
-			enemyManager_->GetEnemy()->SetAnimationNumber(threat, 25.f,false);
+			enemyManager_->GetEnemy()->SetAnimationNumber(kThreat, 25.f,false);
 		}
 
 		//カメラがプレイヤーのとこまで来たらスタート

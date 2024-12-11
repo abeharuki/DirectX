@@ -517,7 +517,7 @@ void Player::DeadInitilize() {
 void Player::DeadUpdata() {
 	hp_ = 0.0f;
 	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-	threshold_ += 0.005f;
+	threshold_ += 0.01f;
 	//animation_->SetThreshold(threshold_);
 	if (threshold_ >= 1.0f) {
 		isOver_ = true;

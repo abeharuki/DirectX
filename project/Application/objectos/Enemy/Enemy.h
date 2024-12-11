@@ -12,17 +12,108 @@
 #include <ParticleSystem.h>
 #include "EnemyHenchman.h"
 
+namespace EnemyConstants {
+	//各WorldTransformの初期化変数
+	constexpr Vector3 kBaseTranslate = { 0.0f, 0.0f, 10.0f };//ベースpos
+	constexpr Vector3 kBaseRotate = { 0.0f, 3.1415f, 0.0f };//ベースの角度
+	constexpr Vector3 kBodyScale = { 1.0f, 1.0f, 1.0f };//体のサイズ
+	constexpr Vector3 kRockTranslate = { 0.0f, 0.0f, -15000.0f };//投擲オブジェクトの初期pos
+	constexpr Vector3 kAreaTranslate = { 0.0f, 0.1f, 0.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトの初期pos
+	constexpr Vector3 kAreaScale = { 4.0f, 22.0f, 1.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトのサイズ
+	constexpr Vector3 kAreaRotate = { -1.57f,0.0f,0.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトの角度
+	constexpr Vector3 kCircleAreaScale = { 3.0f, 3.0f, 3.0f };//投擲攻撃時の範囲を描画するオブジェクトのサイズ
+
+	// バリア関連
+	constexpr Vector3 kBarrierScale = { 7.5f, 7.5f, 7.5f };//バリアモデルのサイズ
+	constexpr Vector3 kBarrierMaskUVScale = { -1.f, 4.f, 1.f };//バリアのマスク画像のUVサイズ
+	constexpr Vector4 kBarrierColor = { 1.0f, 0.0f, 1.0f, 1.0f };//バリアの色
+	constexpr float kBarrierThresholdStart = 1.0f;//バリアが全く見えないときのディゾルブ値
+	constexpr float kBarrierThresholdIncrement = 0.01f;//バリアが徐々に消えていく時のスピード
+
+	// 行動タイミング関連
+	constexpr int kMoveInitTime = 60;//moveに遷移後の初期化タイム
+	constexpr int kMoveUpdateTime = 30;//行動が変わるタイミングのタイム
+	
+	// NomalAttack に関連する定数
+	constexpr int kAttackInitTime = 120; // 初期化後の攻撃待機時間 (60 * 2)
+	constexpr int kAttackStartTime = 60; // 攻撃開始時刻
+	constexpr int kAttackEndTime = 30; // 攻撃終了時刻
+	constexpr int kAttackDuration = 20; // 攻撃フレーム数
+
+	// DashAttack に関連する定数
+	constexpr int kDashAttackInitTime = 100; // ダッシュ攻撃初期化時のタイマー
+	constexpr float kDashAttackFlameTimer = 40.0f; // ダッシュ攻撃アニメーションフレームタイマー
+	constexpr int kDashAttackAreaShowTime = 60; // エリア表示開始時刻
+	constexpr int kDashAttackRunUpEndTime = 40; // 走るアニメーション終了時刻
+	constexpr int kDashAttackRunUpStartTime = 20; // 走るアニメーション開始時刻
+	constexpr float kDashVeloZ = 6.0f; // Z方向ダッシュ速度
+	
+	// ThrowingAttack に関連する定数
+	constexpr float kRockInitHeight = 18.0f; // 投げる岩の初期高さ
+	constexpr Vector3 kRockInitScale = { 0.0f,0.0f,0.0f};  // 岩の初期スケール
+	constexpr float kShakeTimerInit = 60.0f; // シェイクタイマーの初期値
+	constexpr Vector3 kRockMaxScale = { 3.0f,3.0f,3.0f }; // 岩の最大スケール
+	constexpr float kRockScaleIncrement = 0.1f; // 岩のスケール増加値
+	constexpr float kRockLandingHeight = 0.6f; // 岩が地面に到達する高さ
+
+	// InitializeImpact に関連する定数
+	constexpr int kImpactColliderCount = 15; // 衝撃波の数
+	constexpr float kInitImpactRotationY = 0.2f; // 最初の衝撃波の回転角度
+	constexpr float kImpactRotationIncrement = 0.42f; // 衝撃波の回転角度の増加量
+	constexpr float kImpactScaleDivisor = 100.0f; // 衝撃波のスケールに使う割り算の値
+
+	// UpdataImpact に関連する定数
+	constexpr float kImpactTranslationX[] = { 0.12f, 0.35f, 0.53f, 0.625f, 0.6f, 0.46f, 0.25f, -0.02f, -0.26f, -0.47f, -0.6f, -0.63f, -0.55f, -0.38f, -0.15f };
+	constexpr float kImpactTranslationY = 0.0f; // 衝撃波のY方向の移動量（全て同じ）
+	constexpr float kImpactTranslationZ[] = { 0.6f, 0.5f, 0.31f, 0.06f, -0.2f, -0.41f, -0.56f, -0.625f, -0.58f, -0.42f, -0.2f, 0.07f, 0.31f, 0.51f, 0.61f };
+
+	// GroundAttack に関連する定数
+	constexpr float kGroundAttackAnimationTime = 1.6f; // 地面攻撃のアニメーション時間
+	constexpr float kGroundImpactScaleIncrement = 2.0f; // 衝撃波のスケールの増加量
+	constexpr float kGroundImpactMaxScale = 100.0f; // 衝撃波の最大スケール
+	
+	// SpecialBreath に関連する定数
+	constexpr int kSpecialBreathMoveTime = 420; // 移動時間
+	constexpr float kSpecialBreathAttackStartTime = 180.0f; // 攻撃開始時間
+	// Acceleration の設定
+	constexpr float kAccelerationValue = 10.0f; // 加速度の値
+	constexpr float kFiledPosZ = 5.0f; // FiledPos のZ座標
+
+	// SpecialHenchman に関連する定数
+	constexpr int kSpecialHenchmanMoveTime = 600; // 子分のアクション時間
+	constexpr float kBarrierInitThreshold = 1.0f; // バリアの初期スレッショルド
+	constexpr Vector3 kBarrierScaleIncrease = { 2.f,2.f,2.f }; // バリアのスケール増加値
+	constexpr float kBarrierMaxScale = 100.0f; // バリアの最大スケール
+	constexpr float kBarrierYTranslate = 6.0f; // バリアのY軸位置
+	constexpr float kBarrierRotateSpeed = 0.01f; // バリアの回転速度
+	constexpr int kEnemySpawnInterval = 10; // 敵生成の間隔（フレーム単位）
+	constexpr float kEnemyHenchmanSpawnRange = 15.0f; // ヘンチマン生成の範囲
+	constexpr float kEnemyHenchmanSpawnYOffset = -1.0f; // ヘンチマン生成時のY座標
+
+	// Dead状態に関する定数
+	constexpr float kAnimationEndTime = 5.0f;   // アニメーションの終了時間（5秒）
+	constexpr float kBarrierThresholdIncreaseRate = 0.01f; // バリアのスレッショルド増加速度
+	constexpr Vector3 kEdgeColor = { 0.0f,-1.0f,-1.0f }; // エッジカラー調整値
+	constexpr float kThresholdIncreaseRate = 0.001f; // スレッショルドの増加速度
+
+	//必殺技カウントを増やすときに使う定数
+	constexpr float kMaxHp = 800.0f;  // 最大HP
+	constexpr int kHpThreshold = 50;  // HPの閾値
+	
+}
+
+//アニメーションのナンバー
 enum AnimationNumber {
-	breathAttack,//ブレス攻撃
-	dashAttack,//ダッシュ攻撃
-	death,//死亡
-	groundAttack,//地面を殴る攻撃
-	nomalAttack,//通常攻撃
-	run,//走る
-	runUp,//ダッシュ攻撃の走り出し
-	standby,//通常状態
-	swing,//投擲攻撃
-	threat,//威嚇
+	kBreathAttack,//ブレス攻撃
+	kDashAttack,//ダッシュ攻撃
+	kDeath,//死亡
+	kGroundAttack,//地面を殴る攻撃
+	kNomalAttack,//通常攻撃
+	kRun,//走る
+	kRunUp,//ダッシュ攻撃の走り出し
+	kStandby,//通常状態
+	kSwing,//投擲攻撃
+	kThreat,//威嚇
 };
 
 // 振る舞い
@@ -67,8 +158,6 @@ public: // メンバ関数
 	//当たりは判定
 	void OnCollision(Collider* collider) override;
 
-	//強制的にスタン状態にする
-	void StanBehavior();
 
 	//必殺技を打てる回数を増やす
 	void AddSpecialCount();
@@ -184,9 +273,6 @@ private:
 	void GroundAttackUpdata();
 	void InitializeImpact();
 	void UpdataImpact();
-	//スタン中
-	void StanInitialize();
-	void StanUpdata();
 	//必殺技1
 	void SpecialBreathInit();
 	void SpecialBreathUpdata();
@@ -206,7 +292,7 @@ private: // メンバ変数
 	WorldTransform worldTransformCircleArea_;
 	WorldTransform worldTransformColliderImpact_[15];//衝撃波の座標
 	WorldTransform worldTransformBarrier_;
-	//WorldTransform worldTransformSter_[3];
+
 	std::unique_ptr<ColliderManager> colliderManager_[15] = {};//衝撃波用の当たり判定
 	std::unique_ptr<ColliderManager> colliderRockManager_ = {};//投擲用
 
@@ -225,8 +311,7 @@ private: // メンバ変数
 	std::unique_ptr<Model> areaModel_;//ダッシュ攻撃エリア
 	std::unique_ptr<Model> circleAreaModel_;//投擲攻撃エリア
 	std::unique_ptr<Model> barrierModel_;//バリアモデル
-	//std::unique_ptr<Model> sterModel_[3];//混乱時の星
-
+	
 	std::list<EnemyHenchman*> henchmans_;//子分
 	Vector3 hmansRenjuPos_;
 
@@ -234,7 +319,7 @@ private: // メンバ変数
 	Vector3 areaPos_;
 	bool areaDraw_;
 	//エリアのアルファ値
-	float areaAlpha_ = 0.5f;
+	const float areaAlpha_ = 0.5f;
 
 	//posとrotation
 	Vector3 playerPos_ = {};
