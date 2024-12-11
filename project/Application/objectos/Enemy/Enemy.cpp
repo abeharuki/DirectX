@@ -492,7 +492,7 @@ void Enemy::AttackUpdata() {
 void Enemy::NomalAttackInitialize() {
 	//対象が死んでいたらもう一回抽選
 	while (true) {
-		num_ = RandomGenerator::GetRandomInt(0, 3);
+		num_ = RandomGenerator::GetRandomInt(player, tank);//0～３
 		if (num_ == player) {
 			aimPlayer_ = true;
 			break;

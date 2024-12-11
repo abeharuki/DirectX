@@ -94,7 +94,7 @@ public:
     virtual void Relationship();
 
     //位置の初期化
-    virtual void InitPos(float posX){ worldTransformBase_.translate = { posX,0.0f,-35.0f }; }
+    virtual void InitPos(float posX) { worldTransformBase_.translate = { posX,0.0f,-35.0f }; worldTransformBase_.rotate = { 0.0f,0.0f,0.0f };}
 
     //逃げる方向
     virtual void RunAway();

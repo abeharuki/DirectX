@@ -83,6 +83,7 @@ void GameScene::Update() {
 
 	//シーン遷移
 	Fade();
+	//エンカウント時の演出
 	BattleBegin();
 	
 	//当たり判定
@@ -252,6 +253,7 @@ void GameScene::Update() {
 	
 	loader_->SetLight(directionLight_);
 
+	
 }
 
 void GameScene::Draw() {
