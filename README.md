@@ -27,7 +27,7 @@
 <br><br>
 さらに細かい進捗は下記のURLから確認できます。<br>
 
-  [作品動画はこちら](https://youtu.be/Y7S-no2YfIU)<br>[ポートフォリオはこちら](https://drive.google.com/file/d/15fuHKKvBRsdOitzPX2uTvESjmbHBkNvG/view?usp=drive_link)<br>
+  [作品動画はこちら](https://youtu.be/nyvwBBJCtAM)<br>[ポートフォリオはこちら](https://drive.google.com/file/d/1Y0W_oBFEl7xn3lC0QJBoP-e7Hye1SvJ5/view?usp=drive_link)<br>
 
 
 # エンジン
