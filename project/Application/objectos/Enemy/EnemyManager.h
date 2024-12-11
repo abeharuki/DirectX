@@ -75,7 +75,7 @@ private:
 		healerNum,//ヒーラーのダメージ
 		renjuNum,//レンジャーのダメージ
 		tankNum,//タンクーののダメージ
-		kdamageNumMax,
+		kDamageNumMax,
 	};
 
 	//ダメージのアルファ値
@@ -93,7 +93,7 @@ private:
 	std::unique_ptr<Enemy> enemy_;
 
 	std::unique_ptr<Model> nameModel_;
-	Transform HpTransform_;
+	float hp_;
 
 	Vector4 color_;//名前の色
 	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色

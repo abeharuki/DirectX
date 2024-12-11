@@ -62,7 +62,6 @@ void EnemyHenchman::followRenju() {
 
 	if (worldTransform_.translate.y < 0) {
 		worldTransform_.translate.y += 0.1f;
-		destinationAngleY_ += 0.01f;
 	}
 	else {
 		// 追従対象からロックオン対象へのベクトル

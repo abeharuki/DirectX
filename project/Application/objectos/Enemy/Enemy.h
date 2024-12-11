@@ -22,6 +22,9 @@ namespace EnemyConstants {
 	constexpr Vector3 kAreaScale = { 4.0f, 22.0f, 1.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトのサイズ
 	constexpr Vector3 kAreaRotate = { -1.57f,0.0f,0.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトの角度
 	constexpr Vector3 kCircleAreaScale = { 3.0f, 3.0f, 3.0f };//投擲攻撃時の範囲を描画するオブジェクトのサイズ
+	constexpr Vector3 kShadowScale = { 6.f,6.f,1.0f };//影のサイズ
+	constexpr Vector3 kShadowRotate = { -1.571f,0.0f,0.0f };//影の角度
+
 
 	// バリア関連
 	constexpr Vector3 kBarrierScale = { 7.5f, 7.5f, 7.5f };//バリアモデルのサイズ
@@ -100,6 +103,43 @@ namespace EnemyConstants {
 	constexpr float kMaxHp = 800.0f;  // 最大HP
 	constexpr int kHpThreshold = 50;  // HPの閾値
 	
+	/*---------------EnemyManagerでのみ使う定数-----------------*/
+	//影関連
+	constexpr float kShadowHeight = 0.1f;  // 影の高さ
+	constexpr float kMaxShadowHeight = 3.9f;  // 最大影の高さ
+
+	//名前のUI関連
+	constexpr float kDistanceScaleBase = 17.0f;  // 名前のスケールの基準距離
+	constexpr float kDistanceScaleOffset = 14.0f;  // 名前のスケールオフセット
+
+	//HPの色を変わるときの基準定数
+	constexpr float kLowHpThreshold = 200.0f;  // 低HP閾値
+	constexpr float kMidHpThreshold = 400.0f;  // 中HP閾値
+
+	// ダメージ数関連
+	constexpr float kDamagePlayer = 20.0f;  // プレイヤーダメージ
+	constexpr float kDamageHealer = 10.0f;  // ヒーラーダメージ
+	constexpr float kDamageTank = 10.0f;  // タンクダメージ
+	constexpr float kDamageRenjuNormal = 20.0f;  // レンジャーダメージ（通常）
+	constexpr float kDamageRenjuSkill = 30.0f;  // レンジャーダメージ（スキル）
+
+	// アルファ値の設定
+	constexpr float kAlphaDecreaseRate = 0.08f;  // アルファ値の減少率
+	constexpr float kInitAlpha = 2.0f;  // 初期アルファ値
+	constexpr float kZeroAlpha = 0.0f;  // 最小アルファ値
+
+	// ランダムな位置調整
+	constexpr float kRandomOffsetRange = 3.0f;  // ランダムオフセット範囲
+	constexpr float kRandomHeightMin = 3.0f;  // ランダムな高さ最小値
+	constexpr float kRandomHeightMax = 6.0f;  // ランダムな高さ最大値
+
+	// しきい値設定
+	constexpr float kBarrierThresholdLimit = 0.8f;  // バリアのディゾルブしきい値
+
+	// ビルボード関連
+	constexpr float kYPositionOffset = 2.0f;  // Y軸位置オフセット
+	constexpr float kBillboardHeight = 9.5f;  // ビルボードの高さ
+
 }
 
 //アニメーションのナンバー
