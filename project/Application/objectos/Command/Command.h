@@ -5,30 +5,30 @@
 // 定数をまとめる名前空間
 namespace CommandConstants {
 	// 矢印の初期位置と移動範囲
-	constexpr float kArrowInitialX = 31.0f;//矢印UIの初期化X座標
-	constexpr float kArrowInitialY = 469.0f;//矢印UIの初期化Y座標
-	constexpr float kChangeTaskInitializeX = 31.0f;//矢印UIのタスクが変わった時の初期化X座標
-	constexpr float kChangeTaskInitializeY = 510.0f;//矢印UIのタスクが変わった時の初期化Y座標
-	constexpr float kArrowMoveSpeed = 31.0f;//矢印の動くスピード
-	constexpr float kArrowMaxY = 593.0f;//矢印の最大Y座標
-	constexpr float kArrowMinY = 469.0f;//矢印の最小Y座標
-	constexpr float kArrowAnimationStartX = 30.0f;//矢印アニメーションの折り返し地点最小
-	constexpr float kArrowAnimationEndX = 40.0f;//矢印アニメーションの折り返し地点最大
-	constexpr float kOperationArrowMaxY = 572.0f;//作戦タスク時の矢印の最大Y座標
-	constexpr float kOperationArrowMinY = 510.0f;//作戦タスク時の矢印の最小Y座標
+	const float kArrowInitialX = 31.0f;//矢印UIの初期化X座標
+	const float kArrowInitialY = 469.0f;//矢印UIの初期化Y座標
+	const float kChangeTaskInitializeX = 31.0f;//矢印UIのタスクが変わった時の初期化X座標
+	const float kChangeTaskInitializeY = 510.0f;//矢印UIのタスクが変わった時の初期化Y座標
+	const float kArrowMoveSpeed = 31.0f;//矢印の動くスピード
+	const float kArrowMaxY = 593.0f;//矢印の最大Y座標
+	const float kArrowMinY = 469.0f;//矢印の最小Y座標
+	const float kArrowAnimationStartX = 30.0f;//矢印アニメーションの折り返し地点最小
+	const float kArrowAnimationEndX = 40.0f;//矢印アニメーションの折り返し地点最大
+	const float kOperationArrowMaxY = 572.0f;//作戦タスク時の矢印の最大Y座標
+	const float kOperationArrowMinY = 510.0f;//作戦タスク時の矢印の最小Y座標
 
 	//各コマンドUIの初期化位置とサイズ
-	constexpr Vector2 kAttackPos = { 85.0f, 472.0f };//攻撃コマンドの座標
-	constexpr Vector2 kMagicPos = { 85.0f, 503.0f };//マジックコマンドの座標
-	constexpr Vector2 kSkillPos = { 85.0f, 534.0f };//スキルコマンドの座標
-	constexpr Vector2 kToolPos = { 85.0f, 565.0f };//アイテムコマンドの座標
-	constexpr Vector2 kOperationPos = { 85.0f, 596.0f };//作戦コマンドの座標
-	constexpr Vector2 kCommandSize = { 91.0f,46.0f };//コマンドのテクスチャのサイズ
-	constexpr Vector2 kChangeTaskCommand = { 85.0f, 472.0f };//タスクが切り替わった時のコマンド座標
-	constexpr Vector2 kTaskName = { 85.0f, 510.0f };//タスク名座標
+	const Vector2 kAttackPos = { 85.0f, 472.0f };//攻撃コマンドの座標
+	const Vector2 kMagicPos = { 85.0f, 503.0f };//マジックコマンドの座標
+	const Vector2 kSkillPos = { 85.0f, 534.0f };//スキルコマンドの座標
+	const Vector2 kToolPos = { 85.0f, 565.0f };//アイテムコマンドの座標
+	const Vector2 kOperationPos = { 85.0f, 596.0f };//作戦コマンドの座標
+	const Vector2 kCommandSize = { 91.0f,46.0f };//コマンドのテクスチャのサイズ
+	const Vector2 kChangeTaskCommand = { 85.0f, 472.0f };//タスクが切り替わった時のコマンド座標
+	const Vector2 kTaskName = { 85.0f, 510.0f };//タスク名座標
 	//作戦コマンドでの各コマンドの座標
-	constexpr Vector2 kEscapCommand = { 85.0f, 541.0f };//逃げるコマンドの座標
-	constexpr Vector2 kReturnCommand = { 85.0f, 572.0f };//前のタスクに戻るコマンドの座標
+	const Vector2 kEscapCommand = { 85.0f, 541.0f };//逃げるコマンドの座標
+	const Vector2 kReturnCommand = { 85.0f, 572.0f };//前のタスクに戻るコマンドの座標
 
 
 	// ボタンに対応する位置

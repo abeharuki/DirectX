@@ -8,14 +8,14 @@
 
 namespace CameraConstants {
 	// カメラ移動に関する設定
-	constexpr Vector3 kEnemyMoveTarget = { 0.0f,6.0f,-15.0f };  // 敵位置の座標
+	const Vector3 kEnemyMoveTarget = { 0.0f,6.0f,-15.0f };  // 敵位置の座標
 	
-	constexpr Vector3 kPlayerMoveTarget = { 3.f,4.f,-50.0f };  // プレイヤー位置の座標
+	const Vector3 kPlayerMoveTarget = { 3.f,4.f,-50.0f };  // プレイヤー位置の座標
 	
-	constexpr float kMoveLerpRateToEnemy = 0.05f;  // 敵への移動の補間速度
-	constexpr float kMoveLerpRateToPlayer = 0.08f;  // プレイヤーへの移動の補間速度
+	const float kMoveLerpRateToEnemy = 0.05f;  // 敵への移動の補間速度
+	const float kMoveLerpRateToPlayer = 0.08f;  // プレイヤーへの移動の補間速度
 
-	constexpr float kMoveThresholdX = -0.1f;  // X座標の閾値
+	const float kMoveThresholdX = -0.1f;  // X座標の閾値
 	
 }
 

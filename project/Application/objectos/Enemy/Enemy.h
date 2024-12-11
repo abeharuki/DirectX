@@ -14,131 +14,131 @@
 
 namespace EnemyConstants {
 	//各WorldTransformの初期化変数
-	constexpr Vector3 kBaseTranslate = { 0.0f, 0.0f, 10.0f };//ベースpos
-	constexpr Vector3 kBaseRotate = { 0.0f, 3.1415f, 0.0f };//ベースの角度
-	constexpr Vector3 kBodyScale = { 1.0f, 1.0f, 1.0f };//体のサイズ
-	constexpr Vector3 kRockTranslate = { 0.0f, 0.0f, -15000.0f };//投擲オブジェクトの初期pos
-	constexpr Vector3 kAreaTranslate = { 0.0f, 0.1f, 0.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトの初期pos
-	constexpr Vector3 kAreaScale = { 4.0f, 22.0f, 1.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトのサイズ
-	constexpr Vector3 kAreaRotate = { -1.57f,0.0f,0.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトの角度
-	constexpr Vector3 kCircleAreaScale = { 3.0f, 3.0f, 3.0f };//投擲攻撃時の範囲を描画するオブジェクトのサイズ
-	constexpr Vector3 kShadowScale = { 6.f,6.f,1.0f };//影のサイズ
-	constexpr Vector3 kShadowRotate = { -1.571f,0.0f,0.0f };//影の角度
+	const Vector3 kBaseTranslate = { 0.0f, 0.0f, 10.0f };//ベースpos
+	const Vector3 kBaseRotate = { 0.0f, 3.1415f, 0.0f };//ベースの角度
+	const Vector3 kBodyScale = { 1.0f, 1.0f, 1.0f };//体のサイズ
+	const Vector3 kRockTranslate = { 0.0f, 0.0f, -15000.0f };//投擲オブジェクトの初期pos
+	const Vector3 kAreaTranslate = { 0.0f, 0.1f, 0.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトの初期pos
+	const Vector3 kAreaScale = { 4.0f, 22.0f, 1.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトのサイズ
+	const Vector3 kAreaRotate = { -1.57f,0.0f,0.0f };//ダッシュ攻撃時の範囲を描画するオブジェクトの角度
+	const Vector3 kCircleAreaScale = { 3.0f, 3.0f, 3.0f };//投擲攻撃時の範囲を描画するオブジェクトのサイズ
+	const Vector3 kShadowScale = { 6.f,6.f,1.0f };//影のサイズ
+	const Vector3 kShadowRotate = { -1.571f,0.0f,0.0f };//影の角度
 
 
 	// バリア関連
-	constexpr Vector3 kBarrierScale = { 7.5f, 7.5f, 7.5f };//バリアモデルのサイズ
-	constexpr Vector3 kBarrierMaskUVScale = { -1.f, 4.f, 1.f };//バリアのマスク画像のUVサイズ
-	constexpr Vector4 kBarrierColor = { 1.0f, 0.0f, 1.0f, 1.0f };//バリアの色
-	constexpr float kBarrierThresholdStart = 1.0f;//バリアが全く見えないときのディゾルブ値
-	constexpr float kBarrierThresholdIncrement = 0.01f;//バリアが徐々に消えていく時のスピード
+	const Vector3 kBarrierScale = { 7.5f, 7.5f, 7.5f };//バリアモデルのサイズ
+	const Vector3 kBarrierMaskUVScale = { -1.f, 4.f, 1.f };//バリアのマスク画像のUVサイズ
+	const Vector4 kBarrierColor = { 1.0f, 0.0f, 1.0f, 1.0f };//バリアの色
+	const float kBarrierThresholdStart = 1.0f;//バリアが全く見えないときのディゾルブ値
+	const float kBarrierThresholdIncrement = 0.01f;//バリアが徐々に消えていく時のスピード
 
 	// 行動タイミング関連
-	constexpr int kMoveInitTime = 60;//moveに遷移後の初期化タイム
-	constexpr int kMoveUpdateTime = 30;//行動が変わるタイミングのタイム
+	const int kMoveInitTime = 60;//moveに遷移後の初期化タイム
+	const int kMoveUpdateTime = 30;//行動が変わるタイミングのタイム
 	
 	// NomalAttack に関連する定数
-	constexpr int kAttackInitTime = 120; // 初期化後の攻撃待機時間 (60 * 2)
-	constexpr int kAttackStartTime = 60; // 攻撃開始時刻
-	constexpr int kAttackEndTime = 30; // 攻撃終了時刻
-	constexpr int kAttackDuration = 20; // 攻撃フレーム数
+	const int kAttackInitTime = 120; // 初期化後の攻撃待機時間 (60 * 2)
+	const int kAttackStartTime = 60; // 攻撃開始時刻
+	const int kAttackEndTime = 30; // 攻撃終了時刻
+	const int kAttackDuration = 20; // 攻撃フレーム数
 
 	// DashAttack に関連する定数
-	constexpr int kDashAttackInitTime = 100; // ダッシュ攻撃初期化時のタイマー
-	constexpr float kDashAttackFlameTimer = 40.0f; // ダッシュ攻撃アニメーションフレームタイマー
-	constexpr int kDashAttackAreaShowTime = 60; // エリア表示開始時刻
-	constexpr int kDashAttackRunUpEndTime = 40; // 走るアニメーション終了時刻
-	constexpr int kDashAttackRunUpStartTime = 20; // 走るアニメーション開始時刻
-	constexpr float kDashVeloZ = 6.0f; // Z方向ダッシュ速度
+	const int kDashAttackInitTime = 100; // ダッシュ攻撃初期化時のタイマー
+	const float kDashAttackFlameTimer = 40.0f; // ダッシュ攻撃アニメーションフレームタイマー
+	const int kDashAttackAreaShowTime = 60; // エリア表示開始時刻
+	const int kDashAttackRunUpEndTime = 40; // 走るアニメーション終了時刻
+	const int kDashAttackRunUpStartTime = 20; // 走るアニメーション開始時刻
+	const float kDashVeloZ = 6.0f; // Z方向ダッシュ速度
 	
 	// ThrowingAttack に関連する定数
-	constexpr float kRockInitHeight = 18.0f; // 投げる岩の初期高さ
-	constexpr Vector3 kRockInitScale = { 0.0f,0.0f,0.0f};  // 岩の初期スケール
-	constexpr float kShakeTimerInit = 60.0f; // シェイクタイマーの初期値
-	constexpr Vector3 kRockMaxScale = { 3.0f,3.0f,3.0f }; // 岩の最大スケール
-	constexpr float kRockScaleIncrement = 0.1f; // 岩のスケール増加値
-	constexpr float kRockLandingHeight = 0.6f; // 岩が地面に到達する高さ
+	const float kRockInitHeight = 18.0f; // 投げる岩の初期高さ
+	const Vector3 kRockInitScale = { 0.0f,0.0f,0.0f};  // 岩の初期スケール
+	const float kShakeTimerInit = 60.0f; // シェイクタイマーの初期値
+	const Vector3 kRockMaxScale = { 3.0f,3.0f,3.0f }; // 岩の最大スケール
+	const float kRockScaleIncrement = 0.1f; // 岩のスケール増加値
+	const float kRockLandingHeight = 0.6f; // 岩が地面に到達する高さ
 
 	// InitializeImpact に関連する定数
-	constexpr int kImpactColliderCount = 15; // 衝撃波の数
-	constexpr float kInitImpactRotationY = 0.2f; // 最初の衝撃波の回転角度
-	constexpr float kImpactRotationIncrement = 0.42f; // 衝撃波の回転角度の増加量
-	constexpr float kImpactScaleDivisor = 100.0f; // 衝撃波のスケールに使う割り算の値
+	const int kImpactColliderCount = 15; // 衝撃波の数
+	const float kInitImpactRotationY = 0.2f; // 最初の衝撃波の回転角度
+	const float kImpactRotationIncrement = 0.42f; // 衝撃波の回転角度の増加量
+	const float kImpactScaleDivisor = 100.0f; // 衝撃波のスケールに使う割り算の値
 
 	// UpdataImpact に関連する定数
-	constexpr float kImpactTranslationX[] = { 0.12f, 0.35f, 0.53f, 0.625f, 0.6f, 0.46f, 0.25f, -0.02f, -0.26f, -0.47f, -0.6f, -0.63f, -0.55f, -0.38f, -0.15f };
-	constexpr float kImpactTranslationY = 0.0f; // 衝撃波のY方向の移動量（全て同じ）
-	constexpr float kImpactTranslationZ[] = { 0.6f, 0.5f, 0.31f, 0.06f, -0.2f, -0.41f, -0.56f, -0.625f, -0.58f, -0.42f, -0.2f, 0.07f, 0.31f, 0.51f, 0.61f };
+	const float kImpactTranslationX[] = { 0.12f, 0.35f, 0.53f, 0.625f, 0.6f, 0.46f, 0.25f, -0.02f, -0.26f, -0.47f, -0.6f, -0.63f, -0.55f, -0.38f, -0.15f };
+	const float kImpactTranslationY = 0.0f; // 衝撃波のY方向の移動量（全て同じ）
+	const float kImpactTranslationZ[] = { 0.6f, 0.5f, 0.31f, 0.06f, -0.2f, -0.41f, -0.56f, -0.625f, -0.58f, -0.42f, -0.2f, 0.07f, 0.31f, 0.51f, 0.61f };
 
 	// GroundAttack に関連する定数
-	constexpr float kGroundAttackAnimationTime = 1.6f; // 地面攻撃のアニメーション時間
-	constexpr float kGroundImpactScaleIncrement = 2.0f; // 衝撃波のスケールの増加量
-	constexpr float kGroundImpactMaxScale = 100.0f; // 衝撃波の最大スケール
+	const float kGroundAttackAnimationTime = 1.6f; // 地面攻撃のアニメーション時間
+	const float kGroundImpactScaleIncrement = 2.0f; // 衝撃波のスケールの増加量
+	const float kGroundImpactMaxScale = 100.0f; // 衝撃波の最大スケール
 	
 	// SpecialBreath に関連する定数
-	constexpr int kSpecialBreathMoveTime = 420; // 移動時間
-	constexpr float kSpecialBreathAttackStartTime = 180.0f; // 攻撃開始時間
+	const int kSpecialBreathMoveTime = 420; // 移動時間
+	const float kSpecialBreathAttackStartTime = 180.0f; // 攻撃開始時間
 	// Acceleration の設定
-	constexpr float kAccelerationValue = 10.0f; // 加速度の値
-	constexpr float kFiledPosZ = 5.0f; // FiledPos のZ座標
+	const float kAccelerationValue = 10.0f; // 加速度の値
+	const float kFiledPosZ = 5.0f; // FiledPos のZ座標
 
 	// SpecialHenchman に関連する定数
-	constexpr int kSpecialHenchmanMoveTime = 600; // 子分のアクション時間
-	constexpr float kBarrierInitThreshold = 1.0f; // バリアの初期スレッショルド
-	constexpr Vector3 kBarrierScaleIncrease = { 2.f,2.f,2.f }; // バリアのスケール増加値
-	constexpr float kBarrierMaxScale = 100.0f; // バリアの最大スケール
-	constexpr float kBarrierYTranslate = 6.0f; // バリアのY軸位置
-	constexpr float kBarrierRotateSpeed = 0.01f; // バリアの回転速度
-	constexpr int kEnemySpawnInterval = 10; // 敵生成の間隔（フレーム単位）
-	constexpr float kEnemyHenchmanSpawnRange = 15.0f; // ヘンチマン生成の範囲
-	constexpr float kEnemyHenchmanSpawnYOffset = -1.0f; // ヘンチマン生成時のY座標
+	const int kSpecialHenchmanMoveTime = 600; // 子分のアクション時間
+	const float kBarrierInitThreshold = 1.0f; // バリアの初期スレッショルド
+	const Vector3 kBarrierScaleIncrease = { 2.f,2.f,2.f }; // バリアのスケール増加値
+	const float kBarrierMaxScale = 100.0f; // バリアの最大スケール
+	const float kBarrierYTranslate = 6.0f; // バリアのY軸位置
+	const float kBarrierRotateSpeed = 0.01f; // バリアの回転速度
+	const int kEnemySpawnInterval = 10; // 敵生成の間隔（フレーム単位）
+	const float kEnemyHenchmanSpawnRange = 15.0f; // ヘンチマン生成の範囲
+	const float kEnemyHenchmanSpawnYOffset = -1.0f; // ヘンチマン生成時のY座標
 
 	// Dead状態に関する定数
-	constexpr float kAnimationEndTime = 5.0f;   // アニメーションの終了時間（5秒）
-	constexpr float kBarrierThresholdIncreaseRate = 0.01f; // バリアのスレッショルド増加速度
-	constexpr Vector3 kEdgeColor = { 0.0f,-1.0f,-1.0f }; // エッジカラー調整値
-	constexpr float kThresholdIncreaseRate = 0.001f; // スレッショルドの増加速度
+	const float kAnimationEndTime = 5.0f;   // アニメーションの終了時間（5秒）
+	const float kBarrierThresholdIncreaseRate = 0.01f; // バリアのスレッショルド増加速度
+	const Vector3 kEdgeColor = { 0.0f,-1.0f,-1.0f }; // エッジカラー調整値
+	const float kThresholdIncreaseRate = 0.001f; // スレッショルドの増加速度
 
 	//必殺技カウントを増やすときに使う定数
-	constexpr float kMaxHp = 800.0f;  // 最大HP
-	constexpr int kHpThreshold = 50;  // HPの閾値
+	const float kMaxHp = 800.0f;  // 最大HP
+	const int kHpThreshold = 50;  // HPの閾値
 	
 	/*---------------EnemyManagerでのみ使う定数-----------------*/
 	//影関連
-	constexpr float kShadowHeight = 0.1f;  // 影の高さ
-	constexpr float kMaxShadowHeight = 3.9f;  // 最大影の高さ
+	const float kShadowHeight = 0.1f;  // 影の高さ
+	const float kMaxShadowHeight = 3.9f;  // 最大影の高さ
 
 	//名前のUI関連
-	constexpr float kDistanceScaleBase = 17.0f;  // 名前のスケールの基準距離
-	constexpr float kDistanceScaleOffset = 14.0f;  // 名前のスケールオフセット
+	const float kDistanceScaleBase = 17.0f;  // 名前のスケールの基準距離
+	const float kDistanceScaleOffset = 14.0f;  // 名前のスケールオフセット
 
 	//HPの色を変わるときの基準定数
-	constexpr float kLowHpThreshold = 200.0f;  // 低HP閾値
-	constexpr float kMidHpThreshold = 400.0f;  // 中HP閾値
+	const float kLowHpThreshold = 200.0f;  // 低HP閾値
+	const float kMidHpThreshold = 400.0f;  // 中HP閾値
 
 	// ダメージ数関連
-	constexpr float kDamagePlayer = 20.0f;  // プレイヤーダメージ
-	constexpr float kDamageHealer = 10.0f;  // ヒーラーダメージ
-	constexpr float kDamageTank = 10.0f;  // タンクダメージ
-	constexpr float kDamageRenjuNormal = 20.0f;  // レンジャーダメージ（通常）
-	constexpr float kDamageRenjuSkill = 30.0f;  // レンジャーダメージ（スキル）
+	const float kDamagePlayer = 20.0f;  // プレイヤーダメージ
+	const float kDamageHealer = 10.0f;  // ヒーラーダメージ
+	const float kDamageTank = 10.0f;  // タンクダメージ
+	const float kDamageRenjuNormal = 20.0f;  // レンジャーダメージ（通常）
+	const float kDamageRenjuSkill = 30.0f;  // レンジャーダメージ（スキル）
 
 	// アルファ値の設定
-	constexpr float kAlphaDecreaseRate = 0.08f;  // アルファ値の減少率
-	constexpr float kInitAlpha = 2.0f;  // 初期アルファ値
-	constexpr float kZeroAlpha = 0.0f;  // 最小アルファ値
+	const float kAlphaDecreaseRate = 0.08f;  // アルファ値の減少率
+	const float kInitAlpha = 2.0f;  // 初期アルファ値
+	const float kZeroAlpha = 0.0f;  // 最小アルファ値
 
 	// ランダムな位置調整
-	constexpr float kRandomOffsetRange = 3.0f;  // ランダムオフセット範囲
-	constexpr float kRandomHeightMin = 3.0f;  // ランダムな高さ最小値
-	constexpr float kRandomHeightMax = 6.0f;  // ランダムな高さ最大値
+	const float kRandomOffsetRange = 3.0f;  // ランダムオフセット範囲
+	const float kRandomHeightMin = 3.0f;  // ランダムな高さ最小値
+	const float kRandomHeightMax = 6.0f;  // ランダムな高さ最大値
 
 	// しきい値設定
-	constexpr float kBarrierThresholdLimit = 0.8f;  // バリアのディゾルブしきい値
+	const float kBarrierThresholdLimit = 0.8f;  // バリアのディゾルブしきい値
 
 	// ビルボード関連
-	constexpr float kYPositionOffset = 2.0f;  // Y軸位置オフセット
-	constexpr float kBillboardHeight = 9.5f;  // ビルボードの高さ
+	const float kYPositionOffset = 2.0f;  // Y軸位置オフセット
+	const float kBillboardHeight = 9.5f;  // ビルボードの高さ
 
 }
 
