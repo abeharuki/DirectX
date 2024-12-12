@@ -20,6 +20,7 @@ public:
 	//毎フレームの更新
 	void Update();
 
+	//リソースのゲッター
 	const Microsoft::WRL::ComPtr<ID3D12Resource> GetResource() const { return materialResorce_; }
 
 	//色
@@ -29,6 +30,7 @@ public:
 		materialData->color.a = color.w;
 	};
 
+	//ライトの設定
 	void SetLighting(bool flag) { materialData->enableLighting = flag; }
 
 	//UVTransform

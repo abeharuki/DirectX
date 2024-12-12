@@ -16,6 +16,34 @@
 #include <Command/Command.h>
 #include <ModelLoader.h>
 #include "BaseCharacter.h"
+#include <Transition/Transition.h>
+
+//ゲームシーンクラスの定数
+namespace GameSceneConstants {
+	// ラジアルブラーの初期設定
+	const float kRadialBlurInitWidth = 0.01f;//ブラーの掛ける強さ
+	const float kRadialBlurInitRotation = 0.1f;//ブラーの回転
+
+	// ラジアルブラーの最大幅
+	const float kMaxRadialBlurWidth = 0.9f;//ブラーのmax強さ
+
+	// カメラ方向遷移の最大時間
+	const int kCameraDirectionTimeMax = 10;
+
+	// 各キャラクターの初期位置
+	const float kHealerInitPos = 6.0f;
+	const float kRenjuInitPos = -3.0f;
+	const float kTankInitPos = 0.0f;
+
+	// 追従カメラの初期位置
+	const Vector3 kFollowCameraInit = { 3.0f,0.0f,-35.0f };
+
+	// バトル開始のZ軸閾値
+	const float kBattleStartZThreshold = -49.9f;
+
+	// スタート時の敵のアニメーションフレームタイム
+	const float kEnemyAnimationFlame = 25.0f;
+}
 
 /**
  * @file GameScene
@@ -33,9 +61,7 @@ public: // メンバ関数
 	void RenderDirect() override;
 
 private:
-	//フェードイン・フェードアウト
-	void Fade();
-
+	
 	//バトル開始の演出
 	void BattleBegin();
 
@@ -63,9 +89,9 @@ private: // メンバ変数
 	//ローダー
 	std::unique_ptr<ModelLoader> loader_;
 
-	//フェードイン・フェードアウト用スプライト
-	std::unique_ptr<Sprite> spriteBack_;
-
+	// フェードイン・フェードアウト用
+	std::unique_ptr<Transition> transition_;
+	
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
 
@@ -84,11 +110,6 @@ private: // メンバ変数
 
 	//コマンド
 	std::unique_ptr<Command> command_;
-
-	//フェーズイン・フェードアウト
-	bool isFadeOut_;
-	bool isFadeIn_;
-	float alpha_;
 
 	//ラジアルブラー
 	RadialBlur radialBlur_;

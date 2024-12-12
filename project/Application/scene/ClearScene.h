@@ -2,6 +2,7 @@
 #include "Framework/IScene.h"
 #include "Input.h"
 #include <Sprite.h>
+#include "Transition/Transition.h"
 
 /**
  * @file ClearScene
@@ -18,17 +19,11 @@ public:
 	//ポストエフェクトのかからないオブジェクトの描画
 	void RenderDirect() override;
 
-private:
-	//フェードイン・フェードアウト
-	void Fade();
+
 private:
 	std::unique_ptr<Sprite> spriteClear_;
 	std::unique_ptr<Sprite> spritePushA_;
-	// フェードイン・フェードアウト用スプライト
-	std::unique_ptr<Sprite> spriteBack_;
+	// フェードイン・フェードアウト用
+	std::unique_ptr<Transition> transition_;
 
-	bool isFadeOut_;
-	bool isFadeIn_;
-	bool isFede_;
-	float alpha_;
 };

@@ -11,7 +11,21 @@
 #include <Renju/RenjuManager.h>
 #include "PostEffects/PostEffect.h"
 #include <ModelLoader.h>
+#include <Transition/Transition.h>
 
+//タイトルシーンクラスの定数
+namespace TitleSceneConstants {
+	// スプライトのサイズ
+	const Vector2 kSpriteTitleSize = { 1280.0f, 905.0f };   // タイトルスプライトのサイズ
+
+
+	// タイトルスプライトの位置
+	const Vector2 kSpriteTitlePos = { 0.0f, -250.0f };  // タイトルスプライトの位置
+	const Vector2 kSpritePushAPos = { 50.0f, 0.0f };    // "Press A" スプライトの位置
+
+	// その他の定数
+	const float kOutLineValue = 0.005f;  // アウトラインの値
+}
 
 /**
  * @file TitleScene
@@ -31,9 +45,7 @@ public:
 
 
 private:
-	//フェードイン・フェードアウト
-	void Fade();
-
+	
 	//カメラの動き
 	void cameraMove();
 
@@ -51,12 +63,7 @@ private:
 	//uint32_t audioData_[10];
 	std::unique_ptr<Sprite> spriteTitle_;
 	std::unique_ptr<Sprite> spritePushA_;
-	//std::unique_ptr<Sprite> spriteRule_;
-
-	// フェードイン・フェードアウト用スプライト
-	std::unique_ptr<Sprite> spriteBack_;
-
-	WorldTransform worldTransform_;
+	
 	ViewProjection viewProjection_;
 
 	// 天球
@@ -80,15 +87,9 @@ private:
 	// レンジャー
 	std::unique_ptr<RenjuManager> renjuManager_;
 
-	Vector2 pos_;
-	bool rule_;
-
-	bool isFadeOut_;
-	bool isFadeIn_;
-	bool isFede_;
-	float alpha_;
-
-	float a_;
+	// フェードイン・フェードアウト用
+	std::unique_ptr<Transition> transition_;
+	
 	std::vector<BaseCharacter*> characters;
 	//ノードエディター
 	Editor::NodeEditor editor_;

@@ -33,8 +33,9 @@ struct Skeleton {
 
 namespace SkeletonPace {
 
-
+	//スケルトンの作成
 	Skeleton CreateSkeleton(const Node& rootNode);
 
+	//ジョイントの作成
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
 }

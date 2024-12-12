@@ -26,6 +26,8 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	static LineBox* GetInstance();
+
+	//フレームboxの作成
 	static LineBox* Create();
 	static LineBox* Create(AABB aabb);
 	static LineBox* Create(OBB obb);
@@ -35,24 +37,30 @@ public:
 	void Initialize(AABB aabb);
 	void Initialize(OBB obb);
 
+	//毎フレームの更新
 	void Update(AABB aabb);
 	void Updata();
 
+	//描画
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 
+	//中心座標の設定
 	void SetCenter(Vector3 center) {
 		obb_.center = center;
 		Updata();
 	}
 
-	
-
+	//中心座標のゲッター
 	Vector3 GetCenter() { return obb_.center; }
+
+	//transformのセッター
 	void SetWorldTransform(WorldTransform worldtransform) { 
 		worldTransform_ = worldtransform;
 		worldTransform_.translate = worldtransform.translate + obb_.center;
 		worldTransform_.UpdateMatrix();
 	}
+
+	//transformのゲッター
 	WorldTransform& GetWorldTramnsform() { return worldTransform_; }
 
 	//光の色　向き　明るさ
@@ -65,10 +73,9 @@ public:
 	//スポットライト
 	void SpotLightDraw(SpotLight spotLight);
 
-	
-
+	//線の開始地点と終了地点の設定
 	void SetLinePos(Vector3 start, Vector3 end);
-
+	//色の設定
 	void SetColor(Vector4 color);
 	// ブレンドモード
 	void SetBlendMode(BlendMode blendMode);

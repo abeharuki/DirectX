@@ -4,11 +4,7 @@
 
 
 void TitleScene::Initialize() {
-	worldTransform_.Initialize();
-	worldTransform_.scale = { 10.0f,10.0f,10.0f };
-	worldTransform_.translate.z = -5;
 	viewProjection_.Initialize();
-	viewProjection_.translation_ = { 0.0f, 1.0f, -10.0f };
 	
 	/*audio_ = Audio::GetInstance();
 	audioData_[0] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
@@ -51,26 +47,17 @@ void TitleScene::Initialize() {
 	healerManager_ = std::make_unique<HealerManager>();
 	healerManager_->Initialize();
 
-	alpha_ = 1.0f;
-	// フェードイン・フェードアウト用スプライト
-	spriteBack_.reset(Sprite::Create("resources/Black.png"));
-	spriteTitle_.reset(Sprite::Create("resources/Title/DRAPONQUEST1.png"));
-	spriteTitle_->SetSize({ 1280.0f,905.0f });
-	spriteTitle_->SetPosition({ 0.0f,-250.0f });
-	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));
-	spritePushA_->SetPosition(Vector2{ 50.0f,0.0f });
-	//spriteRule_.reset(Sprite::Create("resources/Title/rule.png"));
-	rule_ = false;
 	
-	spriteBack_->SetSize({ 1280.0f,720.0f });
-	isFadeIn_ = true;
-	isFadeOut_ = false;
-	isFede_ = false;
-
-	a_ = 0.005f;
+	spriteTitle_.reset(Sprite::Create("resources/Title/DRAPONQUEST1.png"));
+	spriteTitle_->SetSize(TitleSceneConstants::kSpriteTitleSize);
+	spriteTitle_->SetPosition(TitleSceneConstants::kSpriteTitlePos);
+	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));
+	spritePushA_->SetPosition(TitleSceneConstants::kSpritePushAPos);
+	transition_ = std::make_unique<Transition>();
+	transition_->Initialize();
 
 	PostEffect::GetInstance()->isGrayscale(false);
-
+	PostEffect::GetInstance()->ValueOutLine(TitleSceneConstants::kOutLineValue);
 #ifndef NDEBUG
 #else
 	// リリースビルド時のコード
@@ -83,27 +70,23 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Update() {
-	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-	if (Input::GetInstance()->GetPadConnect()) {
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)) {
-			//rule_ = true;
-		}
-	}
-
-	if (Input::PushKey(DIK_G)) {
-		//rule_ = true;
-	}
+	
 	
 
 	enemyManager_->Update();
 	
+	//シーン遷移
+	transition_->ChangeScene();
+	transition_->Update();
 
-
-	Fade();
+	if (transition_->GetFade()) {
+		SceneManager::GetInstance()->ChangeScene("GameScene");
+	}
+	
 	cameraMove();
 	skydome_->Update();
 	loader_->Update();
-	worldTransform_.UpdateMatrix();
+	
 	
 	//ライティングの設定
 	playerManager_->GetPlayer()->SetLight(directionLight_);
@@ -113,26 +96,20 @@ void TitleScene::Update() {
 	tankManager_->GetTank()->SetLight(directionLight_);
 	loader_->SetLight(directionLight_);
 
-	PostEffect::GetInstance()->ValueOutLine(a_);
+	
 
-	ImGui::Begin("Player");
-	ImGui::SliderFloat3("pos", &worldTransform_.translate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("rotate", &worldTransform_.rotate.x, -0.0f, 10.0f);
-	ImGui::End();
+	
 
 	ImGui::Begin("Setting");
 	ImGui::DragFloat3("DirectionLight", &directionLight_.direction.x, 1.0f);
 	ImGui::DragFloat("Light", &directionLight_.intensity, 1.0f);
-	ImGui::DragFloat("outline", &a_, 0.01f);
-	ImGui::DragFloat2("TitlePos", &pos_.x, 1.0f);
 	ImGui::End();
 
 	editor_.load("Example");
 	editor_.show("ExampleNode");
 	editor_.save("Example");
 	
-	//std::string state = editor_.GetLinkNode("Attack", Output1).name;
-
+	
 }
 
 void TitleScene::Draw() {
@@ -162,7 +139,7 @@ void TitleScene::Draw() {
 void TitleScene::RenderDirect() {
 	spriteTitle_->Draw();
 	spritePushA_->Draw();
-	spriteBack_->Draw();
+	transition_->Draw();
 }
 
 void TitleScene::cameraMove() {
@@ -176,36 +153,3 @@ void TitleScene::cameraMove() {
 }
 
 
-void TitleScene::Fade() {
-	if (Input::GetInstance()->GetPadConnect()) {
-		if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A) && !isFadeIn_) {
-			isFadeOut_ = true;
-		}
-	}
-
-	if (Input::PushKey(DIK_SPACE) && !isFadeIn_) {
-		isFadeOut_ = true;
-	}
-
-	//フェードイン時
-	if (isFadeIn_) {
-		if (alpha_ > 0.0f) {
-			alpha_ -= 0.02f;
-		}
-		else {
-			alpha_ = 0.0f;
-			isFadeIn_ = false;
-		}
-	}
-
-	//フェードアウト時
-	if (isFadeOut_) {
-		if (alpha_ < 1) {
-			alpha_ += 0.02f;
-		}
-		else {
-			alpha_ = 1.0f;
-			SceneManager::GetInstance()->ChangeScene("GameScene");
-		}
-	}
-}

@@ -47,8 +47,10 @@ public: // 静的メンバ関数
 	/// <returns></returns>
 	static Skybox* GetInstance();
 
+	//作成
 	static Skybox* Create(const std::string& fileName);
 
+	//テクスチャ番号
 	uint32_t GetTexture() { return texture_; }
 
 public: // 静的メンバ変数

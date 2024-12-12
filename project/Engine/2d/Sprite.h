@@ -118,13 +118,14 @@ public: // メンバ関数
 	void Draw();
 
 	void  UpdateVertexBuffer();
-	/// <summary>
-	/// 座標の設定
-	/// </summary>
-	/// <param name="position">座標</param>
+	
+	//スプライトの座標の設定
 	void SetPosition(const Vector2& position) { position_ = position; }
+	//スプライトのサイズの設定
 	void SetSize(const Vector2& size) { size_ = size; }
+	//スプライトの回転の設定
 	void SetRotation(const float& rotation) { rotation_ = rotation; }
+	//UV座標の設定
 	void SetUV(Transform& uvTransform) {
 		// UVTransform用の行列
 		Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
@@ -138,7 +139,7 @@ public: // メンバ関数
 		materialDataSprite->uvTransform = uvTransformMatrix;
 	}
 
-
+	//スプライトの座標のゲッター
 	const Vector2& GetPosition() const { return position_; }
 
 

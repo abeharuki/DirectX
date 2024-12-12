@@ -81,34 +81,34 @@ public:
 	/// <returns></returns>
 	void CreateVertexResource();
 
-	/// <summary>
-	/// 描画前処理
-	/// </summary>
-	/// <param name="commandList">描画コマンドリスト</param>
+	
 	//光の色　向き　明るさ
 	void DirectionalLightDraw(DirectionLight directionLight);
 	//ポイントライトの詳細　向き
 	void PointLightDraw(PointLight pointLight, Vector3 direction);
 	//スポットライト
 	void SpotLightDraw(SpotLight spotLight);
-
+	//ディレクションライト
 	void DirectionalLight(Vector4 color, Vector3 direction, float intensity);
 
 	
 	//static void PostDraw();
 
-	
+	//描画
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 	
 	
 
-	
+	//モデルの作成
 	static Model* CreateModelFromObj(const std::string& filename, const std::string& texturePath);
+	//テクスチャを指定しないobjの作成
 	static Model* CreateFromObj(const std::string& filename);
+	//デプスのないobjの作成
 	static Model* CreateFromNoDepthObj(const std::string& filename, const std::string& texturePath);
 
 	//static Microsoft::WRL::ComPtr<ID3D12Resource> GetLightRsurce() { return lightResource_; };
 
+	/*------------------セッター----------------------*/
 	void SetUV(Transform& uvTransform) { materialData_->SetUV(uvTransform); }
 	void SetMaskUV(Transform& uvTransform) { 
 		// UVTransform用の行列

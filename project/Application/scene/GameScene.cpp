@@ -7,14 +7,13 @@
 #include <PostEffects/PostEffect.h>
 
 
-
 void GameScene::Initialize() {
 
 	//衝突マネージャーの作成
 	collisionManager_ = std::make_unique<CollisionManager>();
 
 	viewProjection_.Initialize();
-	viewProjection_.translation_ = { 0.0f, 0.0f, -10.0f };
+	
 
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
@@ -25,10 +24,10 @@ void GameScene::Initialize() {
 	// 地面
 	loader_.reset(ModelLoader::Create("resources/JsonFile/loader.json"));
 
-	alpha_ = 1.0f;
-	//フェードイン・フェードアウト用スプライト
-	spriteBack_.reset(Sprite::Create("resources/Black.png"));
-	spriteBack_->SetSize({ 1280.0f, 720.0f });
+	//トランジション
+	transition_ = std::make_unique<Transition>();
+	transition_->Initialize();
+	
 
 	//プレイヤー
 	playerManager_ = std::make_unique<PlayerManager>();
@@ -61,28 +60,36 @@ void GameScene::Initialize() {
 	command_ = std::make_unique<Command>();
 	command_->Initialize();
 
-	//フェード
-	isFadeIn_ = true;
-	isFadeOut_ = false;
-
+	
 	//バトルのフラグ
 	battle_ = false;
 
 	//ラジアルブラー
 	radialBlur_.isEnble = false;
-	radialBlur_.blurWidth = 0.01f;
-	radialBlur_.rotation = 0.1f;
+	radialBlur_.blurWidth = GameSceneConstants::kRadialBlurInitWidth;
+	radialBlur_.rotation = GameSceneConstants::kRadialBlurInitRotation;
 	
 
 	characters = {healerManager_->GetHealer(), renjuManager_->GetRenju(),tankManager_->GetTank()};
 
-	PostEffect::GetInstance()->isBloom(true);
 }
 
 void GameScene::Update() {
 
 	//シーン遷移
-	Fade();
+	if (playerManager_->IsOver() || enemyManager_->IsClear()) {
+		transition_->SetFadeOut(true);
+	}
+	if (enemyManager_->IsClear() && transition_->GetFade()) {
+		SceneManager::GetInstance()->ChangeScene("ClearScene");
+	}
+
+	if (playerManager_->IsOver() && transition_->GetFade()) {
+		SceneManager::GetInstance()->ChangeScene("OverScene");
+	}
+
+	transition_->Update();
+
 	//エンカウント時の演出
 	BattleBegin();
 	
@@ -106,7 +113,7 @@ void GameScene::Update() {
 	
 	//playerの更新
 	playerManager_->GetPlayer()->SetEnemyLength(enemyManager_->GetWorldTransform().translate);
-	if (radialBlur_.blurWidth == 0.01f) {
+	if (radialBlur_.blurWidth == GameSceneConstants::kRadialBlurInitWidth) {
 		playerManager_->Update();
 	}
 	
@@ -231,7 +238,7 @@ void GameScene::Update() {
 	loader_->Update();
 
 	// 追従カメラの更新
-	if ((!cameraDirection_||battle_) && radialBlur_.blurWidth == 0.01f) {
+	if ((!cameraDirection_||battle_) && radialBlur_.blurWidth == GameSceneConstants::kRadialBlurInitWidth) {
 		followCamera_->Update();
 	}
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -325,18 +332,6 @@ void GameScene::RenderDirect() {
 	}
 
 	if (!playerManager_->GetPlayer()->IsDash() && (playerManager_->GetPlayer()->GameStart() && cameraDirection_)) {
-		//if (!tankManager_->GetTank()->GetBarrier()) {
-		//	//敵
-		//	enemyManager_->Draw(viewProjection_);
-		//	// タンク
-		//	tankManager_->Draw(viewProjection_);
-		//	// ヒーラー
-		//	healerManager_->Draw(viewProjection_);
-		//	// レンジャー
-		//	renjuManager_->Draw(viewProjection_);
-		//	//プレイヤー
-		//	playerManager_->Draw(viewProjection_);
-		//}
 		
 		enemyManager_->DrawUI();
 		playerManager_->DrawUI();
@@ -350,7 +345,8 @@ void GameScene::RenderDirect() {
 		}
 	}
 	
-	spriteBack_->Draw();
+	//シーン遷移の描画
+	transition_->Draw();
 
 
 	//デプスのないオブジェクト
@@ -362,51 +358,14 @@ void GameScene::RenderDirect() {
 
 }
 
-void GameScene::Fade() {
-	if (isFadeIn_) {
-		if (alpha_ > 0.001f) {
-			alpha_ -= 0.02f;
-		}
-		else {
-			alpha_ = 0.0f;
-			isFadeIn_ = false;
-		}
-	}
-
-	if (playerManager_->IsOver() || enemyManager_->IsClear()) {
-		if (alpha_ < 1) {
-			alpha_ += 0.02f;
-		}
-		else {
-			alpha_ = 1.0f;
-			isFadeOut_ = true;
-		}
-	}
-
-	if (playerManager_->IsOver()) {
-		PostEffect::GetInstance()->isGrayscale(false);
-	}
-
-	spriteBack_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-
-	if (enemyManager_->IsClear() && isFadeOut_) {
-		SceneManager::GetInstance()->ChangeScene("ClearScene");
-	}
-
-	if (playerManager_->IsOver() && isFadeOut_) {
-		SceneManager::GetInstance()->ChangeScene("OverScene");
-	}
-
-}
-
 void GameScene::BattleBegin(){
 	PostEffect* const posteffect = PostEffect::GetInstance();
 	//ラジアルブラーの演出
-	if (playerManager_->GetPlayer()->GameStart() && !cameraDirection_ && radialBlur_.blurWidth < 0.9f) {
+	if (playerManager_->GetPlayer()->GameStart() && !cameraDirection_ && radialBlur_.blurWidth <GameSceneConstants::kMaxRadialBlurWidth) {
 		posteffect->isRadialBlur(true);
 
 		radialBlur_.blurWidth = Math::LerpShortAngle(radialBlur_.blurWidth,1.0f,0.1f);
-		cameraDirectionTime_ = 10;
+		cameraDirectionTime_ = GameSceneConstants::kCameraDirectionTimeMax;
 
 		healerManager_->GetHealer()->SetGameStart(true);
 		renjuManager_->GetRenju()->SetGameStart(true);
@@ -414,21 +373,21 @@ void GameScene::BattleBegin(){
 	}
 
 	//カメラの演出に移行
-	if (radialBlur_.blurWidth >= 0.9f && !cameraDirection_) {
+	if (radialBlur_.blurWidth >= GameSceneConstants::kMaxRadialBlurWidth && !cameraDirection_) {
 		--cameraDirectionTime_;
 		if (cameraDirectionTime_ <= 0) {
 			posteffect->isRadialBlur(false);
-			radialBlur_.blurWidth = 0.01f;
+			radialBlur_.blurWidth = GameSceneConstants::kRadialBlurInitWidth;
 			radialBlur_.rotation = 0.f;
 			cameraDirection_ = true;
 			//位置の初期化
 			playerManager_->GetPlayer()->InitPos();
-			healerManager_->GetHealer()->InitPos(6.f);
-			renjuManager_->GetRenju()->InitPos(-3.f);
-			tankManager_->GetTank()->InitPos(0.f);
+			healerManager_->GetHealer()->InitPos(GameSceneConstants::kHealerInitPos);
+			renjuManager_->GetRenju()->InitPos(GameSceneConstants::kRenjuInitPos);
+			tankManager_->GetTank()->InitPos(GameSceneConstants::kTankInitPos);
 			//カメラの初期化
 			followCamera_->InitAngle();
-			followCamera_->SetinterTargetPos({ 3.0f,0.0f,-35.0f });
+			followCamera_->SetinterTargetPos(GameSceneConstants::kFollowCameraInit);
 		}
 	}
 
@@ -439,11 +398,11 @@ void GameScene::BattleBegin(){
 	if (cameraDirection_ && !battle_) {
 		followCamera_->CameraDirection();
 		if (!followCamera_->GetMoveToEnemy()) {
-			enemyManager_->GetEnemy()->SetAnimationNumber(kThreat, 25.f,false);
+			enemyManager_->GetEnemy()->SetAnimationNumber(kThreat, GameSceneConstants::kEnemyAnimationFlame,false);
 		}
 
 		//カメラがプレイヤーのとこまで来たらスタート
-		if (followCamera_->GetViewProjection().translation_.z <= -49.9f) {
+		if (followCamera_->GetViewProjection().translation_.z <= GameSceneConstants::kBattleStartZThreshold) {
 			battle_ = true;
 			command_->SetTaskType(TaskType::kInitial);
 			command_->SetOperatin(false);

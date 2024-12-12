@@ -62,11 +62,8 @@ public:
 	/// <returns></returns>
 	void CreateVertexResource();
 	void DrawSphere(VertexData* vertexData, uint32_t vertexIndex);
-	/// <summary>
-	/// 描画前処理
-	/// </summary>
-	/// <param name="commandList">描画コマンドリスト</param>
-
+	
+	//描画
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 
 	//光の色　向き　明るさ

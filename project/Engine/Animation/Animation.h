@@ -123,6 +123,8 @@ public:
 	/// <returns></returns>
 	void CreateResource();
 
+	/*-----------------------------セッター---------------------------------*/
+
 	//光の色　向き　明るさ
 	void DirectionalLightDraw(DirectionLight directionLight);
 	//ポイントライトの詳細　向き
@@ -135,8 +137,7 @@ public:
 			lightData->environment_.isEnble_ = flag;
 		}
 		lightData->environment_.environment = environment;
-	}
-
+	}	
 	//止める
 	void Stop(bool flag) {
 		stop_ = flag;
@@ -161,12 +162,15 @@ public:
 	void SetpreAnimationTimer(float time) { animationTime = time; }
 	float GetAnimationTimer() { return  animationTime; }
 
+	//ブレンドモードの設定
 	void SetBlend(const uint32_t animationNumber,float num);
 
+	//テクスチャの設定
 	void SetTexture(const std::string& texturePath);
+	//マスクテクスチャの設定
 	void SetMaskTexture(const std::string& texturePath);
 
-
+	//指定したジョイントの座標受け取り
 	const WorldTransform& GetJointWorldTransform(const std::string& name)const;
 private:
 	// ルートシグネチャ

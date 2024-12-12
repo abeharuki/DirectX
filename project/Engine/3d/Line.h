@@ -63,8 +63,10 @@ public:
 	/// 描画前処理
 	/// </summary>
 	/// <param name="commandList">描画コマンドリスト</param>
-
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
+
+	//線の作成
+	static Line* CreateLine(Vector3 start, Vector3 end);
 
 	//光の色　向き　明るさ
 	void LightDraw(Vector4 color, Vector3 direction, float intensity);
@@ -76,8 +78,7 @@ public:
 	//スポットライト
 	void SpotLightDraw(SpotLight spotLight);
 
-	static Line* CreateLine(Vector3 start, Vector3 end);
-
+	//線の開始地点と終了地点の設定
 	void SetLinePos(Vector3 start, Vector3 end);
 
 	void SetColor(Vector4 color);

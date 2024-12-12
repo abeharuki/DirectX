@@ -357,7 +357,7 @@ public:
 	//クォータニオン
 	static Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
 
-
+	//
 	static Matrix4x4 MakeScaleMatrix(Vector3 scale);
 
 	static Matrix4x4 MakeTranslateMatrix(Vector3 translate);

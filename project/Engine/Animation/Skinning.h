@@ -45,5 +45,6 @@ struct SkinCluster {
 
 namespace SkinningPace {
 
+	//スキニングの作成
 	SkinCluster CreateSkinCuster( const Skeleton& skelteon, const ModelData& modelData);
 }
