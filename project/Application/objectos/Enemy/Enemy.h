@@ -323,6 +323,8 @@ private:
 	// パーツ親子関係
 	void Relationship();
 
+	//ターゲットを抽選
+	void SelectTarget();
 private: // メンバ変数
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformBody_;
@@ -406,10 +408,10 @@ private: // メンバ変数
 	int num_;
 
 	enum TragetNum {
-		player,
-		healer,
-		renju,
-		tank,
+		kPlayer,
+		kHealer,
+		kRenju,
+		kTank,
 	};
 
 	//クリアフラグ

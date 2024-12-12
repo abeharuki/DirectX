@@ -2,42 +2,33 @@
 #include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 
-// コンボ定数表
-const std::array<Player::ConstAttack, Player::ComboNum> Player::kConstAttacks_ = {
-	{// 振りかぶり、攻撃前硬直、攻撃振り時間、硬直、振りかぶりの移動の速さ,ため移動速さ,攻撃振りの移動速さ
-	 {15, 10, 15, 3, -0.04f, 0.0f, 0.14f},
-	 {15, 10, 15, 3, -0.04f, 0.0f, 0.2f},
-	 {15, 10, 15, 30, -0.04f, 0.0f, 0.2f}}
-};
 
 
 void Player::Initialize() {
 
 	// 初期化
 	worldTransformBase_.Initialize();
-	worldTransformBase_.translate.x = 3.0f;
+	worldTransformBase_.translate = PlayerConstants::kPlayerInitPosition;
 	worldTransformHammer_.Initialize();
-	worldTransformHammer_.rotate = {-0.7f,0.0f,1.7f};
+	worldTransformHammer_.rotate = PlayerConstants::kWeaponRotate;
 	worldTransformHead_.Initialize();
 	worldTransformCollision_.Initialize();
-	worldTransformCollision_.scale = { 0.1f, 1.0f, 0.1f };
-	worldTransformCollision_.translate.y = 2.0f;
+	worldTransformCollision_.scale = PlayerConstants::kWeaponCollisionScale;
+	worldTransformCollision_.translate = PlayerConstants::kWeaponCollisionTranslate;
 	worldTransformNum_.Initialize();
-	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
+	worldTransformNum_.scale = PlayerConstants::kPlayerNumScale;
 	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
 	alpha_ = 0.0f;
 
 	isOver_ = false;
 	animation_ = AnimationManager::Create("resources/Player", "Atlas.png", "player.gltf");
-	animationNumber_ = standby;
-	flameTime_ = 30.0f;
+	animationNumber_ = kStandby;
+	flameTime_ = PlayerConstants::kFlameTimeDefault;
 	attackType_.resize(AttackType::kAttackMax);
 	for (int i = 0; i < AttackType::kAttackMax; ++i) {
 		attackType_[i] = false;
 	}
 
-
-	
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -85,9 +76,6 @@ void Player::Update() {
 		case Behavior::kAttack:
 			AttackInitialize();
 			break;
-		case Behavior::knock:
-			knockInitialize();
-			break;
 		case Behavior::kDead:
 			DeadInitilize();
 			break;
@@ -118,9 +106,6 @@ void Player::Update() {
 		// 攻撃
 		AttackUpdata();
 		break;
-	case Behavior::knock:
-		knockUpdata();
-		break;
 	case Behavior::kDead:
 		DeadUpdata();
 		break;
@@ -130,10 +115,10 @@ void Player::Update() {
 		if (enemy_->isAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
-				hp_ -= 10;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= PlayerConstants::kAttackEnemyDamageNormal;
+				alpha_ = PlayerConstants::kDamageAlphaInitValue;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/10.png");
 			}
 		}
@@ -143,18 +128,15 @@ void Player::Update() {
 		if (enemy_->isAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
-				hp_ -= 50;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= PlayerConstants::kAttackEnemyDamageHenchman;
+				alpha_ = PlayerConstants::kDamageAlphaInitValue;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/50.png");
 			}
 		}
 	}
 
-	if (Input::PushKey(DIK_O)) {
-		//isOver_ = true;
-	}
 
 	if (hp_ <= 0 && behavior_ != Behavior::kDead) {
 		behaviorRequest_ = Behavior::kDead;
@@ -169,7 +151,7 @@ void Player::Update() {
 	damageModel_->SetColor({ 1.f,1.f,1.f,alpha_ });
 	//αの変更
 	if (alpha_ > 0.0f) {
-		alpha_ -= 0.08f;
+		alpha_ -= PlayerConstants::kDamageAlphaDecrement;
 		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
 	}
 
@@ -216,13 +198,13 @@ void Player::NoDepthDraw(const ViewProjection& camera){
 
 // 移動
 void Player::MoveInitialize() {
-	worldTransformBase_.translate.y = 0.0f;
-	workAttack_.isAttack = false;
+	worldTransformBase_.translate.y = PlayerConstants::kPlayerInitPosition.y;
+	isAttack = false;
 	dash_ = false;
 	combo_ = false;
 	auto_ = false;
 	animation_->SetpreAnimationTimer(0);
-	flameTime_ = 30.0f;
+	flameTime_ = PlayerConstants::kFlameTimeDefault;
 	animation_->SetLoop(true);
 };
 void Player::MoveUpdata() {
@@ -230,7 +212,7 @@ void Player::MoveUpdata() {
 
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
-	animationNumber_ = standby;
+	animationNumber_ = kStandby;
 	bool isMove = false;
 
 	// 移動速度
@@ -307,24 +289,24 @@ void Player::MoveUpdata() {
 	}
 
 	if (isMove) {
-		animationNumber_ = run;
+		animationNumber_ = kRun;
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_->rotation_.y);
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		// 現在の位置から移動する位置へのベクトル
 		Vector3 sub = (worldTransformBase_.translate + velocity_) - GetLocalPosition();
 		// 平行移動
 		worldTransformBase_.translate += velocity_;
-		if (sub.z != 0.0) {
+		if (sub.z != 0.0f) {
 			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
 
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
+			if (sub.z < 0.0f) {
+				destinationAngleY_ = (sub.x >= 0.0f)
 					? std::numbers::pi_v<float> -destinationAngleY_
 					: -std::numbers::pi_v<float> -destinationAngleY_;
 			}
 		}
 		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			destinationAngleY_ = (sub.x >= 0.0f) ? std::numbers::pi_v<float> / 2.0f
 				: -std::numbers::pi_v<float> / 2.0f;
 		}
 	}
@@ -337,12 +319,6 @@ void Player::MoveUpdata() {
 	// 攻撃
 	if (attackType_[kNormalAttack] && !preNoAttack_) {
 		auto_ = true;
-		// 敵の座標までの距離
-		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-		if (length < 5) {
-			auto_ = false;
-			behaviorRequest_ = Behavior::kAttack;
-		}
 	}
 
 	// ダッシュボタンを押したら
@@ -354,7 +330,7 @@ void Player::MoveUpdata() {
 	}
 
 	if (auto_) {
-		animationNumber_ = run;
+		animationNumber_ = kRun;
 		// 敵の座標までの距離
 		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 		// 追従対象からロックオン対象へのベクトル
@@ -383,7 +359,7 @@ void Player::MoveUpdata() {
 		worldTransformBase_.translate += velocity_;
 
 
-		if (length < 5) {
+		if (length < PlayerConstants::kAttackRange) {
 			auto_ = false;
 			behaviorRequest_ = Behavior::kAttack;
 		}
@@ -393,12 +369,12 @@ void Player::MoveUpdata() {
 
 // ジャンプ
 void Player::JumpInitialize() {
-	worldTransformBase_.translate.y = 0.0f;
+	worldTransformBase_.translate.y = PlayerConstants::kPlayerInitPosition.y;
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
-	animationNumber_ = jump;
-	flameTime_ = 30.0f;
+	animationNumber_ = kJump;
+	flameTime_ = PlayerConstants::kFlameTimeDefault;
 	animation_->SetAnimationTimer(0.5f, flameTime_);
 	animation_->SetLoop(false);
 
@@ -426,7 +402,7 @@ void Player::DashInitialize() {
 	workDash_.dashParameter_ = 0;
 	worldTransformBase_.rotate.y = destinationAngleY_;
 	dash_ = true;
-	animationNumber_ = run;
+	animationNumber_ = kRun;
 }
 void Player::DashUpdata() {
 	// dashTimer -= 4;
@@ -443,60 +419,20 @@ void Player::DashUpdata() {
 	}
 }
 
-
-// ノックバック
-void Player::knockInitialize() {
-	if (hp_ >= 1) {
-		PostEffect::GetInstance()->VignetteColor({ 0.1f, 0.0f, 0.0f });
-		PostEffect::GetInstance()->isVignetting(true);
-	}
-	PostEffect::GetInstance()->isRadialBlur(false);
-	nockTime_ = 10;
-	animation_->SetAnimationTimer(0, 8.0f);
-	animation_->SetpreAnimationTimer(0);
-	nockBack_ = true;
-};
-void Player::knockUpdata() {
-	worldTransformBase_.translate -= velocity_;
-	worldTransformBase_.translate.y = 0;
-	if (--nockTime_ <= 0) {
-		PostEffect::GetInstance()->isVignetting(false);
-		if (hp_ > 0) {
-			behaviorRequest_ = Behavior::kRoot;
-		}
-		else {
-			behaviorRequest_ = Behavior::kDead;
-		}
-
-		nockBack_ = false;
-		animation_->SetAnimationTimer(0, 8.0f);
-		animation_->SetpreAnimationTimer(0);
-	}
-
-
-
-};
-
 // 攻撃
 void Player::AttackInitialize() {
 	worldTransformHammer_.translate.x = 0.0f;
-	workAttack_.attackParameter_ = 0;
-	workAttack_.comboIndex = 0;
-	workAttack_.inComboPhase = 0;
-	workAttack_.comboNext = false;
-	workAttack_.isFinalAttack = false;
-	animationNumber_ = animeAttack;
-
+	animationNumber_ = kAnimeAttack;
 	animation_->SetpreAnimationTimer(0);
 }
 void Player::AttackUpdata() {
 	
-	if (animation_->GetAnimationTimer() > 0.8f) {
-		workAttack_.isAttack = true;
+	if (animation_->GetAnimationTimer() > PlayerConstants::kAttackAnimationStartTime) {
+		isAttack = true;
 	}
 
-	if (animation_->GetAnimationTimer() >= 1.6f) {
-		animationNumber_ = standby;
+	if (animation_->GetAnimationTimer() >= PlayerConstants::kAttackAnimationEndTime) {
+		animationNumber_ = kStandby;
 		behaviorRequest_ = Behavior::kRoot;
 	}
 
@@ -515,11 +451,11 @@ void Player::DeadInitilize() {
 	isDead_ = true;
 };
 void Player::DeadUpdata() {
-	hp_ = 0.0f;
-	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-	threshold_ += 0.01f;
+	hp_ = PlayerConstants::kDeadHP;
+	animation_->SetEdgeColor(PlayerConstants::kDeadEdgeColor);
+	threshold_ += PlayerConstants::kDeadThresholdIncrement;
 	//animation_->SetThreshold(threshold_);
-	if (threshold_ >= 1.0f) {
+	if (threshold_ >= PlayerConstants::kDeadAnimationThreshold) {
 		isOver_ = true;
 
 	}
@@ -555,7 +491,7 @@ void Player::Relationship() {
 
 void Player::InitPos() {
 	behaviorRequest_ = Behavior::kRoot;
-	animationNumber_ = standby;
+	animationNumber_ = kStandby;
 	worldTransformBase_.translate = { 3.0f,0.0f,-35.0f };
 	worldTransformBase_.rotate = {0.0f,0.0f,0.0f};
 	destinationAngleY_ = 0.0f;
@@ -581,10 +517,10 @@ void Player::OnCollision(Collider* collider) {
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hp_ -= 10;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= PlayerConstants::kAttackEnemyDamageNormal;
+				alpha_ = PlayerConstants::kDamageAlphaInitValue;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/10.png");
 			}
 
@@ -611,10 +547,10 @@ void Player::OnCollision(Collider* collider) {
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hp_ -= 20;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= PlayerConstants::kAttackEnemyDamageBreath;
+				alpha_ = PlayerConstants::kDamageAlphaInitValue;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/20.png");
 			}
 
@@ -623,10 +559,10 @@ void Player::OnCollision(Collider* collider) {
 		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kThrowing) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
-				hp_ -= 10;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= PlayerConstants::kAttackEnemyDamageNormal;
+				alpha_ = PlayerConstants::kDamageAlphaInitValue;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/10.png");
 			}
 		}
@@ -695,10 +631,10 @@ void Player::BarrierRange(){
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hp_ -= 20;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= PlayerConstants::kAttackEnemyDamageBreath;
+				alpha_ = PlayerConstants::kDamageAlphaInitValue;
+				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformBase_.translate.z };
+				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + PlayerConstants::kPlayerDamageDisplayHeight,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/20.png");
 			}
 		}

@@ -13,6 +13,75 @@
 #include "Command/Command.h"
 #include "Enemy/Enemy.h"
 
+namespace PlayerConstants{
+	// 位置・スケール・回転に関する設定
+	const Vector3 kPlayerInitPosition = { 3.0f,0.0f,0.0f};  // プレイヤーの初期位置（X座標）
+	const Vector3 kWeaponRotate = { -0.7f,0.0f,1.7f };//武器の初期角度
+	const Vector3 kWeaponCollisionScale = { 0.1f, 1.0f, 0.1f };  // プレイヤーのコリジョンスケール（X, Y, Z）
+	const Vector3 kWeaponCollisionTranslate = { 0.0f, 2.0f,0.0f };  // プレイヤーのコリジョンのY座標
+	const Vector3 kPlayerNumScale = { 0.5f, 0.5f, 0.5f };  // プレイヤーのダメージ表示スケール（X, Y, Z）
+
+	// プレイヤーのダメージ関連
+	const float kDamageAlphaInitValue = 2.0f;  // プレイヤーが食らったときダメージ表示の初期アルファ値（透明度）
+	const float kDamageAlphaDecrement = 0.08f;  // ダメージ表示のアルファ値の減少速度
+
+	// プレイヤーの攻撃関連
+	const float kAttackEnemyDamageNormal = 10.0f;  // 通常攻撃,投擲、ダッシュのダメージ値
+	const float kAttackEnemyDamageBreath = 20.0f;  // ブレス攻撃,地面を殴るのダメージ値
+	const float kAttackEnemyDamageHenchman = 50.0f;  // 子分攻撃のダメージ値
+	const float kPlayerDamageDisplayHeight = 2.0f;  // ダメージ表示のY座標オフセット
+	const float kAttackRange = 5.0f;  // 攻撃範囲（敵との距離）
+	// 攻撃関連
+	const float kAttackAnimationStartTime = 0.8f;  // 攻撃アニメーションが開始される時間
+	const float kAttackAnimationEndTime = 1.6f;    // 攻撃アニメーションが終了する時間
+
+	// プレイヤーのHP,MP関連
+	const float kPlayerMaxHP = 100.0f;  // プレイヤーの最大HP
+	const float kPlayerMaxMP = 100.0f;  // プレイヤーの最大MP
+	
+	// プレイヤーの行動タイミング関連
+	const float kFlameTimeDefault = 30.0f;  // プレイヤーのフレーム時間（デフォルト）
+
+	// 死亡関連
+	const float kDeadThresholdIncrement = 0.01f;    // 死亡時の閾値増加量
+	const float kDeadAnimationThreshold = 1.0f;     // 死亡アニメーション終了の閾値
+	const float kDeadHP = 0.0f;                     // 死亡時のHP
+	const Vector3 kDeadEdgeColor = { 0.0f, -1.0f, -1.0f }; // 死亡時のエッジカラー
+
+	/*---------------PlayerManagerでのみ使う定数-----------------*/
+	// プレイヤー関連
+	const float kPlayerHpLowThreshold = 20.0f; // HPが低い閾値（赤色に変化）
+	const float kPlayerHpMediumThreshold = 50.0f; // HPが中間の閾値（オレンジ色に変化）
+
+	//影関連
+	const float kShadowHeight = 0.11f;  // 影の高さ
+	const float kMaxShadowHeight = 3.9f;  // 最大影の高さ
+	const Vector3 kShadowScale = { 1.8f,1.8f,1.0f };//影のサイズ
+	const Vector3 kShadowRotate = { -1.571f,0.0f,0.0f };//影の角度
+
+	// スプライト関連
+	const Vector2 kHpSpriteSize = { 100.0f, 10.0f };   // HPバーのサイズ
+	const Vector2 kMpSpriteSize = { 100.0f, 10.0f };   // MPバーのサイズ
+	const Vector2 k1PSize = { 93.0f, 85.0f };        // 1Pスプライトのサイズ
+	const Vector2 kHSize = { 35.0f, 35.0f };            // Hスプライトのサイズ
+	const Vector2 kMSize = { 35.0f, 35.0f };            // Mスプライトのサイズ
+	const Vector2 kNameSize = { 106.0f, 50.0f };        // 名前スプライトのサイズ
+	const Vector2 kHpNumSize = { 36.0f, 36.0f };  // HP数字のサイズ
+	const Vector2 kMpNumSize = { 36.0f, 36.0f };  // MP数字のサイズ
+	const Vector2 kHpSpritePos = { 1106.0f,405.0f };   // HPバーの位置
+	const Vector2 kMpSpritePos = { 1106.0f,430.0f };   // MPバーの位置
+	const Vector2 k1PPos = { 995.0f,373.0f };        // 1Pスプライトの位置
+	const Vector2 kHPos = { 1097.0f,383.0f };            // Hスプライトの位置
+	const Vector2 kMPos = { 1097.0f,408.0f };            // Mスプライトの位置
+	const Vector2 kNamePos = { 995.0f,363.0f };        // 名前スプライトの位置
+
+	// HP・MPナンバーの位置関連
+	const float kHpNumPosOffset = 16.0f;  // HP数字の位置のオフセット
+	const float kMpNumPosOffset = 16.0f;  // MP数字の位置のオフセット
+	const Vector2 kHpNumInitPos = { 1172.0f, 385.0f }; // 初期HP番号スプライトの位置
+	const Vector2 kMpNumInitPos = { 1172.0f, 410.0f }; // 初期MP番号スプライトの位置
+}
+
 /**
  * @file Player
  * @brief プレイヤーが操作するキャラクターを制御するクラス
@@ -26,31 +95,8 @@ public:
 		kJump, // ジャンプ
 		kDash, // ダッシュ
 		kAttack, //攻撃
-		knock,//ノックバック
 		kDead, // 死亡
 	};
-
-	// 攻撃用定数
-	struct ConstAttack {
-		// 振りかぶり時間
-		uint32_t anticipationTime;
-		// ため時間
-		uint32_t chargeTime;
-		// 攻撃振りの時間
-		uint32_t swingTime;
-		// 硬直時間
-		uint32_t recoveryTime;
-		// 振りかぶりの移動の速さ
-		float anticipationSpeed;
-		// ため移動速さ
-		float chargeSpeed;
-		// 攻撃振りの移動速さ
-		float swingSpeed;
-	};
-
-	// コンボ
-	static const int ComboNum = 3;
-	static const std::array<ConstAttack, ComboNum> kConstAttacks_;
 
 public: // メンバ関数
 	~Player();
@@ -90,7 +136,7 @@ public: // メンバ関数
 	bool GameStart() { return gameStart_; }
 	//こうげきフラグ
 	bool IsRoot() { return root_; }
-	bool IsAttack() { return workAttack_.isAttack; }
+	bool IsAttack() { return isAttack; }
 	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }
 	bool IsOver() { return isOver_; }
@@ -154,10 +200,6 @@ private:
 	void DashInitialize();
 	void DashUpdata();
 
-	// ノックバックの初期化・更新
-	void knockInitialize();
-	void knockUpdata();
-
 	//攻撃の初期化・更新
 	void AttackInitialize();
 	void AttackUpdata();
@@ -183,10 +225,10 @@ private: // メンバ変数
 	Animations* animation_;
 	int animationNumber_;
 	enum AnimationNumber {
-		animeAttack,//攻撃
-		jump,//ジャンプ
-		run,//移動
-		standby,//待機
+		kAnimeAttack,//攻撃
+		kJump,//ジャンプ
+		kRun,//移動
+		kStandby,//待機
 	};
 
 	float flameTime_;
@@ -214,16 +256,7 @@ private: // メンバ変数
 	WorkDash workDash_;
 
 	// 攻撃用ワーク
-	struct WorkAttack {
-		uint32_t attackParameter_ = 0;
-		int32_t comboIndex = 0;
-		int32_t inComboPhase = 0;
-		bool comboNext = false;
-		bool isAttack = false;
-		bool isFinalAttack = false;
-	};
-
-	WorkAttack workAttack_;
+	bool isAttack = false;
 
 	bool root_;
 	bool dash_;

@@ -274,7 +274,7 @@ void Enemy::MoveInitialize() {
 	animationNumber_ = kStandby;
 	animation_->SetLoop(true);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
-	num_ = RandomGenerator::GetRandomInt(player, tank);
+	num_ = RandomGenerator::GetRandomInt(kPlayer, kTank);
 	
 };
 void Enemy::MoveUpdata() {
@@ -302,19 +302,19 @@ void Enemy::MoveUpdata() {
 		
 		// 敵の座標までの距離
 		float length;
-		if (num_ == player) {
+		if (num_ == kPlayer) {
 			length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
 			sub = playerPos_ - GetWorldPosition();
 		}
-		else if (num_ == healer) {
+		else if (num_ == kHealer) {
 			length = Math::Length(Math::Subract(healerPos_, worldTransformBase_.translate));
 			sub = healerPos_ - GetWorldPosition();
 		}
-		else if (num_ == renju) {
+		else if (num_ == kRenju) {
 			length = Math::Length(Math::Subract(renjuPos_, worldTransformBase_.translate));
 			sub = renjuPos_ - GetWorldPosition();
 		}
-		else if (num_ == tank) {
+		else if (num_ == kTank) {
 			length = Math::Length(Math::Subract(tankPos_, worldTransformBase_.translate));
 			sub = tankPos_ - GetWorldPosition();
 		}
@@ -344,16 +344,16 @@ void Enemy::MoveUpdata() {
 
 
 				worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-				if (num_ == player) {
+				if (num_ == kPlayer) {
 					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, playerPos_, 0.03f);
 				}
-				else if (num_ == healer) {
+				else if (num_ == kHealer) {
 					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, healerPos_, 0.03f);
 				}
-				else if (num_ == renju) {
+				else if (num_ == kRenju) {
 					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, renjuPos_, 0.03f);
 				}
-				else if (num_ == tank) {
+				else if (num_ == kTank) {
 					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_, 0.03f);
 				}
 				
@@ -473,26 +473,7 @@ void Enemy::AttackUpdata() {
 
 //殴り攻撃
 void Enemy::NomalAttackInitialize() {
-	//対象が死んでいたらもう一回抽選
-	while (true) {
-		num_ = RandomGenerator::GetRandomInt(player, tank);//0～３
-		if (num_ == player) {
-			aimPlayer_ = true;
-			break;
-		}
-		else if (!isDeadHealer_ && num_ == healer) {
-			aimHealer_ = true;
-			break;
-		}
-		else if (!isDeadRenju_ && num_ == renju) {
-			aimRenju_ = true;
-			break;
-		}
-		else if (!isDeadTank_ && num_ == tank) {
-			aimTank_ = true;
-			break;
-		}
-	}
+	SelectTarget();//ターゲットを決める
 	animationNumber_ = kRun;
 	behaviorAttack_ = false;
 	time_ = EnemyConstants::kAttackInitTime;
@@ -508,19 +489,19 @@ void Enemy::NomalAttackUpdata() {
 		velocity_ = Math::Multiply(0.35f, velocity_);// 接近速度係数をかける
 		Vector3 targetPos = {};
 		//番号で対象を識別
-		if (num_ == player) {
+		if (num_ == kPlayer) {
 			sub = playerPos_ - GetWorldPosition();
 			targetPos = playerPos_;
 		}
-		if (num_ == healer) {
+		if (num_ == kHealer) {
 			sub = healerPos_ - GetWorldPosition();
 			targetPos = healerPos_;
 		}
-		if (num_ == renju) {
+		if (num_ == kRenju) {
 			sub = renjuPos_ - GetWorldPosition();
 			targetPos = renjuPos_;
 		}
-		if (num_ == tank) {
+		if (num_ == kTank) {
 			sub = tankPos_ - GetWorldPosition();
 			targetPos = tankPos_;
 		}
@@ -572,35 +553,10 @@ void Enemy::NomalAttackUpdata() {
 
 //ダッシュ攻撃//近いやつに攻撃するようにする
 void Enemy::DashAttackInitialize() {
-	//対象が死んでいたらもう一回抽選
-	while (true) {
-		num_ = RandomGenerator::GetRandomInt(player, tank);
-		if (num_ == player) {
-			break;
-		}
-		else if (!isDeadHealer_ && num_ == healer) {
-			break;
-		}
-		else if (!isDeadRenju_ && num_ == renju) {
-			break;
-		}
-		else if (!isDeadTank_ && num_ == tank) {
-			break;
-		}
-	}
-
 	time_ = EnemyConstants::kDashAttackInitTime;
 	animation_->SetLoop(false);
 	animation_->SetFlameTimer(EnemyConstants::kDashAttackFlameTimer);
-	if (isDeadHealer_ && num_ == healer) {
-		num_ = RandomGenerator::GetRandomInt(player, tank);
-	}
-	else if (isDeadRenju_ && num_ == renju) {
-		num_ = RandomGenerator::GetRandomInt(player, tank);
-	}
-	else if (isDeadTank_ && num_ == tank) {
-		num_ = RandomGenerator::GetRandomInt(player, tank);
-	}
+	SelectTarget();//ターゲットを決める
 }
 void Enemy::DashAttackUpdata() {
 	--time_;
@@ -627,16 +583,16 @@ void Enemy::DashAttackUpdata() {
 	}
 	else {
 		//対象の方を向く
-		if (num_ == player) {
+		if (num_ == kPlayer) {
 			sub = playerPos_ - GetWorldPosition();
 		}
-		if (num_ == healer) {
+		if (num_ == kHealer) {
 			sub = healerPos_ - GetWorldPosition();
 		}
-		if (num_ == renju) {
+		if (num_ == kRenju) {
 			sub = renjuPos_ - GetWorldPosition();
 		}
-		if (num_ == tank) {
+		if (num_ == kTank) {
 			sub = tankPos_ - GetWorldPosition();
 		}
 		// y軸周りの回転
@@ -706,103 +662,45 @@ void Enemy::ThrowingAttackInitialize() {
 	animation_->SetpreAnimationTimer(0);
 	animationNumber_ = kSwing;
 	animation_->SetLoop(false);
-	//対象が死んでいたらもう一回抽選
-	while (true) {
-		num_ = RandomGenerator::GetRandomInt(player, tank);
-		if (num_ == player) {
-			break;
-		}
-		else if (!isDeadHealer_ && num_ == healer) {
-			break;
-		}
-		else if (!isDeadRenju_ && num_ == renju) {
-			break;
-		}
-		else if (!isDeadTank_ && num_ == tank) {
-			break;
-		}
-	}
+	SelectTarget();//ターゲットを決める
 }
 void Enemy::ThrowingAttackUpdata() {
 	if (!isAttack_) {
 
 
-		if (num_ == player) {
+		if (num_ == kPlayer) {
 			sub = playerPos_ - GetWorldPosition();
 			worldTransformCircleArea_.translate = { playerPos_.x,0.1f,playerPos_.z };
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
 
 		}
-		else if (num_ == healer) {
+		else if (num_ == kHealer) {
 			sub = healerPos_ - GetWorldPosition();
 			worldTransformCircleArea_.translate = { healerPos_ .x,0.1f, healerPos_.z };
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-
+		
 		}
-		else if (num_ == renju) {
+		else if (num_ == kRenju) {
 			sub = renjuPos_ - GetWorldPosition();
 			worldTransformCircleArea_.translate = { renjuPos_.x,0.1f,renjuPos_.z };
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
-
-
+			
 		}
-		else if (num_ == tank) {
+		else if (num_ == kTank) {
 			sub = tankPos_ - GetWorldPosition();
 			worldTransformCircleArea_.translate = { tankPos_.x,0.1f,tankPos_.z };
-			// y軸周りの回転
-			if (sub.z != 0.0) {
-				destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+		}
 
-				if (sub.z < 0.0) {
-					destinationAngleY_ = (sub.x >= 0.0)
-						? std::numbers::pi_v<float> -destinationAngleY_
-						: -std::numbers::pi_v<float> -destinationAngleY_;
-				}
-			}
-			else {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-					: -std::numbers::pi_v<float> / 2.0f;
-			}
+		// y軸周りの回転
+		if (sub.z != 0.0) {
+			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
 
+			if (sub.z < 0.0) {
+				destinationAngleY_ = (sub.x >= 0.0)
+					? std::numbers::pi_v<float> -destinationAngleY_
+					: -std::numbers::pi_v<float> -destinationAngleY_;
+			}
+		}
+		else {
+			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+				: -std::numbers::pi_v<float> / 2.0f;
 		}
 
 		// 回転
@@ -838,20 +736,19 @@ void Enemy::ThrowingAttackUpdata() {
 		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
 		//対象に位置に投擲
-		if (num_ == player) {
+		if (num_ == kPlayer) {
 			sub = playerPos_ - worldTransformRock_.GetWorldPos();
 			
-		
 		}
-		else if (num_ == healer) {
+		else if (num_ == kHealer) {
 			sub = healerPos_ - worldTransformRock_.GetWorldPos();
 			
 		}
-		else if (num_ == renju) {
+		else if (num_ == kRenju) {
 			sub = renjuPos_ - worldTransformRock_.GetWorldPos();
 			
 		}
-		else if (num_ == tank) {
+		else if (num_ == kTank) {
 			sub = tankPos_ - worldTransformRock_.GetWorldPos();
 			
 		}
@@ -1102,6 +999,38 @@ void Enemy::Relationship() {
 			worldTransformBody_.scale, worldTransformBody_.rotate, worldTransformBody_.translate),
 		worldTransformBase_.matWorld_);
 
+}
+
+void Enemy::SelectTarget()
+{
+	//対象が死んでいたらもう一回抽選
+	while (true) {
+		num_ = RandomGenerator::GetRandomInt(kPlayer, kTank);
+		if (num_ == kPlayer) {
+			if (attack_ == BehaviorAttack::kNomal) {
+				aimPlayer_ = true;
+			}
+			break;
+		}
+		else if (!isDeadHealer_ && num_ == kHealer) {
+			if (attack_ == BehaviorAttack::kNomal) {
+				aimHealer_ = true;
+			}
+			break;
+		}
+		else if (!isDeadRenju_ && num_ == kRenju) {
+			if (attack_ == BehaviorAttack::kNomal) {
+				aimRenju_ = true;
+			}
+			break;
+		}
+		else if (!isDeadTank_ && num_ == kTank) {
+			if (attack_ == BehaviorAttack::kNomal) {
+				aimTank_ = true;
+			}
+			break;
+		}
+	}
 }
 
 const Vector3 Enemy::GetWorldPosition() const {

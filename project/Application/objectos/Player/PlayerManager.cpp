@@ -25,33 +25,33 @@ void PlayerManager::Initialize() {
 	for (int i = 0; i < 3; ++i) {
 		HPnum_[i].reset(Sprite::Create("resources/character/0.png"));
 		MPnum_[i].reset(Sprite::Create("resources/character/0.png"));
-		HPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
-		MPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
-		HPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,385.0f });
-		MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,410.0f });
+		HPnum_[i]->SetSize(PlayerConstants::kHpNumSize);
+		MPnum_[i]->SetSize(PlayerConstants::kMpNumSize);
+		HPnum_[i]->SetPosition(Vector2{ PlayerConstants::kHpNumInitPos.x - (PlayerConstants::kHpNumPosOffset * i) ,PlayerConstants::kHpNumInitPos.y});
+		MPnum_[i]->SetPosition(Vector2{ PlayerConstants::kMpNumInitPos.x - (PlayerConstants::kMpNumPosOffset * i) ,PlayerConstants::kMpNumInitPos.y});
 	}
 
 	HPnum_[2]->SetTexture("resources/character/1.png");
 	MPnum_[2]->SetTexture("resources/character/1.png");
 
-	spriteHP_->SetPosition(Vector2{1106.0f,405.0f});
-	spriteHPG_->SetPosition(Vector2{ 1106.0f,405.0f });
-	spriteMP_->SetPosition(Vector2{ 1106.0f,430.0f });
-	spriteMPG_->SetPosition(Vector2{ 1106.0f,430.0f });
-	sprite1P_->SetPosition(Vector2{ 995.0f,373.0f });
-	spriteH_->SetPosition(Vector2{ 1097.0f,383.0f });
-	spriteM_->SetPosition(Vector2{ 1097.0f,408.0f });
-	spriteName_->SetPosition(Vector2{ 995.0f,363.0f});
+	spriteHP_->SetPosition(PlayerConstants::kHpSpritePos);
+	spriteHPG_->SetPosition(PlayerConstants::kHpSpritePos);
+	spriteMP_->SetPosition(PlayerConstants::kMpSpritePos);
+	spriteMPG_->SetPosition(PlayerConstants::kMpSpritePos);
+	sprite1P_->SetPosition(PlayerConstants::k1PPos);
+	spriteH_->SetPosition(PlayerConstants::kHPos);
+	spriteM_->SetPosition(PlayerConstants::kMPos);
+	spriteName_->SetPosition(PlayerConstants::kNamePos);
 
-	spriteHPG_->SetSize(Vector2{ 100.0f,10.0f });
-	spriteMPG_->SetSize(Vector2{ 100.0f,10.0f });
-	sprite1P_->SetSize(Vector2{ 93.0f,85.0f });
-	spriteH_->SetSize(Vector2{ 35.0f,35.0f });
-	spriteM_->SetSize(Vector2{ 35.0f,35.0f });
-	spriteName_->SetSize(Vector2{ 106.0f,50.0f });
+	spriteHPG_->SetSize(PlayerConstants::kHpSpriteSize);
+	spriteMPG_->SetSize(PlayerConstants::kMpSpriteSize);
+	sprite1P_->SetSize(PlayerConstants::k1PSize);
+	spriteH_->SetSize(PlayerConstants::kHSize);
+	spriteM_->SetSize(PlayerConstants::kMSize);
+	spriteName_->SetSize(PlayerConstants::kNameSize);
 
-	spriteHpSize_ = { 100.0f,10.0f };
-	spriteMpSize_ = { 100.0f,10.0f };
+	spriteHpSize_ = PlayerConstants::kHpSpriteSize;
+	spriteMpSize_ = PlayerConstants::kMpSpriteSize;
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
@@ -59,9 +59,9 @@ void PlayerManager::Initialize() {
 
 	worldTransformHead_ = player_->GetWorldTransform();
 	worldTransformShadow_.Initialize();
-	worldTransformShadow_.rotate  = { -1.571f,0.0f,0.0f };
-	worldTransformShadow_.scale = { 1.8f,1.8f,1.0f };
-	worldTransformShadow_.translate = { player_->GetWorldPosition().x,0.11f,player_->GetWorldPosition().z };
+	worldTransformShadow_.rotate = PlayerConstants::kShadowRotate;
+	worldTransformShadow_.scale = PlayerConstants::kShadowScale;
+	worldTransformShadow_.translate = { player_->GetWorldPosition().x,PlayerConstants::kShadowHeight,player_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
 
 	emitter_ = {
@@ -81,8 +81,8 @@ void PlayerManager::Initialize() {
 	isParticle_ = false;
 	
 
-	revivalTransform_.scale = { 137.0f,22.0f,70.0f };
-	revivalTransform_.translate = { 571.0f,650.0f,1.0f };
+	//revivalTransform_.scale = { 137.0f,22.0f,70.0f };
+	//revivalTransform_.translate = { 571.0f,650.0f,1.0f };
 	spriteRevivalG_->SetSize(Vector2(120.0f, revivalTransform_.scale.y));
 	spriteRevivalG_->SetPosition(Vector2(revivalTransform_.translate.x, revivalTransform_.translate.y));
 	spriteRevival_->SetPosition(Vector2(revivalTransform_.translate.x, revivalTransform_.translate.y));
@@ -114,10 +114,10 @@ void PlayerManager::Update() {
 
 
 	//影の計算
-	shadowColor_.w = 1 - (player_->GetWorldPosition().y / 3.9f);
+	shadowColor_.w = 1 - (player_->GetWorldPosition().y / PlayerConstants::kMaxShadowHeight);
 
 	shadowModel_->SetColor(shadowColor_);
-	worldTransformShadow_.translate = { player_->GetWorldPosition().x,0.11f,player_->GetWorldPosition().z };
+	worldTransformShadow_.translate = { player_->GetWorldPosition().x,PlayerConstants::kShadowHeight,player_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
 
 	//キャラクターの更新
@@ -136,7 +136,7 @@ void PlayerManager::Update() {
 	
 
 	//HP,MP表示の計算
-	if (spriteHpSize_.x < 100.0f) {
+	if (spriteHpSize_.x < PlayerConstants::kPlayerMaxHP) {
 		int HPnum = int(spriteHpSize_.x);
 		HPnum %= 10;
 		if (spriteHpSize_.x >= 0) {
@@ -153,7 +153,7 @@ void PlayerManager::Update() {
 		HPnum_[1]->SetTexture("resources/character/0.png");
 	}
 
-	if (spriteMpSize_.x < 100.0f) {
+	if (spriteMpSize_.x < PlayerConstants::kPlayerMaxMP) {
 		int MPnum = int(spriteMpSize_.x);
 		MPnum %= 10;
 		MPnum_[0]->SetTexture("resources/character/" + std::to_string(MPnum) + ".png");
@@ -173,12 +173,12 @@ void PlayerManager::Update() {
 	}
 
 
-	if (spriteHpSize_.x < 20) {
+	if (spriteHpSize_.x < PlayerConstants::kPlayerHpLowThreshold) {
 		hpColor_ = { 5.0f,0.0f,0.0f,1.0f };
 		hpNumColor_ = { 5.0f,0.0f,0.0f,1.0f };
 
 	}
-	else if (spriteHpSize_.x <= 50) {
+	else if (spriteHpSize_.x <= PlayerConstants::kPlayerHpMediumThreshold) {
 		hpNumColor_ = { 1.0f,0.2f,0.0f,1.0f };
 		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
@@ -187,13 +187,13 @@ void PlayerManager::Update() {
 		hpNumColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
 
-	//復活させる時の(今は使ってない)
+	/*/復活させる時の(今は使ってない)
 	Revival();
 	if (revivalTransform_.scale.x >= 120.0f) {
 		revivalTransform_.scale.x = 120.0f;
 	}
 	spriteRevival_->SetSize(Vector2(revivalTransform_.scale.x, revivalTransform_.scale.y));
-
+	*/
 	
 
 	ImGui::Begin("Sprite");
@@ -244,10 +244,10 @@ void PlayerManager::DrawUI() {
 		MPnum_[i]->Draw();
 	}
 
-	if (player_->GetHp() >= 100) {
+	if (player_->GetHp() >= PlayerConstants::kPlayerMaxHP) {
 		HPnum_[2]->Draw();
 	}
-	if (player_->GetMp() >= 100) {
+	if (player_->GetMp() >= PlayerConstants::kPlayerMaxMP) {
 		MPnum_[2]->Draw();
 	}
 

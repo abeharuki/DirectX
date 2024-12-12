@@ -165,16 +165,16 @@ void GameScene::Update() {
 		}
 		//個人回復
 		if (healerManager_->GetHealer()->GetOneHeal()) {
-			if (healerManager_->GetHealer()->GetPlayerHp() <= 30 && playerManager_->GetPlayer()->GetHp() >= 1) {
+			if (healerManager_->GetHealer()->GetPlayerHp() <= HealerConstants::kSingleHealHpThreshold && playerManager_->GetPlayer()->GetHp() >= 1) {
 				playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
-			else if (healerManager_->GetHealer()->GetHp() <= 30 && !healerManager_->GetHealer()->IsDead()) {
+			else if (healerManager_->GetHealer()->GetHp() <= HealerConstants::kSingleHealHpThreshold && !healerManager_->GetHealer()->IsDead()) {
 				healerManager_->GetHealer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
-			else if (healerManager_->GetHealer()->GetRenjuHp() <= 30 && !renjuManager_->GetRenju()->IsDead()) {
+			else if (healerManager_->GetHealer()->GetRenjuHp() <= HealerConstants::kSingleHealHpThreshold && !renjuManager_->GetRenju()->IsDead()) {
 				renjuManager_->GetRenju()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
-			else if (healerManager_->GetHealer()->GetTankHp() <= 30 && !tankManager_->GetTank()->IsDead()) {
+			else if (healerManager_->GetHealer()->GetTankHp() <= HealerConstants::kSingleHealHpThreshold && !tankManager_->GetTank()->IsDead()) {
 				tankManager_->GetTank()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
 
