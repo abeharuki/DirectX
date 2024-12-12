@@ -6,6 +6,7 @@
 #include <imgui.h>
 #include <memory>
 
+//カメラクラスの定数
 namespace CameraConstants {
 	// カメラ移動に関する設定
 	const Vector3 kEnemyMoveTarget = { 0.0f,6.0f,-15.0f };  // 敵位置の座標

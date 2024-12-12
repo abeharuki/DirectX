@@ -68,29 +68,29 @@ void RenjuBullet::Update() {
 	if (shockData_[2].alpha_ <= 0) {
 		isDead_ = true;
 	}
-
+	
 	shockData_[0].threshold_ += shockData_[0].shockVelocity_;
-	shockData_[0].alpha_ -= 0.1f;
+	shockData_[0].alpha_ -= RenjuBulletConstants::kShockAlphaDecrement;
 	shockData_[0].scaleVelocity_ = Math::Lerp(worldTransformShockwave_[0].scale, { 8.f,8.f,8.f }, 0.8f);
 	
 
-	if (shockData_[0].alpha_ <= 0.5f) {
+	if (shockData_[0].alpha_ <= RenjuBulletConstants::kShockwaveAlphaThresholdMid) {
 		
 		shockData_[1].threshold_ += shockData_[1].shockVelocity_;
-		shockData_[1].alpha_ -= 0.1f;
+		shockData_[1].alpha_ -= RenjuBulletConstants::kShockAlphaDecrement;
 		shockData_[1].scaleVelocity_ = Math::Lerp(worldTransformShockwave_[1].scale, { 5.f,5.f,5.f }, 0.4f);
 	}
-	if (shockData_[0].alpha_ <= 0.1f) {
+	if (shockData_[0].alpha_ <= RenjuBulletConstants::kShockwaveAlphaThresholdLow) {
 		shockData_[2].threshold_ += shockData_[2].shockVelocity_;
-		shockData_[2].alpha_ -= 0.1f;
+		shockData_[2].alpha_ -= RenjuBulletConstants::kShockAlphaDecrement;
 		shockData_[2].scaleVelocity_ = Math::Lerp(worldTransformShockwave_[2].scale, { 5.f,5.f,5.f }, 0.4f);
 	}
 
 	worldTransform_.translate = worldTransform_.translate + velocity_;
 	//衝撃波のpos
 	for (int i = 0; i < 3; ++i) {
-		if (shockData_[i].threshold_ >= 1.0f) {
-			shockData_[i].threshold_ = 1.0f;
+		if (shockData_[i].threshold_ >= RenjuBulletConstants::kShockwaveThresholdMax) {
+			shockData_[i].threshold_ = RenjuBulletConstants::kShockwaveThresholdMax;
 		}
 
 		shockwave_[i]->SetThreshold(shockData_[i].threshold_);

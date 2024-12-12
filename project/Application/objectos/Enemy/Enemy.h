@@ -12,6 +12,7 @@
 #include <ParticleSystem.h>
 #include "EnemyHenchman.h"
 
+//enemyクラスの定数
 namespace EnemyConstants {
 	//各WorldTransformの初期化変数
 	const Vector3 kBaseTranslate = { 0.0f, 0.0f, 10.0f };//ベースpos

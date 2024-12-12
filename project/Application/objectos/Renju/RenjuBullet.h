@@ -2,6 +2,14 @@
 #include <CollisionManager/Collider.h>
 #include <Model.h>
 
+namespace RenjuBulletConstants {
+	const float kShockAlphaDecrement = 0.1f; // 衝撃波のアルファ減少量
+	const float kShockwaveAlphaThresholdMid = 0.5f; // 中間アルファ閾値
+	const float kShockwaveAlphaThresholdLow = 0.1f; // 低アルファ閾値
+	const float kShockwaveThresholdMax = 1.0f; // 衝撃波の最大しきい値
+	
+}
+
 /**
  * @file RenjuManager
  * @brief レンジャーが打つ矢を制御するクラス

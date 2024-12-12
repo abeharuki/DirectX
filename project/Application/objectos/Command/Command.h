@@ -2,7 +2,7 @@
 #include <ViewProjection.h>
 #include <Sprite.h>
 
-// 定数をまとめる名前空間
+// コマンドクラスの定数
 namespace CommandConstants {
 	// 矢印の初期位置と移動範囲
 	const float kArrowInitialX = 31.0f;//矢印UIの初期化X座標

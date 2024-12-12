@@ -16,8 +16,8 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 	BaseCharacter::Initialize(animation, skillName);
 	worldTransformBow_.Initialize();
 	worldTransformArrow_.Initialize();
-	worldTransformBow_.rotate = { 1.9f,0.0f,-1.5f };
-	worldTransformBase_.translate.x = -3.0f;
+	worldTransformBow_.rotate = RenjuConstants::kBowRotate;
+	worldTransformBase_.translate = RenjuConstants::kBaseTranslat;
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/arrow.obj", "resources/Renju/bow.png"));
 	bowModel_.reset(Model::CreateModelFromObj("resources/Renju/bow.obj", "resources/Renju/bow.png"));
 
@@ -26,7 +26,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 	Relationship();
 	worldTransformBody_.TransferMatrix();
 
-	worldTransformShadow_.translate = { worldTransformBase_.translate.x,0.1f,worldTransformBase_.translate.z };
+	worldTransformShadow_.translate = { worldTransformBase_.translate.x,RenjuConstants::kShadowTranslateOffset,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
 
 
@@ -64,7 +64,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 	behaviorTree_ = new BehaviorTree<Renju>(this);
 	behaviorTree_->Initialize();
 
-	distance_ = 2;
+	distance_ = RenjuConstants::kTargetDistance;
 };
 
 /// <summary>
@@ -225,7 +225,7 @@ void Renju::NoDepthDraw(const ViewProjection& camera) {
 // 移動
 void Renju::MoveInitialize() {
 	BaseCharacter::MoveInitialize();
-	minDistance_ = 10.0f;
+	minDistance_ = RenjuConstants::kMinDistance;
 };
 void Renju::MoveUpdate() {
 
@@ -237,11 +237,11 @@ void Renju::MoveUpdate() {
 	BaseCharacter::MoveUpdate();
 
 	//スキル
-	if (mp_ >= 10 && enemy_->IsBehaviorRequest() && coolTime_ < 10.f) {
+	if (mp_ >= RenjuConstants::kSkillMpCost && enemy_->IsBehaviorRequest() && coolTime_ < RenjuConstants::kCoolTimeSkill) {
 		if (enemy_->GetBehavior() != enemy_->GetBehaviorRequest() && enemy_->GetBehaviorRequest() != Behavior::kAttack && enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 			// 敵の座標までの距離
 			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-			if (length >= minDistance_ * 1.5f) {
+			if (length >= minDistance_ * RenjuConstants::kMinDistanceMultiplier) {
 				state_ = CharacterState::Unique;
 				special_ = false;
 			}
@@ -250,9 +250,9 @@ void Renju::MoveUpdate() {
 
 	
 	//子分を出す攻撃かどうか
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetBehavior() == Behavior::kAttack && !special_ && mp_ >=20) {
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetBehavior() == Behavior::kAttack && !special_ && mp_ >=RenjuConstants::kProtectMpCost) {
 		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-		if (length >= minDistance_ * 3.f) {
+		if (length >= minDistance_ * RenjuConstants::kMinDistanceProtectMultiplier) {
 			state_ = CharacterState::Protect;
 		}
 		else {
@@ -288,21 +288,21 @@ void Renju::AttackInitialize() {
 	BaseCharacter::AttackInitialize();
 	skill_ = false;
 	special_ = false;
-	fireTimer_ = 20;
-	flameTime_ = 60.0f;
-	worldTransformArrow_.rotate = { -0.3f,0.0f,1.3f };
+	fireTimer_ = RenjuConstants::kAttackInitFireTimer;
+	flameTime_ = RenjuConstants::kAttackInitFlameTime;
+	worldTransformArrow_.rotate = RenjuConstants::kAttackArrowRotate;
 };
 void Renju::AttackUpdate() {
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 
 	// 距離条件チェック
-	if (minDistance_ * 2 <= length && !followPlayer_) {
+	if (minDistance_ * distance_ <= length && !followPlayer_) {
 		state_ = NextState("Attack", Output1);
 		searchTarget_ = true;
 	}
 
-	if (length >= minDistance_ * 1.5f) {
+	if (length >= minDistance_ * RenjuConstants::kMinDistanceMultiplier) {
 		isAttack_ = true;
 		animation_->SetLoop(false);
 		animationNumber_ = animeAttack;
@@ -337,20 +337,20 @@ void Renju::AttackUpdate() {
 			// 弾の速度
 			const float kBulletSpeed = 1.5f;
 
-			Vector3 vector = Vector3{ enemy_->GetWorldPosition().x,enemy_->GetWorldPosition().y + 7,enemy_->GetWorldPosition().z } - worldTransformBase_.GetWorldPos();
+			Vector3 vector = Vector3{ enemy_->GetWorldPosition().x,enemy_->GetWorldPosition().y + RenjuConstants::kBulletYOffset,enemy_->GetWorldPosition().z } - worldTransformBase_.GetWorldPos();
 			vector = Math::Normalize(vector);
 			Vector3 velocity = kBulletSpeed * vector;
 
 			// 弾を生成、初期化
 			RenjuBullet* newBullet = new RenjuBullet();
 			newBullet->Initialize(
-				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
-				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity, skill_);
+				bulletModel_.get(), worldTransformBase_.translate, RenjuConstants::kBulletScale,
+				{ RenjuConstants::kBulletRotationX,worldTransformBase_.rotate.y,0.f }, velocity, skill_);
 
 
 			bullets_.push_back(newBullet);
 
-			coolTime_ = 60;
+			coolTime_ = RenjuConstants::kCoolTime;
 			state_ = NextState("Attack", Output1);
 		}
 	}
@@ -380,17 +380,18 @@ void Renju::UniqueInitialize() {
 	skill_ = true;
 	drawWepon_ = true;
 	isAttack_ = true;
-	mp_ -= 10;
+	mp_ -= RenjuConstants::kSkillMpCost;
 	animation_->SetLoop(false);
-	fireTimer_ = 60;
-	flameTime_ = 60.0f;
-	specialTimer_ = 60 * 7;
+	fireTimer_ = RenjuConstants::kUniqueInitFireTimer;
+	flameTime_ = RenjuConstants::kUniqueInitFlameTime;
+	specialTimer_ = RenjuConstants::kSpecialTimerDuration;
 	emitter_.velocityRange = { .min{0,0,0},.max{0.f,0.f,0.f} };
 	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} };
 	filed_.strength = 1.f;
 	animationNumber_ = animeAttack;
 }
 void Renju::UniqueUpdate() {
+	//ローカル座標
 	emitter_.translate = { worldTransformBow_.matWorld_.m[3][0],worldTransformBow_.matWorld_.m[3][1] ,worldTransformBow_.matWorld_.m[3][2] };
 
 	if (isAttack_) {
@@ -418,10 +419,10 @@ void Renju::UniqueUpdate() {
 		}
 
 		//チャージ中アニメーションを止める
-		if (fireTimer_ >= 1 && fireTimer_ <= 48) {
+		if (fireTimer_ >= 1 && fireTimer_ <= RenjuConstants::kFireTimerCharge) {
 			if (special_ && specialTimer_ >= 0) {
 				--specialTimer_;
-				fireTimer_ = 48;
+				fireTimer_ = RenjuConstants::kFireTimerCharge;
 			}
 
 			animation_->Stop(true);
@@ -442,21 +443,21 @@ void Renju::UniqueUpdate() {
 			// 弾の速度
 			const float kBulletSpeed = 3.f;
 
-			Vector3 vector = Vector3{ enemy_->GetWorldPosition().x,enemy_->GetWorldPosition().y + 7,enemy_->GetWorldPosition().z } - worldTransformBase_.GetWorldPos();
+			Vector3 vector = Vector3{ enemy_->GetWorldPosition().x,enemy_->GetWorldPosition().y + RenjuConstants::kBulletYOffset,enemy_->GetWorldPosition().z } - worldTransformBase_.GetWorldPos();
 			vector = Math::Normalize(vector);
 			Vector3 velocity = kBulletSpeed * vector;
 
 			// 弾を生成、初期化
 			RenjuBullet* newBullet = new RenjuBullet();
 			newBullet->Initialize(
-				bulletModel_.get(), worldTransformBase_.translate, { 1.5f, 1.5f, 1.5f },
-				{ 1.2f,worldTransformBase_.rotate.y,0.f }, velocity, skill_);
+				bulletModel_.get(), worldTransformBase_.translate, RenjuConstants::kBulletScale,
+				{ RenjuConstants::kBulletRotationX,worldTransformBase_.rotate.y,0.f }, velocity, skill_);
 
 
 			bullets_.push_back(newBullet);
 
 			//元に戻して状態遷移
-			coolTime_ = 60;
+			coolTime_ = RenjuConstants::kCoolTime;
 			filed_.strength = 0.0f;
 			particle_->StopParticle();
 			state_ = NextState("Skill", Output1);
@@ -475,7 +476,7 @@ void Renju::BreathUpdate() {
 
 void Renju::ProtectInitialize(){
 	BaseCharacter::ProtectInitialize();
-	coolTime_ = 30;
+	coolTime_ = RenjuConstants::kProtectCoolTime;
 }
 void Renju::ProtectUpdate(){
 	--coolTime_;
@@ -516,7 +517,8 @@ void Renju::ProtectUpdate(){
 		worldTransformBase_.translate += velocity_;
 	}
 	else {
-		mp_ -= 10;
+		//相手のバリアを壊すときのスキルは通常スキルの二倍のMPが必要になるのでここでもMP消費
+		mp_ -= RenjuConstants::kSkillMpCost;
 		special_ = true;
 		state_ = CharacterState::Unique;
 	}
@@ -531,6 +533,7 @@ void Renju::DeadInitialize() {
 	BaseCharacter::DeadInitialize();
 }
 void Renju::DeadUpdate() {
+	/*
 	if (isHitPlayer_ != preHitPlayer_) {
 		if (Input::GetInstance()->GetPadConnect()) {
 			if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)) {
@@ -569,7 +572,7 @@ void Renju::DeadUpdate() {
 	ImGui::Text("T%d", revivalCount_);
 	ImGui::Text("%d", isHitPlayer_);
 	ImGui::Text("%d", preHitPlayer_);
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Renju::Relationship() {
@@ -599,9 +602,9 @@ void Renju::OnCollision(Collider* collider) {
 
 		if (isHit_ != preHit_) {
 			if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
-				hp_ -= 10.0f;
-				alpha_ = 2.0f;
-				specialTimer_ += 30;
+				hp_ -= RenjuConstants::kEnemyDamageHenchman;
+				alpha_ = RenjuConstants::kDamageAlphaInitValue;
+				specialTimer_ += RenjuConstants::kSpecialTimerIncrement;
 				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
 				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
 				damageModel_->SetTexture("character/10.png");
@@ -624,7 +627,7 @@ void Renju::OnCollision(Collider* collider) {
 			.size{collider->GetOBB().size}
 		};
 		if (state_ != CharacterState::Unique) {
-			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
+			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * AllyAIConstants::kCollisionPushOutFactor;
 			worldTransformBase_.translate.y = 0.0f;
 		}
 	}

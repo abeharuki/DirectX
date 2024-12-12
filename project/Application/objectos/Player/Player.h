@@ -13,6 +13,7 @@
 #include "Command/Command.h"
 #include "Enemy/Enemy.h"
 
+//プレイヤークラスの定数
 namespace PlayerConstants{
 	// 位置・スケール・回転に関する設定
 	const Vector3 kPlayerInitPosition = { 3.0f,0.0f,0.0f};  // プレイヤーの初期位置（X座標）

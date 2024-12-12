@@ -6,6 +6,13 @@
 #include <cassert>
 #include <numbers>
 
+//味方AIキャラクターの定数
+namespace AllyAIConstants {
+
+    const float kCollisionPushOutFactor = 0.3f; // AABB-OBBの押し出し係数
+}
+
+
 /**
  * @file BaseCharacter
  * @brief 味方AIの基底クラス
@@ -185,6 +192,7 @@ protected:
     //敵の情報
     Enemy* enemy_;
     float enemylength_;
+    //キャラごとの敵との距離感覚
     int distance_ = 1;
 
     float kDegreeToRandian = 3.141592f / 180.0f;

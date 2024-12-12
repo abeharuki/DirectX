@@ -43,7 +43,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	Relationship();
 	worldTransformBody_.TransferMatrix();
 
-	worldTransformShadow_.translate = { worldTransformBase_.translate.x,0.1f,worldTransformBase_.translate.z };
+	worldTransformShadow_.translate = { worldTransformBase_.translate.x,HealerConstants::kShadowTranslateOffset,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
 
 	emitter_.resize(5);
@@ -618,7 +618,7 @@ void Healer::OnCollision(Collider* collider) {
 			.size{collider->GetOBB().size}
 		};
 		if (state_ != CharacterState::Unique) {
-			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * HealerConstants::kCollisionPushOutFactor;
+			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * AllyAIConstants::kCollisionPushOutFactor;
 			worldTransformBase_.translate.y = 0.0f;
 		}
 	}

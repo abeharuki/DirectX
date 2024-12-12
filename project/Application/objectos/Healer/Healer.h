@@ -10,6 +10,7 @@
 #include <ParticleSystem.h>
 #include "base/BaseCharacter.h"
 
+//ヒーラークラスの定数
 namespace HealerConstants {
 	//各worldTransformの初期化
 	const Vector3 kBaseTranslate = { 6.0f,0.0f,0.0f };//キャラクターの基本位置
@@ -20,7 +21,7 @@ namespace HealerConstants {
 	const Vector3 kMagicCircleRotate = { -1.571f,0.0f,0.0f };//魔法陣の初期角度
 	const Vector3 kMagicCircleScale = { 2.0f,2.0f,2.0f };//魔法陣の初期サイズ
 	const Vector3 kHealScale = { 0.5f,0.5f,0.5f };//回復数値描画の初期サイズ
-
+	const float kShadowTranslateOffset = 0.1f;// 影のオフセット
 	
 
 	const int kEmitterCount = 5;//エミッターのMax数
@@ -60,7 +61,7 @@ namespace HealerConstants {
 	const int kAttackCoolTime = 60;             // 攻撃後のクールタイム
 
 
-	const float kCollisionPushOutFactor = 0.3f; // AABB-OBBの押し出し係数
+	
 	
 }
 

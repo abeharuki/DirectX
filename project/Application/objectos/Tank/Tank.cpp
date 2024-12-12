@@ -11,15 +11,15 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	BaseCharacter::Initialize(animation, skillName);
 	barrierModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj", "resources/Tank/b.png"));
 	barrierModel_->SetBlendMode(BlendMode::kNormal);
-	barrierModel_->SetColor({ 0.f,1.0f,1.0f,0.4f });
+	barrierModel_->SetColor(TankConstants::kBarrierColor);
 	worldTransformBarrier_.Initialize();
-	worldTransformBarrier_.scale = { 7.f,7.f,7.f };
+	worldTransformBarrier_.scale = TankConstants::kBarrierScale;
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformBody_.TransferMatrix();
 
-	worldTransformShadow_.translate = { worldTransformBase_.translate.x,0.1f,worldTransformBase_.translate.z };
+	worldTransformShadow_.translate = { worldTransformBase_.translate.x,TankConstants::kShadowHeight,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
 
 	emitter_ = {
@@ -37,7 +37,7 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	particle_ = ParticleManager::Create("resources/particle/circle.png", 10);
 	particle_->SetEmitter(emitter_);
 
-	barrierThreshold_ = 1.0f;
+	barrierThreshold_ = TankConstants::kBarrierThreshold;
 
 	AABB aabbSize{ .min{-0.7f,-0.0f,-0.4f},.max{0.7f,1.5f,0.4f} };
 	SetAABB(aabbSize);
@@ -50,6 +50,7 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	behaviorTree_ = new BehaviorTree<Tank>(this);
 	behaviorTree_->Initialize();
 	
+	distance_ = TankConstants::kTargetDistance;
 };
 
 /// <summary>
@@ -120,7 +121,7 @@ void Tank::NoDepthDraw(const ViewProjection& camera){
 
 void Tank::BarrierDraw(const ViewProjection& camera)
 {
-	if (barrier_ || barrierThreshold_ < 1) {
+	if (barrier_ || barrierThreshold_ < TankConstants::kBarrierThreshold) {
 		barrierModel_->Draw(worldTransformBarrier_, camera, false);
 	}
 	
@@ -129,7 +130,7 @@ void Tank::BarrierDraw(const ViewProjection& camera)
 // 移動
 void Tank::MoveInitialize() { 
 	BaseCharacter::MoveInitialize();
-	minDistance_ = 6.0f;
+	minDistance_ = TankConstants::kMinDistance;
 	stanAttack_ = false;
 	barrier_ = false;
 };
@@ -137,12 +138,12 @@ void Tank::MoveUpdate() {
 	
 	BaseCharacter::MoveUpdate();
 
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath && enemy_->GetBehavior() == Behavior::kAttack && mp_ >= 20) {
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath && enemy_->GetBehavior() == Behavior::kAttack && mp_ >= TankConstants::kBreathMpCost) {
 		state_ = CharacterState::Breath;
 	}
 	
-	if (barrierThreshold_ < 1) {
-		barrierThreshold_ += 0.03f;
+	if (barrierThreshold_ < TankConstants::kBarrierThreshold) {
+		barrierThreshold_ += TankConstants::kBarrierThresholdIncrement;
 	}
 
 };
@@ -158,7 +159,7 @@ void Tank::JumpUpdate() {
 // 攻撃
 void Tank::AttackInitialize() { 
 	BaseCharacter::AttackInitialize();
-	fireTimer_ = 40;
+	fireTimer_ = TankConstants::kFireTimerInit;
 };
 void Tank::AttackUpdate() {
 	--fireTimer_;
@@ -184,7 +185,7 @@ void Tank::AttackUpdate() {
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 
 	// 距離条件チェック
-	if (minDistance_ * 2 <= length && !followPlayer_) {
+	if (minDistance_ * distance_ <= length && !followPlayer_) {
 		state_ = NextState("Attack", Output1);
 		searchTarget_ = true;
 	}
@@ -192,7 +193,7 @@ void Tank::AttackUpdate() {
 
 	isAttack_ = false;
 	
-	if (fireTimer_ > 10) {
+	if (fireTimer_ > TankConstants::kFireTimerThreshold1) {
 		velocity_ = { 0.0f,0.0f,-0.01f };
 		const float kCharacterSpeed = 0.1f;
 		velocity_ = Math::Normalize(velocity_);
@@ -201,14 +202,14 @@ void Tank::AttackUpdate() {
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		worldTransformBase_.translate += velocity_;
 	}
-	else if (fireTimer_ <= 5 && fireTimer_ > 0) {
+	else if (fireTimer_ <= TankConstants::kFireTimerThreshold2 && fireTimer_ > 0) {
 		isAttack_ = true;
 
 		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.2f);
 	}
 	else if (fireTimer_ <= 0) {
-		fireTimer_ = 40;
-		coolTime_ = 60;
+		fireTimer_ = TankConstants::kFireTimerInit;
+		coolTime_ = TankConstants::kCoolTimeInit;
 		state_ = NextState("Attack", Output1);
 	}
 
@@ -301,7 +302,6 @@ void Tank::ProtectInitialize()
 {
 	BaseCharacter::ProtectInitialize();
 }
-
 void Tank::ProtectUpdate()
 {
 	BaseCharacter::ProtectUpdate();
@@ -313,6 +313,7 @@ void Tank::DeadInitialize() {
 	BaseCharacter::DeadInitialize();
 }
 void Tank::DeadUpdate() {
+	/*
 	if (isHitPlayer_ != preHitPlayer_) {
 		if (Input::GetInstance()->GetPadConnect()) {
 			if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)) {
@@ -353,7 +354,7 @@ void Tank::DeadUpdate() {
 	ImGui::Text("T%d", revivalCount_);
 	ImGui::Text("%d", isHitPlayer_);
 	ImGui::Text("%d", preHitPlayer_);
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Tank::Relationship() {
@@ -395,7 +396,7 @@ void Tank::OnCollision(Collider* collider) {
 		};
 
 		if (state_ != CharacterState::Unique) {
-			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
+			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * AllyAIConstants::kCollisionPushOutFactor;
 			worldTransformBase_.translate.y = 0.0f;
 		}
 		
