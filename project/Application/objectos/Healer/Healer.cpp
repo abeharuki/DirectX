@@ -17,25 +17,25 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	// 初期化
 	BaseCharacter::Initialize(animation, skillName);
 
-	worldTransformBase_.translate.x = 6.0f;
+	worldTransformBase_.translate = HealerConstants::kBaseTranslate;
 
 	worldTransformCane_.Initialize();
-	worldTransformCane_.translate = { -0.03f, 0.04f, 0.1f };
-	worldTransformCane_.rotate = { 1.3f, 0.f, 0.f };
-	worldTransformCane_.scale = { 1.f, 1.f, 1.f };
+	worldTransformCane_.translate = HealerConstants::kCaneTranslate;
+	worldTransformCane_.rotate = HealerConstants::kCaneRotate;
+	worldTransformCane_.scale = HealerConstants::kCaneScale;
 
 
 
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < kMaxCharacterNum; ++i) {
 		magicCircle_[i].reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Healer/mahoujin.png"));
 		healModel_[i].reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/H20.png"));
 		worldTransformMagicCircle_[i].Initialize();
 		worldTransformHeal_[i].Initialize();
-		worldTransformMagicCircle_[i].translate.y = 0.11f;
-		worldTransformMagicCircle_[i].rotate.x = -1.571f;
-		worldTransformMagicCircle_[i].scale = { 2.0f,2.0f,2.0f };
-		worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
-		threshold_[i] = 0.8f;
+		worldTransformMagicCircle_[i].translate = HealerConstants::kMagicCircleTranslate;
+		worldTransformMagicCircle_[i].rotate = HealerConstants::kMagicCircleRotate;
+		worldTransformMagicCircle_[i].scale = HealerConstants::kMagicCircleScale;
+		worldTransformHeal_[i].scale = HealerConstants::kHealScale;
+		threshold_[i] = HealerConstants::kMagicThreshold;
 	}
 
 
@@ -50,7 +50,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	particle_.resize(5);
 
 
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < HealerConstants::kEmitterCount; ++i) {
 		emitter_[i] = {
 		.translate{0,0,0},
 		.count{50},
@@ -117,15 +117,15 @@ void Healer::Update() {
 
 
 	//魔法陣の表示
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < kMaxCharacterNum; ++i) {
 		magicCircle_[i]->SetThreshold(threshold_[i]);
 	}
 
 	//回復数値の表示
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < kMaxCharacterNum; ++i) {
 		healModel_[i]->SetColor({ 1.f,1.f,1.f,healAlph_[i] });
 		if (healAlph_[i] > 0.0f) {
-			healAlph_[i] -= 0.08f;
+			healAlph_[i] -= HealerConstants::kHealAlphaDecrement;
 			worldTransformHeal_[i].translate = Math::Lerp(worldTransformHeal_[i].translate, { healNumMove_[i] }, 0.05f);
 		}
 	}
@@ -133,7 +133,7 @@ void Healer::Update() {
 	Relationship();
 	BaseCharacter::Update();
 	worldTransformCane_.TransferMatrix();
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < kMaxCharacterNum; ++i) {
 		worldTransformMagicCircle_[i].UpdateMatrix();
 		worldTransformHeal_[i].TransferMatrix();
 	}
@@ -168,11 +168,11 @@ void Healer::Update() {
 
 void Healer::Draw(const ViewProjection& camera) {
 	BaseCharacter::Draw(camera);
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < HealerConstants::kEmitterCount; ++i) {
 		particle_[i]->Draw(camera);
 	}
 
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < kMaxCharacterNum; ++i) {
 		magicCircle_[i]->Draw(worldTransformMagicCircle_[i], camera, true);
 	}
 
@@ -188,7 +188,6 @@ void Healer::NoDepthDraw(const ViewProjection& camera) {
 
 };
 
-
 // 移動
 void Healer::MoveInitialize() {
 	BaseCharacter::MoveInitialize();
@@ -202,16 +201,16 @@ void Healer::MoveUpdate() {
 	BaseCharacter::MoveUpdate();
 
 	//味方の体力全員が50以下なら全体回復
-	//味方の体力が誰か20以下なら回復
-	if ((playerHp_ <= 30 && playerHp_ > 0) || (renjuHp_ <= 30 && renjuHp_ > 0) || (tankHp_ <= 30 && tankHp_ > 0) || (hp_ <= 30 && hp_ > 0)) {
-		if (mp_ >= 10 && coolTime_ <= 20) {
+	//味方の体力が誰か30以下なら回復
+	if ((playerHp_ <= HealerConstants::kSingleHealHpThreshold && playerHp_ > 0) || (renjuHp_ <= HealerConstants::kSingleHealHpThreshold && renjuHp_ > 0) || (tankHp_ <= HealerConstants::kSingleHealHpThreshold && tankHp_ > 0) || (hp_ <= HealerConstants::kSingleHealHpThreshold && hp_ > 0)) {
+		if (mp_ >= HealerConstants::kSingleHealMpCost && coolTime_ <= HealerConstants::kCoolTimeThreshold) {
 			oneHeal_ = true;
 			state_ = NextState("Move", Output3);
 		}
 
 	}
-	else if (playerHp_ <= 50 && renjuHp_ <= 50 && tankHp_ <= 50 && hp_ <= 50) {
-		if (mp_ >= 20 && coolTime_ <= 20) {
+	else if (playerHp_ <= HealerConstants::kSingleHealHpThreshold && renjuHp_ <= HealerConstants::kSingleHealHpThreshold && tankHp_ <= HealerConstants::kSingleHealHpThreshold && hp_ <= HealerConstants::kSingleHealHpThreshold) {
+		if (mp_ >= HealerConstants::kAllHealMpCost && coolTime_ <= HealerConstants::kCoolTimeThreshold) {
 			allHeal_ = true;
 			state_ = NextState("Move", Output3);
 		}
@@ -237,22 +236,22 @@ void Healer::AttackUpdate() {
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 
 	// 距離条件チェック
-	if (minDistance_ * 2 <= length && !followPlayer_) {
+	if (minDistance_ * HealerConstants::kMinDistanceMultiplier <= length && !followPlayer_) {
 		state_ = NextState("Attack", Output1);
 		searchTarget_ = true;
 	}
 
 	isAttack_ = false;
 	++attackParameter_;
-	if (attackParameter_ >= 25) {
+	if (attackParameter_ >= HealerConstants::kAttackStartFrames) {
 		isAttack_ = true;
 	}
 
 	//攻撃が終わったら
-	if (attackParameter_ >= 60) {
+	if (attackParameter_ >= HealerConstants::kAttackEndFrames) {
 		attackParameter_ = 0;
 		searchTarget_ = true;
-		coolTime_ = 60;
+		coolTime_ = HealerConstants::kAttackCoolTime;
 		state_ = NextState("Attack", Output1);
 	}
 
@@ -262,49 +261,49 @@ void Healer::AttackUpdate() {
 void Healer::UniqueInitialize() {
 	//40回復
 	if (oneHeal_) {
-		mp_ -= 10;
-		healAmount_ = 40;
-		for (int i = 0; i < 4; ++i) {
+		mp_ -= HealerConstants::kSingleHealMpCost;
+		healAmount_ = HealerConstants::kSingleHealAmount;
+		for (int i = 0; i < kMaxCharacterNum; ++i) {
 			healModel_[i]->SetTexture("character/H40.png");
 		}
 
-		for (int i = 0; i < 4; ++i) {
-			worldTransformMagicCircle_[i].scale = { 2.f,2.f,2.f };
+		for (int i = 0; i < kMaxCharacterNum; ++i) {
+			worldTransformMagicCircle_[i].scale = HealerConstants::kMagicCircleScale;
 		}
 
-		if (hp_ <= 30) {
-			worldTransformHeal_[healer].scale = { 0.f,0.f,0.f };
+		if (hp_ <= HealerConstants::kHealThreshold) {
+			worldTransformHeal_[kHealer].scale = { 0.f,0.f,0.f };
 		}
-		if (playerHp_ <= 30) {
-			worldTransformHeal_[player].scale = { 0.f,0.f,0.f };
+		if (playerHp_ <= HealerConstants::kHealThreshold) {
+			worldTransformHeal_[kPlayer].scale = { 0.f,0.f,0.f };
 		}
-		if (renjuHp_ <= 30) {
-			worldTransformHeal_[renju].scale = { 0.f,0.f,0.f };
+		if (renjuHp_ <= HealerConstants::kHealThreshold) {
+			worldTransformHeal_[kRenju].scale = { 0.f,0.f,0.f };
 		}
-		if (tankHp_ <= 30) {
-			worldTransformHeal_[tank].scale = { 0.f,0.f,0.f };
+		if (tankHp_ <= HealerConstants::kHealThreshold) {
+			worldTransformHeal_[kTank].scale = { 0.f,0.f,0.f };
 		}
 
 	}
 	//全員20回復
 	if (allHeal_) {
-		mp_ -= 20;
-		healAmount_ = 20;
-		for (int i = 0; i < 4; ++i) {
+		mp_ -= HealerConstants::kAllHealMpCost;
+		healAmount_ = HealerConstants::kAllHealAmount;
+		for (int i = 0; i < kMaxCharacterNum; ++i) {
 			healModel_[i]->SetTexture("character/H20.png");
 			worldTransformHeal_[i].scale = { 0.f,0.f,0.f };
 		}
 
 	}
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < HealerConstants::kEmitterCount; ++i) {
 		particle_[i]->SetFrequencyTime(0.0f);
 		particle_[i]->SetEmitter(emitter_[i]);
 	}
 
 
-	coolTime_ = 60;
-	for (int i = 0; i < 4; ++i) {
-		threshold_[i] = 0.8f;
+	coolTime_ = HealerConstants::kCoolTimeReset;
+	for (int i = 0; i < kMaxCharacterNum; ++i) {
+		threshold_[i] = HealerConstants::kMagicThreshold;
 	}
 
 	
@@ -316,7 +315,7 @@ void Healer::UniqueUpdate() {
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 
 	//距離チェック
-	if (length >= minDistance_ * 2.f) {
+	if (length >= minDistance_ * HealerConstants::kMinDistanceMultiplier) {
 		healAnimation_ = true;
 		animationNumber_ = standby;//攻撃モーションをいれたら変える
 	}
@@ -328,50 +327,50 @@ void Healer::UniqueUpdate() {
 	//全体ヒールかどうか
 	if (healAnimation_) {
 		if (allHeal_) {
-			if (threshold_[healer] > 0) {
-				for (int i = 0; i < 4; ++i) {
-					threshold_[i] -= 0.02f;
-					worldTransformHeal_[i].scale = { 0.5f,0.5f,0.5f };
+			if (threshold_[kHealer] > 0) {
+				for (int i = 0; i < kMaxCharacterNum; ++i) {
+					threshold_[i] -= HealerConstants::kThresholdDecrease;
+					worldTransformHeal_[i].scale = HealerConstants::kHealAnimationScale;
 				}
 			}
 			else {
-				for (int i = 0; i < 4; ++i) {
-					threshold_[i] -= 0.0f;
+				for (int i = 0; i < kMaxCharacterNum; ++i) {
+					threshold_[i] = 0.0f;
 				}
 			}
 		}
 		else {
-			if (threshold_[healer] > 0) {
-				threshold_[healer] -= 0.02f;
-				if (hp_ <= 30) {
-					worldTransformHeal_[healer].scale = { 0.5f,0.5f,0.5f };
+			if (threshold_[kHealer] > 0) {
+				threshold_[kHealer] -= HealerConstants::kThresholdDecrease;
+				if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
+					worldTransformHeal_[kHealer].scale = HealerConstants::kHealAnimationScale;
 				}
 
-				if (playerHp_ <= 30) {
-					threshold_[player] -= 0.02f;
-					worldTransformHeal_[player].scale = { 0.5f,0.5f,0.5f };
+				if (playerHp_ <= HealerConstants::kHealThreshold && playerHp_ > 0) {
+					threshold_[kPlayer] -= HealerConstants::kThresholdDecrease;
+					worldTransformHeal_[kPlayer].scale = HealerConstants::kHealAnimationScale;
 				}
-				if (renjuHp_ <= 30) {
-					threshold_[renju] -= 0.02f;
-					worldTransformHeal_[renju].scale = { 0.5f,0.5f,0.5f };
+				if (renjuHp_ <= HealerConstants::kHealThreshold && renjuHp_ > 0) {
+					threshold_[kRenju] -= HealerConstants::kThresholdDecrease;
+					worldTransformHeal_[kRenju].scale = HealerConstants::kHealAnimationScale;
 				}
-				if (tankHp_ <= 30) {
-					threshold_[tank] -= 0.02f;
-					worldTransformHeal_[tank].scale = { 0.5f,0.5f,0.5f };
+				if (tankHp_ <= HealerConstants::kHealThreshold && tankHp_ >0) {
+					threshold_[kTank] -= HealerConstants::kThresholdDecrease;
+					worldTransformHeal_[kTank].scale = HealerConstants::kHealAnimationScale;
 				}
 
 			}
 			else {
-				threshold_[healer] = 0;
+				threshold_[kHealer] = 0;
 			}
 		}
 		--coolTime_;
-		particle_[0]->SetTranslate(worldTransformBase_.translate);
-		particle_[0]->Update();
-		particle_[1]->SetTranslate(playerPos_);//player
-		particle_[2]->SetTranslate(renjuPos_);//renju
-		particle_[3]->SetTranslate(tankPos_);//tank
-		particle_[4]->SetTranslate(worldTransformBase_.translate);//healer
+		particle_[kHealer]->SetTranslate(worldTransformBase_.translate);
+		particle_[kHealer]->Update();
+		particle_[kPlayer]->SetTranslate(playerPos_);//player
+		particle_[kRenju]->SetTranslate(renjuPos_);//renju
+		particle_[kTank]->SetTranslate(tankPos_);//tank
+		particle_[kMaxCharacterNum]->SetTranslate(worldTransformBase_.translate);//healer
 	}
 	else {
 		// 追従対象からロックオン対象へのベクトル
@@ -410,57 +409,57 @@ void Healer::UniqueUpdate() {
 
 	//回復数値の設定
 
-	if (hp_ <= 30) {
-		worldTransformHeal_[healer].translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-		healNumMove_[healer] = { worldTransformHeal_[healer].translate.x ,worldTransformHeal_[healer].translate.y + 2.0f,worldTransformHeal_[healer].translate.z };
+	if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
+		worldTransformHeal_[kHealer].translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + HealerConstants::kHealPositionYOffset,worldTransformBase_.translate.z };
+		healNumMove_[kHealer] = { worldTransformHeal_[kHealer].translate.x ,worldTransformHeal_[kHealer].translate.y + HealerConstants::kHealPositionYOffset,worldTransformHeal_[kHealer].translate.z };
 
 	}
-	if (playerHp_ <= 30) {
-		worldTransformHeal_[player].translate = { playerPos_.x,playerPos_.y + 2.0f,playerPos_.z };
-		healNumMove_[player] = { worldTransformHeal_[player].translate.x ,worldTransformHeal_[player].translate.y + 2.0f,worldTransformHeal_[player].translate.z };
+	if (playerHp_ <= HealerConstants::kHealThreshold && playerHp_ > 0) {
+		worldTransformHeal_[kPlayer].translate = { playerPos_.x,playerPos_.y + HealerConstants::kHealPositionYOffset,playerPos_.z };
+		healNumMove_[kPlayer] = { worldTransformHeal_[kPlayer].translate.x ,worldTransformHeal_[kPlayer].translate.y + HealerConstants::kHealPositionYOffset,worldTransformHeal_[kPlayer].translate.z };
 
 	}
-	if (renjuHp_ <= 30) {
-		worldTransformHeal_[renju].translate = { renjuPos_.x,renjuPos_.y + 2.0f,renjuPos_.z };
-		healNumMove_[renju] = { worldTransformHeal_[renju].translate.x ,worldTransformHeal_[renju].translate.y + 2.0f,worldTransformHeal_[renju].translate.z };
+	if (renjuHp_ <= HealerConstants::kHealThreshold && renjuHp_ > 0) {
+		worldTransformHeal_[kRenju].translate = { renjuPos_.x,renjuPos_.y + HealerConstants::kHealPositionYOffset,renjuPos_.z };
+		healNumMove_[kRenju] = { worldTransformHeal_[kRenju].translate.x ,worldTransformHeal_[kRenju].translate.y + HealerConstants::kHealPositionYOffset,worldTransformHeal_[kRenju].translate.z };
 
 	}
-	if (tankHp_ <= 30) {
-		worldTransformHeal_[tank].translate = { tankPos_.x,tankPos_.y + 2.0f,tankPos_.z };
-		healNumMove_[tank] = { worldTransformHeal_[tank].translate.x ,worldTransformHeal_[tank].translate.y + 2.0f,worldTransformHeal_[tank].translate.z };
+	if (tankHp_ <= HealerConstants::kHealThreshold && tankHp_ > 0) {
+		worldTransformHeal_[kTank].translate = { tankPos_.x,tankPos_.y + 2.0f,tankPos_.z };
+		healNumMove_[kTank] = { worldTransformHeal_[kTank].translate.x ,worldTransformHeal_[kTank].translate.y + 2.0f,worldTransformHeal_[kTank].translate.z };
 
 	}
 	
 	if (coolTime_ < 5) {
-		for (int i = 0; i < 4; ++i) {
-			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale - 1.0f;
+		for (int i = 0; i < kMaxCharacterNum; ++i) {
+			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale - HealerConstants::kMagicCircleScaleDecrease;
 		}
 	}
 	else if (coolTime_ < 10) {
-		for (int i = 0; i < 4; ++i) {
-			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale + 0.5f;
+		for (int i = 0; i < kMaxCharacterNum; ++i) {
+			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale + HealerConstants::kMagicCircleScaleIncrease;
 		}
 	}
 
 	//パーティクルの更新
 	if (coolTime_ <= 1) {
 		if (allHeal_) {
-			for (int i = 0; i < 5; ++i) {
+			for (int i = 0; i < HealerConstants::kEmitterCount; ++i) {
 				particle_[i]->Update();
 			}
 		}
 		else {
-			if (playerHp_ <= 30) {
-				particle_[1]->Update();
+			if (playerHp_ <= HealerConstants::kHealThreshold && playerHp_ > 0) {
+				particle_[kPlayer]->Update();
 			}
-			if (hp_ <= 30) {
-				particle_[4]->Update();
+			if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
+				particle_[kMaxCharacterNum]->Update();//healer
 			}
-			if (renjuHp_ <= 30) {
-				particle_[2]->Update();
+			if (renjuHp_ <= HealerConstants::kHealThreshold && renjuHp_ > 0) {
+				particle_[kRenju]->Update();
 			}
-			if (tankHp_ <= 30) {
-				particle_[3]->Update();
+			if (tankHp_ <= HealerConstants::kHealThreshold && tankHp_ > 0) {
+				particle_[kTank]->Update();
 			}
 		}
 	}
@@ -468,27 +467,27 @@ void Healer::UniqueUpdate() {
 	if (coolTime_ <= 0) {
 		heal_ = true;
 		state_ = NextState("Heal", Output1);
-		coolTime_ = 60;
+		coolTime_ = HealerConstants::kCoolTimeReset;
 
-		for (int i = 0; i < 4; ++i) {
+		for (int i = 0; i < kMaxCharacterNum; ++i) {
 			
 			
 		}
-		if (playerHp_ <= 30) {
-			healAlph_[player] = 2.0f;
-			threshold_[player] = 0.8f;
+		if (playerHp_ <= HealerConstants::kHealThreshold && playerHp_ > 0) {
+			healAlph_[kPlayer] = HealerConstants::kHealNumThreshold;
+			threshold_[kPlayer] = HealerConstants::kMagicThreshold;
 		}
-		if (hp_ <= 30) {
-			healAlph_[healer] = 2.0f;
-			threshold_[healer] = 0.8f;
+		if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
+			healAlph_[kHealer] = HealerConstants::kHealNumThreshold;
+			threshold_[kHealer] = HealerConstants::kMagicThreshold;
 		}
-		if (renjuHp_ <= 30) {
-			healAlph_[renju] = 2.0f;
-			threshold_[renju] = 0.8f;
+		if (renjuHp_ <= HealerConstants::kHealThreshold && renjuHp_ > 0) {
+			healAlph_[kRenju] = HealerConstants::kHealNumThreshold;
+			threshold_[kRenju] = HealerConstants::kMagicThreshold;
 		}
-		if (tankHp_ <= 30) {
-			healAlph_[tank] = 2.0f;
-			threshold_[tank] = 0.8f;
+		if (tankHp_ <= HealerConstants::kHealThreshold && tankHp_ > 0) {
+			healAlph_[kTank] = HealerConstants::kHealNumThreshold;
+			threshold_[kTank] = HealerConstants::kMagicThreshold;
 		}
 
 	}
@@ -515,6 +514,7 @@ void Healer::DeadInitialize() {
 	BaseCharacter::DeadInitialize();
 }
 void Healer::DeadUpdate() {
+	/*
 	if (isHitPlayer_ != preHitPlayer_) {
 		if (Input::GetInstance()->GetPadConnect()) {
 			if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)) {
@@ -554,9 +554,10 @@ void Healer::DeadUpdate() {
 	ImGui::Text("T%d", revivalCount_);
 	ImGui::Text("%d", isHitPlayer_);
 	ImGui::Text("%d", preHitPlayer_);
-	ImGui::End();
+	ImGui::End();*/
 
 }
+
 // 親子関係
 void Healer::Relationship() {
 
@@ -568,15 +569,15 @@ void Healer::Relationship() {
 			worldTransformCane_.translate),
 		animation_->GetJointWorldTransform("mixamorig:RightHand").matWorld_);
 
-	worldTransformMagicCircle_[0].translate.x = worldTransformBase_.translate.x;
-	worldTransformMagicCircle_[0].translate.z = worldTransformBase_.translate.z;
+	worldTransformMagicCircle_[kHealer].translate.x = worldTransformBase_.translate.x;
+	worldTransformMagicCircle_[kHealer].translate.z = worldTransformBase_.translate.z;
 
-	worldTransformMagicCircle_[1].translate.x = playerPos_.x;
-	worldTransformMagicCircle_[1].translate.z = playerPos_.z;
-	worldTransformMagicCircle_[2].translate.x = renjuPos_.x;
-	worldTransformMagicCircle_[2].translate.z = renjuPos_.z;
-	worldTransformMagicCircle_[3].translate.x = tankPos_.x;
-	worldTransformMagicCircle_[3].translate.z = tankPos_.z;
+	worldTransformMagicCircle_[kPlayer].translate.x = playerPos_.x;
+	worldTransformMagicCircle_[kPlayer].translate.z = playerPos_.z;
+	worldTransformMagicCircle_[kRenju].translate.x = renjuPos_.x;
+	worldTransformMagicCircle_[kRenju].translate.z = renjuPos_.z;
+	worldTransformMagicCircle_[kTank].translate.x = tankPos_.x;
+	worldTransformMagicCircle_[kTank].translate.z = tankPos_.z;
 
 
 	for (int i = 0; i < 4; ++i) {
@@ -617,7 +618,7 @@ void Healer::OnCollision(Collider* collider) {
 			.size{collider->GetOBB().size}
 		};
 		if (state_ != CharacterState::Unique) {
-			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
+			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * HealerConstants::kCollisionPushOutFactor;
 			worldTransformBase_.translate.y = 0.0f;
 		}
 	}

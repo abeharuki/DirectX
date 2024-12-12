@@ -10,6 +10,60 @@
 #include <ParticleSystem.h>
 #include "base/BaseCharacter.h"
 
+namespace HealerConstants {
+	//各worldTransformの初期化
+	const Vector3 kBaseTranslate = { 6.0f,0.0f,0.0f };//キャラクターの基本位置
+	const Vector3 kCaneTranslate = { -0.03f, 0.04f, 0.1f };//杖の初期位置
+	const Vector3 kCaneRotate = { 1.3f, 0.f, 0.f };//杖の初期回転角度
+	const Vector3 kCaneScale = { 1.f, 1.f, 1.f }; //杖の初期サイズ
+	const Vector3 kMagicCircleTranslate = { 0.0f,0.11f,0.0f };//魔法陣の初期座標
+	const Vector3 kMagicCircleRotate = { -1.571f,0.0f,0.0f };//魔法陣の初期角度
+	const Vector3 kMagicCircleScale = { 2.0f,2.0f,2.0f };//魔法陣の初期サイズ
+	const Vector3 kHealScale = { 0.5f,0.5f,0.5f };//回復数値描画の初期サイズ
+
+	
+
+	const int kEmitterCount = 5;//エミッターのMax数
+	const float kHealAlphaDecrement = 0.08f;//蛭海フック数値モデルのアルファ値の変化
+
+	const int kCoolTimeReset = 60;//クールタイム初期化値
+
+	// HP関連の閾値
+	const int kSingleHealHpThreshold = 30;  //単体回復を行うHPの閾値
+	const int kAllHealHpThreshold = 50;    //全体回復を行うHPの閾値
+	const int kSingleHealAmount = 40;         //単体回復量
+	const int kAllHealAmount = 20;            //全体回復量
+	const int kHealThreshold = 30;            //回復対象のHP閾値
+	const Vector3 kHealAnimationScale = { 0.5f,0.5f,0.5f };//ヒール中のスケール
+	const float kMagicCircleScaleIncrease = 0.5f;//クールタイムによるスケール増加
+	const float kMagicCircleScaleDecrease = 1.0f;//クールタイムによるスケール減少
+	const float kHealPositionYOffset = 2.0f;//回復位置のY方向オフセット
+
+	// MP関連の閾値
+	const int kSingleHealMpCost = 10;//単体回復の消費MP
+	const int kAllHealMpCost = 20;//全体回復の消費MP
+
+	// 敵との距離関連
+	const float kMinDistanceMultiplier = 2.0f;//最小距離倍率
+
+	// 回復エフェクトの閾値
+	const float kThresholdDecrease = 0.02f;//ヒール中の閾値減少量
+	const float kMagicThreshold = 0.8f;//魔法陣の閾値
+	const float kHealNumThreshold = 2.0f;//回復数値の閾値
+
+	// クールタイムの閾値
+	const int kCoolTimeThreshold = 20;//スキル使用可能なクールタイム閾値
+	
+	// 攻撃関連
+	const int kAttackStartFrames = 25;          // 攻撃開始までのフレーム数
+	const int kAttackEndFrames = 60;            // 攻撃終了までのフレーム数
+	const int kAttackCoolTime = 60;             // 攻撃後のクールタイム
+
+
+	const float kCollisionPushOutFactor = 0.3f; // AABB-OBBの押し出し係数
+	
+}
+
 
 /**
  * @file Healer
@@ -111,10 +165,11 @@ private: // メンバ変数
 	WorldTransform worldTransformMagicCircle_[4];
 	WorldTransform worldTransformHeal_[4];
 	enum Character {
-		healer,
-		player,
-		renju,
-		tank,
+		kHealer,
+		kPlayer,
+		kRenju,
+		kTank,
+		kMaxCharacterNum,
 	};
 	//魔法陣
 	std::unique_ptr<Model> magicCircle_[4];
