@@ -31,48 +31,92 @@ struct Blur {
 class GasianBlur {
 public:
 
+    /// <summary>
+    /// ガウシアンブラーの初期化処理
+    /// </summary>
+    void Initialize();
 
-	void Initialize();
+    /// <summary>
+    /// 描画処理
+    /// </summary>
+    /// <param name="srvHandle">シェーダリソースビューのハンドル</param>
+    void Draw(DescriptorHandle srvHandle);
 
-	void Draw(DescriptorHandle srvHandle);
+    /// <summary>
+    /// 描画前のセットアップ処理
+    /// </summary>
+    void PreDraw();
 
-	void PreDraw();
-	void PostDraw();
+    /// <summary>
+    /// 描画後の後処理
+    /// </summary>
+    void PostDraw();
 
+    /// <summary>
+    /// 現在のシェーダリソースビュー(SRV)ハンドルを取得
+    /// </summary>
+    /// <returns>シェーダリソースビューのハンドル</returns>
+    const DescriptorHandle& GetHandle() { return colorBuffer_->GetSRVHandle(); }
 
-	const DescriptorHandle& GetHandle() { return colorBuffer_->GetSRVHandle(); }
+    /// <summary>
+    /// ガウシアンブラーのステップ幅を設定
+    /// </summary>
+    /// <param name="num">ステップ幅</param>
+    void SetWidth(float num) { blurData->stepWidth = num; }
 
-	
-	//テクスチャのサイズ
-	void SetWidth(float num) { blurData->stepWidth = num; }
-	void SetSigma(float sigma) { blurData->sigma = sigma; }
-	void isGasianBlur(bool flag) { blurData->isEnble = flag; }
+    /// <summary>
+    /// ガウシアンブラーのシグマ値を設定
+    /// </summary>
+    /// <param name="sigma">シグマ値</param>
+    void SetSigma(float sigma) { blurData->sigma = sigma; }
+
+    /// <summary>
+    /// ガウシアンブラーの有効/無効を設定
+    /// </summary>
+    /// <param name="flag">有効フラグ</param>
+    void isGasianBlur(bool flag) { blurData->isEnble = flag; }
+
 private:
-	void CreateResource();
 
-	/// <summary>
-	/// グラフィックスパイプラインの初期化
-	/// </summary>
-	void sPipeline();
+    /// <summary>
+    /// リソース作成処理
+    /// </summary>
+    void CreateResource();
+
+    /// <summary>
+    /// グラフィックスパイプラインの初期化
+    /// </summary>
+    void sPipeline();
+
 private:
 
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	// リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
+    // 頂点バッファビュー
+    D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 
-	Blur* blurData = nullptr;
+    // リソース
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
 
-	// ルートシグネチャ
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
-	// パイプラインステートオブジェクト
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+    // ガウシアンブラー用のデータ構造
+    Blur* blurData = nullptr;
 
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+    // ルートシグネチャ
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 
-	std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
-	float clearColor_[4]{ 0.1f, 0.25f, 0.5f, 1.0f };
+    // パイプラインステートオブジェクト
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 
-	uint32_t texture_;
+    // 頂点シェーダのバイナリデータ
+    Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+
+    // ピクセルシェーダのバイナリデータ
+    Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+
+    // カラーバッファ
+    std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
+
+    // クリアカラー
+    float clearColor_[4]{ 0.1f, 0.25f, 0.5f, 1.0f };
+
+    // マスクテクスチャID
+    uint32_t texture_;
 };

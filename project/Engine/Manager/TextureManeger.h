@@ -19,6 +19,7 @@ public:
 
 	static void Destroy();
 
+	//読み込み検索
 	static void Load(const std::string& filename);
 
 	/// <summary>

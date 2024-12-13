@@ -21,6 +21,31 @@ void Math::UpdateCircularMotion3D(float& posX, float& posZ, float centerX, float
 	}
 }
 
+bool Math::isWithinRange(float value, float range, float sub) {
+	if (value >= range - sub && value <= range + sub) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+
+bool Math::CircleColiision(Circle circleA, Circle circleB) {
+	double a;
+	double b;
+	double c;
+
+	a = double(circleB.center.x - circleA.center.x);
+	b = double(circleB.center.y - circleA.center.y);
+	c = sqrt(a * a + b * b);
+	if (c <= circleA.radius + circleB.radius) {
+		return true;
+	}
+
+	return false;
+}
+
 // 加算
 Vector3 Math::Add(const Vector3& v1, const Vector3& v2) {
 	Vector3 add;
@@ -358,8 +383,7 @@ Matrix4x4
 }
 
 // アフィン変換
-Matrix4x4
-    Math::MakeAffineRotateMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate) {
+Matrix4x4 Math::MakeAffineRotateMatrix(const Vector3& scale, const Matrix4x4& rotate, const Vector3& translate) {
 	// 回転
 	
 	Matrix4x4 rotateXYZMatrix = rotate;
@@ -396,8 +420,7 @@ Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Quaternion& quatern
 
 
 // 透視投影行列
-Matrix4x4
-    Math::MakePerspectiverFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
+Matrix4x4 Math::MakePerspectiverFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
 	Matrix4x4 MakePerspectiverFovMatrix;
 	MakePerspectiverFovMatrix.m[0][0] = 1 / aspectRatio * (1 / std::tan(fovY / 2));
 	MakePerspectiverFovMatrix.m[0][1] = 0.0f;

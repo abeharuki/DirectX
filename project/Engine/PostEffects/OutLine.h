@@ -38,51 +38,95 @@ struct OutLineStyle {
 class OutLine
 {
 public:
-	void Initialize();
 
-	void Draw();
+    /// <summary>
+    /// アウトライン処理の初期化
+    /// </summary>
+    void Initialize();
 
-	void PreDraw();
-	void PostDraw();
+    /// <summary>
+    /// 描画処理
+    /// </summary>
+    void Draw();
 
-	//エフェクトの設定
-	void isOutLine(bool flag) { outLineData->isEnable = flag; }
-	void ValueOutLine(float value) { outLineData->differenceValue = value; }
-	void SetViewProjection(ViewProjection& viewProjection) { 
-		viewProjection_ = viewProjection;
-		outLineData->projectionInverse = Math::Inverse(viewProjection_.matProjection);
-	}
+    /// <summary>
+    /// 描画前のセットアップ処理
+    /// </summary>
+    void PreDraw();
 
-	const DescriptorHandle& GetHandle() { return colorBuffer_->GetSRVHandle(); }
+    /// <summary>
+    /// 描画後の後処理
+    /// </summary>
+    void PostDraw();
+
+    /// <summary>
+    /// アウトラインエフェクトの有効/無効を設定
+    /// </summary>
+    /// <param name="flag">有効フラグ</param>
+    void isOutLine(bool flag) { outLineData->isEnable = flag; }
+
+    /// <summary>
+    /// アウトラインの差分値を設定
+    /// </summary>
+    /// <param name="value">差分値</param>
+    void ValueOutLine(float value) { outLineData->differenceValue = value; }
+
+    /// <summary>
+    /// ビュー射影行列を設定
+    /// </summary>
+    /// <param name="viewProjection">ビュー射影行列</param>
+    void SetViewProjection(ViewProjection& viewProjection) {
+        viewProjection_ = viewProjection;
+        outLineData->projectionInverse = Math::Inverse(viewProjection_.matProjection);
+    }
+
+    /// <summary>
+    /// 現在のシェーダリソースビュー(SRV)ハンドルを取得
+    /// </summary>
+    /// <returns>シェーダリソースビューのハンドル</returns>
+    const DescriptorHandle& GetHandle() { return colorBuffer_->GetSRVHandle(); }
+
 private:
-	void CreateResource();
 
-	/// <summary>
-	/// グラフィックスパイプラインの初期化
-	/// </summary>
-	void sPipeline();
+    /// <summary>
+    /// リソース作成処理
+    /// </summary>
+    void CreateResource();
 
-
+    /// <summary>
+    /// グラフィックスパイプラインの初期化
+    /// </summary>
+    void sPipeline();
 
 private:
-	ViewProjection viewProjection_;
 
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	// リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> postEffectResource_;
+    // ビュー射影行列データ
+    ViewProjection viewProjection_;
 
-	OutLineStyle* outLineData = nullptr;
+    // 頂点バッファビュー
+    D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 
+    // ポストエフェクト用リソース
+    Microsoft::WRL::ComPtr<ID3D12Resource> postEffectResource_;
 
-	// ルートシグネチャ
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
-	// パイプラインステートオブジェクト
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+    // アウトラインエフェクトデータ構造
+    OutLineStyle* outLineData = nullptr;
 
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+    // ルートシグネチャ
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 
-	std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
-	float clearColor_[4]{ 0.1f, 0.25f, 0.5f, 1.0f };
+    // パイプラインステートオブジェクト
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+
+    // 頂点シェーダのバイナリデータ
+    Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+
+    // ピクセルシェーダのバイナリデータ
+    Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+
+    // カラーバッファ
+    std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
+
+    // クリアカラー
+    float clearColor_[4]{ 0.1f, 0.25f, 0.5f, 1.0f };
 };

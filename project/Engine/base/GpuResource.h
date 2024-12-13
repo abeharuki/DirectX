@@ -8,25 +8,57 @@
  */
 class GpuResource
 {
-	friend class CommandContext;
+    /// <summary>
+    /// CommandContext クラスからアクセス可能にするためのフレンドクラス宣言
+    /// </summary>
+    friend class CommandContext;
 
 public:
-	virtual ~GpuResource() = default;
+    /// <summary>
+    /// デストラクタ
+    /// </summary>
+    virtual ~GpuResource() = default;
 
-	ID3D12Resource* GetResource() const { return resource_.Get(); };
+    /// <summary>
+    /// GPUリソースを取得
+    /// </summary>
+    /// <returns>ID3D12Resource ポインタ</returns>
+    ID3D12Resource* GetResource() const { return resource_.Get(); };
 
-	D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const { return gpuVirtualAddress_; };
+    /// <summary>
+    /// GPU仮想アドレスを取得
+    /// </summary>
+    /// <returns>D3D12_GPU_VIRTUAL_ADDRESS</returns>
+    D3D12_GPU_VIRTUAL_ADDRESS GetGpuVirtualAddress() const { return gpuVirtualAddress_; };
 
-	D3D12_RESOURCE_STATES GetResourceState() { return currentState_; };
+    /// <summary>
+    /// 現在のリソースステートを取得
+    /// </summary>
+    /// <returns>D3D12_RESOURCE_STATES</returns>
+    D3D12_RESOURCE_STATES GetResourceState() { return currentState_; };
 
-	void SetResourceState(D3D12_RESOURCE_STATES newState) { currentState_ = newState; };
+    /// <summary>
+    /// リソースステートを設定
+    /// </summary>
+    /// <param name="newState">新しいリソースステート</param>
+    void SetResourceState(D3D12_RESOURCE_STATES newState) { currentState_ = newState; };
 
-	//void SetResource(ID3D12Resource* resource) { resource_ = resource; }
+    // リソース設定用の関数をコメントアウト
+    //void SetResource(ID3D12Resource* resource) { resource_ = resource; }
 
 protected:
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
+    /// <summary>
+    /// GPUリソースを保持するための ComPtr
+    /// </summary>
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
 
-	D3D12_RESOURCE_STATES currentState_{};
+    /// <summary>
+    /// 現在のリソースのステート
+    /// </summary>
+    D3D12_RESOURCE_STATES currentState_{};  ///< リソースの現在の状態（例: D3D12_RESOURCE_STATE_COMMON）
 
-	D3D12_GPU_VIRTUAL_ADDRESS gpuVirtualAddress_ = 0;
+    /// <summary>
+    /// GPU仮想アドレス
+    /// </summary>
+    D3D12_GPU_VIRTUAL_ADDRESS gpuVirtualAddress_ = 0;  ///< GPUの仮想メモリアドレス
 };

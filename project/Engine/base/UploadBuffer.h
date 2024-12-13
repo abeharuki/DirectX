@@ -8,14 +8,32 @@
 class UploadBuffer : public GpuResource
 {
 public:
-	void Create(size_t sizeInBytes);
+    /// <summary>
+    /// アップロードバッファを作成
+    /// </summary>
+    /// <param name="sizeInBytes">バッファのサイズ（バイト単位）</param>
+    void Create(size_t sizeInBytes);
 
-	void* Map();
+    /// <summary>
+    /// バッファをマップして、CPUからのデータ書き込みを可能にする
+    /// </summary>
+    /// <returns>バッファのポインタ</returns>
+    void* Map();
 
-	void Unmap();
+    /// <summary>
+    /// バッファのマッピングを解除し、GPUにデータを転送できるようにする
+    /// </summary>
+    void Unmap();
 
-	size_t GetBufferSize() const { return bufferSize_; };
+    /// <summary>
+    /// アップロードバッファのサイズを取得
+    /// </summary>
+    /// <returns>バッファのサイズ（バイト単位）</returns>
+    size_t GetBufferSize() const { return bufferSize_; };
 
 private:
-	size_t bufferSize_ = 0;
+    /// <summary>
+    /// アップロードバッファのサイズ（バイト単位）
+    /// </summary>
+    size_t bufferSize_ = 0;
 };

@@ -95,14 +95,13 @@ public:
 	//static ParticleSystem* GetInstance();
 	//static void Destroy();
 
-	void Clear();
-
 	// 初期化
 	void Initialize(const std::string& filename);
 
 	// スタート
 	void Update();
 
+	//描画
 	void Draw(const ViewProjection& viewProjection);
 
 	//static ParticleSystem*Create(const std::string& filename);
@@ -162,17 +161,48 @@ public:
 	void DebugParameter();
 private:
 
+	/// <summary>
+	/// コンピュートシェーダの初期化
+	/// 必要なシェーダリソースやパイプラインステートの設定を実行
+	/// </summary>
 	void InitilaizeCS();
+
+	/// <summary>
+	/// コンピュートシェーダを用いてパーティクルの状態を更新
+	/// シミュレーションのステップごとに呼び出し
+	/// </summary>
 	void UpdateCS();
 
+	/// <summary>
+	/// グラフィックスパイプラインの設定
+	/// 描画に必要なステートやレンダリング設定を初期化
+	/// </summary>
 	void sPipeline();
 
+	/// <summary>
+	/// 必要なGPUリソースを作成
+	/// バッファやテクスチャなどのリソースを初期化
+	/// </summary>
 	void CreateResource();
 
+	/// <summary>
+	/// 頂点リソースを作成します。
+	/// パーティクルの描画用に必要な頂点データやバッファを設定
+	/// </summary>
 	void CreateVertexResource();
 
+	/// <summary>
+	/// カメラのビューおよびプロジェクション行列を基にリソースを更新
+	/// 描画の際に適切な変換が行われるように設定
+	/// </summary>
+	/// <param name="viewProjection">カメラのビューおよびプロジェクション情報</param>
 	void UpdatePerViewResource(const ViewProjection& viewProjection);
 
+	/// <summary>
+	/// テクスチャを読み込み
+	/// 指定されたファイルパスから画像データをロードし、GPUリソースに登録します。
+	/// </summary>
+	/// <param name="filename">読み込むテクスチャファイルのパス</param>
 	void LoadTexture(const std::string& filename);
 
 private:

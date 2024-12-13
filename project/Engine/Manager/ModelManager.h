@@ -49,21 +49,56 @@ struct Scene {
  */
 class ModelManager {
 public:
-	static ModelManager* GetInstance();
+    /// <summary>
+    /// シングルトンインスタンスを取得
+    /// </summary>
+    /// <returns>ModelManagerのインスタンス</returns>
+    static ModelManager* GetInstance();
 
-	//objファイルの読み込み
-	static MaterialData LoadMaterialTemplateFile(const std::string& filename);
-	static ModelData LoadGltfFile(const std::string& directorPath,const std::string& filename);
-	static ModelData LoadObjFile(const std::string& filename);
+    /// <summary>
+    /// objファイルからマテリアルテンプレートを読み込む
+    /// </summary>
+    /// <param name="filename">マテリアルテンプレートファイル名</param>
+    /// <returns>読み込まれたマテリアルデータ</returns>
+    static MaterialData LoadMaterialTemplateFile(const std::string& filename);
 
-	void LoadJsonObject(nlohmann::json& object, Scene::ObjectData& objectData);
+    /// <summary>
+    /// glTFファイルを読み込み、モデルデータを生成
+    /// </summary>
+    /// <param name="directorPath">ディレクトリのパス</param>
+    /// <param name="filename">glTFファイル名</param>
+    /// <returns>読み込まれたモデルデータ</returns>
+    static ModelData LoadGltfFile(const std::string& directorPath, const std::string& filename);
 
+    /// <summary>
+    /// objファイルを読み込み、モデルデータを生成
+    /// </summary>
+    /// <param name="filename">objファイル名</param>
+    /// <returns>読み込まれたモデルデータ</returns>
+    static ModelData LoadObjFile(const std::string& filename);
 
-	static Node ReadNode(aiNode* node);
+    /// <summary>
+    /// JSON形式のオブジェクトデータを読み込み、シーンに設定
+    /// </summary>
+    /// <param name="object">JSONオブジェクト</param>
+    /// <param name="objectData">シーンのオブジェクトデータ</param>
+    void LoadJsonObject(nlohmann::json& object, Scene::ObjectData& objectData);
 
-	static const int maxtex = 256;
+    /// <summary>
+    /// aiNodeからNodeデータを読み取る
+    /// </summary>
+    /// <param name="node">aiNode</param>
+    /// <returns>生成されたNodeデータ</returns>
+    static Node ReadNode(aiNode* node);
 
+    /// <summary>
+    /// 最大テクスチャ数
+    /// </summary>
+    static const int maxtex = 256;
 
 private:
-	static ModelManager* instance_;
+    /// <summary>
+    /// シングルトンインスタンス
+    /// </summary>
+    static ModelManager* instance_;
 };

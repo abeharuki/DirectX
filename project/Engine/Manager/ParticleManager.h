@@ -21,23 +21,62 @@ struct ParticleId {
  */
 class ParticleManager {
 public:
-	static ParticleManager* GetInstance();
+    /// <summary>
+    /// シングルトンインスタンスを取得
+    /// </summary>
+    /// <returns>ParticleManagerのインスタンス</returns>
+    static ParticleManager* GetInstance();
 
-	static void Destroy();
+    /// <summary>
+    /// シングルトンインスタンスを破棄
+    /// </summary>
+    static void Destroy();
 
-	static ParticleSystem* Create(const std::string& name, uint32_t Id);
-
-
+    /// <summary>
+    /// パーティクルシステムを新しく生成
+    /// </summary>
+    /// <param name="name">パーティクルシステムの名前</param>
+    /// <param name="Id">パーティクルシステムの識別ID</param>
+    /// <returns>生成されたParticleSystemオブジェクト</returns>
+    static ParticleSystem* Create(const std::string& name, uint32_t Id);
 
 private:
-	ParticleManager() = default;
-	~ParticleManager() = default;
-	ParticleManager(const ParticleManager&) = delete;
-	ParticleManager& operator=(const ParticleManager&) = delete;
+    /// <summary>
+    /// ParticleManagerのコンストラクタ（デフォルト）
+    /// </summary>
+    ParticleManager() = default;
 
-	ParticleSystem* CreateInternal(const std::string& name,uint32_t Id);
+    /// <summary>
+    /// ParticleManagerのデストラクタ
+    /// </summary>
+    ~ParticleManager() = default;
+
+    /// <summary>
+    /// コピーコンストラクタを削除
+    /// </summary>
+    ParticleManager(const ParticleManager&) = delete;
+
+    /// <summary>
+    /// コピー代入演算子を削除
+    /// </summary>
+    ParticleManager& operator=(const ParticleManager&) = delete;
+
+    /// <summary>
+    /// 内部でパーティクルシステムを生成
+    /// </summary>
+    /// <param name="name">パーティクルシステムの名前</param>
+    /// <param name="Id">パーティクルシステムの識別ID</param>
+    /// <returns>生成されたParticleSystemオブジェクト</returns>
+    ParticleSystem* CreateInternal(const std::string& name, uint32_t Id);
+
 private:
-	static ParticleManager* instance_;
+    /// <summary>
+    /// ParticleManagerのシングルトンインスタンス
+    /// </summary>
+    static ParticleManager* instance_;
 
-	std::map<ParticleId, std::unique_ptr<ParticleSystem>> particleSystems_;
+    /// <summary>
+    /// パーティクルシステムのリスト
+    /// </summary>
+    std::map<ParticleId, std::unique_ptr<ParticleSystem>> particleSystems_;
 };

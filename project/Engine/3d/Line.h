@@ -57,12 +57,9 @@ public:
 	/// <summary>
 	/// 3Dモデル生成
 	/// </summary>
-	/// <returns></returns>
 	void CreateVertexResource(Vector3 start, Vector3 end);
-	/// <summary>
-	/// 描画前処理
-	/// </summary>
-	/// <param name="commandList">描画コマンドリスト</param>
+
+	//描画
 	void Draw(WorldTransform& worldTransform, const ViewProjection& viewProjection, bool light);
 
 	//線の作成

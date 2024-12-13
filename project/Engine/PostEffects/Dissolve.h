@@ -34,49 +34,105 @@ struct DissolveStyle {
 class Dissolve {
 public:
 
-	void Initialize();
+    /// <summary>
+    /// ディゾルブエフェクトの初期化
+    /// 必要なリソースやパイプラインを設定
+    /// </summary>
+    void Initialize();
 
-	void Draw(DescriptorHandle srvHandle);
+    /// <summary>
+    /// 描画処理を実行
+    /// 指定されたシェーダリソースビュー(SRV)ハンドルを使用
+    /// </summary>
+    /// <param name="srvHandle">シェーダリソースビューのハンドル</param>
+    void Draw(DescriptorHandle srvHandle);
 
-	void PreDraw();
-	void PostDraw();
+    /// <summary>
+    /// 描画前の準備処理を実行
+    /// 状態のセットアップ
+    /// </summary>
+    void PreDraw();
 
+    /// <summary>
+    /// 描画後の後処理を実行します。
+    /// 状態のリセットや後続処理の準備
+    /// </summary>
+    void PostDraw();
 
-	const DescriptorHandle& GetHandle() { return colorBuffer_->GetSRVHandle(); }
+    /// <summary>
+    /// 現在のディゾルブのシェーダリソースビュー(SRV)ハンドルを取得
+    /// </summary>
+    /// <returns>シェーダリソースビューのハンドル</returns>
+    const DescriptorHandle& GetHandle() { return colorBuffer_->GetSRVHandle(); }
 
-	void isDissolve(bool flag) { dissolveData->isEnble = flag; }
-	//閾値
-	void Threshold(float num) { dissolveData->threshold = num; }
-	void SetColor(Vector3 num) { dissolveData->edgeColor = num; }
+    /// <summary>
+    /// ディゾルブエフェクトの有効/無効を設定
+    /// </summary>
+    /// <param name="flag">ディゾルブエフェクトの有効フラグ</param>
+    void isDissolve(bool flag) { dissolveData->isEnble = flag; }
+
+    /// <summary>
+    /// ディゾルブの閾値を設定
+    /// </summary>
+    /// <param name="num">閾値</param>
+    void Threshold(float num) { dissolveData->threshold = num; }
+
+    /// <summary>
+    /// エッジ部分のカラーを設定
+    /// </summary>
+    /// <param name="num">カラー値 (Vector3形式)</param>
+    void SetColor(Vector3 num) { dissolveData->edgeColor = num; }
+
 private:
-	void CreateResource();
 
-	/// <summary>
-	/// グラフィックスパイプラインの初期化
-	/// </summary>
-	void sPipeline();
+    /// <summary>
+    /// 必要なリソースを作成
+    /// バッファやテクスチャなどを初期化
+    /// </summary>
+    void CreateResource();
 
-	//マスクテクスチャの読み込み
-	void LoadTexture(const std::string& texturePath);
+    /// <summary>
+    /// グラフィックスパイプラインの初期化
+    /// シェーダやステートの設定を実行
+    /// </summary>
+    void sPipeline();
+
+    /// <summary>
+    /// マスクテクスチャを読み込み
+    /// ディゾルブエフェクトに使用
+    /// </summary>
+    /// <param name="texturePath">テクスチャファイルのパス</param>
+    void LoadTexture(const std::string& texturePath);
+
 private:
 
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	// リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
+    // 頂点バッファビュー
+    D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 
-	DissolveStyle* dissolveData = nullptr;
+    // 描画リソース
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
 
-	// ルートシグネチャ
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
-	// パイプラインステートオブジェクト
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
+    // ディゾルブのデータ構造
+    DissolveStyle* dissolveData = nullptr;
 
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+    // ルートシグネチャ
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 
-	std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
-	float clearColor_[4]{ 0.1f, 0.25f, 0.5f, 1.0f };
+    // パイプラインステートオブジェクト
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 
-	uint32_t texture_;
+    // 頂点シェーダのバイナリデータ
+    Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+
+    // ピクセルシェーダのバイナリデータ
+    Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+
+    // カラーバッファ
+    std::unique_ptr<ColorBuffer> colorBuffer_ = nullptr;
+
+    // クリアカラー
+    float clearColor_[4]{ 0.1f, 0.25f, 0.5f, 1.0f };
+
+    // マスクテクスチャID
+    uint32_t texture_;
 };

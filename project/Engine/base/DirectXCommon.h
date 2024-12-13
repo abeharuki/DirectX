@@ -92,8 +92,9 @@ public: // メンバ関数
 	void CreateRenderTexture();
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format,const Vector4& clearColor);
 
+	//アロケーター
 	DescriptorHandle AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type);
-
+	//ディスクリプタヒープゲッター
 	ID3D12DescriptorHeap* GetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type) const { return descriptorHeaps_[type]->GetDescriptorHeap(); }
 
 	/// <summary>
@@ -123,10 +124,9 @@ public: // メンバ関数
 	// バックバッファの数を取得
 	size_t GetBackBufferCount() const { return swapChainResources.size(); }
 
+	//各ヒープのゲッター
 	ID3D12DescriptorHeap* GetSRV() const { return  descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetDescriptorHeap(); }
-
 	ID3D12DescriptorHeap* GetRTV() const { return descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetDescriptorHeap(); }
-
 	ID3D12DescriptorHeap* GetDSV() const { return descriptorHeaps_[D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetDescriptorHeap(); }
 
 	const DescriptorHandle& GetHandle() { return srvHandle_; }

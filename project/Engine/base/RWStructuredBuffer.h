@@ -10,23 +10,54 @@
 class RWStructuredBuffer : public GpuResource
 {
 public:
-	
-	//頂点数と要素数
-	void Create(uint32_t numElements, uint32_t elementSize);
+    /// <summary>
+    /// バッファの作成
+    /// </summary>
+    /// <param name="numElements">バッファ内の要素数</param>
+    /// <param name="elementSize">1要素あたりのサイズ（バイト単位）</param>
+    void Create(uint32_t numElements, uint32_t elementSize);
 
-	const DescriptorHandle& GetSRVHandle() const { return srvHandle_; };
+    /// <summary>
+    /// SRV（Shader Resource View）のディスクリプタハンドルを取得
+    /// </summary>
+    /// <returns>SRVのディスクリプタハンドル</returns>
+    const DescriptorHandle& GetSRVHandle() const { return srvHandle_; };
 
-	const DescriptorHandle& GetUAVHandle() { return uavHandle_; };
+    /// <summary>
+    /// UAV（Unordered Access View）のディスクリプタハンドルを取得
+    /// </summary>
+    /// <returns>UAVのディスクリプタハンドル</returns>
+    const DescriptorHandle& GetUAVHandle() { return uavHandle_; };
 
-	size_t GetBufferSize() const { return bufferSize_; };
+    /// <summary>
+    /// バッファのサイズを取得
+    /// </summary>
+    /// <returns>バッファのサイズ（バイト単位）</returns>
+    size_t GetBufferSize() const { return bufferSize_; };
 
 private:
-	void CreateDerivedViews(ID3D12Device* device, uint32_t numElements, uint32_t elementSize);
+    /// <summary>
+    /// SRV と UAV を生成するための派生ビューの作成
+    /// </summary>
+    /// <param name="device">Direct3D 12 デバイス</param>
+    /// <param name="numElements">要素数</param>
+    /// <param name="elementSize">1要素あたりのサイズ（バイト単位）</param>
+    void CreateDerivedViews(ID3D12Device* device, uint32_t numElements, uint32_t elementSize);
 
 private:
-	DescriptorHandle srvHandle_{};
-	DescriptorHandle uavHandle_{};
+    /// <summary>
+    /// SRV（Shader Resource View）のディスクリプタハンドル
+    /// </summary>
+    DescriptorHandle srvHandle_{};
 
+    /// <summary>
+    /// UAV（Unordered Access View）のディスクリプタハンドル
+    /// </summary>
+    DescriptorHandle uavHandle_{};
+
+    /// <summary>
+    /// バッファのサイズ（バイト単位）
+    /// </summary>
 	size_t bufferSize_ = 0;
 };
 
