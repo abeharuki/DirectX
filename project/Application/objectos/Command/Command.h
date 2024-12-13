@@ -29,7 +29,8 @@ namespace CommandConstants {
 	//作戦コマンドでの各コマンドの座標
 	const Vector2 kEscapCommand = { 85.0f, 541.0f };//逃げるコマンドの座標
 	const Vector2 kReturnCommand = { 85.0f, 572.0f };//前のタスクに戻るコマンドの座標
-
+	//矢印UIサイズ
+	const Vector2 kArrowSize = { 50.0f, 50.0f };//矢印のサイズ
 
 	// ボタンに対応する位置
 	constexpr float kAttackButtonY = 468.0f;//攻撃コマンドの決定座標

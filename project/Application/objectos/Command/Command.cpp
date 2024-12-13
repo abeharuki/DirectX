@@ -56,7 +56,7 @@ void Command::Initialize() {
 	operation->SetSize(CommandConstants::kCommandSize);
 
 	arrowPos_ = { CommandConstants::kArrowInitialX,CommandConstants::kArrowInitialY,0.0f };
-	arrow->SetSize({ 50.0f,50.0 });
+	arrow->SetSize(CommandConstants::kArrowSize);
 
 	backgroundTask[kTask1]->SetSize({ CommandConstants::kBackgroundTaskWidth,CommandConstants::kBackgroundTaskHeight} );
 
