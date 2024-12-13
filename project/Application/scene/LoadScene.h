@@ -4,8 +4,6 @@
 #include <memory>
 #include "Audio/Audio.h"
 #include <Sprite.h>
-#include <Sphere.h>
-#include <Model.h>
 #include <numbers>
 
 /**
@@ -59,7 +57,7 @@ private:
 	std::unique_ptr<Sprite> backSprite_;
 	std::unique_ptr<Sprite> nowLoadingSprite_;
 	std::unique_ptr<Sprite> loadSprite_;
-	ViewProjection viewProjection_;
+	
 	
 
 	//スプライト

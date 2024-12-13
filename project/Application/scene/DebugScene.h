@@ -1,7 +1,6 @@
 #pragma once
 #include "Framework/IScene.h"
 #include "Input.h"
-#include <Sprite.h>
 #include "3d/ModelLoader.h"
 #include <camera/followCamera.h>
 #include <PostEffects/PostEffect.h>
@@ -15,6 +14,7 @@
 #include <Enemy/EnemyManager.h>
 #include "CollisionManager/CollisionConfig.h"
 #include "Manager/ParticleManager.h"
+#include <Sprite.h>
 
 /**
  * @file DebugScene

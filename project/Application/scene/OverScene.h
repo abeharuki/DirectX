@@ -1,7 +1,6 @@
 #pragma once
 #include "Framework/IScene.h"
 #include "Input.h"
-#include <Sprite.h>
 #include <ParticleSystem.h>
 #include <Transition/Transition.h>
 

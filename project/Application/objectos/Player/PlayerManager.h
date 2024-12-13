@@ -1,8 +1,6 @@
 #pragma once
 #include "Player.h"
-#include "Model.h"
 #include <ParticleSystem.h>
-#include <Animation/Animation.h>
 
 /**
  * @file PlayerManager

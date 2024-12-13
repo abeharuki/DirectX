@@ -1,7 +1,5 @@
 #pragma once
-#include "Model.h"
 #include "Healer.h"
-#include <ParticleSystem.h>
 
 /**
  * @file HealerManager

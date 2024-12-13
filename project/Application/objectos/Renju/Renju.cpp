@@ -1,5 +1,4 @@
 #include "Renju.h"
-#include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 #include <ParticleManager.h>
 

@@ -1,5 +1,4 @@
 #include "EnemyHenchman.h"
-#include <numbers>
 #include <CollisionManager/CollisionConfig.h>
 
 EnemyHenchman::~EnemyHenchman() {

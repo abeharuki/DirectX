@@ -1,6 +1,5 @@
 #pragma once
 #include "Enemy.h"
-#include "Model.h"
 #include <Sphere.h>
 
 /**

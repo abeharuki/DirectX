@@ -1,7 +1,6 @@
 #pragma once
 #include "Framework/IScene.h"
 #include "Audio/Audio.h"
-#include <Ground.h>
 #include <Skydome.h>
 #include <camera/followCamera.h>
 #include <Player/PlayerManager.h>

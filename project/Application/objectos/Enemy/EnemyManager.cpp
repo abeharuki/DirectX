@@ -1,5 +1,4 @@
 #include "EnemyManager.h"
-#include <numbers>
 
 void EnemyManager::Initialize() {
 	

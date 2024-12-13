@@ -1,8 +1,5 @@
 #pragma once
 #include "Framework/IScene.h"
-#include "Input.h"
-#include "DirectXCommon.h"
-#include "Engine.h"
 #include "Skydome.h"
 #include <Player/PlayerManager.h>
 #include "camera/followCamera.h"

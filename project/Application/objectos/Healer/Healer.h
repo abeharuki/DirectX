@@ -1,10 +1,4 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "Engine.h"
-#include "Input.h"
-#include "Sprite.h"
-#include "ViewProjection.h"
-#include "WorldTransform.h"
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
 #include <ParticleSystem.h>

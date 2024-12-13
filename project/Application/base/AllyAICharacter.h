@@ -5,6 +5,7 @@
 #include <Enemy/Enemy.h>
 #include <cassert>
 #include <numbers>
+#include <Sprite.h>
 
 //味方AIキャラクターの定数
 namespace AllyAIConstants {

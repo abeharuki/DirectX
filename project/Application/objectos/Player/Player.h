@@ -1,11 +1,4 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "Engine.h"
-#include "Input.h"
-#include "Sprite.h"
-#include "ViewProjection.h"
-#include "WorldTransform.h"
-#include <array>
 #include <optional>
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>

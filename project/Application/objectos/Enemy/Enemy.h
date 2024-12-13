@@ -1,8 +1,4 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "Engine.h"
-#include "Input.h"
-#include "Sprite.h"
 #include "Utilities/RandomGenerator.h"
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>
@@ -11,6 +7,7 @@
 #include <AnimationManager.h>
 #include <ParticleSystem.h>
 #include "EnemyHenchman.h"
+
 
 //enemyクラスの定数
 namespace EnemyConstants {

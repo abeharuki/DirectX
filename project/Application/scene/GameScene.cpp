@@ -1,10 +1,5 @@
 #include "GameScene.h"
 #include "Framework/SceneManager.h"
-#include "TextureManeger.h"
-#include <cassert>
-#include <imgui.h>
-#include <numbers>
-#include <PostEffects/PostEffect.h>
 
 
 void GameScene::Initialize() {
