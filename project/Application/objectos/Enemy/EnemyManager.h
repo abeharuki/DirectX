@@ -36,8 +36,8 @@ public:
 
 	/*-----ゲッター-----*/
 	Enemy* GetEnemy() { return enemy_.get(); };
-	bool IsAttack() { return enemy_->isAttack(); }
-	bool IsClear() { return enemy_->isClear(); }
+	bool IsAttack() { return enemy_->IsAttack(); }
+	bool IsClear() { return enemy_->IsClear(); }
 
 	const WorldTransform& GetWorldTransform();
 	Vector3 GetRockWorldPos();

@@ -347,7 +347,7 @@ void Tank::OnCollision(Collider* collider) {
 	AllyAICharacter::OnCollision(collider);
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
-		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+		if (enemy_->IsAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			
 			if (stanAttack_) {
 				stanAttack_ = false;

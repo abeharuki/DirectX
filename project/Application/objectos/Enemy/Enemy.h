@@ -31,9 +31,12 @@ namespace EnemyConstants {
 	const float kBarrierThresholdStart = 1.0f;//バリアが全く見えないときのディゾルブ値
 	const float kBarrierThresholdIncrement = 0.01f;//バリアが徐々に消えていく時のスピード
 
-	// 行動タイミング関連
+	// 行動関連定数
 	const int kMoveInitTime = 60;//moveに遷移後の初期化タイム
 	const int kMoveUpdateTime = 30;//行動が変わるタイミングのタイム
+	const float kMoveAnimationTime = 3.0f;//アニメーションが変わるタイミングのタイム
+	const int kCharacterLength = 10;//他のキャラクターとの距離閾値
+
 	
 	// NomalAttack に関連する定数
 	const int kAttackInitTime = 120; // 初期化後の攻撃待機時間 (60 * 2)
@@ -243,8 +246,8 @@ public: // メンバ関数
 
 	float GetImpactSize() { return worldTransformImpact_.scale.z; }
 
-	bool isAttack() { return isAttack_; };
-	bool isClear() { return clear_; };
+	bool IsAttack() { return isAttack_; };
+	bool IsClear() { return clear_; };
 	bool IsAreaDraw() { return areaDraw_; }
 	bool IsBehaberAttack() {return  behaviorAttack_;}
 	bool IsSpecial() { return special_;}

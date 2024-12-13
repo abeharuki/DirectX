@@ -383,7 +383,7 @@ void Renju::UniqueUpdate() {
 	emitter_.translate = { worldTransformBow_.matWorld_.m[3][0],worldTransformBow_.matWorld_.m[3][1] ,worldTransformBow_.matWorld_.m[3][2] };
 
 	if (isAttack_) {
-		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->isAttack()) {
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->IsAttack()) {
 			special_ = false;
 		}
 

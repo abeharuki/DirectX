@@ -414,7 +414,7 @@ void GameScene::CheckAllCollision() {
 	collisionManager_->ClearColliderList();
 	collisionManager_->SetColliderList(playerManager_->GetPlayer());
 	collisionManager_->SetColliderList(enemyManager_->GetEnemy());
-	if (enemyManager_->GetEnemy()->isAttack()) {
+	if (enemyManager_->IsAttack()) {
 		collisionManager_->SetColliderList(enemyManager_->GetEnemy()->GetRockCollider());
 
 		for (int i = 0; i < 15; ++i) {

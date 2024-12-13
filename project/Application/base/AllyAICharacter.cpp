@@ -84,7 +84,7 @@ void AllyAICharacter::Update() {
 
 	//各キャラの処理にしないといけない
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && GetAimCharacter()) {
-		if (enemy_->isAttack()) {
+		if (enemy_->IsAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
 				hp_ -= AllyAIConstants::kEnemyDamageNormal;
@@ -95,7 +95,7 @@ void AllyAICharacter::Update() {
 	}
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
-		if (enemy_->isAttack()) {
+		if (enemy_->IsAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
 				hp_ -= AllyAIConstants::kEnemyDamageHenchman;
@@ -279,12 +279,12 @@ void AllyAICharacter::MoveUpdate() {
 
 
 	//敵の攻撃が終わったらまたジャンプできるように設定
-	if (!enemy_->isAttack()) {
+	if (!enemy_->IsAttack()) {
 		jumpCount_ = 1;
 	}
 
 	//地面をたたきつける攻撃が来たらジャンプする
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->GetBehavior() == Behavior::kAttack && enemy_->isAttack()) {
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->GetBehavior() == Behavior::kAttack && enemy_->IsAttack()) {
 		//ジャンプは敵の攻撃一回に対して一回まで
 		if (jumpCount_ == 1 && enemylength_ <= AllyAIConstants::kGroundAttackDistance) {
 			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
@@ -365,7 +365,7 @@ void AllyAICharacter::AttackUpdate()
 {
 	if (!isAttack_) {
 		//地面をたたきつける攻撃が来たらジャンプする
-		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->IsAttack()) {
 			//ジャンプは敵の攻撃一回に対して一回まで
 			if (jumpCount_ == 1 && enemylength_ <= AllyAIConstants::kGroundAttackDistance) {
 				//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
@@ -663,7 +663,7 @@ void AllyAICharacter::IsVisibleToEnemy()
 
 void AllyAICharacter::BarrierRange() {
 	//バリアの範囲内にいるか
-	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
+	if (enemy_->IsAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
 		//プレイヤーの円
 		Circle p;
 		p.center = Vector2{ worldTransformBase_.translate.x,worldTransformBase_.translate.z };
@@ -850,7 +850,7 @@ void AllyAICharacter::OnCollision(Collider* collider)
 		henchmanSearch_ = true;
 
 		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
-			if (enemy_->isAttack()) {
+			if (enemy_->IsAttack()) {
 
 				isHit_ = true;
 
@@ -881,7 +881,7 @@ void AllyAICharacter::OnCollision(Collider* collider)
 
 	//敵の攻撃との当たり判定
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
-		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kGround) {
+		if (enemy_->IsAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kGround) {
 
 			isHit_ = true;
 
@@ -893,7 +893,7 @@ void AllyAICharacter::OnCollision(Collider* collider)
 
 		}
 
-		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kThrowing) {
+		if (enemy_->IsAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kThrowing) {
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {

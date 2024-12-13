@@ -278,7 +278,7 @@ void Enemy::MoveInitialize() {
 };
 void Enemy::MoveUpdata() {
 	if (animationNumber_ == kThreat) {
-		if (animation_->GetAnimationTimer() >= 3.0f) {
+		if (animation_->GetAnimationTimer() >= EnemyConstants::kMoveAnimationTime) {
 			behaviorRequest_ = Behavior::kRoot;
 			animation_->SetpreAnimationTimer(0.0f);
 		}
@@ -322,7 +322,7 @@ void Enemy::MoveUpdata() {
 			sub = playerPos_ - GetWorldPosition();
 		}
 		
-		if (length > 10) {
+		if (length > EnemyConstants::kCharacterLength) {
 			++moveTime_;
 			if (moveTime_ > EnemyConstants::kMoveUpdateTime) {
 				animationNumber_ = kRun;
@@ -627,7 +627,7 @@ void Enemy::DashAttackUpdata() {
 			areaPos_ = Math::Normalize(areaPos_);
 			areaPos_ = Math::Multiply(22, areaPos_);
 			areaPos_ = Math::TransformNormal(areaPos_, rotateMatrix);
-			worldTransformArea_.translate = { worldTransformBase_.translate.x + areaPos_.x,0.1f,worldTransformBase_.translate.z + areaPos_.z };
+			worldTransformArea_.translate = { worldTransformBase_.translate.x + areaPos_.x,EnemyConstants::kAreaTranslate.y,worldTransformBase_.translate.z + areaPos_.z };
 		}
 
 	}
@@ -669,22 +669,22 @@ void Enemy::ThrowingAttackUpdata() {
 
 		if (num_ == kPlayer) {
 			sub = playerPos_ - GetWorldPosition();
-			worldTransformCircleArea_.translate = { playerPos_.x,0.1f,playerPos_.z };
+			worldTransformCircleArea_.translate = { playerPos_.x,EnemyConstants::kAreaTranslate.y,playerPos_.z };
 
 		}
 		else if (num_ == kHealer) {
 			sub = healerPos_ - GetWorldPosition();
-			worldTransformCircleArea_.translate = { healerPos_ .x,0.1f, healerPos_.z };
+			worldTransformCircleArea_.translate = { healerPos_ .x,EnemyConstants::kAreaTranslate.y, healerPos_.z };
 		
 		}
 		else if (num_ == kRenju) {
 			sub = renjuPos_ - GetWorldPosition();
-			worldTransformCircleArea_.translate = { renjuPos_.x,0.1f,renjuPos_.z };
+			worldTransformCircleArea_.translate = { renjuPos_.x,EnemyConstants::kAreaTranslate.y,renjuPos_.z };
 			
 		}
 		else if (num_ == kTank) {
 			sub = tankPos_ - GetWorldPosition();
-			worldTransformCircleArea_.translate = { tankPos_.x,0.1f,tankPos_.z };
+			worldTransformCircleArea_.translate = { tankPos_.x,EnemyConstants::kAreaTranslate.y,tankPos_.z };
 		}
 
 		// y軸周りの回転

@@ -130,7 +130,7 @@ public: // メンバ関数
 	bool GameStart() { return gameStart_; }
 	//こうげきフラグ
 	bool IsRoot() { return root_; }
-	bool IsAttack() { return isAttack; }
+	bool IsAttack() { return isAttack_; }
 	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }
 	bool IsOver() { return isOver_; }
@@ -250,7 +250,7 @@ private: // メンバ変数
 	WorkDash workDash_;
 
 	// 攻撃用ワーク
-	bool isAttack = false;
+	bool isAttack_ = false;
 
 	bool root_;
 	bool dash_;

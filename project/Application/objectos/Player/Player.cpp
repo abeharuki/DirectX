@@ -110,7 +110,7 @@ void Player::Update() {
 	}
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kNomal && enemy_->GetAimPlayer()) {
-		if (enemy_->isAttack()) {
+		if (enemy_->IsAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
 				hp_ -= PlayerConstants::kAttackEnemyDamageNormal;
@@ -123,7 +123,7 @@ void Player::Update() {
 	}
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
-		if (enemy_->isAttack()) {
+		if (enemy_->IsAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
 				hp_ -= PlayerConstants::kAttackEnemyDamageHenchman;
@@ -197,7 +197,7 @@ void Player::NoDepthDraw(const ViewProjection& camera){
 // 移動
 void Player::MoveInitialize() {
 	worldTransformBase_.translate.y = PlayerConstants::kPlayerInitPosition.y;
-	isAttack = false;
+	isAttack_ = false;
 	dash_ = false;
 	combo_ = false;
 	auto_ = false;
@@ -426,7 +426,7 @@ void Player::AttackInitialize() {
 void Player::AttackUpdata() {
 	
 	if (animation_->GetAnimationTimer() > PlayerConstants::kAttackAnimationStartTime) {
-		isAttack = true;
+		isAttack_ = true;
 	}
 
 	if (animation_->GetAnimationTimer() >= PlayerConstants::kAttackAnimationEndTime) {
@@ -506,7 +506,7 @@ void Player::OnCollision(Collider* collider) {
 		}
 
 
-		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
+		if (enemy_->IsAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
 			const float kSpeed = 3.0f;
 			velocity_ = { 0.0f, 0.0f, -kSpeed };
 			velocity_ = Math::TransformNormal(velocity_, collider->GetWorldTransform().matWorld_);
@@ -540,7 +540,7 @@ void Player::OnCollision(Collider* collider) {
 	}
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemyAttack) {
-		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kGround) {
+		if (enemy_->IsAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kGround) {
 			
 			isHit_ = true;
 
@@ -554,7 +554,7 @@ void Player::OnCollision(Collider* collider) {
 
 		}
 
-		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kThrowing) {
+		if (enemy_->IsAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kThrowing) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
 				hp_ -= PlayerConstants::kAttackEnemyDamageNormal;
@@ -614,7 +614,7 @@ void Player::OnCollision(Collider* collider) {
 }
 
 void Player::BarrierRange(){
-	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
+	if (enemy_->IsAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
 		//プレイヤーの円
 		Circle p;
 		p.center = Vector2{ worldTransformBase_.translate.x,worldTransformBase_.translate.z };
