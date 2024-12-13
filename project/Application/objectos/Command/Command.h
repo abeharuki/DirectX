@@ -14,6 +14,7 @@ namespace CommandConstants {
 	const float kArrowMinY = 469.0f;//矢印の最小Y座標
 	const float kArrowAnimationStartX = 30.0f;//矢印アニメーションの折り返し地点最小
 	const float kArrowAnimationEndX = 40.0f;//矢印アニメーションの折り返し地点最大
+	const float kArrowkAnimationOffset = 1.0f;//矢印アニメーションのオフセット
 	const float kOperationArrowMaxY = 572.0f;//作戦タスク時の矢印の最大Y座標
 	const float kOperationArrowMinY = 510.0f;//作戦タスク時の矢印の最小Y座標
 
@@ -32,30 +33,34 @@ namespace CommandConstants {
 	//矢印UIサイズ
 	const Vector2 kArrowSize = { 50.0f, 50.0f };//矢印のサイズ
 
+
+
 	// ボタンに対応する位置
-	constexpr float kAttackButtonY = 468.0f;//攻撃コマンドの決定座標
-	constexpr float kMagicButtonY = 499.0f;//マジックコマンドの決定座標
-	constexpr float kSkillButtonY = 531.0f;//スキルコマンドの決定座標
-	constexpr float kToolButtonY = 562.0f;//アイテムコマンドの決定座標
-	constexpr float kOperationButtonY = 593.0f;//作戦コマンドの決定座標
-	constexpr float kReturnToTaskButtonY = 510.0f;//元のタスクに戻るボタンの決定座標
+	const float kAttackButtonY = 468.0f;//攻撃コマンドの決定座標
+	const float kMagicButtonY = 499.0f;//マジックコマンドの決定座標
+	const float kSkillButtonY = 531.0f;//スキルコマンドの決定座標
+	const float kToolButtonY = 562.0f;//アイテムコマンドの決定座標
+	const float kOperationButtonY = 593.0f;//作戦コマンドの決定座標
+	const float kReturnToTaskButtonY = 510.0f;//元のタスクに戻るボタンの決定座標
 	// 作戦タスクのボタンに対応する位置
-	constexpr float kOperationAttackButtonY = 510.0f;//作戦コマンドの攻撃命令ボタン決定座標
-	constexpr float kOperationFollowButtonY = 541.0f;//作成コマンドのついてくる命令ボタン決定座標
-	constexpr float kOperationReturnToTaskButtonY = 572.0f;//元のタスクに戻るボタンの決定座標
+	const float kOperationAttackButtonY = 510.0f;//作戦コマンドの攻撃命令ボタン決定座標
+	const float kOperationFollowButtonY = 541.0f;//作成コマンドのついてくる命令ボタン決定座標
+	const float kOperationReturnToTaskButtonY = 572.0f;//元のタスクに戻るボタンの決定座標
 
 	// 背景タスクのサイズと位置
-	constexpr float kBackgroundTaskWidth = 200.0f;//タスクの横
-	constexpr float kBackgroundTaskHeight = 200.0f;//タスクの高さ
-	constexpr Vector2 kBackgroundTask1 = { 30.0f,450.0f };//タスク１の座標
-	constexpr Vector2 kBackgroundTask1Size = { 310.0f,200.0f };//タスク1のサイズ
-	constexpr Vector2 kBackgroundChangeTask1 = { 3.0f,450.0f };//タスク1のタスクが変わった時の座標
-	constexpr Vector2 kBackgroundTask2 = {77.0f,474.0f};//タスク2の座標
-	constexpr Vector2 kBackgroundTask2Size = { 167.0f,170.0f };//タスク２のサイズ
-	constexpr Vector2 kBackgroundTask3 = { 37.0f,457.0f };//タスク3の座標
-	constexpr Vector2 kBackgroundTask3Size = { 196.0f,200.0f };//タスク3のサイズ
-	constexpr Vector2 kBackgroundAnimationTaskPos = { 30.0f,665.0f };//タスクのアニメーションpos
-	constexpr float kBackgroundAnimationTaskSizeY = -199.9f;//タスクのアニメーションサイズ
+	const float kBackgroundTaskWidth = 200.0f;//タスクの横
+	const float kBackgroundTaskHeight = 200.0f;//タスクの高さ
+	const Vector2 kBackgroundTask1 = { 30.0f,450.0f };//タスク１の座標
+	const Vector2 kBackgroundTask1Size = { 310.0f,200.0f };//タスク1のサイズ
+	const Vector2 kBackgroundChangeTask1 = { 3.0f,450.0f };//タスク1のタスクが変わった時の座標
+	const Vector2 kBackgroundTask2 = {77.0f,474.0f};//タスク2の座標
+	const Vector2 kBackgroundTask2Size = { 167.0f,170.0f };//タスク２のサイズ
+	const Vector2 kBackgroundTask3 = { 37.0f,457.0f };//タスク3の座標
+	const Vector2 kBackgroundTask3Size = { 196.0f,200.0f };//タスク3のサイズ
+	const Vector2 kBackgroundAnimationTaskPos = { 30.0f,665.0f };//タスクのアニメーションpos
+	const float kBackgroundAnimationTaskSizeY = -200.0f;//タスクのアニメーションサイズ
+	const float kBackgroundAnimationOffsetY = 0.1f;//タスクのアニメーションサイズオフセット
+	const Vector4 kBackgroundTaskColor = { 1.0f,1.0f,1.0f,0.8f };//タスクの色
 
 }
 

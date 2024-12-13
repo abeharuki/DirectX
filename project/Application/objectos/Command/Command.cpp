@@ -28,7 +28,7 @@ void Command::Initialize() {
 	sprites_[kReturn].reset(Sprite::Create("resources/Command/return.png"));
 
 	for (int i = 0; i < Task::kTaskMax; ++i) {
-		backgroundTask[i]->SetColor({ 1.0f,1.0f,1.0f,0.8f });
+		backgroundTask[i]->SetColor(CommandConstants::kBackgroundTaskColor);
 		backgroundTask[i]->SetPosition(CommandConstants::kBackgroundTask1);
 	}
 	
@@ -290,9 +290,9 @@ void Command::TaskAnimation(){
 	if (taskAnimation_ && behaviorRoot_) {
 		backgroundTask[kTask1]->SetSize({ taskSize_.x,taskSize_.y });
 		backgroundTask[kTask1]->SetPosition(CommandConstants::kBackgroundAnimationTaskPos);
-		taskSize_ = Math::Lerp({ Vector3{taskSize_.x,taskSize_.y,0.0f} }, Vector3{ taskSize_.x,-200.0f,0.0f }, 0.4f);
+		taskSize_ = Math::Lerp({ Vector3{taskSize_.x,taskSize_.y,0.0f} }, Vector3{ taskSize_.x,CommandConstants::kBackgroundAnimationTaskSizeY,0.0f }, 0.4f);
 		
-		if (taskSize_.y <= CommandConstants::kBackgroundAnimationTaskSizeY) {
+		if (taskSize_.y <= CommandConstants::kBackgroundAnimationTaskSizeY + CommandConstants::kBackgroundAnimationOffsetY) {
 			taskAnimation_ = false;
 		}
 	}
@@ -425,7 +425,7 @@ void Command::AnimationArrow(){
 	if (int(arrowPos_.x) == CommandConstants::kArrowAnimationStartX) {
 		arrowFlag_ = true;
 	}
-	if (int(arrowPos_.x) == CommandConstants::kArrowAnimationEndX-1) {//39
+	if (int(arrowPos_.x) == CommandConstants::kArrowAnimationEndX-CommandConstants::kArrowkAnimationOffset) {//39
 		arrowFlag_ = false;
 	}
 
