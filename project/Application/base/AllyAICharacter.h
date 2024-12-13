@@ -138,12 +138,12 @@ namespace AllyAIConstants {
 
 
 /**
- * @file BaseCharacter
+ * @file AllyAICharacter
  * @brief 味方AIの基底クラス
  */
-class BaseCharacter : public Collider {
+class AllyAICharacter : public Collider {
 public:
-    virtual ~BaseCharacter() = default;
+    virtual ~AllyAICharacter() = default;
 
     //各キャラクターの初期化
     virtual void Initialize(Animations* animation,std::string className);

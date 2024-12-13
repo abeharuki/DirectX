@@ -294,7 +294,7 @@
     <ClCompile Include="Engine\Framework\SceneManager.cpp">
       <Filter>ソース ファイル\Engine\Maneger</Filter>
     </ClCompile>
-    <ClCompile Include="Application\base\BaseCharacter.cpp">
+    <ClCompile Include="Application\base\AllyAICharacter.cpp">
       <Filter>ソース ファイル\Application\base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Framework\Framework.cpp">
@@ -622,7 +622,7 @@
     <ClInclude Include="Application\scene\OverScene.h">
       <Filter>ヘッダー ファイル\Application\scene</Filter>
     </ClInclude>
-    <ClInclude Include="Application\base\BaseCharacter.h">
+    <ClInclude Include="Application\base\AllyAICharacter.h">
       <Filter>ヘッダー ファイル\Application\base</Filter>
     </ClInclude>
     <ClInclude Include="Application\base\Skydome.h">

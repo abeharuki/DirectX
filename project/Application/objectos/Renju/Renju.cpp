@@ -13,7 +13,7 @@ Renju::~Renju() {
 /// 初期化
 /// </summary>
 void Renju::Initialize(Animations* animation, std::string skillName) {
-	BaseCharacter::Initialize(animation, skillName);
+	AllyAICharacter::Initialize(animation, skillName);
 	worldTransformBow_.Initialize();
 	worldTransformArrow_.Initialize();
 	worldTransformBow_.rotate = RenjuConstants::kBowRotate;
@@ -92,7 +92,7 @@ void Renju::Update() {
 
 	Relationship();
 
-	BaseCharacter::Update();
+	AllyAICharacter::Update();
 
 	worldTransformBow_.TransferMatrix();
 	worldTransformArrow_.TransferMatrix();
@@ -200,7 +200,7 @@ void Renju::Draw(const ViewProjection& camera) {
 	}
 
 
-	BaseCharacter::Draw(camera);
+	AllyAICharacter::Draw(camera);
 	if (state_ == CharacterState::Attacking || state_ == CharacterState::Unique) {
 		bulletModel_->Draw(worldTransformArrow_, camera, true);
 	}
@@ -219,12 +219,12 @@ void Renju::Draw(const ViewProjection& camera) {
 }
 
 void Renju::NoDepthDraw(const ViewProjection& camera) {
-	BaseCharacter::NoDepthDraw(camera);
+	AllyAICharacter::NoDepthDraw(camera);
 }
 
 // 移動
 void Renju::MoveInitialize() {
-	BaseCharacter::MoveInitialize();
+	AllyAICharacter::MoveInitialize();
 	minDistance_ = RenjuConstants::kMinDistance;
 };
 void Renju::MoveUpdate() {
@@ -234,7 +234,7 @@ void Renju::MoveUpdate() {
 		special_ = false;
 	}
 
-	BaseCharacter::MoveUpdate();
+	AllyAICharacter::MoveUpdate();
 
 	//スキル
 	if (mp_ >= RenjuConstants::kSkillMpCost && enemy_->IsBehaviorRequest() && coolTime_ < RenjuConstants::kCoolTimeSkill) {
@@ -277,15 +277,15 @@ void Renju::MoveUpdate() {
 
 // ジャンプ
 void Renju::JumpInitialize() {
-	BaseCharacter::JumpInitialize();
+	AllyAICharacter::JumpInitialize();
 };
 void Renju::JumpUpdate() {
-	BaseCharacter::JumpUpdate();
+	AllyAICharacter::JumpUpdate();
 };
 
 // 攻撃
 void Renju::AttackInitialize() {
-	BaseCharacter::AttackInitialize();
+	AllyAICharacter::AttackInitialize();
 	skill_ = false;
 	special_ = false;
 	fireTimer_ = RenjuConstants::kAttackInitFireTimer;
@@ -319,7 +319,7 @@ void Renju::AttackUpdate() {
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
 		//Y軸の回転
-		BaseCharacter::DestinationAngle(sub);
+		AllyAICharacter::DestinationAngle(sub);
 
 
 		if (fireTimer_ == 0) {
@@ -362,7 +362,7 @@ void Renju::AttackUpdate() {
 	}
 
 
-	BaseCharacter::AttackUpdate();
+	AllyAICharacter::AttackUpdate();
 }
 
 void Renju::UniqueInitialize() {
@@ -394,7 +394,7 @@ void Renju::UniqueUpdate() {
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
 		//Y軸の回転
-		BaseCharacter::DestinationAngle(sub);
+		AllyAICharacter::DestinationAngle(sub);
 
 		//チャージ中アニメーションを止める
 		if (fireTimer_ >= 1 && fireTimer_ <= RenjuConstants::kFireTimerCharge) {
@@ -446,14 +446,14 @@ void Renju::UniqueUpdate() {
 
 //ブレス攻撃の回避
 void Renju::BreathInitialize() {
-	BaseCharacter::BreathInitialize();
+	AllyAICharacter::BreathInitialize();
 }
 void Renju::BreathUpdate() {
-	BaseCharacter::BreathUpdate();
+	AllyAICharacter::BreathUpdate();
 }
 
 void Renju::ProtectInitialize(){
-	BaseCharacter::ProtectInitialize();
+	AllyAICharacter::ProtectInitialize();
 	coolTime_ = RenjuConstants::kProtectCoolTime;
 }
 void Renju::ProtectUpdate(){
@@ -464,7 +464,7 @@ void Renju::ProtectUpdate(){
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
 		//Y軸の回転
-		BaseCharacter::DestinationAngle(sub);
+		AllyAICharacter::DestinationAngle(sub);
 
 		const float kSpeed = 0.001f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
@@ -497,7 +497,7 @@ void Renju::ProtectUpdate(){
 void Renju::DeadInitialize() {
 	//復活時間
 	revivalCount_ = 0;
-	BaseCharacter::DeadInitialize();
+	AllyAICharacter::DeadInitialize();
 }
 void Renju::DeadUpdate() {
 	/*
@@ -543,7 +543,7 @@ void Renju::DeadUpdate() {
 }
 
 void Renju::Relationship() {
-	BaseCharacter::Relationship();
+	AllyAICharacter::Relationship();
 
 	worldTransformBow_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(
@@ -562,7 +562,7 @@ void Renju::Relationship() {
 // 衝突を検出したら呼び出されるコールバック関数
 void Renju::OnCollision(Collider* collider) {
 
-	BaseCharacter::OnCollision(collider);
+	AllyAICharacter::OnCollision(collider);
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeHenchman) {
 		isHit_ = true;
@@ -571,7 +571,7 @@ void Renju::OnCollision(Collider* collider) {
 			if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
 				hp_ -= RenjuConstants::kEnemyDamageHenchman;
 				specialTimer_ += RenjuConstants::kSpecialTimerIncrement;
-				BaseCharacter::DameageInit();
+				AllyAICharacter::DameageInit();
 				damageModel_->SetTexture("character/10.png");
 			}
 		}

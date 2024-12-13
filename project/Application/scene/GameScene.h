@@ -1,8 +1,6 @@
 #pragma once
 #include "Framework/IScene.h"
 #include "Input.h"
-#include "WorldTransform.h"
-#include "ViewProjection.h"
 #include "DirectXCommon.h"
 #include "Engine.h"
 #include "Skydome.h"
@@ -15,7 +13,6 @@
 #include "CollisionManager/CollisionManager.h"
 #include <Command/Command.h>
 #include <ModelLoader.h>
-#include "BaseCharacter.h"
 #include <Transition/Transition.h>
 
 //ゲームシーンクラスの定数
@@ -120,6 +117,6 @@ private: // メンバ変数
 	int cameraDirectionTime_;
 
 
-	std::vector<BaseCharacter*> characters;
+	std::vector<AllyAICharacter*> characters;
 
 };

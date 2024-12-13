@@ -8,7 +8,7 @@
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
 #include <ParticleSystem.h>
-#include "base/BaseCharacter.h"
+#include "base/AllyAICharacter.h"
 #include "RenjuBullet.h"
 
 //レンジャークラスの定数
@@ -63,7 +63,7 @@ namespace RenjuConstants {
  * @file Renju
  * @brief レンジャーキャラクターを制御するクラス
  */
-class Renju : public BaseCharacter {
+class Renju : public AllyAICharacter {
 
 public: // メンバ関数
 	~Renju() override;
@@ -126,7 +126,7 @@ public: // メンバ関数
 
 
 	void SetLight(DirectionLight directionLight)override { 
-		BaseCharacter::SetLight(directionLight); 
+		AllyAICharacter::SetLight(directionLight); 
 		bulletModel_->DirectionalLightDraw(directionLight);
 		bowModel_->DirectionalLightDraw(directionLight);
 	}

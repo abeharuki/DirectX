@@ -90,7 +90,7 @@ private:
 	// フェードイン・フェードアウト用
 	std::unique_ptr<Transition> transition_;
 	
-	std::vector<BaseCharacter*> characters;
+	std::vector<AllyAICharacter*> characters;
 	//ノードエディター
 	Editor::NodeEditor editor_;
 };

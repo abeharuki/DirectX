@@ -15,7 +15,7 @@ Healer::~Healer() {
 void Healer::Initialize(Animations* animation, std::string skillName) {
 
 	// 初期化
-	BaseCharacter::Initialize(animation, skillName);
+	AllyAICharacter::Initialize(animation, skillName);
 
 	worldTransformBase_.translate = HealerConstants::kBaseTranslate;
 
@@ -131,7 +131,7 @@ void Healer::Update() {
 	}
 
 	Relationship();
-	BaseCharacter::Update();
+	AllyAICharacter::Update();
 	worldTransformCane_.TransferMatrix();
 	for (int i = 0; i < kMaxCharacterNum; ++i) {
 		worldTransformMagicCircle_[i].UpdateMatrix();
@@ -167,7 +167,7 @@ void Healer::Update() {
 };
 
 void Healer::Draw(const ViewProjection& camera) {
-	BaseCharacter::Draw(camera);
+	AllyAICharacter::Draw(camera);
 	for (int i = 0; i < HealerConstants::kEmitterCount; ++i) {
 		particle_[i]->Draw(camera);
 	}
@@ -184,13 +184,13 @@ void Healer::NoDepthDraw(const ViewProjection& camera) {
 	for (int i = 0; i < 4; ++i) {
 		healModel_[i]->Draw(worldTransformHeal_[i], camera, false);
 	}
-	BaseCharacter::NoDepthDraw(camera);
+	AllyAICharacter::NoDepthDraw(camera);
 
 };
 
 // 移動
 void Healer::MoveInitialize() {
-	BaseCharacter::MoveInitialize();
+	AllyAICharacter::MoveInitialize();
 	allHeal_ = false;
 	oneHeal_ = false;
 	heal_ = false;
@@ -198,7 +198,7 @@ void Healer::MoveInitialize() {
 void Healer::MoveUpdate() {
 
 
-	BaseCharacter::MoveUpdate();
+	AllyAICharacter::MoveUpdate();
 
 	//味方の体力全員が50以下なら全体回復
 	//味方の体力が誰か30以下なら回復
@@ -221,15 +221,15 @@ void Healer::MoveUpdate() {
 
 // ジャンプ
 void Healer::JumpInitialize() {
-	BaseCharacter::JumpInitialize();
+	AllyAICharacter::JumpInitialize();
 };
 void Healer::JumpUpdate() {
-	BaseCharacter::JumpUpdate();
+	AllyAICharacter::JumpUpdate();
 };
 
 //アタック
 void Healer::AttackInitialize() {
-	BaseCharacter::AttackInitialize();
+	AllyAICharacter::AttackInitialize();
 };
 void Healer::AttackUpdate() {
 	// プレイヤーの座標までの距離
@@ -255,7 +255,7 @@ void Healer::AttackUpdate() {
 		state_ = NextState("Attack", Output1);
 	}
 
-	BaseCharacter::AttackUpdate();
+	AllyAICharacter::AttackUpdate();
 }
 
 void Healer::UniqueInitialize() {
@@ -377,7 +377,7 @@ void Healer::UniqueUpdate() {
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
 		//Y軸の回転
-		BaseCharacter::DestinationAngle(sub);
+		AllyAICharacter::DestinationAngle(sub);
 
 		
 		const float kSpeed = 0.04f;
@@ -483,23 +483,23 @@ void Healer::UniqueUpdate() {
 
 //ブレス攻撃の回避
 void Healer::BreathInitialize() {
-	BaseCharacter::BreathInitialize();
+	AllyAICharacter::BreathInitialize();
 }
 void Healer::BreathUpdate() {
-	BaseCharacter::BreathUpdate();
+	AllyAICharacter::BreathUpdate();
 }
 
 void Healer::ProtectInitialize(){
-	BaseCharacter::ProtectInitialize();
+	AllyAICharacter::ProtectInitialize();
 }
 void Healer::ProtectUpdate(){
-	BaseCharacter::ProtectUpdate();
+	AllyAICharacter::ProtectUpdate();
 }
 
 void Healer::DeadInitialize() {
 	//復活時間
 	revivalCount_ = 0;
-	BaseCharacter::DeadInitialize();
+	AllyAICharacter::DeadInitialize();
 }
 void Healer::DeadUpdate() {
 	/*
@@ -549,7 +549,7 @@ void Healer::DeadUpdate() {
 // 親子関係
 void Healer::Relationship() {
 
-	BaseCharacter::Relationship();
+	AllyAICharacter::Relationship();
 
 	worldTransformCane_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(
@@ -582,7 +582,7 @@ void Healer::Relationship() {
 // 衝突を検出したら呼び出されるコールバック関数
 void Healer::OnCollision(Collider* collider) {
 
-	BaseCharacter::OnCollision(collider);
+	AllyAICharacter::OnCollision(collider);
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (!followPlayer_ && searchTarget_) {

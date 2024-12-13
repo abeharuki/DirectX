@@ -8,7 +8,7 @@
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
 #include <ParticleSystem.h>
-#include "base/BaseCharacter.h"
+#include "base/AllyAICharacter.h"
 
 //ヒーラークラスの定数
 namespace HealerConstants {
@@ -70,7 +70,7 @@ namespace HealerConstants {
  * @file Healer
  * @brief ヒーラーキャラクターを制御するクラス
  */
-class Healer : public BaseCharacter {
+class Healer : public AllyAICharacter {
 
 public: // メンバ関数
 	~Healer() override;	
@@ -127,7 +127,7 @@ public: // メンバ関数
 
 	/*-----セッター-----*/
 	void SetLight(DirectionLight directionLight) override{
-		BaseCharacter::SetLight(directionLight);
+		AllyAICharacter::SetLight(directionLight);
 		DirectionLight light;
 		light = directionLight;
 		light.direction *= -1.0f;

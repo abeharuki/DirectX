@@ -1,7 +1,7 @@
-#include "BaseCharacter.h"
+#include "AllyAICharacter.h"
 
 
-void BaseCharacter::Initialize(Animations* animation, std::string className) {
+void AllyAICharacter::Initialize(Animations* animation, std::string className) {
 	className_ = className;
 	animation_ = animation;
 	animationNumber_ = kStandby;
@@ -58,7 +58,7 @@ void BaseCharacter::Initialize(Animations* animation, std::string className) {
 	animation_->Update(animationNumber_);
 }
 
-void BaseCharacter::Update() {
+void AllyAICharacter::Update() {
 
 	//影の計算
 	shadowColor_.w = 1 - (worldTransformBase_.translate.y / AllyAIConstants::kShadowAlphaAdjustment);
@@ -194,18 +194,18 @@ void BaseCharacter::Update() {
 
 }
 
-void BaseCharacter::Draw(const ViewProjection& camera) {
+void AllyAICharacter::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
 	shadowModel_->Draw(worldTransformShadow_, camera, false);
 }
-void BaseCharacter::NoDepthDraw(const ViewProjection& camera) {
+void AllyAICharacter::NoDepthDraw(const ViewProjection& camera) {
 	if (!isDead_) {
 		damageModel_->Draw(worldTransformNum_, camera, false);
 	}
 	
 }
 
-void BaseCharacter::DrawUI() {
+void AllyAICharacter::DrawUI() {
 	spriteHPG_->Draw();
 	spriteHP_->Draw();
 	spriteMPG_->Draw();
@@ -228,7 +228,7 @@ void BaseCharacter::DrawUI() {
 	}
 }
 
-void BaseCharacter::MoveInitialize()
+void AllyAICharacter::MoveInitialize()
 {
 	//目標座標を-8～8の範囲でランダムにずらす
 	randPos_ = Vector3{ RandomGenerator::GetRandomFloat(-8.f, 8.f),0,RandomGenerator::GetRandomFloat(-8.f, 8.f) };
@@ -243,7 +243,7 @@ void BaseCharacter::MoveInitialize()
 	animationNumber_ = kStandby;
 
 }
-void BaseCharacter::MoveUpdate() {
+void AllyAICharacter::MoveUpdate() {
 
 
 	--coolTime_;
@@ -325,7 +325,7 @@ void BaseCharacter::MoveUpdate() {
 
 }
 
-void BaseCharacter::JumpInitialize()
+void AllyAICharacter::JumpInitialize()
 {
 	--jumpCount_;
 	worldTransformBase_.translate.y = 0.0f;
@@ -337,7 +337,7 @@ void BaseCharacter::JumpInitialize()
 	animation_->SetAnimationTimer(0.5f, flameTime_);
 	animation_->SetLoop(false);
 }
-void BaseCharacter::JumpUpdate()
+void AllyAICharacter::JumpUpdate()
 {
 	// 移動
 	worldTransformBase_.translate += velocity_;
@@ -355,13 +355,13 @@ void BaseCharacter::JumpUpdate()
 	}
 }
 
-void BaseCharacter::AttackInitialize()
+void AllyAICharacter::AttackInitialize()
 {
 	searchTarget_ = false;
 	animationNumber_ = kAnimeAttack;
 	drawWepon_ = true;
 }
-void BaseCharacter::AttackUpdate()
+void AllyAICharacter::AttackUpdate()
 {
 	if (!isAttack_) {
 		//地面をたたきつける攻撃が来たらジャンプする
@@ -400,11 +400,11 @@ void BaseCharacter::AttackUpdate()
 	}
 }
 
-void BaseCharacter::BreathInitialize() {
+void AllyAICharacter::BreathInitialize() {
 	velocity_ = { 0.0f,0.0f,0.0f };
 	isAttack_ = false;
 }
-void BaseCharacter::BreathUpdate() {
+void AllyAICharacter::BreathUpdate() {
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = tankPos_ - GetWorldPosition();
 
@@ -443,13 +443,13 @@ void BaseCharacter::BreathUpdate() {
 	}
 }
 
-void BaseCharacter::ProtectInitialize()
+void AllyAICharacter::ProtectInitialize()
 {
 	velocity_ = { 0.0f,0.0f,0.0f };
 	isAttack_ = false;
 	animationNumber_ = kRun;
 }
-void BaseCharacter::ProtectUpdate()
+void AllyAICharacter::ProtectUpdate()
 {
 
 	henchmanNum_ = 0;
@@ -518,7 +518,7 @@ void BaseCharacter::ProtectUpdate()
 	}
 }
 
-void BaseCharacter::DeadInitialize()
+void AllyAICharacter::DeadInitialize()
 {
 	isAttack_ = false;
 	isDead_ = true;
@@ -526,7 +526,7 @@ void BaseCharacter::DeadInitialize()
 	animation_->SetLoop(false);
 }
 
-void BaseCharacter::Relationship()
+void AllyAICharacter::Relationship()
 {
 	worldTransformBody_.matWorld_ = Math::Multiply(
 		Math::MakeAffineMatrix(
@@ -542,7 +542,7 @@ void BaseCharacter::Relationship()
 
 }
 
-void BaseCharacter::followPlayer()
+void AllyAICharacter::followPlayer()
 {
 	if (followPlayer_ && state_ != CharacterState::Unique && state_ != CharacterState::Breath) {
 
@@ -574,8 +574,7 @@ void BaseCharacter::followPlayer()
 	}
 }
 
-
-void BaseCharacter::searchTarget()
+void AllyAICharacter::searchTarget()
 {
 	if (!followPlayer_ && searchTarget_ && state_ != CharacterState::Breath) {
 		drawWepon_ = false;
@@ -623,7 +622,7 @@ void BaseCharacter::searchTarget()
 	}
 }
 
-void BaseCharacter::IsVisibleToEnemy()
+void AllyAICharacter::IsVisibleToEnemy()
 {
 	isArea_ = false;
 	//float rectWidth = 6.0f; // 横幅の設定 (敵の中心から±3)
@@ -662,7 +661,7 @@ void BaseCharacter::IsVisibleToEnemy()
 	}
 }
 
-void BaseCharacter::BarrierRange() {
+void AllyAICharacter::BarrierRange() {
 	//バリアの範囲内にいるか
 	if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
 		//プレイヤーの円
@@ -688,7 +687,7 @@ void BaseCharacter::BarrierRange() {
 
 }
 
-void BaseCharacter::DestinationAngle(Vector3 sub){
+void AllyAICharacter::DestinationAngle(Vector3 sub){
 	// y軸周りの回転
 	if (sub.z != 0.0) {
 		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
@@ -705,7 +704,7 @@ void BaseCharacter::DestinationAngle(Vector3 sub){
 	}
 }
 
-void BaseCharacter::RunAway()
+void AllyAICharacter::RunAway()
 {
 	animationNumber_ = kRun;
 	//敵の攻撃範囲からどちらに逃げる方が早く範囲外に出れるか
@@ -728,7 +727,7 @@ void BaseCharacter::RunAway()
 
 }
 
-CharacterState BaseCharacter::NextState(std::string name, int outputNum)
+CharacterState AllyAICharacter::NextState(std::string name, int outputNum)
 {
 	auto linkedNode = editor_.GetLinkNode(name, outputNum);
 
@@ -762,7 +761,7 @@ CharacterState BaseCharacter::NextState(std::string name, int outputNum)
 	}
 }
 
-void BaseCharacter::InitializePerCharacter()
+void AllyAICharacter::InitializePerCharacter()
 {
 
 	if (className_ == "Healer") {
@@ -819,7 +818,7 @@ void BaseCharacter::InitializePerCharacter()
 
 }
 
-bool BaseCharacter::GetAimCharacter()
+bool AllyAICharacter::GetAimCharacter()
 {
 	if (className_ == "Healer") {
 		return enemy_->GetAimHealer();
@@ -836,14 +835,14 @@ bool BaseCharacter::GetAimCharacter()
 
 }
 
-float BaseCharacter::GetDistanceSquared(const Vector3& a, const Vector3& b)
+float AllyAICharacter::GetDistanceSquared(const Vector3& a, const Vector3& b)
 {
 	return (b.x - a.x) * (b.x - a.x) +
 		(b.y - a.y) * (b.y - a.y) +
 		(b.z - a.z) * (b.z - a.z);
 }
 
-void BaseCharacter::OnCollision(Collider* collider)
+void AllyAICharacter::OnCollision(Collider* collider)
 {
 	//敵との当たり判定
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
@@ -928,7 +927,7 @@ void BaseCharacter::OnCollision(Collider* collider)
 	worldTransformBase_.UpdateMatrix();
 }
 
-const Vector3 BaseCharacter::GetWorldPosition() const
+const Vector3 AllyAICharacter::GetWorldPosition() const
 {
 	// ワールド座標を入れる関数
 	Vector3 worldPos;

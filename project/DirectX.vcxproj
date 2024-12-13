@@ -162,7 +162,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application\base\BaseCharacter.cpp" />
+    <ClCompile Include="Application\base\AllyAICharacter.cpp" />
     <ClCompile Include="Application\base\camera\followCamera.cpp" />
     <ClCompile Include="Application\base\Ground.cpp" />
     <ClCompile Include="Application\base\Skydome.cpp" />
@@ -419,7 +419,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application\base\BaseCharacter.h" />
+    <ClInclude Include="Application\base\AllyAICharacter.h" />
     <ClInclude Include="Application\base\camera\followCamera.h" />
     <ClInclude Include="Application\base\Ground.h" />
     <ClInclude Include="Application\base\Skydome.h" />

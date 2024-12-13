@@ -8,7 +8,7 @@
 #include "../../BehaviorTree/BehaviorTree.h"
 #include "Enemy/Enemy.h"
 #include <ParticleSystem.h>
-#include "base/BaseCharacter.h"
+#include "base/AllyAICharacter.h"
 
 //タンククラスの定数
 namespace TankConstants {
@@ -40,7 +40,7 @@ namespace TankConstants {
  * @file Tank
  * @brief タンクキャラクターを制御するクラス
  */
-class Tank : public BaseCharacter {
+class Tank : public AllyAICharacter {
 
 public: // メンバ関数
 	~Tank() override;
@@ -101,7 +101,7 @@ public: // メンバ関数
 		}
 	}
 	void SetLight(DirectionLight directionLight) override{
-		BaseCharacter::SetLight(directionLight);
+		AllyAICharacter::SetLight(directionLight);
 		//shield_->DirectionalLightDraw(directionLight);
 	}
 

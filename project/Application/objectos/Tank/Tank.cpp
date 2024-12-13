@@ -8,7 +8,7 @@ Tank::~Tank() {
 }
 
 void Tank::Initialize(Animations* animation, std::string skillName) {
-	BaseCharacter::Initialize(animation, skillName);
+	AllyAICharacter::Initialize(animation, skillName);
 	barrierModel_.reset(Model::CreateModelFromObj("resources/Tank/barrier.obj", "resources/Tank/b.png"));
 	barrierModel_->SetBlendMode(BlendMode::kNormal);
 	barrierModel_->SetColor(TankConstants::kBarrierColor);
@@ -75,7 +75,7 @@ void Tank::Update() {
 	isHitPlayer_ = false;
 	
 	Relationship();
-	BaseCharacter::Update();
+	AllyAICharacter::Update();
 	worldTransformBarrier_.UpdateMatrix();
 	if (behaviorTree_) {
 		behaviorTree_->Update();
@@ -108,7 +108,7 @@ void Tank::Update() {
 };
 
 void Tank::Draw(const ViewProjection& camera) {
-	BaseCharacter::Draw(camera);
+	AllyAICharacter::Draw(camera);
 
 	particle_->Draw(camera);
 	
@@ -116,7 +116,7 @@ void Tank::Draw(const ViewProjection& camera) {
 }
 
 void Tank::NoDepthDraw(const ViewProjection& camera){
-	BaseCharacter::NoDepthDraw(camera);
+	AllyAICharacter::NoDepthDraw(camera);
 }
 
 void Tank::BarrierDraw(const ViewProjection& camera)
@@ -129,7 +129,7 @@ void Tank::BarrierDraw(const ViewProjection& camera)
 
 // 移動
 void Tank::MoveInitialize() { 
-	BaseCharacter::MoveInitialize();
+	AllyAICharacter::MoveInitialize();
 	minDistance_ = TankConstants::kMinDistance;
 	stanAttack_ = false;
 	barrier_ = false;
@@ -137,7 +137,7 @@ void Tank::MoveInitialize() {
 };
 void Tank::MoveUpdate() {
 	
-	BaseCharacter::MoveUpdate();
+	AllyAICharacter::MoveUpdate();
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath && enemy_->GetBehavior() == Behavior::kAttack && mp_ >= TankConstants::kBreathMpCost) {
 		state_ = CharacterState::Breath;
@@ -151,15 +151,15 @@ void Tank::MoveUpdate() {
 
 // ジャンプ
 void Tank::JumpInitialize() {
-	BaseCharacter::JumpInitialize();
+	AllyAICharacter::JumpInitialize();
 };
 void Tank::JumpUpdate() {
-	BaseCharacter::JumpUpdate();
+	AllyAICharacter::JumpUpdate();
 };
 
 // 攻撃
 void Tank::AttackInitialize() { 
-	BaseCharacter::AttackInitialize();
+	AllyAICharacter::AttackInitialize();
 	fireTimer_ = TankConstants::kFireTimerInit;
 };
 void Tank::AttackUpdate() {
@@ -169,7 +169,7 @@ void Tank::AttackUpdate() {
 	Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
 	//Y軸の回転
-	BaseCharacter::DestinationAngle(sub);
+	AllyAICharacter::DestinationAngle(sub);
 
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
@@ -203,7 +203,7 @@ void Tank::AttackUpdate() {
 		state_ = NextState("Attack", Output1);
 	}
 
-	BaseCharacter::AttackUpdate();
+	AllyAICharacter::AttackUpdate();
 }
 
 
@@ -226,7 +226,7 @@ void Tank::UniqueUpdate(){
 	Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
 	//Y軸の回転
-	BaseCharacter::DestinationAngle(sub);
+	AllyAICharacter::DestinationAngle(sub);
 
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
@@ -272,7 +272,7 @@ void Tank::UniqueUpdate(){
 }
 
 void Tank::BreathInitialize(){
-	BaseCharacter::BreathInitialize();
+	AllyAICharacter::BreathInitialize();
 }
 void Tank::BreathUpdate() {
 	state_ = CharacterState::Unique;
@@ -280,17 +280,17 @@ void Tank::BreathUpdate() {
 
 void Tank::ProtectInitialize()
 {
-	BaseCharacter::ProtectInitialize();
+	AllyAICharacter::ProtectInitialize();
 }
 void Tank::ProtectUpdate()
 {
-	BaseCharacter::ProtectUpdate();
+	AllyAICharacter::ProtectUpdate();
 }
 
 void Tank::DeadInitialize() {
 	//復活時間
 	revivalCount_ = 0;
-	BaseCharacter::DeadInitialize();
+	AllyAICharacter::DeadInitialize();
 }
 void Tank::DeadUpdate() {
 	/*
@@ -338,13 +338,13 @@ void Tank::DeadUpdate() {
 }
 
 void Tank::Relationship() {
-	BaseCharacter::Relationship();	
+	AllyAICharacter::Relationship();	
 }
 
 // 衝突を検出したら呼び出されるコールバック関数
 void Tank::OnCollision(Collider* collider) {
 
-	BaseCharacter::OnCollision(collider);
+	AllyAICharacter::OnCollision(collider);
 
 	if (collider->GetCollisionAttribute() == kCollisionAttributeEnemy) {
 		if (enemy_->isAttack() && enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
