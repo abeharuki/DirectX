@@ -135,10 +135,7 @@ void GameScene::Update() {
 		character->SetOperation(command_->GetOperatin());
 		//プレイヤーに追従
 		character->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
-		//倒された時のディゾルブ
-		if (playerManager_->GetPlayer()->GetHp() <= 0) {
-			character->Dissolve();
-		}
+		//バリアを展開しているposの受け取り
 		character->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
 		if (enemyManager_->GetEnemy()->IsSpecial()) {
 			for (EnemyHenchman* enemy : enemyManager_->GetEnemy()->GetEnemys()) {

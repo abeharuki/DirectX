@@ -29,7 +29,7 @@ namespace PlayerConstants{
 	// プレイヤーの攻撃関連
 	const float kAttackEnemyDamageNormal = 10.0f;  // 通常攻撃,投擲、ダッシュのダメージ値
 	const float kAttackEnemyDamageBreath = 20.0f;  // ブレス攻撃,地面を殴るのダメージ値
-	const float kAttackEnemyDamageHenchman = 50.0f;  // 子分攻撃のダメージ値
+	const float kAttackEnemyDamageHenchman = 40.0f;  // 子分攻撃のダメージ値
 	const float kPlayerDamageDisplayHeight = 2.0f;  // ダメージ表示のY座標オフセット
 	const float kAttackRange = 5.0f;  // 攻撃範囲（敵との距離）
 	// 攻撃関連
@@ -283,9 +283,9 @@ private: // メンバ変数
 	float threshold_;
 
 	//体力
-	float hp_ = 100.0f;
+	float hp_ = PlayerConstants::kPlayerMaxHP;
 	//マジックポイント
-	float mp_ = 100.0f;
+	float mp_ = PlayerConstants::kPlayerMaxMP;
 
 	bool preHit_;
 	bool isHit_;

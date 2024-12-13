@@ -65,6 +65,7 @@ public: // 静的メンバ関数
 	/// </summary>
 	static void PostDraw();
 
+	//スプライトの作成
 	static Sprite* Create(
 		const std::string& fileName /* Vector4 color = {1, 1, 1, 1},
 		Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false*/);

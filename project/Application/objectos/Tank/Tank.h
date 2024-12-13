@@ -15,15 +15,14 @@ namespace TankConstants {
 	// バリアの設定
 	const float kBarrierThreshold = 1.0f; // バリアのしきい値
 	const Vector3 kBarrierScale = { 7.f,7.f,7.f };; // バリアのスケール
-	const float kBarrierThresholdIncrement = 0.03f; // バリアしきい値の増加量
+	const float kBarrierThresholdIncrement = 0.03f; // バリアを閉じる時のスピード
+	const float kBarrierThresholdDecrement = 0.01f;//バリアを展開するときのスピード
 	const Vector4 kBarrierColor = { 0.f,1.0f,1.0f,0.4f };//バリアの色
-
-	// シャドウの設定
-	const float kShadowHeight = 0.1f; // シャドウの高さオフセット
 	
 	// 距離関連
 	const float kMinDistance = 6.0f;  // 最小距離
 	const int kTargetDistance = 2; // 敵との距離感覚
+	const int kTargetBareathDistance = 3; // ブレス攻撃時の敵との距離感覚
 
 	// 攻撃関連
 	const int kFireTimerInit = 40;     // 攻撃初期化時のfireTimerの値
@@ -31,7 +30,7 @@ namespace TankConstants {
 	const int kFireTimerThreshold2 = 5;   // fireTimerが5以下10以上のときの閾値
 	const int kCoolTimeInit = 60;      // クールタイム初期化値
 	
-
+	
 	// mp関連
 	const int kBreathMpCost = 20;  // ブレス技の消費MP
 }
@@ -128,7 +127,7 @@ private: // メンバ変数
 	//攻撃フラグ
 	bool stanAttack_ = false;
 	// 攻撃時間
-	int fireTimer_ = 40;
+	int fireTimer_ = 0;
 	//復活時間
 	int revivalCount_ = 0;
 

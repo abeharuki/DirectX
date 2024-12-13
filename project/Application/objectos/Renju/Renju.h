@@ -16,8 +16,7 @@ namespace RenjuConstants {
 	// ワールドトランスフォームの初期設定
 	const Vector3 kBowRotate = { 1.9f, 0.0f, -1.5f }; // 弓の初期回転角度
 	const Vector3 kBaseTranslat = { -3.0f, 0.0f, 0.0f }; // ベースの初期位置
-	const float kShadowTranslateOffset = 0.1f;// 影のオフセット
-	const Vector3 kAttackArrowRotate = { -0.3f,0.0f,1.3f };
+	const Vector3 kAttackArrowRotate = { -0.3f,0.0f,1.3f };//弓の角度
 
 	// クールタイム
 	const int kCoolTime = 60; //クールタイムの初期値
@@ -162,10 +161,10 @@ private: // メンバ変数
 	//弾
 	std::list<RenjuBullet*> bullets_;
 	// 攻撃時間
-	int fireTimer_ = 20;
+	int fireTimer_ = 0;
 	//子分を出してくる攻撃を止める
 	bool special_ = false;
-	int specialTimer_ = 60 * 8;
+	int specialTimer_ = 0;
 
 	//復活時間
 	int revivalCount_ = 0;

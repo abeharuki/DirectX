@@ -43,7 +43,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	Relationship();
 	worldTransformBody_.TransferMatrix();
 
-	worldTransformShadow_.translate = { worldTransformBase_.translate.x,HealerConstants::kShadowTranslateOffset,worldTransformBase_.translate.z };
+	worldTransformShadow_.translate = { worldTransformBase_.translate.x,AllyAIConstants::kShadowTranslateOffset,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
 
 	emitter_.resize(5);
@@ -317,11 +317,11 @@ void Healer::UniqueUpdate() {
 	//距離チェック
 	if (length >= minDistance_ * HealerConstants::kMinDistanceMultiplier) {
 		healAnimation_ = true;
-		animationNumber_ = standby;//攻撃モーションをいれたら変える
+		animationNumber_ = kStandby;//攻撃モーションをいれたら変える
 	}
 	else {
 		healAnimation_ = false;
-		animationNumber_ = run;
+		animationNumber_ = kRun;
 	}
 
 	//全体ヒールかどうか
@@ -376,22 +376,10 @@ void Healer::UniqueUpdate() {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+		//Y軸の回転
+		BaseCharacter::DestinationAngle(sub);
 
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
-
-
+		
 		const float kSpeed = 0.04f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;

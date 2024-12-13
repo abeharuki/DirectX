@@ -26,7 +26,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 	Relationship();
 	worldTransformBody_.TransferMatrix();
 
-	worldTransformShadow_.translate = { worldTransformBase_.translate.x,RenjuConstants::kShadowTranslateOffset,worldTransformBase_.translate.z };
+	worldTransformShadow_.translate = { worldTransformBase_.translate.x,AllyAIConstants::kShadowTranslateOffset,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
 
 
@@ -305,11 +305,11 @@ void Renju::AttackUpdate() {
 	if (length >= minDistance_ * RenjuConstants::kMinDistanceMultiplier) {
 		isAttack_ = true;
 		animation_->SetLoop(false);
-		animationNumber_ = animeAttack;
+		animationNumber_ = kAnimeAttack;
 	}
 	else {
 		isAttack_ = false;
-		animationNumber_ = run;
+		animationNumber_ = kRun;
 	}
 
 	if (isAttack_) {
@@ -318,19 +318,8 @@ void Renju::AttackUpdate() {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ =
-				(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
-		}
+		//Y軸の回転
+		BaseCharacter::DestinationAngle(sub);
 
 
 		if (fireTimer_ == 0) {
@@ -388,7 +377,7 @@ void Renju::UniqueInitialize() {
 	emitter_.velocityRange = { .min{0,0,0},.max{0.f,0.f,0.f} };
 	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} };
 	filed_.strength = 1.f;
-	animationNumber_ = animeAttack;
+	animationNumber_ = kAnimeAttack;
 }
 void Renju::UniqueUpdate() {
 	//ローカル座標
@@ -404,19 +393,8 @@ void Renju::UniqueUpdate() {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ =
-				(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
-		}
+		//Y軸の回転
+		BaseCharacter::DestinationAngle(sub);
 
 		//チャージ中アニメーションを止める
 		if (fireTimer_ >= 1 && fireTimer_ <= RenjuConstants::kFireTimerCharge) {
@@ -485,19 +463,8 @@ void Renju::ProtectUpdate(){
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ =
-				(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
-		}
+		//Y軸の回転
+		BaseCharacter::DestinationAngle(sub);
 
 		const float kSpeed = 0.001f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
@@ -603,10 +570,8 @@ void Renju::OnCollision(Collider* collider) {
 		if (isHit_ != preHit_) {
 			if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
 				hp_ -= RenjuConstants::kEnemyDamageHenchman;
-				alpha_ = RenjuConstants::kDamageAlphaInitValue;
 				specialTimer_ += RenjuConstants::kSpecialTimerIncrement;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				BaseCharacter::DameageInit();
 				damageModel_->SetTexture("character/10.png");
 			}
 		}

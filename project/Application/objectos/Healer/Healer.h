@@ -21,7 +21,7 @@ namespace HealerConstants {
 	const Vector3 kMagicCircleRotate = { -1.571f,0.0f,0.0f };//魔法陣の初期角度
 	const Vector3 kMagicCircleScale = { 2.0f,2.0f,2.0f };//魔法陣の初期サイズ
 	const Vector3 kHealScale = { 0.5f,0.5f,0.5f };//回復数値描画の初期サイズ
-	const float kShadowTranslateOffset = 0.1f;// 影のオフセット
+
 	
 
 	const int kEmitterCount = 5;//エミッターのMax数

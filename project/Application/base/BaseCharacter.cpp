@@ -4,8 +4,8 @@
 void BaseCharacter::Initialize(Animations* animation, std::string className) {
 	className_ = className;
 	animation_ = animation;
-	animationNumber_ = standby;
-	flameTime_ = 30.0f;
+	animationNumber_ = kStandby;
+	flameTime_ = AllyAIConstants::kFlameTimeInit;
 
 	shadowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/particle/circle.png"));
 	shadowModel_->SetBlendMode(BlendMode::kSubtract);
@@ -24,34 +24,34 @@ void BaseCharacter::Initialize(Animations* animation, std::string className) {
 	for (int i = 0; i < 3; ++i) {
 		HPnum_[i].reset(Sprite::Create("resources/character/0.png"));
 		MPnum_[i].reset(Sprite::Create("resources/character/0.png"));
-		HPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
-		MPnum_[i]->SetSize(Vector2{ 36.0f,36.0f });
+		HPnum_[i]->SetSize(AllyAIConstants::kSpriteNumSize);
+		MPnum_[i]->SetSize(AllyAIConstants::kSpriteNumSize);
 	}
 
 	HPnum_[2]->SetTexture("resources/character/1.png");
 	MPnum_[2]->SetTexture("resources/character/1.png");
 
-	spriteHPG_->SetSize(Vector2{ 100.0f,10.0f });
-	spriteMPG_->SetSize(Vector2{ 100.0f,10.0f });
-	spriteH_->SetSize(Vector2{ 35.0f,35.0f });
-	spriteM_->SetSize(Vector2{ 35.0f,35.0f });
+	spriteHPG_->SetSize(AllyAIConstants::kSpriteHPSize);
+	spriteMPG_->SetSize(AllyAIConstants::kSpriteMPSize);
+	spriteH_->SetSize(AllyAIConstants::kSpriteHSize);
+	spriteM_->SetSize(AllyAIConstants::kSpriteMSize);
 
 	InitializePerCharacter();
 
-	spriteNumP_->SetSize(Vector2{ 93.0f,85.0f });
-	spriteName_->SetSize(Vector2{ 106.0f,50.0f });
+	spriteNumP_->SetSize(AllyAIConstants::kSpriteNumPSize);
+	spriteName_->SetSize(AllyAIConstants::kSpriteNameSize);
 
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBody_.Initialize();
 	worldTransformNum_.Initialize();
 	worldTransformShadow_.Initialize();
-	worldTransformShadow_.rotate = { -1.571f,0.0f,0.0f };
-	if (className != "Tank") { worldTransformShadow_.scale = { 1.8f,1.8f,1.0f }; }
-	else { worldTransformShadow_.scale = { 2.2f,2.2f,1.0f }; }
-	worldTransformNum_.scale = { 0.5f,0.5f,0.5f };
-	alpha_ = 0.0f;
-	//henchmans_.clear();
+	worldTransformShadow_.rotate = AllyAIConstants::kShadowRotation;
+	if (className != "Tank") {worldTransformShadow_.scale = AllyAIConstants::kShadowScaleDefault;}
+	else { worldTransformShadow_.scale = AllyAIConstants::kShadowScaleTank; }
+	worldTransformNum_.scale = AllyAIConstants::kWorldTransformNumScale;
+	alpha_ = AllyAIConstants::kDamageInitAlpha;
+	
 
 	animation_->SetpreAnimationTimer(0.0f);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
@@ -61,9 +61,9 @@ void BaseCharacter::Initialize(Animations* animation, std::string className) {
 void BaseCharacter::Update() {
 
 	//影の計算
-	shadowColor_.w = 1 - (worldTransformBase_.translate.y / 3.9f);
+	shadowColor_.w = 1 - (worldTransformBase_.translate.y / AllyAIConstants::kShadowAlphaAdjustment);
 	shadowModel_->SetColor(shadowColor_);
-	worldTransformShadow_.translate = { worldTransformBase_.translate.x,0.1f,worldTransformBase_.translate.z };
+	worldTransformShadow_.translate = { worldTransformBase_.translate.x,AllyAIConstants::kShadowTranslateOffset,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
 
 
@@ -87,10 +87,8 @@ void BaseCharacter::Update() {
 		if (enemy_->isAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
-				hp_ -= 10;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= AllyAIConstants::kEnemyDamageNormal;
+				DameageInit();
 				damageModel_->SetTexture("character/10.png");
 			}
 		}
@@ -100,10 +98,8 @@ void BaseCharacter::Update() {
 		if (enemy_->isAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
-				hp_ -= 50;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= AllyAIConstants::kEnemyDamageHenchman;
+				DameageInit();
 				damageModel_->SetTexture("character/50.png");
 				//失敗したら強制的に状態遷移
 				if (!isDead_) {
@@ -121,11 +117,11 @@ void BaseCharacter::Update() {
 	//ダメージの表示
 	damageModel_->SetColor({ 1.f,1.f,1.f,alpha_ });
 	if (alpha_ > 0.0f) {
-		alpha_ -= 0.08f;
+		alpha_ -= AllyAIConstants::kDamageAlphaDecrement;
 		worldTransformNum_.translate = Math::Lerp(worldTransformNum_.translate, { numMove_ }, 0.05f);
 	}
 	else {
-		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
+		worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + AllyAIConstants::kDamageDisplayHeight,worldTransformBase_.translate.z };
 	}
 
 	//barrierの中にいるか
@@ -139,12 +135,12 @@ void BaseCharacter::Update() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformNum_.TransferMatrix();
 
-	spriteHP_->SetSize({ hp_,10.f });
-	spriteMP_->SetSize({ mp_,10.f });
+	spriteHP_->SetSize({ hp_,AllyAIConstants::kSpriteHPSize.y});
+	spriteMP_->SetSize({ mp_,AllyAIConstants::kSpriteMPSize.y});
 	//HP,MP表示の計算
-	if (hp_ < 100.0f) {
+	if (hp_ < AllyAIConstants::kMaxHPMPDisplay) {
 		int HPnum = int(hp_);
-		HPnum %= 10;
+		HPnum %= 10;//桁をずらす
 		if (hp_ >= 0) {
 			HPnum_[0]->SetTexture("resources/character/" + std::to_string(HPnum) + ".png");
 			HPnum_[1]->SetTexture("resources/character/" + std::to_string(int(hp_ / 10)) + ".png");
@@ -161,9 +157,9 @@ void BaseCharacter::Update() {
 	}
 
 
-	if (mp_ < 100.0f) {
+	if (mp_ < AllyAIConstants::kMaxHPMPDisplay) {
 		int MPnum = int(mp_);
-		MPnum %= 10;
+		MPnum %= 10;//桁をずらす
 		MPnum_[0]->SetTexture("resources/character/" + std::to_string(MPnum) + ".png");
 		MPnum_[1]->SetTexture("resources/character/" + std::to_string(int(mp_ / 10)) + ".png");
 	}
@@ -180,18 +176,18 @@ void BaseCharacter::Update() {
 
 
 	//色の設定
-	if (hp_ < 20) {
-		hpColor_ = { 5.0f,0.0f,0.0f,1.0f };
-		hpNumColor_ = { 5.0f,0.0f,0.0f,1.0f };
+	if (hp_ < AllyAIConstants::kLowHPThreshold) {
+		hpColor_ = AllyAIConstants::kLowHPColor;
+		hpNumColor_ = AllyAIConstants::kLowHPColor;
 
 	}
-	else if (hp_ <= 50) {
-		hpNumColor_ = { 1.0f,0.2f,0.0f,1.0f };
-		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	else if (hp_ <= AllyAIConstants::kMediumHPThreshold) {
+		hpNumColor_ = AllyAIConstants::kMediumHPColor;
+		hpColor_ = AllyAIConstants::kDefaultHPColor;
 	}
 	else {
-		hpColor_ = { 1.0f,1.0f,1.0f,1.0f };
-		hpNumColor_ = { 1.0f,1.0f,1.0f,1.0f };
+		hpColor_ = AllyAIConstants::kDefaultHPColor;
+		hpNumColor_ = AllyAIConstants::kDefaultHPColor;
 	}
 
 
@@ -234,6 +230,7 @@ void BaseCharacter::DrawUI() {
 
 void BaseCharacter::MoveInitialize()
 {
+	//目標座標を-8～8の範囲でランダムにずらす
 	randPos_ = Vector3{ RandomGenerator::GetRandomFloat(-8.f, 8.f),0,RandomGenerator::GetRandomFloat(-8.f, 8.f) };
 	worldTransformBase_.translate.y = 0.0f;
 	velocity_ = { 0.0f,0.0f,0.0f };
@@ -242,8 +239,8 @@ void BaseCharacter::MoveInitialize()
 	drawWepon_ = false;
 	animation_->SetpreAnimationTimer(0);
 	animation_->SetLoop(true);
-	flameTime_ = 30.0f;
-	animationNumber_ = standby;
+	flameTime_ = AllyAIConstants::kFlameTimeInit;
+	animationNumber_ = kStandby;
 
 }
 void BaseCharacter::MoveUpdate() {
@@ -269,13 +266,12 @@ void BaseCharacter::MoveUpdate() {
 	}
 
 	if (isArea_ && searchTarget_ && enemy_->IsAreaDraw()) {
-		const float kCharacterSpeed = 0.3f;
 		velocity_ = Math::Normalize(velocity_);
-		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
+		velocity_ = Math::Multiply(AllyAIConstants::kCharacterSpeed, velocity_);
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		worldTransformBase_.translate += velocity_;
-		animationNumber_ = run;
+		animationNumber_ = kRun;
 	}
 	IsVisibleToEnemy();
 
@@ -290,22 +286,22 @@ void BaseCharacter::MoveUpdate() {
 	//地面をたたきつける攻撃が来たらジャンプする
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->GetBehavior() == Behavior::kAttack && enemy_->isAttack()) {
 		//ジャンプは敵の攻撃一回に対して一回まで
-		if (jumpCount_ == 1 && enemylength_ <= 35) {
+		if (jumpCount_ == 1 && enemylength_ <= AllyAIConstants::kGroundAttackDistance) {
 			//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
 
-			if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
+			if (enemylength_ < AllyAIConstants::kJumpDistanceNear && enemy_->GetImpactSize() < AllyAIConstants::kImpactSizeSmall) {
 				state_ = NextState("Move", Output2);
 			}
 
-			if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
+			if (Math::isWithinRange(enemylength_, AllyAIConstants::kJumpDistanceMidLow, 5) && Math::isWithinRange(enemy_->GetImpactSize(), AllyAIConstants::kImpactSizeMediumLow, 10)) {
 				state_ = NextState("Move", Output2);
 			}
 
-			if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
+			if (Math::isWithinRange(enemylength_, AllyAIConstants::kJumpDistanceMidHigh, 5) && Math::isWithinRange(enemy_->GetImpactSize(), AllyAIConstants::kImpactSizeMediumHigh, 10)) {
 				state_ = NextState("Move", Output2);
 			}
 
-			if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
+			if (Math::isWithinRange(enemylength_, AllyAIConstants::kJumpDistanceFar, 5) && Math::isWithinRange(enemy_->GetImpactSize(), AllyAIConstants::kImpactSizeLarge, 10)) {
 				state_ = NextState("Move", Output2);
 			}
 		}
@@ -320,7 +316,7 @@ void BaseCharacter::MoveUpdate() {
 	//弓キャラを守る
 	if (className_ != "Renju") {
 		if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && state_ != CharacterState::Protect) {
-			if (henchmans_.size() >= 1) {
+			if (henchmans_.size() >= AllyAIConstants::kHenchmanCountThreshold) {
 				henchmanSearch_ = true;
 				state_ = NextState("Move", Output5);
 			}
@@ -336,8 +332,8 @@ void BaseCharacter::JumpInitialize()
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_ = { 0.f,kJumpFirstSpeed,0.f };
-	animationNumber_ = jump;
-	flameTime_ = 30.0f;
+	animationNumber_ = kJump;
+	flameTime_ = AllyAIConstants::kFlameTimeInit;
 	animation_->SetAnimationTimer(0.5f, flameTime_);
 	animation_->SetLoop(false);
 }
@@ -362,7 +358,7 @@ void BaseCharacter::JumpUpdate()
 void BaseCharacter::AttackInitialize()
 {
 	searchTarget_ = false;
-	animationNumber_ = animeAttack;
+	animationNumber_ = kAnimeAttack;
 	drawWepon_ = true;
 }
 void BaseCharacter::AttackUpdate()
@@ -371,23 +367,23 @@ void BaseCharacter::AttackUpdate()
 		//地面をたたきつける攻撃が来たらジャンプする
 		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->isAttack()) {
 			//ジャンプは敵の攻撃一回に対して一回まで
-			if (jumpCount_ == 1 && enemylength_ <= 36) {
+			if (jumpCount_ == 1 && enemylength_ <= AllyAIConstants::kGroundAttackDistance) {
 				//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
 
-				if (enemylength_ < 5 && enemy_->GetImpactSize() < 10) {
-					state_ = NextState("Attack", Output2);
+				if (enemylength_ < AllyAIConstants::kJumpDistanceNear && enemy_->GetImpactSize() < AllyAIConstants::kImpactSizeSmall) {
+					state_ = NextState("Move", Output2);
 				}
 
-				if (Math::isWithinRange(enemylength_, 10, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 20, 10)) {
-					state_ = NextState("Attack", Output2);
+				if (Math::isWithinRange(enemylength_, AllyAIConstants::kJumpDistanceMidLow, 5) && Math::isWithinRange(enemy_->GetImpactSize(), AllyAIConstants::kImpactSizeMediumLow, 10)) {
+					state_ = NextState("Move", Output2);
 				}
 
-				if (Math::isWithinRange(enemylength_, 20, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 40, 10)) {
-					state_ = NextState("Attack", Output2);
+				if (Math::isWithinRange(enemylength_, AllyAIConstants::kJumpDistanceMidHigh, 5) && Math::isWithinRange(enemy_->GetImpactSize(), AllyAIConstants::kImpactSizeMediumHigh, 10)) {
+					state_ = NextState("Move", Output2);
 				}
 
-				if (Math::isWithinRange(enemylength_, 30, 5) && Math::isWithinRange(enemy_->GetImpactSize(), 60, 10)) {
-					state_ = NextState("Attack", Output2);
+				if (Math::isWithinRange(enemylength_, AllyAIConstants::kJumpDistanceFar, 5) && Math::isWithinRange(enemy_->GetImpactSize(), AllyAIConstants::kImpactSizeLarge, 10)) {
+					state_ = NextState("Move", Output2);
 				}
 			}
 
@@ -412,20 +408,8 @@ void BaseCharacter::BreathUpdate() {
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = tankPos_ - GetWorldPosition();
 
-	// y軸周りの回転
-	if (sub.z != 0.0) {
-		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-		if (sub.z < 0.0) {
-			destinationAngleY_ = (sub.x >= 0.0)
-				? std::numbers::pi_v<float> -destinationAngleY_
-				: -std::numbers::pi_v<float> -destinationAngleY_;
-		}
-	}
-	else {
-		destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-			: -std::numbers::pi_v<float> / 2.0f;
-	}
+	//Y軸の回転
+	DestinationAngle(sub);
 
 	
 	// 敵の位置から自分の位置への方向ベクトルを計算
@@ -437,24 +421,24 @@ void BaseCharacter::BreathUpdate() {
 
 	
 
-	const float kSpeed = 0.3f;
-	Vector3 directionTank = (tankPos_ -(direction * 0.3f)) - GetWorldPosition();
+	
+	Vector3 directionTank = (tankPos_ -(direction * AllyAIConstants::kEscapeFactor)) - GetWorldPosition();
 
-	velocity_ = Math::Normalize(directionTank) * kSpeed;
+	velocity_ = Math::Normalize(directionTank) * AllyAIConstants::kCharacterSpeed;
 
 	//目的の場所までこれたか
-	if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (direction.x * 0.3f)), 2.f) &&
-		Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (direction.z * 0.3f)), 2.f)) {
-		animationNumber_ = standby;
+	if (Math::isWithinRange(worldTransformBase_.translate.x, (tankPos_.x - (direction.x * AllyAIConstants::kEscapeFactor)), AllyAIConstants::kCloseDistance) &&
+		Math::isWithinRange(worldTransformBase_.translate.z, (tankPos_.z - (direction.z * AllyAIConstants::kEscapeFactor)), AllyAIConstants::kCloseDistance)) {
+		animationNumber_ = kStandby;
 	}
 	else {
-		animationNumber_ = run;
+		animationNumber_ = kRun;
 		worldTransformBase_.translate += velocity_;
 		worldTransformBase_.translate.y = 0;
 	}
 
 
-	if (!barrier_ || barrierThreshold_ > 0.1f) {
+	if (!barrier_ || barrierThreshold_ > AllyAIConstants::kBarrierThreshold) {
 		state_ = NextState("Breath", Output1);
 	}
 }
@@ -463,7 +447,7 @@ void BaseCharacter::ProtectInitialize()
 {
 	velocity_ = { 0.0f,0.0f,0.0f };
 	isAttack_ = false;
-	animationNumber_ = run;
+	animationNumber_ = kRun;
 }
 void BaseCharacter::ProtectUpdate()
 {
@@ -517,20 +501,8 @@ void BaseCharacter::ProtectUpdate()
 	//一番近い子分の方を向く// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = henchmanDist_ - GetWorldPosition();
 
-	// y軸周りの回転
-	if (sub.z != 0.0) {
-		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-		if (sub.z < 0.0) {
-			destinationAngleY_ = (sub.x >= 0.0)
-				? std::numbers::pi_v<float> -destinationAngleY_
-				: -std::numbers::pi_v<float> -destinationAngleY_;
-		}
-	}
-	else {
-		destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-			: -std::numbers::pi_v<float> / 2.0f;
-	}
+	//Y軸の回転
+	DestinationAngle(sub);
 
 	const float kSpeed = 0.1f;
 	Vector3 direction = sub;
@@ -550,7 +522,7 @@ void BaseCharacter::DeadInitialize()
 {
 	isAttack_ = false;
 	isDead_ = true;
-	animationNumber_ = death;
+	animationNumber_ = kDeath;
 	animation_->SetLoop(false);
 }
 
@@ -577,20 +549,8 @@ void BaseCharacter::followPlayer()
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = playerPos_ - GetWorldPosition();
 
-		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
+		//Y軸の回転
+		DestinationAngle(sub);
 
 		// プレイヤーの座標までの距離
 		float length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
@@ -598,28 +558,22 @@ void BaseCharacter::followPlayer()
 		// 距離条件チェック
 		if (minDistance_ <= length) {
 			drawWepon_ = false;
-			const float kSpeed = 0.3f;
+			
 			Vector3 direction = sub;
 
-			velocity_ = Math::Normalize(direction) * kSpeed;
+			velocity_ = Math::Normalize(direction) * AllyAIConstants::kCharacterSpeed;
 
 			worldTransformBase_.translate += velocity_;
-			animationNumber_ = run;
+			animationNumber_ = kRun;
 			worldTransformBase_.translate.y = 0.0f;
 		}
 		else {
 			followPlayer_ = false;
-			animationNumber_ = standby;
+			animationNumber_ = kStandby;
 		}
 	}
 }
 
-void BaseCharacter::Dissolve()
-{
-	animation_->SetEdgeColor(Vector3{ 0.0f,-1.0f,-1.0f });
-	threshold_ += 0.004f;
-	//animation_->SetThreshold(threshold_);
-}
 
 void BaseCharacter::searchTarget()
 {
@@ -628,32 +582,20 @@ void BaseCharacter::searchTarget()
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
+		//Y軸の回転
+		DestinationAngle(sub);
 
 		// 距離条件チェック
 		if (minDistance_ * distance_ <= enemylength_) {
 			if (state_ != CharacterState::Jumping) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash || !enemy_->IsBehaberAttack()) {
-					const float kSpeed = 0.3f;
+					
 					Vector3 direction = sub;
 
-					velocity_ = Math::Normalize(direction) * kSpeed;
+					velocity_ = Math::Normalize(direction) * AllyAIConstants::kCharacterSpeed;
 
 					worldTransformBase_.translate += velocity_;
-					animationNumber_ = run;
+					animationNumber_ = kRun;
 					worldTransformBase_.translate.y = 0.0f;
 				}
 			
@@ -663,7 +605,7 @@ void BaseCharacter::searchTarget()
 		else {
 			//攻撃アクションに移行
 			drawWepon_ = true;
-			animationNumber_ = standby;
+			animationNumber_ = kStandby;
 			if (coolTime_ <= 0 && !isArea_ && enemy_->GetBehavior() != Behavior::kDead) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash) {
 					state_ = NextState("Move", Output1);
@@ -702,7 +644,7 @@ void BaseCharacter::IsVisibleToEnemy()
 
 
 	//距離条件のチェック
-	if (enemyMinDistance_ <= distance && distance <= enemyMaxDistance_) {
+	if (AllyAIConstants::kEnemyMinDistance_ <= distance && distance <= AllyAIConstants::kEnemyMaxDistance_) {
 		toEnemy = Math::Normalize(toEnemy); // toEnemyベクトルを正規化
 		enemyForward = Math::Normalize(enemyForward); // enemyForwardベクトルを正規化
 
@@ -710,7 +652,7 @@ void BaseCharacter::IsVisibleToEnemy()
 		float angle = std::acos(dot);
 
 		//角度条件チェック
-		if (std::abs(angle) <= angleRange_) {
+		if (std::abs(angle) <= AllyAIConstants::kAngleRange_) {
 			if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash && enemy_->IsAreaDraw()) {
 				RunAway();
 				isArea_ = true;
@@ -737,10 +679,8 @@ void BaseCharacter::BarrierRange() {
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hp_ -= 20;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= AllyAIConstants::kEnemyDamageBreath;
+				DameageInit();
 				damageModel_->SetTexture("character/20.png");
 			}
 		}
@@ -748,24 +688,41 @@ void BaseCharacter::BarrierRange() {
 
 }
 
+void BaseCharacter::DestinationAngle(Vector3 sub){
+	// y軸周りの回転
+	if (sub.z != 0.0) {
+		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+		if (sub.z < 0.0) {
+			destinationAngleY_ = (sub.x >= 0.0)
+				? std::numbers::pi_v<float> -destinationAngleY_
+				: -std::numbers::pi_v<float> -destinationAngleY_;
+		}
+	}
+	else {
+		destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			: -std::numbers::pi_v<float> / 2.0f;
+	}
+}
+
 void BaseCharacter::RunAway()
 {
-	animationNumber_ = run;
+	animationNumber_ = kRun;
 	//敵の攻撃範囲からどちらに逃げる方が早く範囲外に出れるか
 	if (enemy_->GetWorldPosition().z > worldTransformBase_.translate.z) {
 		if (enemy_->GetWorldPosition().x > worldTransformBase_.translate.x) {
-			velocity_ = { -1.0f,0.0f,-1.5f };
+			velocity_ = { -AllyAIConstants::kVelocityX,0.0f,AllyAIConstants::kVelocityZ };
 		}
 		else {
-			velocity_ = { 1.0f,0.0f,-1.5f };
+			velocity_ = { AllyAIConstants::kVelocityX,0.0f,AllyAIConstants::kVelocityZ };
 		}
 	}
 	else {
 		if (enemy_->GetWorldPosition().x < worldTransformBase_.translate.x) {
-			velocity_ = { -1.0f,0.0f,-1.5f };
+			velocity_ = { -AllyAIConstants::kVelocityX,0.0f,AllyAIConstants::kVelocityZ };
 		}
 		else {
-			velocity_ = { 1.0f,0.0f,-1.5f };
+			velocity_ = { AllyAIConstants::kVelocityX,0.0f,AllyAIConstants::kVelocityZ };
 		}
 	}
 
@@ -812,51 +769,51 @@ void BaseCharacter::InitializePerCharacter()
 		skillName_ = "Heal";
 		spriteNumP_.reset(Sprite::Create("resources/character/4P.png"));
 		spriteName_.reset(Sprite::Create("resources/Healer/healer.png"));
-		spriteHP_->SetPosition(Vector2{ 1106.0f,615.0f });
-		spriteHPG_->SetPosition(Vector2{ 1106.0f,615.0f });
-		spriteMP_->SetPosition(Vector2{ 1106.0f,640.0f });
-		spriteMPG_->SetPosition(Vector2{ 1106.0f,640.0f });
-		spriteNumP_->SetPosition(Vector2{ 995.0f,583.0f });
-		spriteH_->SetPosition(Vector2{ 1097.0f,593.0f });
-		spriteM_->SetPosition(Vector2{ 1097.0f,618.0f });
-		spriteName_->SetPosition(Vector2{ 995.0f,573.0f });
+		spriteHP_->SetPosition(Vector2{ AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kHealerSpriteHPBarYPos});
+		spriteHPG_->SetPosition(Vector2{ AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kHealerSpriteHPBarYPos});
+		spriteMP_->SetPosition(Vector2{ AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kHealerSpriteMPBarYPos});
+		spriteMPG_->SetPosition(Vector2{ AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kHealerSpriteMPBarYPos});
+		spriteNumP_->SetPosition(Vector2{AllyAIConstants::kSpriteIdentifyXPos,AllyAIConstants::kHealerSpriteNumPYPos });
+		spriteH_->SetPosition(Vector2{AllyAIConstants::kSpriteIconXPos,AllyAIConstants::kHealerSpriteHIconYPos});
+		spriteM_->SetPosition(Vector2{AllyAIConstants::kSpriteIconXPos,AllyAIConstants::kHealerSpriteMIconYPos});
+		spriteName_->SetPosition(Vector2{AllyAIConstants::kSpriteIdentifyXPos,AllyAIConstants::kHealerSpriteNameYPos });
 		for (int i = 0; i < 3; ++i) {
-			HPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,595.0f });
-			MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,620.0f });
+			HPnum_[i]->SetPosition(Vector2{AllyAIConstants::kNumXPos - (AllyAIConstants::kNumXOffset * i) ,AllyAIConstants::kHealerHPNumYPos});
+			MPnum_[i]->SetPosition(Vector2{AllyAIConstants::kNumXPos - (AllyAIConstants::kNumXOffset * i) ,AllyAIConstants::kHealerMPNumYPos});
 		}
 	}
 	else if (className_ == "Renju") {
 		skillName_ = "Skill";
 		spriteNumP_.reset(Sprite::Create("resources/character/3P.png"));
 		spriteName_.reset(Sprite::Create("resources/Renju/renju.png"));
-		spriteHP_->SetPosition(Vector2{ 1106.0f,545.0f });
-		spriteHPG_->SetPosition(Vector2{ 1106.0f,545.0f });
-		spriteMP_->SetPosition(Vector2{ 1106.0f,570.0f });
-		spriteMPG_->SetPosition(Vector2{ 1106.0f,570.0f });
-		spriteNumP_->SetPosition(Vector2{ 995.0f,513.0f });
-		spriteH_->SetPosition(Vector2{ 1097.0f,523.0f });
-		spriteM_->SetPosition(Vector2{ 1097.0f,548.0f });
-		spriteName_->SetPosition(Vector2{ 995.0f,503.0f });
+		spriteHP_->SetPosition(Vector2{AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kRenjuSpriteHPBarYPos });
+		spriteHPG_->SetPosition(Vector2{AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kRenjuSpriteHPBarYPos });
+		spriteMP_->SetPosition(Vector2{AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kRenjuSpriteMPBarYPos });
+		spriteMPG_->SetPosition(Vector2{AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kRenjuSpriteMPBarYPos });
+		spriteNumP_->SetPosition(Vector2{AllyAIConstants::kSpriteIdentifyXPos,AllyAIConstants::kRenjuSpriteNumPYPos });
+		spriteH_->SetPosition(Vector2{AllyAIConstants::kSpriteIconXPos,AllyAIConstants::kRenjuSpriteHIconYPos });
+		spriteM_->SetPosition(Vector2{AllyAIConstants::kSpriteIconXPos,AllyAIConstants::kRenjuSpriteMIconYPos });
+		spriteName_->SetPosition(Vector2{AllyAIConstants::kSpriteIdentifyXPos,AllyAIConstants::kRenjuSpriteNameYPos });
 		for (int i = 0; i < 3; ++i) {
-			HPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,525.0f });
-			MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,560.0f });
+			HPnum_[i]->SetPosition(Vector2{AllyAIConstants::kNumXPos - (AllyAIConstants::kNumXOffset * i) ,AllyAIConstants::kRenjuHPNumYPos });
+			MPnum_[i]->SetPosition(Vector2{AllyAIConstants::kNumXPos - (AllyAIConstants::kNumXOffset * i) ,AllyAIConstants::kRenjuMPNumYPos });
 		}
 	}
 	else if (className_ == "Tank") {
 		skillName_ = "Skill";
 		spriteName_.reset(Sprite::Create("resources/Tank/tank.png"));
 		spriteNumP_.reset(Sprite::Create("resources/character/2P.png"));
-		spriteHP_->SetPosition(Vector2{ 1106.0f,475.0f });
-		spriteHPG_->SetPosition(Vector2{ 1106.0f,475.0f });
-		spriteMP_->SetPosition(Vector2{ 1106.0f,500.0f });
-		spriteMPG_->SetPosition(Vector2{ 1106.0f,500.0f });
-		spriteNumP_->SetPosition(Vector2{ 995.0f,443.0f });
-		spriteH_->SetPosition(Vector2{ 1097.0f,453.0f });
-		spriteM_->SetPosition(Vector2{ 1097.0f,478.0f });
-		spriteName_->SetPosition(Vector2{ 995.0f,433.0f });
+		spriteHP_->SetPosition(Vector2{AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kTankSpriteHPBarYPos });
+		spriteHPG_->SetPosition(Vector2{AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kTankSpriteHPBarYPos });
+		spriteMP_->SetPosition(Vector2{AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kTankSpriteMPBarYPos });
+		spriteMPG_->SetPosition(Vector2{AllyAIConstants::kSpriteBarXPos,AllyAIConstants::kTankSpriteMPBarYPos });
+		spriteNumP_->SetPosition(Vector2{AllyAIConstants::kSpriteIdentifyXPos,AllyAIConstants::kTankSpriteNumPYPos });
+		spriteH_->SetPosition(Vector2{AllyAIConstants::kSpriteIconXPos,AllyAIConstants::kTankSpriteHIconYPos });
+		spriteM_->SetPosition(Vector2{AllyAIConstants::kSpriteIconXPos,AllyAIConstants::kTankSpriteMIconYPos });
+		spriteName_->SetPosition(Vector2{AllyAIConstants::kSpriteIdentifyXPos,AllyAIConstants::kTankSpriteNameYPos });
 		for (int i = 0; i < 3; ++i) {
-			HPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,455.0f });
-			MPnum_[i]->SetPosition(Vector2{ 1172.0f - (16.0f * i) ,480.0f });
+			HPnum_[i]->SetPosition(Vector2{AllyAIConstants::kNumXPos - (AllyAIConstants::kNumXOffset * i) ,AllyAIConstants::kTankHPNumYPos });
+			MPnum_[i]->SetPosition(Vector2{AllyAIConstants::kNumXPos - (AllyAIConstants::kNumXOffset * i) ,AllyAIConstants::kTankMPNumYPos });
 		}
 	}
 
@@ -886,7 +843,6 @@ float BaseCharacter::GetDistanceSquared(const Vector3& a, const Vector3& b)
 		(b.z - a.z) * (b.z - a.z);
 }
 
-
 void BaseCharacter::OnCollision(Collider* collider)
 {
 	//敵との当たり判定
@@ -901,14 +857,9 @@ void BaseCharacter::OnCollision(Collider* collider)
 
 				if (isHit_ != preHit_) {
 					if (enemy_->GetBehaviorAttack() == BehaviorAttack::kDash) {
-						hp_ -= 10.0f;
-						alpha_ = 2.0f;
-						worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-						numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+						hp_ -= AllyAIConstants::kEnemyDamageNormal;
+						DameageInit();
 						damageModel_->SetTexture("character/10.png");
-					}
-					else {
-						hp_ -= 5.0f;
 					}
 				}
 
@@ -936,10 +887,8 @@ void BaseCharacter::OnCollision(Collider* collider)
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hp_ -= 20;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= AllyAIConstants::kEnemyDamageBreath;
+				DameageInit();
 				damageModel_->SetTexture("character/20.png");
 			}
 
@@ -949,10 +898,8 @@ void BaseCharacter::OnCollision(Collider* collider)
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
-				hp_ -= 10;
-				alpha_ = 2.0f;
-				worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + 2.0f,worldTransformBase_.translate.z };
-				numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + 2.0f,worldTransformNum_.translate.z };
+				hp_ -= AllyAIConstants::kEnemyDamageNormal;
+				DameageInit();
 				damageModel_->SetTexture("character/10.png");
 			}
 		}

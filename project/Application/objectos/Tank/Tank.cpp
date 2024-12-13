@@ -19,7 +19,7 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	Relationship();
 	worldTransformBody_.TransferMatrix();
 
-	worldTransformShadow_.translate = { worldTransformBase_.translate.x,TankConstants::kShadowHeight,worldTransformBase_.translate.z };
+	worldTransformShadow_.translate = { worldTransformBase_.translate.x,AllyAIConstants::kShadowTranslateOffset,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
 
 	emitter_ = {
@@ -133,6 +133,7 @@ void Tank::MoveInitialize() {
 	minDistance_ = TankConstants::kMinDistance;
 	stanAttack_ = false;
 	barrier_ = false;
+	distance_ = TankConstants::kTargetDistance;
 };
 void Tank::MoveUpdate() {
 	
@@ -167,19 +168,8 @@ void Tank::AttackUpdate() {
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-	// y軸周りの回転
-	if (sub.z != 0.0) {
-		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-		if (sub.z < 0.0) {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> -destinationAngleY_
-				: -std::numbers::pi_v<float> -destinationAngleY_;
-		}
-	}
-	else {
-		destinationAngleY_ =
-			(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
-	}
+	//Y軸の回転
+	BaseCharacter::DestinationAngle(sub);
 
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
@@ -218,11 +208,12 @@ void Tank::AttackUpdate() {
 
 
 void Tank::UniqueInitialize(){
-	mp_ -= 20;
-	fireTimer_ = 40;
+	mp_ -= TankConstants::kBreathMpCost;
+	fireTimer_ = TankConstants::kFireTimerInit;
 	stanAttack_ = false;
 	barrier_ = false;
 	barrierThreshold_ = 1.0f;
+	distance_ = TankConstants::kTargetBareathDistance;
 }
 void Tank::UniqueUpdate(){
 	//particle_->Update();
@@ -234,36 +225,25 @@ void Tank::UniqueUpdate(){
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-	// y軸周りの回転
-	if (sub.z != 0.0) {
-		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-		if (sub.z < 0.0) {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> -destinationAngleY_
-				: -std::numbers::pi_v<float> -destinationAngleY_;
-		}
-	}
-	else {
-		destinationAngleY_ =
-			(sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f : -std::numbers::pi_v<float> / 2.0f;
-	}
+	//Y軸の回転
+	BaseCharacter::DestinationAngle(sub);
 
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 
-	if (length >= minDistance_ * 3.0f) {
+	if (length >= minDistance_ * distance_) {
 		barrier_ = true;
 		animation_->SetLoop(false);
-		animationNumber_ = standby;
+		animationNumber_ = kStandby;
 	}
 	else {
 		barrier_ = false;
-		animationNumber_ = run;
+		animationNumber_ = kRun;
 	}
 	
 	//バリアを展開
 	if (barrier_) {
-		barrierThreshold_ -= 0.01f;
+		barrierThreshold_ -= TankConstants::kBarrierThresholdDecrement;
 		
 		if (enemy_->GetBehavior() != Behavior::kAttack) {
 			state_ = NextState("Attack", Output1);//スキルに変えておく
