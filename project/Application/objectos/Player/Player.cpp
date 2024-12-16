@@ -165,19 +165,6 @@ void Player::Update() {
 	worldTransformHammer_.TransferMatrix();
 	worldTransformNum_.TransferMatrix();
 
-	//animation_->SetThreshold(threshold_);
-	ImGui::Begin("Player");
-	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("NumPos", &worldTransformNum_.translate.x, -10.0f, 10.0f);
-	ImGui::DragFloat3("rotate", &worldTransformNum_.rotate.x,0.1f);
-	ImGui::DragFloat3("scale", &worldTransformNum_.scale.x, 0.1f);
-	ImGui::Text("EnemyLength%f", length_);
-	ImGui::Text("%dAnimationNumber", animationNumber_);
-	ImGui::Text("%f", hp_);
-	ImGui::SliderFloat("Thres", &threshold_, 0.0f, 1.0f);
-	ImGui::Text("%f", animation_->GetAnimationTimer());
-	ImGui::SliderFloat("flameTime", &flameTime_, 0.0f, 60.0f);
-	ImGui::End();
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("PlayerHp", &hp_, 1.0f);
 	ImGui::End();

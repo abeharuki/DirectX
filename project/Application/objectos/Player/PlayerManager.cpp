@@ -201,11 +201,6 @@ void PlayerManager::Update() {
 	ImGui::DragFloat2("Mpsize", &spriteMpSize_.x, 1.0f);
 	ImGui::DragFloat4("HpColor", &hpColor_.x, 0.1f);
 	ImGui::End();
-
-	ImGui::Begin("Player");
-	ImGui::DragFloat3("ShadowSize", &worldTransformShadow_.scale.x, 0.1f);
-	ImGui::SliderFloat4("ShadowColor", &shadowColor_.x, -1.0f, 1.0f);
-	ImGui::End();
 };
 
 void PlayerManager::Draw(const ViewProjection& camera) {

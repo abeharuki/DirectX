@@ -85,15 +85,6 @@ void Tank::Update() {
 	particle_->SetTranslate(worldTransformBase_.translate);
 	barrierModel_->SetThreshold(barrierThreshold_);
 
-	ImGui::Begin("Tank");
-	ImGui::SliderFloat3("pos", &worldTransformBase_.translate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("shieldpos", &worldTransformBarrier_.translate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("shieldrotate", &worldTransformBarrier_.rotate.x, -10.0f, 10.0f);
-	ImGui::SliderFloat3("enemypos", &enemy_->GetWorldTransformArea().translate.x, -10.0f, 10.0f);
-	ImGui::DragFloat3("rotate", &worldTransformBase_.rotate.x);
-	ImGui::Text("%d", fireTimer_);
-	ImGui::Text("%f", hp_);
-	ImGui::End();
 
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("TankHp", &hp_, 1.0f);

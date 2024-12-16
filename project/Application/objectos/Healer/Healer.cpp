@@ -145,16 +145,6 @@ void Healer::Update() {
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("HealerHp", &hp_, 1.0f);
 	ImGui::End();
-
-	ImGui::Begin("Healer");
-	particle_[3]->DebugParameter();
-	ImGui::Text("%f", threshold_);
-	ImGui::DragFloat3("translat", &worldTransformBase_.translate.x, 0.1f);
-	ImGui::DragFloat3("rotate", &worldTransformCane_.rotate.x, 0.1f);
-	ImGui::DragFloat3("scale", &worldTransformCane_.scale.x, 0.1f);
-	ImGui::DragFloat("magicCirecle", &threshold_[0], 0.01f);
-	ImGui::End();
-
 #ifdef USE_IMGUI
 
 	editor_.show("HealerNode");

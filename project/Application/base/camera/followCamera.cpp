@@ -78,10 +78,7 @@ void FollowCamera::Update() {
 	viewProjection_.UpdateMatrix();
 	ApplyGlobalVariables();
 
-	ImGui::Begin("camera");
-	ImGui::Text("Angle%f", destinationAngleX_);
-	ImGui::End();
-
+	
 }
 void FollowCamera::TitleUpdate() {
 

@@ -115,21 +115,7 @@ void Command::Update() {
 
 	AnimationArrow();
 	
-	
 
-	ImGui::Begin("Command");
-	ImGui::DragFloat2("Pos1", &pos[0].x, 1.0f);
-	ImGui::DragFloat2("size1", &size[0].x, 1.0f);
-	ImGui::DragFloat2("Pos2", &pos[1].x, 1.0f);
-	ImGui::DragFloat2("size2", &size[1].x, 1.0f);
-	ImGui::DragFloat2("Pos3", &pos[2].x, 1.0f);
-	ImGui::DragFloat2("size3", &size[2].x, 1.0f);
-	ImGui::DragFloat2("Pos3", &pos[2].x, 1.0f);
-	ImGui::DragFloat2("size3", &size[2].x, 1.0f);
-	ImGui::DragFloat3("ArrowPos", &arrowPos_.x, 1.0f);
-	ImGui::Text("TaskSize%f", taskSize_.y);
-	ImGui::Text("TaskAnimation%d", taskAnimation_);
-	ImGui::End();
 }
 
 void Command::DrawUI() {

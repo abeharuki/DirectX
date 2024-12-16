@@ -85,14 +85,6 @@ void EnemyManager::Update() {
 		worldTransformNum_[i].TransferMatrix();
 	}
 
-	ImGui::Begin("EnemyManager");
-	ImGui::Text("Length%f", playerLength_);
-	ImGui::DragFloat("HpParameter", &hp_,1.f,0.0f);
-	ImGui::DragFloat3("translat", &worldTransformName_.translate.x, 0.1f);
-	ImGui::DragFloat3("rotate", &worldTransformName_.rotate.x, 0.1f);
-	ImGui::DragFloat3("scale", &worldTransformName_.scale.x, 0.1f);
-	ImGui::DragFloat4("color", &color_.x, 0.1f);
-	ImGui::End();
 
 };
 

@@ -21,9 +21,7 @@ void Skydome::Update() {
 	model_->SetUV(uv);
 	worldTransform_.scale = {500, 500, 500};
 	worldTransform_.UpdateMatrix();
-	ImGui::Begin("SkyDome");
-	ImGui::DragFloat3("Scale", &uv.scale.x, 0.1f);
-	ImGui::End();
+	
 };
 
 /// <summary>

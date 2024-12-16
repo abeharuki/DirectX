@@ -147,41 +147,6 @@ void Renju::Update() {
 	ImGui::DragFloat("RenjuHp", &hp_, 1.0f);
 	ImGui::End();
 
-	ImGui::Begin("Renju");
-	ImGui::Text("animeNunber%d", animationNumber_);
-	ImGui::Text("animeTime%f", animation_->GetAnimationTimer());
-	ImGui::SliderFloat3("BowPos", &worldTransformArrow_.translate.x, -10.0f, 10.0f);
-	ImGui::DragFloat3("rotate", &worldTransformArrow_.rotate.x, 0.1f);
-
-	if (ImGui::TreeNode("Particle")) {
-
-		ImGui::SliderInt("ParticelCount", &particleCount_, 1, 50);
-		ImGui::SliderFloat("Frequency", &emitter_.frequency, 0.0f, 5.0f);
-		ImGui::DragFloat3("Pos", &emitter_.translate.x, 0.1f);
-		ImGui::DragFloat3("PosRangeMin", &emitter_.translateRange.min.x, 0.1f);
-		ImGui::DragFloat3("PosRangeMax", &emitter_.translateRange.max.x, 0.1f);
-		ImGui::DragFloat3("ScaleRangeMin", &emitter_.scaleRange.min.x, 0.01f);
-		ImGui::DragFloat3("ScaleRangeMax", &emitter_.scaleRange.max.x, 0.01f);
-
-		ImGui::SliderFloat3("ColorMin", &emitter_.colorRange.min.x, 0.0f, 1.0f);
-		ImGui::SliderFloat3("ColorMax", &emitter_.colorRange.max.x, 0.0f, 1.0f);
-		ImGui::SliderFloat("AlphaMin", &emitter_.alphaRange.min, 0.0f, 10.0f);
-		ImGui::SliderFloat("AlphaMax", &emitter_.alphaRange.max, 0.0f, 10.0f);
-		ImGui::SliderFloat("lifeTimeMin", &emitter_.lifeTimeRange.min, 0.0f, 1.0f);
-		ImGui::SliderFloat("lifeTimeMax", &emitter_.lifeTimeRange.max, 0.0f, 1.0f);
-		ImGui::DragFloat3("VelocityMin", &emitter_.velocityRange.min.x, 0.1f);
-		ImGui::DragFloat3("VelocityMax", &emitter_.velocityRange.max.x, 0.1f);
-		ImGui::Checkbox("scaleFlag", &scaleFlag_);
-		ImGui::SliderFloat("endAlpha", &emitter_.endAlpha, 0.0f, 10.0f);
-		ImGui::SliderFloat3("scaleAlpha", &emitter_.endScale.x, 0.0f, 3.0f);
-
-		ImGui::SliderFloat("GravityStrength", &filed_.strength, 0.0f, 10.0f);
-		ImGui::SliderFloat("GravityStop", &filed_.stopDistance, 0.0f, 10.0f);
-
-		ImGui::TreePop();
-	}
-
-	ImGui::End();
 
 #ifdef USE_IMGUI
 

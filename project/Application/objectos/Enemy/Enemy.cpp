@@ -204,23 +204,8 @@ void Enemy::Update() {
 	}
 
 
-	ImGui::Begin("EnemyRock");
-	ImGui::SliderFloat3("pos", &worldTransformRock_.translate.x, -150.0f, 150.0f);
-	ImGui::End();
 
-	ImGui::Begin("Enemy");
-	animation_->AnimationDebug();
-	ImGui::SliderFloat3("pos", &worldTransformBarrier_.translate.x, 0.0f, 10.0f);
-	ImGui::SliderFloat3("Scale", &worldTransformBarrier_.scale.x, 0.0f, 10.0f);
-	ImGui::DragFloat3("rotato", &worldTransformBody_.rotate.x, 1.0f);
-	ImGui::DragFloat3("rotatoBase", &worldTransformBase_.rotate.x, 0.1f);
-	ImGui::DragFloat3("Area", &worldTransformArea_.translate.x, 0.1f);
-	ImGui::DragFloat3("Impact", &worldTransformColliderImpact_[0].scale.x, 0.1f);
-	ImGui::Text("time%d", time_);
-	ImGui::Text("Attack%d", isAttack_);
-	ImGui::Text("ImpactSize%f", worldTransformImpact_.scale.z);
-	ImGui::Text("AnimationTime%f", animation_->GetAnimationTimer());
-	ImGui::End();
+	
 }
 
 void Enemy::Draw(const ViewProjection& camera) {
