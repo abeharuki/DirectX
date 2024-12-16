@@ -365,7 +365,7 @@ void AllyAICharacter::AttackUpdate()
 {
 	if (!isAttack_) {
 		//地面をたたきつける攻撃が来たらジャンプする
-		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->IsAttack()) {
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kGround && enemy_->GetBehavior() == Behavior::kAttack && enemy_->IsAttack()) {
 			//ジャンプは敵の攻撃一回に対して一回まで
 			if (jumpCount_ == 1 && enemylength_ <= AllyAIConstants::kGroundAttackDistance) {
 				//敵との距離とimpactのサイズに応じてジャンプするタイミングをずらす
@@ -610,7 +610,7 @@ void AllyAICharacter::searchTarget()
 					state_ = NextState("Move", Output1);
 				}
 				else {
-					if (!enemy_->IsBehaberAttack()) {
+					if (!enemy_->IsBehaberAttack()&&!enemy_->IsAttack()) {
 						state_ = NextState("Move", Output1);
 					}
 
@@ -886,6 +886,7 @@ void AllyAICharacter::OnCollision(Collider* collider)
 			isHit_ = true;
 
 			if (isHit_ != preHit_) {
+				jumpCount_ -= 1;
 				hp_ -= AllyAIConstants::kEnemyDamageBreath;
 				DameageInit();
 				damageModel_->SetTexture("character/20.png");

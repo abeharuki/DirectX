@@ -318,8 +318,11 @@ void Healer::UniqueUpdate() {
 		animationNumber_ = kStandby;//攻撃モーションをいれたら変える
 	}
 	else {
-		healAnimation_ = false;
-		animationNumber_ = kRun;
+		if (!healAnimation_) {
+			healAnimation_ = false;
+			animationNumber_ = kRun;
+		}
+		
 	}
 
 	//全体ヒールかどうか

@@ -68,7 +68,7 @@ namespace EnemyConstants {
 
 	// UpdataImpact に関連する定数
 	const float kImpactTranslationX[] = { 0.12f, 0.35f, 0.53f, 0.625f, 0.6f, 0.46f, 0.25f, -0.02f, -0.26f, -0.47f, -0.6f, -0.63f, -0.55f, -0.38f, -0.15f };
-	const float kImpactTranslationY = 0.0f; // 衝撃波のY方向の移動量（全て同じ）
+	const float kImpactTranslationY = 0.1f; // 衝撃波のY方向（全て同じ）
 	const float kImpactTranslationZ[] = { 0.6f, 0.5f, 0.31f, 0.06f, -0.2f, -0.41f, -0.56f, -0.625f, -0.58f, -0.42f, -0.2f, 0.07f, 0.31f, 0.51f, 0.61f };
 
 	// GroundAttack に関連する定数

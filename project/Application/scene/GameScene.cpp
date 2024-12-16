@@ -275,7 +275,7 @@ void GameScene::Draw() {
 	renjuManager_->Draw(viewProjection_);
 	
 	//ポストエフェクトをかける
-	if (!playerManager_->GetPlayer()->IsDash()/*|| (playerManager_->GetPlayer()->GameStart() && !cameraDirection_) || (tankManager_->GetTank()->GetBarrier() || tankManager_->GetTank()->GetBarrierThreshold() < 0.5f)*/ ) {
+	if (!playerManager_->GetPlayer()->IsDash()) {
 		//プレイヤー
 		playerManager_->Draw(viewProjection_);
 	}
@@ -289,8 +289,6 @@ void GameScene::Draw() {
 		//command_->Draw(viewProjection_);
 	}
 	
-	// 3Dオブジェクト描画後処理
-	//Model::PostDraw();
 #pragma endregion
 
 #pragma region 前景スプライト描画

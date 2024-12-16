@@ -225,7 +225,10 @@ void Enemy::Update() {
 void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
 	if (attack_==BehaviorAttack::kGround && behavior_ == Behavior::kAttack && isAttack_ == true) {
-		impactModel_->Draw(worldTransformImpact_, camera, true);
+		impactModel_->Draw(worldTransformImpact_, camera, false);
+		for (int i = 0; i < EnemyConstants::kImpactColliderCount; ++i) {
+			RenderCollisionBounds(worldTransformColliderImpact_[i], camera);
+		}
 	}
 
 	if (areaDraw_) {
@@ -389,7 +392,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 	//1～5の番号で攻撃の抽選
-	int num = RandomGenerator::GetRandomInt(1, 5);
+	int num = RandomGenerator::GetRandomInt(4, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 		//7～9の番号で必殺技の抽選
 		num = RandomGenerator::GetRandomInt(7, 9);//max9
@@ -789,7 +792,7 @@ void Enemy::InitializeImpact() {
 void Enemy::UpdataImpact() {
 	// 各衝撃波の更新
 	for (int i = 0; i < EnemyConstants::kImpactColliderCount; ++i) {
-		worldTransformColliderImpact_[i].translate += { EnemyConstants::kImpactTranslationX[i], EnemyConstants::kImpactTranslationY, EnemyConstants::kImpactTranslationZ[i] };
+		worldTransformColliderImpact_[i].translate += { EnemyConstants::kImpactTranslationX[i], 0.0f, EnemyConstants::kImpactTranslationZ[i] };
 		worldTransformColliderImpact_[i].scale.x = worldTransformImpact_.scale.x / EnemyConstants::kImpactScaleDivisor;
 		worldTransformColliderImpact_[i].scale.z = worldTransformImpact_.scale.z / EnemyConstants::kImpactScaleDivisor;
 	}
@@ -800,6 +803,7 @@ void Enemy::UpdataImpact() {
 //地面を殴る攻撃
 void Enemy::GroundAttackInitialize() {
 	worldTransformImpact_.translate = worldTransformBase_.translate;
+	worldTransformImpact_.translate.y = EnemyConstants::kImpactTranslationY;
 	isAttack_ = false;
 	animationNumber_ = kGroundAttack;
 	animation_->SetpreAnimationTimer(0.0f);
