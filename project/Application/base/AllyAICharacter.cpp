@@ -610,7 +610,7 @@ void AllyAICharacter::searchTarget()
 					state_ = NextState("Move", Output1);
 				}
 				else {
-					if (!enemy_->IsBehaberAttack()&&!enemy_->IsAttack()) {
+					if (!enemy_->IsBehaberAttack()&&!enemy_->IsAttack()|| jumpCount_ == 0) {
 						state_ = NextState("Move", Output1);
 					}
 

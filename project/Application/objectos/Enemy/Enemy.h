@@ -161,7 +161,6 @@ enum AnimationNumber {
 enum class Behavior {
 	kRoot, // 通常状態
 	kAttack, // 攻撃
-	kStan,//スタン
 	kDead, // 死亡
 };
 

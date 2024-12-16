@@ -205,7 +205,7 @@ void Renju::Draw(const ViewProjection& camera) {
 	}
 
 	if (GetDrawWepon()) {
-		bowModel_->Draw(GetWorldTransformBow(), camera, true);
+		bowModel_->Draw(GetWorldTransformBow(), camera, false);
 	}
 
 	if (skill_) {

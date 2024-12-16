@@ -215,6 +215,7 @@ void Enemy::Update() {
 	ImGui::DragFloat3("rotato", &worldTransformBody_.rotate.x, 1.0f);
 	ImGui::DragFloat3("rotatoBase", &worldTransformBase_.rotate.x, 0.1f);
 	ImGui::DragFloat3("Area", &worldTransformArea_.translate.x, 0.1f);
+	ImGui::DragFloat3("Impact", &worldTransformColliderImpact_[0].scale.x, 0.1f);
 	ImGui::Text("time%d", time_);
 	ImGui::Text("Attack%d", isAttack_);
 	ImGui::Text("ImpactSize%f", worldTransformImpact_.scale.z);
@@ -226,9 +227,6 @@ void Enemy::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformBody_, camera, true);
 	if (attack_==BehaviorAttack::kGround && behavior_ == Behavior::kAttack && isAttack_ == true) {
 		impactModel_->Draw(worldTransformImpact_, camera, false);
-		for (int i = 0; i < EnemyConstants::kImpactColliderCount; ++i) {
-			RenderCollisionBounds(worldTransformColliderImpact_[i], camera);
-		}
 	}
 
 	if (areaDraw_) {
@@ -392,7 +390,7 @@ void Enemy::MoveUpdata() {
 
 void Enemy::AttackInitialize() {
 	//1～5の番号で攻撃の抽選
-	int num = RandomGenerator::GetRandomInt(4, 5);
+	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 		//7～9の番号で必殺技の抽選
 		num = RandomGenerator::GetRandomInt(7, 9);//max9
@@ -755,7 +753,7 @@ void Enemy::ThrowingAttackUpdata() {
 			
 		}
 
-		const float kThrowSpeed = 0.5f;// 投げる速度
+		const float kThrowSpeed = 1.0f;// 投げる速度
 		Vector3 direction = sub;
 
 		Vector3 velocity = Math::Normalize(direction) * kThrowSpeed;
@@ -805,13 +803,14 @@ void Enemy::GroundAttackInitialize() {
 	worldTransformImpact_.translate = worldTransformBase_.translate;
 	worldTransformImpact_.translate.y = EnemyConstants::kImpactTranslationY;
 	isAttack_ = false;
-	animationNumber_ = kGroundAttack;
 	animation_->SetpreAnimationTimer(0.0f);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 	animation_->SetLoop(false);
 	InitializeImpact();
 };
 void Enemy::GroundAttackUpdata() {
+	
+	animationNumber_ = kGroundAttack;
 	if (animation_->GetAnimationTimer() >= EnemyConstants::kGroundAttackAnimationTime) {
 		isAttack_ = true;
 		worldTransformImpact_.scale += Vector3(EnemyConstants::kGroundImpactScaleIncrement, 0.0f, EnemyConstants::kGroundImpactScaleIncrement);
