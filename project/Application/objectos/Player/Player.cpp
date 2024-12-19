@@ -32,7 +32,7 @@ void Player::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 	
-
+	hp_ = 50.0f;
 
 	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);
@@ -140,7 +140,8 @@ void Player::Update() {
 		behaviorRequest_ = Behavior::kDead;
 	}
 
-	if (hp_ >= 20) {
+	//死んでないとき
+	if (hp_ > 0) {
 		//barrierの中にいるか
 		BarrierRange();
 	}

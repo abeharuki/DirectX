@@ -171,6 +171,7 @@ enum class BehaviorAttack {
 	kGround,//地面を殴る攻撃
 	kBreath,//必殺技(体力が半分以下になった時に発動)
 	kHenchman,//必殺技(体力が半分以下になった時に発動)
+	kNothing,//何もしない
 };
 
 /**

@@ -621,13 +621,15 @@ void DirectXCommon::RenderPreDraw() {
 }
 void DirectXCommon::RenderPostDraw() {
 	//HRESULT hr_ = S_FALSE;
+	
 
 	// 今回はRenderTargetからPresentにする
 	renderBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	renderBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	// TransitionBarrierを練る
 	commandList_->ResourceBarrier(1, &renderBarrier);
-
+	//FPS固定
+	UpdateFixFPS();
 }
 
 

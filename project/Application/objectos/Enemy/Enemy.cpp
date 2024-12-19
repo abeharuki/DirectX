@@ -29,6 +29,7 @@ void Enemy::Initialize() {
 	areaModel_->DirectionalLight({ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 2.0f, 0.0f }, 1.0f);
 	animationNumber_ = kStandby;
 	
+
 	// 初期化
 	worldTransformBase_.Initialize();
 	worldTransformBase_.translate = EnemyConstants::kBaseTranslate;
@@ -259,8 +260,9 @@ void Enemy::MoveInitialize() {
 	animationNumber_ = kStandby;
 	animation_->SetLoop(true);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
+	animation_->SetpreAnimationTimer(0);
 	num_ = RandomGenerator::GetRandomInt(kPlayer, kTank);
-	
+	attack_ = BehaviorAttack::kNothing;
 };
 void Enemy::MoveUpdata() {
 	if (animationNumber_ == kThreat) {
@@ -353,24 +355,7 @@ void Enemy::MoveUpdata() {
 		
 	}
 
-	/*------------------デバック用---------------------*/
-	if (Input::PressKey(DIK_7)) {
-		behaviorRequest_ = Behavior::kAttack;
-		attackRequest_ = BehaviorAttack::kNomal;
-	}
-	else if (Input::PressKey(DIK_8)) {
-		behaviorRequest_ = Behavior::kAttack;
-		attackRequest_ = BehaviorAttack::kDash;
-	}
-	else if (Input::PressKey(DIK_9)) {
-		behaviorRequest_ = Behavior::kAttack;
-		attackRequest_ = BehaviorAttack::kThrowing;
-	}
-	else if (Input::PressKey(DIK_0)) {
-		behaviorRequest_ = Behavior::kAttack;
-		attackRequest_ = BehaviorAttack::kGround;
-	}
-	/*------------------------------------------------*/
+	
 };
 
 void Enemy::AttackInitialize() {
@@ -378,7 +363,7 @@ void Enemy::AttackInitialize() {
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 		//7～9の番号で必殺技の抽選
-		num = RandomGenerator::GetRandomInt(7, 9);//max9
+		num = RandomGenerator::GetRandomInt(8, 9);//max9
 	}
 	
 	if (num == 1) {
@@ -452,6 +437,9 @@ void Enemy::AttackUpdata() {
 		break; 
 	case BehaviorAttack::kHenchman:
 		SpecialHenchmanUpdata();
+		break;
+	case BehaviorAttack::kNothing:
+		behaviorRequest_ = Behavior::kRoot;
 		break;
 	}
 }
