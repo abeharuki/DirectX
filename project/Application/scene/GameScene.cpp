@@ -164,7 +164,7 @@ void GameScene::Update() {
 		}
 		//個人回復
 		if (healerManager_->GetHealer()->GetOneHeal()) {
-			if (healerManager_->GetHealer()->GetPlayerHp() <= HealerConstants::kSingleHealHpThreshold && playerManager_->GetPlayer()->GetHp() >= 1) {
+			if (healerManager_->GetHealer()->GetPlayerHp() <= HealerConstants::kSingleHealHpThreshold && playerManager_->GetPlayer()->GetHp() > 0) {
 				playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
 			}
 			else if (healerManager_->GetHealer()->GetHp() <= HealerConstants::kSingleHealHpThreshold && !healerManager_->GetHealer()->IsDead()) {

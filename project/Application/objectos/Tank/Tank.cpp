@@ -176,7 +176,7 @@ void Tank::AttackUpdate() {
 	
 	if (fireTimer_ > TankConstants::kFireTimerThreshold1) {
 		velocity_ = { 0.0f,0.0f,-0.01f };
-		const float kCharacterSpeed = 0.1f;
+		const float kCharacterSpeed = 0.05f;
 		velocity_ = Math::Normalize(velocity_);
 		velocity_ = Math::Multiply(kCharacterSpeed, velocity_);
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);

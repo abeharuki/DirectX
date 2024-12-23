@@ -31,8 +31,7 @@ void Player::Initialize() {
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
 	worldTransformHead_.TransferMatrix();
-	
-	hp_ = 50.0f;
+
 
 	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);
