@@ -64,6 +64,5 @@ private:
 	Vector2 spritePos_;
 	Vector2 spriteSize_ = { 250.0f,250.0f };
 	bool isSprite_;
-	Transform uv;
 
 };

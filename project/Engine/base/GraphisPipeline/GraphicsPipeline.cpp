@@ -1709,16 +1709,19 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateSpriteRootSi
 
 #pragma region RootSignature
 
-	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRange[2] = {};
 	descriptorRange[0].BaseShaderRegister = 0;                      // 0から始まる
 	descriptorRange[0].NumDescriptors = 1;                          // 数は1つ
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
-
+	descriptorRange[1].BaseShaderRegister = 1;                      // 0から始まる
+	descriptorRange[1].NumDescriptors = 1;                          // 数は1つ
+	descriptorRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
+	descriptorRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
 
 	// RootSignature作成. 複数設定できるので配列。
-	D3D12_ROOT_PARAMETER rootParameters[6] = {};
+	D3D12_ROOT_PARAMETER rootParameters[7] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
@@ -1729,10 +1732,9 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateSpriteRootSi
 	rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
 
 	//Texture
-	rootParameters[2].ParameterType =
-		D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
+	rootParameters[2].DescriptorTable.pDescriptorRanges = &descriptorRange[0]; // Tableの中身の配列を指定
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 	//Light
@@ -1749,6 +1751,12 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> GraphicsPipeline::CreateSpriteRootSi
 	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;    // CBVを使う
 	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[5].Descriptor.ShaderRegister = 2; // レジスタ番号2を使う
+
+	//maskテクスチャ
+	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	rootParameters[6].DescriptorTable.pDescriptorRanges = &descriptorRange[1];
+	rootParameters[6].DescriptorTable.NumDescriptorRanges = 1;
 
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};

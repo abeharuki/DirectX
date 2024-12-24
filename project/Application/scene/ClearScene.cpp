@@ -5,12 +5,12 @@
 void ClearScene::Initialize() {
 	spriteClear_.reset(Sprite::Create("resources/clear.png"));
 	spritePushA_.reset(Sprite::Create("resources/Title/push.png"));
+	spriteClear_->SetSize({ 1280.0f, 720.0f });
+	spritePushA_->SetSize({ 1280.0f,720.0f });
 	transition_ = std::make_unique<Transition>();
 	transition_->Initialize();
 
-	PostEffect::GetInstance()->isOutLine(false);
-	PostEffect::GetInstance()->isRadialBlur(false);
-	PostEffect::GetInstance()->isBloom(false);
+	
 }
 
 void ClearScene::Update() {
@@ -19,7 +19,7 @@ void ClearScene::Update() {
 	transition_->Update();
 
 	if (transition_->GetFade()) {
-		SceneManager::GetInstance()->ChangeScene("TitleScene");
+		SceneManager::GetInstance()->ChangeScene("OverScene");
 	}
 }
 

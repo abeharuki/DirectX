@@ -127,6 +127,7 @@ public: // メンバ関数
 	WorldTransform& GetWorldTransformHead() { return worldTransformHead_; }
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
 	WorldTransform& GetWorldTransformCollision() { return worldTransformCollision_; }
+	//エンカウント時のフラグ
 	bool GameStart() { return gameStart_; }
 	//こうげきフラグ
 	bool IsRoot() { return root_; }

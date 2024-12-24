@@ -63,7 +63,7 @@ ConstantBuffer<WritingStyle> gLight : register(b1);
 ConstantBuffer<Camera> gCamera : register(b2);
 TextureCube<float32_t4> gEnvironmentTextere : register(t1);
 Texture2D<float32_t> gMaskTexture : register(t2);
-//ConstantBuffer<DissolveStyle> gDissolveStyle : register(b3);
+
 
 // トゥーンシェーディングの段階数
 #define TOON_LEVELS 4

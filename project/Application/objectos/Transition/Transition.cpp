@@ -6,7 +6,7 @@ void Transition::Initialize(){
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Black.png"));
 	spriteBack_->SetSize(TransitionConstants::kSpriteSize);
-
+	spriteBack_->SetSize({ 1290.0f,720.0f });
 	isFadeIn_ = true;
 	isFadeOut_ = false;
 	isFade_ = false;

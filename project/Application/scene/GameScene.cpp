@@ -292,8 +292,7 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 前景スプライト描画
-	// 前景スプライト描画前処理
-	Sprite::PreDraw();
+	
 	if (playerManager_->GetPlayer()->IsDash() || (playerManager_->GetPlayer()->GameStart() && !cameraDirection_)) {
 		enemyManager_->DrawUI();
 		playerManager_->DrawUI();
@@ -307,10 +306,7 @@ void GameScene::Draw() {
 		}
 	}
 
-	
 
-	// スプライト描画後処理
-	Sprite::PostDraw();
 #pragma endregion
 }
 
@@ -321,7 +317,7 @@ void GameScene::RenderDirect() {
 		playerManager_->Draw(viewProjection_);
 	}
 
-	if (!playerManager_->GetPlayer()->IsDash() && (playerManager_->GetPlayer()->GameStart() && cameraDirection_)) {
+	if (!playerManager_->GetPlayer()->IsDash() && (!playerManager_->GetPlayer()->GameStart()|| (playerManager_->GetPlayer()->GameStart() && cameraDirection_))) {
 		
 		enemyManager_->DrawUI();
 		playerManager_->DrawUI();

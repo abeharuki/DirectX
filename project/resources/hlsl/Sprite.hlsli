@@ -34,13 +34,9 @@ struct Material {
 	float32_t4x4 uvTransform;
 };
 
-struct DirectionalLight {
-	float32_t4 color;     //
-	float32_t3 direction; //
-	float intensity;      //
-	int32_t isEnable;
-};
+
 
 struct PixelShaderOutput {
 	float32_t4 color : SV_TARGET0;
 };
+

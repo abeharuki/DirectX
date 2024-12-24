@@ -15,6 +15,8 @@
 #include "WorldTransform.h"
 #include <imgui.h>
 #include "GraphicsPipeline.h"
+#include <PostEffects/Dissolve.h>
+
 
 /**
  * @file Sprite
@@ -37,6 +39,8 @@ public: // サブクラス
 		Vector4 color; // 色 (RGBA)
 		Matrix4x4 mat; // ３Ｄ変換行列
 	};
+
+	
 
 public: // 静的メンバ関数
 	/// <summary>
@@ -86,8 +90,8 @@ public: // 静的メンバ変数
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> sPipelineState_;
 
-	static Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
-	static Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob_;
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_;
 
 
 	// 射影行列
@@ -154,7 +158,10 @@ public: // メンバ関数
 	void SetFlipX(const bool& flipX) { this->isFlipX_ = flipX; }
 	void SetFlipY(const bool& flipY) { this->isFlipY_ = flipY; }
 
-
+	//ディゾルブの許可
+	void IsGradient(bool flag) { effectsData->isGradient = flag; }
+	void SetThreshold(float num) { effectsData->threshold = num; }
+	void SetEdgeColor(Vector3 color) { effectsData->edgeColor = color; }
 	
 	//色
 	void SetColor(Vector4 color);
@@ -164,11 +171,11 @@ public: // メンバ関数
 
 	//テクスチャ
 	void SetTexture(const std::string& filename);
-
+	void SetMaskTexture(const std::string& path);
 private: // メンバ変数
 	//TextureManager* textureManager_;
 	uint32_t texture_;
-
+	uint32_t maskTexture_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResouce;
 	// データを書き込む
@@ -183,7 +190,7 @@ private: // メンバ変数
 	uint32_t* indexData_;
 
 	MaterialD* materialDataSprite;
-	DirectionLight* directionalLightData = nullptr;
+	DissolveStyle* effectsData = nullptr;//ライトやディゾルブのデータ
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
 
 	// 頂点バッファビュー
@@ -191,8 +198,8 @@ private: // メンバ変数
 	D3D12_INDEX_BUFFER_VIEW ibView_;
 	// 頂点
 
-	// ライティング
-	Microsoft::WRL::ComPtr<ID3D12Resource> lightResource_;
+	//エフェクト
+	Microsoft::WRL::ComPtr<ID3D12Resource> effectsResource_;
 	//座標
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite_;
 

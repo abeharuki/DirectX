@@ -11,13 +11,6 @@
 void Model::Initialize(const std::string& filename, const std::string& texturePath) { 
 	modelData = ModelManager::LoadObjFile(filename);
 	LoadTexture(texturePath);
-	if (texturePath != "") {
-		
-	}
-	else {
-		//LoadTexture(modelData.material.textureFilePath);
-	}
-	
 	CreateVertexResource();
 	sPipeline();
 	
@@ -97,9 +90,7 @@ void Model::Draw(WorldTransform& worldTransform, const ViewProjection& viewProje
 	Engine::GetList()->SetGraphicsRootConstantBufferView(5, cameraResorce_->GetGPUVirtualAddress());
 
 	Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
-	//Engine::GetList()->SetGraphicsRootConstantBufferView(8, dissolveResource_->GetGPUVirtualAddress());
-
-
+	
 	// 三角形の描画
 	Engine::GetList()->DrawInstanced(UINT(meshData_->GetVerticesSize()), 1, 0, 0);
 
@@ -115,13 +106,6 @@ void Model::CreateVertexResource() {
 
 	materialData_ = std::make_unique<Material>();
 	materialData_->Initialize();
-
-	//ディゾルブ
-	//dissolveResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DissolveStyle));
-	//dissolveResource_->Map(0, nullptr, reinterpret_cast<void**>(&dissolveData));
-	//dissolveData->isEnble = false;
-	//dissolveData->threshold = 1.0f;
-	//dissolveData->edgeColor = { 1.0f,0.4f,0.3f };
 
 	
 	// ライティング

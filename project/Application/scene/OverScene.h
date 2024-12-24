@@ -26,4 +26,6 @@ private:
 	std::unique_ptr<Sprite> spritePushA_;
 	// フェードイン・フェードアウト用
 	std::unique_ptr<Transition> transition_;
+
+	DissolveStyle dissolve_;
 };

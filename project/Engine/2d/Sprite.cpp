@@ -1,13 +1,6 @@
 #include "Sprite.h"
 
 
-
-Microsoft::WRL::ComPtr<IDxcBlob> Sprite::vertexShaderBlob_;
-Microsoft::WRL::ComPtr<IDxcBlob> Sprite::pixelShaderBlob_;
-
-
-
-
 Sprite* Sprite::GetInstance() {
 	static Sprite instance;
 	return &instance;
@@ -98,14 +91,19 @@ void Sprite::Draw(Transform& uvTransform ) {
 	Engine::GetList()->IASetIndexBuffer(&ibView_);         // IBVを設定
 
 	
-	
-	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
-	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	// TransformationMatrixCBufferの場所を設定
+	//各テクスチャ
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(6, TextureManager::GetInstance()->GetGPUHandle(maskTexture_));
+
+
+	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+
+
 	// マテリアルCBufferの場所を設定
+	Engine::GetList()->SetGraphicsRootConstantBufferView(3, effectsResource_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
+	
 
 	
 	// 描画
@@ -155,17 +153,18 @@ void Sprite::Draw() {
 	Engine::GetList()->IASetVertexBuffers(0, 1, &vbView_); // VBVを設定
 	Engine::GetList()->IASetIndexBuffer(&ibView_);         // IBVを設定
 
-
-
-	//Engine::GetList()->SetGraphicsRootConstantBufferView(3, lightResource_->GetGPUVirtualAddress());
-	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
-	// TransformationMatrixCBufferの場所を設定
+	//各テクスチャ
 	Engine::GetList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texture_));
+	Engine::GetList()->SetGraphicsRootDescriptorTable(6, TextureManager::GetInstance()->GetGPUHandle(maskTexture_));
+
+	
+	Engine::GetList()->SetDescriptorHeaps(1, Engine::GetSRV().GetAddressOf());
+	
 	// マテリアルCBufferの場所を設定
+	Engine::GetList()->SetGraphicsRootConstantBufferView(3, effectsResource_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(0, materialResorce_->GetGPUVirtualAddress());
 	Engine::GetList()->SetGraphicsRootConstantBufferView(1, wvpResouce->GetGPUVirtualAddress());
-
-
+	
 	// 描画
 	Engine::GetList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
@@ -217,10 +216,6 @@ void Sprite::CreateVertexResource() {
 	// 1頂点あたりのサイズ
 	vbView_.StrideInBytes = sizeof(VertexData);
 	
-
-	//vertexData_[0].normal = {0.0f, 0.0f, -1.0f};
-	
-	
 	// インデックス
 	indexResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(uint32_t) * 6);
 	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
@@ -266,6 +261,22 @@ void Sprite::CreateVertexResource() {
 	// 初期化
 	materialDataSprite->uvTransform = Math::MakeIdentity4x4();
 
+
+
+	// ライティング
+	effectsResource_ = Mesh::CreateBufferResoure(Engine::GetDevice().Get(), sizeof(DissolveStyle));
+	// 頂点リソースにデータを書き込む
+	// 書き込むためのアドレスを取得
+	effectsResource_->Map(0, nullptr, reinterpret_cast<void**>(&effectsData));
+
+	// デフォルト値
+	effectsData->threshold = 0.0f;
+	effectsData->edgeColor = { 1.0f,0.4f,0.3f };
+	effectsData->isGradient = false;
+	effectsData->isEnble = false;
+	// UVTransform用の行列
+	Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(Vector3{ 2,2,0 }, Vector3{ 0,0,0 }, Vector3{ 0,0,0 });
+	effectsData->uvTransform = uvTransformMatrix;
 }
 
 
@@ -273,9 +284,7 @@ void Sprite::CreateVertexResource() {
 void Sprite::LoadTexture(const std::string& fileName) {
 	TextureManager::Load(fileName);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(fileName);
-	//textureManager_ = TextureManager::GetInstance();
-	//textureManager_->Initialize();
-	//texture_ = textureManager_->Load(fileName);
+	maskTexture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/noise0.png");
 }
 
 void Sprite::AdjustTextureSize()
@@ -295,4 +304,9 @@ void Sprite::SetBlendMode(BlendMode blendMode) { blendMode_ = blendMode; }
 void Sprite::SetTexture(const std::string& filename){
 	TextureManager::GetInstance()->Load(filename);
 	texture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(filename);
+}
+
+void Sprite::SetMaskTexture(const std::string& path) {
+	TextureManager::GetInstance()->Load("resources/Mask/" + path);
+	maskTexture_ = TextureManager::GetInstance()->GetTextureIndexByFilePath("resources/Mask/" + path);
 }

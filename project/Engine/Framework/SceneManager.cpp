@@ -33,28 +33,30 @@ void SceneManager::Update() {
 }
 
 void SceneManager::Draw() { 
-	if (!load_) {
-		currentScene_->Draw();
+	if (load_) {
+		loadScene_->Draw();
 	}
 	else {
-		loadScene_->Draw();
+		currentScene_->Draw();
+		
 	}
 	
 }
 
 void SceneManager::RenderDirect() {
-	if (!load_) {
-		currentScene_->RenderDirect();
+	if (load_) {
+		loadScene_->RenderDirect();
 	}
 	else {
-		loadScene_->RenderDirect();
+		currentScene_->RenderDirect();
+		
 	}
 	
 }
 
 void SceneManager::LoadScene() {
-	loadScene_ = sceneFactory_->CreateScene("LoadScene");
-	loadScene_->Initialize();
+	//loadScene_ = sceneFactory_->CreateScene("LoadScene");
+	//loadScene_->Initialize();
 }
 
 void SceneManager::Loading() { 
@@ -75,7 +77,7 @@ void SceneManager::Loading() {
 		//次のシーンを初期化
 		currentScene_->Initialize();
 		load_ = false;
-		loadScene_->Initialize();
+		
 	}
 
 
@@ -90,6 +92,11 @@ void SceneManager::ChangeScene(const std::string& sceneName) {
 
 	assert(sceneFactory_);
 	assert(nextScene_ == nullptr);
+	if (!loadScene_)
+	{
+		loadScene_ = sceneFactory_->CreateScene("LoadScene");
+		loadScene_->Initialize();
+	}
 	nextScene_ = sceneFactory_->CreateScene(sceneName);
 	load_ = true;
 }
