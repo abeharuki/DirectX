@@ -95,7 +95,7 @@ namespace EnemyConstants {
 	const float kEnemyHenchmanSpawnYOffset = -1.0f; // ヘンチマン生成時のY座標
 
 	// Dead状態に関する定数
-	const float kAnimationEndTime = 5.0f;   // アニメーションの終了時間（5秒）
+	const float kAnimationEndTime = 4.0f;   // アニメーションの終了時間（5秒）
 	const float kBarrierThresholdIncreaseRate = 0.01f; // バリアのスレッショルド増加速度
 	const Vector3 kEdgeColor = { 0.0f,-1.0f,-1.0f }; // エッジカラー調整値
 	const float kThresholdIncreaseRate = 0.001f; // スレッショルドの増加速度

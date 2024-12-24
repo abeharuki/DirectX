@@ -85,6 +85,9 @@ void EnemyManager::Update() {
 		worldTransformNum_[i].TransferMatrix();
 	}
 
+	ImGui::Begin("Sprite");
+	ImGui::DragFloat("EnemyHp", &hp_, 1.0f);
+	ImGui::End();
 
 };
 

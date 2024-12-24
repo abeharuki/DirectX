@@ -11,8 +11,8 @@ void Game::Initialize() {
 	SceneManager::GetInstance()->LoadScene();
 	//シーンマネージャーに最初のシーンをセット
 	//SceneManager::GetInstance()->FirstScene("TitleScene");
-	//SceneManager::GetInstance()->FirstScene("GameScene");
-	SceneManager::GetInstance()->FirstScene("OverScene");
+	SceneManager::GetInstance()->FirstScene("GameScene");
+	//SceneManager::GetInstance()->FirstScene("OverScene");
 }
 
 void Game::Update() {

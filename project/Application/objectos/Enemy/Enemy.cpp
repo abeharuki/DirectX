@@ -205,7 +205,6 @@ void Enemy::Update() {
 	}
 
 
-
 	
 }
 
@@ -926,7 +925,7 @@ void Enemy::SpecialHenchmanUpdata()
 
 void Enemy::DeadInitilize() {
 	animationNumber_ = kDeath;
-	animation_->SetAnimationTimer(0.f, 0.f);
+	animation_->SetAnimationTimer(0.4f, 0.f);
 	animation_->SetLoop(false);
 	animation_->SetEdgeColor(EnemyConstants::kEdgeColor);
 }

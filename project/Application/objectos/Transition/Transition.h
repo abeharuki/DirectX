@@ -39,7 +39,9 @@ public:
 	bool GetFadeOut() { return isFadeIn_; }
 	bool GetFadeIn() { return isFadeIn_; }
 	/*------------------ゲッター------------------*/
-	void SetFadeOut(bool flag) { isFadeIn_ = flag; }
+	//シーンが切り替わるときに使う(画面が徐々に暗くなっていく)
+	void SetFadeOut(bool flag) { isFadeOut_ = flag; }
+	//シーンがが切り替わった時に使う(画面が徐々に見えてくる)
 	void SetFadeIn(bool flag) { isFadeIn_ = flag; }
 
 private:

@@ -2,7 +2,7 @@
 #include <Input.h>
 
 void Transition::Initialize(){
-	alpha_ = TransitionConstants::kMaxAlpha;;
+	alpha_ = TransitionConstants::kMaxAlpha;
 	// フェードイン・フェードアウト用スプライト
 	spriteBack_.reset(Sprite::Create("resources/Black.png"));
 	spriteBack_->SetSize(TransitionConstants::kSpriteSize);
