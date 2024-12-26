@@ -9,6 +9,13 @@ void GameScene::Initialize() {
 
 	viewProjection_.Initialize();
 	
+	//ゲームオーバー時のスプライト
+	spriteOver_.reset(Sprite::CreateNoDepth("resources/over.png"));
+	spritePushA_.reset(Sprite::CreateNoDepth("resources/Title/push.png"));
+	spriteOver_->SetSize({ 1280.0f, 720.0f });
+	spritePushA_->SetSize({ 1280.0f,720.0f });
+	spriteOver_->SetEdgeColor(GameSceneConstants::kDissolveEdgeColor);
+	spritePushA_->SetEdgeColor(GameSceneConstants::kDissolveEdgeColor);
 
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
@@ -71,19 +78,22 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	//シーン遷移
-	if (playerManager_->IsOver() || enemyManager_->IsClear()) {
-		transition_->SetFadeOut(true);
-	}
-	if (enemyManager_->IsClear() && transition_->GetFade()) {
-		SceneManager::GetInstance()->ChangeScene("ClearScene");
-	}
-
-	if (playerManager_->IsOver() && transition_->GetFade()) {
-		SceneManager::GetInstance()->ChangeScene("OverScene");
-	}
-
+	//シーン遷移の更新
 	transition_->Update();
+	spriteOver_->SetThreshold(spriteDissolve_);
+	spritePushA_->SetThreshold(spriteDissolve_);
+
+	//クリア時
+	GameClearEffect();
+	
+	//ゲームオーバー時
+	GameOverEffect();
+
+	//タイトルに戻る
+	if (transition_->GetFade()) {
+		SceneManager::GetInstance()->ChangeScene("TitleScene");
+	}
+	
 
 	//エンカウント時の演出
 	BattleBegin();
@@ -187,7 +197,7 @@ void GameScene::Update() {
 	
 
 	//各キャラの更新
-	if (!enemyManager_->IsClear()&&!playerManager_->GetPlayer()->IsDead()) {
+	if (!enemyManager_->IsClear()) {
 		tankManager_->Update();
 		renjuManager_->Update();
 		healerManager_->Update();
@@ -230,7 +240,7 @@ void GameScene::Update() {
 	loader_->Update();
 
 	// 追従カメラの更新
-	if ((!cameraDirection_||battle_) && radialBlur_.blurWidth == GameSceneConstants::kRadialBlurInitWidth) {
+	if ((!cameraDirection_||battle_) && radialBlur_.blurWidth == GameSceneConstants::kRadialBlurInitWidth && !playerManager_->IsOver()) {
 		followCamera_->Update();
 	}
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -331,8 +341,6 @@ void GameScene::RenderDirect() {
 		}
 	}
 	
-	//シーン遷移の描画
-	transition_->Draw();
 
 
 	//デプスのないオブジェクト
@@ -341,6 +349,14 @@ void GameScene::RenderDirect() {
 	renjuManager_->GetRenju()->NoDepthDraw(viewProjection_);
 	tankManager_->GetTank()->NoDepthDraw(viewProjection_);
 	enemyManager_->NoDepthDraw(viewProjection_);
+	
+
+	//ゲームオーバースプライト
+	spriteOver_->Draw();
+	spritePushA_->Draw();
+
+	//シーン遷移の描画
+	transition_->Draw();
 
 }
 
@@ -401,6 +417,28 @@ void GameScene::BattleBegin(){
 	healerManager_->GetHealer()->SetBattleStart(battle_);
 	renjuManager_->GetRenju()->SetBattleStart(battle_);
 	tankManager_->GetTank()->SetBattleStart(battle_);
+}
+
+void GameScene::GameClearEffect(){
+	//クリア時
+	if (enemyManager_->IsClear()) {
+		
+		if (spriteDissolve_ <= 0) {
+			transition_->ChangeScene();
+		}
+	}
+}
+
+void GameScene::GameOverEffect(){
+	//ゲームオバー時
+	if (playerManager_->IsOver()) {
+		spriteDissolve_ -= GameSceneConstants::kDissolveThresholdIncrement;
+		//ディゾルブの値がゼロになったらフェイドの許可
+		if (spriteDissolve_ <= 0) {
+			transition_->ChangeScene();
+		}
+		
+	}
 }
 
 void GameScene::CheckAllCollision() {

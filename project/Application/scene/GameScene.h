@@ -37,6 +37,10 @@ namespace GameSceneConstants {
 
 	// スタート時の敵のアニメーションフレームタイム
 	const float kEnemyAnimationFlame = 25.0f;
+
+	//ゲームオバーディゾルブ関連
+	const float kDissolveThresholdIncrement = 0.01f;    //ディゾルブの閾値増加量
+	const Vector3 kDissolveEdgeColor = { 1.0f,0.0f,0.0f };//エッジの色
 }
 
 /**
@@ -58,6 +62,12 @@ private:
 	
 	//バトル開始の演出
 	void BattleBegin();
+
+	//ゲームクリアの演出
+	void GameClearEffect();
+
+	//ゲームオーバーの演出
+	void GameOverEffect();
 
 	//当たり判定
 	void CheckAllCollision();
@@ -113,7 +123,14 @@ private: // メンバ変数
 	bool cameraDirection_ = false;
 	int cameraDirectionTime_;
 
-
+	//味方AIキャラクター
 	std::vector<AllyAICharacter*> characters;
+
+
+	//ゲームオーバー画面のスプライトとディゾルブ
+	std::unique_ptr<Sprite> spriteOver_;
+	std::unique_ptr<Sprite> spritePushA_;
+	
+	float spriteDissolve_ = 1.0f;
 
 };

@@ -434,16 +434,18 @@ void Player::AttackUpdata() {
 void Player::DeadInitilize() {
 	threshold_ = 0.0f;
 	isDead_ = true;
+	animationNumber_ = kDeath;
+	animation_->SetLoop(false);
+	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetAnimationTimer(0.0f, 0.0f);
 };
 void Player::DeadUpdata() {
 	hp_ = PlayerConstants::kDeadHP;
-	animation_->SetEdgeColor(PlayerConstants::kDeadEdgeColor);
-	threshold_ += PlayerConstants::kDeadThresholdIncrement;
-	//animation_->SetThreshold(threshold_);
-	if (threshold_ >= PlayerConstants::kDeadAnimationThreshold) {
+	
+	if (animation_->GetAnimationTimer() >= PlayerConstants::kDeadAnimationThreshold) {
 		isOver_ = true;
-
 	}
+
 };
 
 // 親子関係

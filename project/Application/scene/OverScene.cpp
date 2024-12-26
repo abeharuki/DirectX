@@ -21,6 +21,8 @@ void OverScene::Update() {
 	if (transition_->GetFade()) {
 		SceneManager::GetInstance()->ChangeScene("ClearScene");
 	}
+	spriteOver_->SetThreshold(dissolve_.threshold);
+	spriteOver_->SetEdgeColor(dissolve_.edgeColor);
 	spritePushA_->SetThreshold(dissolve_.threshold);
 	spritePushA_->SetEdgeColor(dissolve_.edgeColor);
 

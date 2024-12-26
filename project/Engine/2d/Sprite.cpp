@@ -14,6 +14,13 @@ void Sprite::Initialize(const std::string& fileName) {
 	sPipeline();
 	
 }
+void Sprite::NoDepthInitialize(const std::string& fileName) {
+	LoadTexture(fileName);
+	AdjustTextureSize();
+	CreateVertexResource();
+	sNoDepthPipeline();
+
+}
 
 
 Sprite* Sprite::Create(const std::string& fileName/* Vector4 color = {1, 1, 1, 1},
@@ -24,19 +31,29 @@ Sprite* Sprite::Create(const std::string& fileName/* Vector4 color = {1, 1, 1, 1
 
 }
 
+Sprite* Sprite::CreateNoDepth(const std::string& fileName)
+{
+	Sprite* sprite = new Sprite;
+	sprite->NoDepthInitialize(fileName);
+	return sprite;
+}
+
 
 void Sprite::sPipeline(){
-
-
 	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateSpriteVSShader();
 	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreateSpritePSShader();
-
 
 	rootSignature_ = GraphicsPipeline::GetInstance()->CreateSpriteRootSignature();
 	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateSpritePipeline(blendMode_);
 
-	
-	
+};
+
+void Sprite::sNoDepthPipeline() {
+	vertexShaderBlob_ = GraphicsPipeline::GetInstance()->CreateSpriteVSShader();
+	pixelShaderBlob_ = GraphicsPipeline::GetInstance()->CreateSpritePSShader();
+
+	rootSignature_ = GraphicsPipeline::GetInstance()->CreateSpriteRootSignature();
+	sPipelineState_ = GraphicsPipeline::GetInstance()->CreateNoDepthSpritePipeline(blendMode_);
 
 };
 

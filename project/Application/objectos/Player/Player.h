@@ -37,8 +37,7 @@ namespace PlayerConstants{
 	const float kFlameTimeDefault = 30.0f;  // プレイヤーのフレーム時間（デフォルト）
 
 	// 死亡関連
-	const float kDeadThresholdIncrement = 0.01f;    // 死亡時の閾値増加量
-	const float kDeadAnimationThreshold = 1.0f;     // 死亡アニメーション終了の閾値
+	const float kDeadAnimationThreshold = 3.0f;     // 死亡アニメーション終了の閾値
 	const float kDeadHP = 0.0f;                     // 死亡時のHP
 	const Vector3 kDeadEdgeColor = { 0.0f, -1.0f, -1.0f }; // 死亡時のエッジカラー
 
@@ -221,6 +220,7 @@ private: // メンバ変数
 	int animationNumber_;
 	enum AnimationNumber {
 		kAnimeAttack,//攻撃
+		kDeath,//死亡
 		kJump,//ジャンプ
 		kRun,//移動
 		kStandby,//待機

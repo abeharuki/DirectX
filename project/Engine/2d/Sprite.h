@@ -74,8 +74,8 @@ public: // 静的メンバ関数
 		const std::string& fileName /* Vector4 color = {1, 1, 1, 1},
 		Vector2 anchorpoint = {0.0f, 0.0f}, bool isFlipX = false, bool isFlipY = false*/);
 
-
-
+	//デプスのないスプライト
+	static Sprite* CreateNoDepth(const std::string& fileName);
 
 
 public: // 静的メンバ変数
@@ -109,12 +109,15 @@ public: // メンバ関数
 	/// グラフィックスパイプラインの初期化
 	/// </summary>
 	void sPipeline();
+	void sNoDepthPipeline();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	/// <returns>成否</returns>
 	void Initialize(const std::string& fileName);
+	void NoDepthInitialize(const std::string& fileName);
+	
 
 	/// <summary>
 	/// 描画

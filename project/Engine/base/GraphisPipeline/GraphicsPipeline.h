@@ -102,6 +102,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateSkyboxGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateLineGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateSpritePipeline(BlendMode blendMode_);
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateNoDepthSpritePipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleGraphicsPipeline(BlendMode blendMode_);
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateParticleCSGraphicsPipeline();
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> CreateEmiteCSGraphicsPipeline();
