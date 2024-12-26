@@ -475,10 +475,7 @@ void GameScene::CheckAllCollision() {
 	for (auto* character : characters) {
 		collisionManager_->SetColliderList(character);
 	}
-	/*collisionManager_->SetColliderList(healerManager_->GetHealer());
-	collisionManager_->SetColliderList(renjuManager_->GetRenju());	
-	collisionManager_->SetColliderList(tankManager_->GetTank());*/
-
+	
 	for (RenjuBullet* bullet : renjuManager_->GetRenju()->GetBullets()) {
 		collisionManager_->SetColliderList(bullet);
 	}
