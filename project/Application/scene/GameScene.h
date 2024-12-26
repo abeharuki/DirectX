@@ -41,6 +41,11 @@ namespace GameSceneConstants {
 	//ゲームオバーディゾルブ関連
 	const float kDissolveThresholdIncrement = 0.01f;    //ディゾルブの閾値増加量
 	const Vector3 kDissolveEdgeColor = { 1.0f,0.0f,0.0f };//エッジの色
+
+	//ゲームクリアのスプライト関連
+	const float kInitialClearSpriteY = -1.0f;// 初期クリアスプライトのY座標
+	const float kClearSpriteTargetX = 50.0f; // クリアスプライトの目標X座標
+	const float kClearSpriteFinalY = 720.0f; // クリアスプライトの最終Y座標
 }
 
 /**
@@ -127,10 +132,13 @@ private: // メンバ変数
 	std::vector<AllyAICharacter*> characters;
 
 
-	//ゲームオーバー画面のスプライトとディゾルブ
+	//ゲームオーバーとクリア画面のスプライト
+	std::unique_ptr<Sprite> spriteClear_;
 	std::unique_ptr<Sprite> spriteOver_;
 	std::unique_ptr<Sprite> spritePushA_;
-	
+	Vector3 clearSpritePos_ = {GameSceneConstants::kClearSpriteTargetX,-GameSceneConstants::kClearSpriteFinalY,0.0f};
+	bool clearEffect_ = false;
+	//スプライトのディゾルブ
 	float spriteDissolve_ = 1.0f;
 
 };

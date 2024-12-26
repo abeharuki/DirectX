@@ -36,7 +36,7 @@ public:
 
 	/*------------------ゲッター------------------*/
 	bool GetFade() { return isFade_; }
-	bool GetFadeOut() { return isFadeIn_; }
+	bool GetFadeOut() { return isFadeOut_; }
 	bool GetFadeIn() { return isFadeIn_; }
 	/*------------------ゲッター------------------*/
 	//シーンが切り替わるときに使う(画面が徐々に暗くなっていく)
