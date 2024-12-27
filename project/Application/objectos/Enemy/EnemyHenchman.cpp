@@ -30,7 +30,7 @@ void EnemyHenchman::Update() {
 
 	animation_->SetThreshold(thre_);
 
-	if (thre_ >= 1) {
+	if (thre_ >= 0.6f) {
 		dead_ = true;
 	}
 
