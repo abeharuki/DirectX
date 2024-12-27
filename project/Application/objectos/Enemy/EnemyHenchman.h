@@ -33,10 +33,14 @@ public:
 	Vector3 GetPos() { return worldTransform_.translate; }
 	bool IsDead() { return dead_; }
 	bool IsHitEnemy() { return enemyHit_; }
+	bool IsDamage() { return isDamaged_; }
+	bool IsTarget() { return isTarget_; }
 
 	/*------------セッター---------*/
 	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; }
 	void SetSpacal(bool flag) { specal_ = flag; }
+	void SetDamaged(bool flag) { isDamaged_ = flag; }
+	void SetTarget(bool flag) { isTarget_ = flag; }
 
 private:
 	WorldTransform worldTransform_;
@@ -57,6 +61,11 @@ private:
 
 	//ディゾルブ用
 	float thre_ = 0.0f;
+
+	//プレイヤーからの攻撃
+	bool isDamaged_ = false;
+	//プレイヤーから狙われているか
+	bool isTarget_ = false;
 
 	//死亡フラグ
 	bool dead_;

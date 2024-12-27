@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <CollisionManager/CollisionConfig.h>
+#include <AllyAICharacter.h>
 
 
 void Player::Initialize() {
@@ -15,6 +16,8 @@ void Player::Initialize() {
 	worldTransformCollision_.translate = PlayerConstants::kWeaponCollisionTranslate;
 	worldTransformNum_.Initialize();
 	worldTransformNum_.scale = PlayerConstants::kPlayerNumScale;
+	worldTransformTargetArrow_.Initialize();
+	arrowModel_.reset(Model::CreateModelFromObj("resources/particle/plane.obj", "resources/Player/arrow.png"));
 	damageModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/character/20.png"));
 	alpha_ = 0.0f;
 
@@ -122,6 +125,8 @@ void Player::Update() {
 	}
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+		//どの子分を攻撃するか
+		HenchmanTarget();
 		if (enemy_->IsAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
@@ -164,6 +169,7 @@ void Player::Update() {
 	worldTransformHead_.TransferMatrix();
 	worldTransformHammer_.TransferMatrix();
 	worldTransformNum_.TransferMatrix();
+	worldTransformTargetArrow_.TransferMatrix();
 
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("PlayerHp", &hp_, 1.0f);
@@ -172,6 +178,9 @@ void Player::Update() {
 
 void Player::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera, true);
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+		arrowModel_->Draw(worldTransformTargetArrow_, camera, false);
+	}
 	
 	RenderCollisionBounds(worldTransformHead_, camera);
 	
@@ -186,7 +195,6 @@ void Player::MoveInitialize() {
 	worldTransformBase_.translate.y = PlayerConstants::kPlayerInitPosition.y;
 	isAttack_ = false;
 	dash_ = false;
-	combo_ = false;
 	auto_ = false;
 	animation_->SetpreAnimationTimer(0);
 	flameTime_ = PlayerConstants::kFlameTimeDefault;
@@ -317,9 +325,20 @@ void Player::MoveUpdata() {
 	if (auto_) {
 		animationNumber_ = kRun;
 		// 敵の座標までの距離
-		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+		float length;
 		// 追従対象からロックオン対象へのベクトル
-		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
+		Vector3 sub;
+		if (enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
+			//敵本体
+			length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+			sub = enemy_->GetWorldPosition() - GetWorldPosition();
+		}
+		else {
+			//敵の子分
+			length = Math::Length(Math::Subract(henchmanDist_, worldTransformBase_.translate));
+			sub = henchmanDist_ - GetWorldPosition();
+		}
+		
 
 		// y軸周りの回転
 		if (sub.z != 0.0) {
@@ -446,6 +465,45 @@ void Player::DeadUpdata() {
 		isOver_ = true;
 	}
 
+}
+
+void Player::HenchmanTarget(){
+
+	//目標対象が死んだときに次のターゲットを見つける
+	if (!auto_ && !isAttack_) {
+		for (EnemyHenchman* enemy : henchmans_) {
+			if (!enemy->IsDead()) {
+				henchmanDist_ = enemy->GetPos();
+			}
+		}
+	}
+	
+
+	for (EnemyHenchman* enemy : henchmans_) {
+		
+		
+		if (!enemy->IsDead() && !enemy->IsHitEnemy() && enemy) {
+			if (enemy->GetPos().y >= 0) {
+				float distanceToNowDist = Math::GetDistanceSquared(worldTransformBase_.translate, henchmanDist_);
+				float distanceToHench = Math::GetDistanceSquared(worldTransformBase_.translate, enemy->GetPos());
+				//今追いかけている子分より更に自分に近い子分がいたらそっちを追いかける
+				if (distanceToNowDist > distanceToHench) {
+					henchmanDist_ = enemy->GetPos();
+					if (auto_) {
+						enemy->SetTarget(true);
+					}
+				}
+			}
+		}
+		
+		
+		//ターゲットのみ倒す
+		if (isAttack_ && enemy->IsTarget()) {
+			enemy->SetDamaged(true);
+		}
+		
+
+	}
 };
 
 // 親子関係
@@ -468,12 +526,20 @@ void Player::Relationship() {
 			worldTransformCollision_.translate),
 		worldTransformHammer_.matWorld_);
 
+	//ダメージのビルボード
 	Matrix4x4 backToFrontMatrix = Math::MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrixNum = backToFrontMatrix * Math::Inverse(camera_.matView);
 	billboardMatrixNum.m[3][0] = worldTransformNum_.translate.x;
 	billboardMatrixNum.m[3][1] = worldTransformNum_.translate.y;
 	billboardMatrixNum.m[3][2] = worldTransformNum_.translate.z;
 	worldTransformNum_.matWorld_ = Math::MakeScaleMatrix(worldTransformNum_.scale) * billboardMatrixNum;
+
+	//矢印のビルボード
+	Matrix4x4 billboardMatrixArrow = backToFrontMatrix * Math::Inverse(camera_.matView);
+	billboardMatrixArrow.m[3][0] = henchmanDist_.x;
+	billboardMatrixArrow.m[3][1] = 5.0f;
+	billboardMatrixArrow.m[3][2] = henchmanDist_.z;
+	worldTransformTargetArrow_.matWorld_ = Math::MakeScaleMatrix(worldTransformTargetArrow_.scale) * billboardMatrixArrow;
 }
 
 void Player::InitPos() {

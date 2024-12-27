@@ -21,6 +21,13 @@ void Math::UpdateCircularMotion3D(float& posX, float& posZ, float centerX, float
 	}
 }
 
+float Math::GetDistanceSquared(const Vector3& a, const Vector3& b)
+{
+	return (b.x - a.x) * (b.x - a.x) +
+		(b.y - a.y) * (b.y - a.y) +
+		(b.z - a.z) * (b.z - a.z);
+}
+
 bool Math::isWithinRange(float value, float range, float sub) {
 	if (value >= range - sub && value <= range + sub) {
 		return true;

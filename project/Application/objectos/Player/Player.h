@@ -131,7 +131,6 @@ public: // メンバ関数
 	//こうげきフラグ
 	bool IsRoot() { return root_; }
 	bool IsAttack() { return isAttack_; }
-	bool IsCombo() { return combo_; }
 	bool IsDash() { return dash_; }
 	bool IsOver() { return isOver_; }
 	bool IsDead() { return isDead_; }
@@ -170,6 +169,7 @@ public: // メンバ関数
 		// 敵の座標までの距離
 		length_ = Math::Length(Math::Subract(pos, worldTransformBase_.translate));
 	}
+	void SetHenchman(EnemyHenchman* henchman) { henchmans_.push_back(henchman); }
 
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
 	void SetBarrierPos(Vector3 pos) { barrierPos_ = pos; }
@@ -202,6 +202,9 @@ private:
 	void DeadInitilize();
 	void DeadUpdata();
 
+	//攻撃する子分を探す
+	void HenchmanTarget();
+
 	// パーツ親子関係
 	void Relationship();
 private: // メンバ変数
@@ -209,6 +212,10 @@ private: // メンバ変数
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformHammer_;
 	WorldTransform worldTransformCollision_;
+	WorldTransform worldTransformTargetArrow_;
+
+	//ターゲットアロー
+	std::unique_ptr<Model> arrowModel_;
 
 	//ダメージ表示
 	WorldTransform worldTransformNum_;
@@ -255,10 +262,14 @@ private: // メンバ変数
 
 	bool root_;
 	bool dash_;
-	bool combo_;
 	bool noAttack_;
 	bool preNoAttack_;
 	bool auto_;
+
+	//敵子分のposを格納
+	std::list<EnemyHenchman*> henchmans_;
+	//子分の場所
+	Vector3 henchmanDist_;
 
 	// 攻撃の時間
 	const uint32_t behaviorAttackTime = 15;

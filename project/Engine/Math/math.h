@@ -325,6 +325,15 @@ struct PerFrame {
 class Math {
 public:
 
+ 
+    /**
+     * @brief 目的の場所までの距離を計算
+     * @param a 現在地
+     * @param b 目的地
+     * @return 目的の場所までの距離
+     */
+    static float GetDistanceSquared(const Vector3& a, const Vector3& b);
+
     /**
      * @brief 値が指定範囲内に収まっているかを判定します。
      * @param value 判定する値

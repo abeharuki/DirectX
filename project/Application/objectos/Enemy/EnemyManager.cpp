@@ -141,7 +141,10 @@ void EnemyManager::DamageNumMath(){
 
 // 衝突を検出したら呼び出されるコールバック関数
 void EnemyManager::OnCollision() {
-	isHit_ = true;
+	if (enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman || enemy_->GetBehavior() != Behavior::kAttack) {
+		isHit_ = true;
+	}
+	
 
 	if (isHit_ != preHit_) {
 		

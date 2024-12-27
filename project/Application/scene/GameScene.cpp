@@ -144,9 +144,11 @@ void GameScene::Update() {
 		character->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
 		//バリアを展開しているposの受け取り
 		character->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
+		//敵の子分の情報を格納する
 		if (enemyManager_->GetEnemy()->IsSpecial()) {
 			for (EnemyHenchman* enemy : enemyManager_->GetEnemy()->GetEnemys()) {
 				character->SetHenchman(enemy);
+				playerManager_->GetPlayer()->SetHenchman(enemy);
 			}
 		}
 	}

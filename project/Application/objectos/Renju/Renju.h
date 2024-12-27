@@ -175,5 +175,4 @@ private: // メンバ変数
 
 	//パワーゲージのスプライト番号
 	int gejiNum_ = 0;
-	bool gajiEffect_ = false;
 };

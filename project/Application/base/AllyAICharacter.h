@@ -255,16 +255,14 @@ public:
 
     //次の状態遷移をノードから検索
     CharacterState NextState(std::string name, int outputNum);
+
+   
 private:
     //クラスごとの初期化
     void InitializePerCharacter();
 
     //敵がどのキャラを狙っているか
     bool GetAimCharacter();
-
-    //目的の場所までの距離
-    float GetDistanceSquared(const Vector3& a,const Vector3& b);
-
 
 protected:
     //状態遷移
@@ -385,7 +383,6 @@ protected:
     std::list<EnemyHenchman*> henchmans_;
     //レンジャーとの距離が最も近い子分のpos
     Vector3 henchmanDist_;
-    int henchmanNum_;
     bool henchmanSearch_ = false;
   
 };

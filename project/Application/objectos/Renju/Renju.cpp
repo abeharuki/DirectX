@@ -152,11 +152,7 @@ void Renju::Update() {
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("RenjuHp", &hp_, 1.0f);
 	ImGui::End();
-	ImGui::Begin("Renju");
-	ImGui::DragFloat3("GajiScale", &worldTransformPawaGeji_.scale.x, 0.1f,0.0f,1.0f);
-	ImGui::Checkbox("Effect", &gajiEffect_);
-	ImGui::DragInt("SpecialTimer", &specialTimer_, 1, 0, 420);
-	ImGui::End();
+	
 
 #ifdef USE_IMGUI
 
@@ -230,24 +226,7 @@ void Renju::MoveUpdate() {
 	
 	//子分を出す攻撃かどうか
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && enemy_->GetBehavior() == Behavior::kAttack && !special_ && mp_ >=RenjuConstants::kProtectMpCost) {
-		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-		if (length >= minDistance_ * RenjuConstants::kMinDistanceProtectMultiplier) {
-			state_ = CharacterState::Protect;
-		}
-		else {
-			const float kSpeed = 0.06f;
-			// 敵の位置から自分の位置への方向ベクトルを計算
-			Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
-
-			// 方向ベクトルを反転させることで敵から遠ざかる方向に移動
-			Math::Normalize(direction);   // 正規化して単位ベクトルにする
-			direction *= -1.0f; // 反転して反対方向に進む
-
-			// 速度を設定
-			velocity_ = direction * kSpeed;
-			worldTransformBase_.translate -= velocity_;
-			worldTransformBase_.translate.y = 0;
-		}
+		state_ = CharacterState::Protect;
 	}
 
 	
@@ -459,7 +438,7 @@ void Renju::ProtectUpdate(){
 		//Y軸の回転
 		AllyAICharacter::DestinationAngle(sub);
 
-		const float kSpeed = 0.001f;
+		const float kSpeed = 0.02f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = enemy_->GetWorldTransform().translate - worldTransformBase_.translate;
 

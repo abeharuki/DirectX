@@ -28,6 +28,10 @@ void EnemyHenchman::Update() {
 		thre_ += 0.01f;
 	}
 
+	if (isDamaged_) {
+		thre_ += 0.06f;
+	}
+
 	animation_->SetThreshold(thre_);
 
 	if (thre_ >= 0.6f) {
@@ -39,7 +43,7 @@ void EnemyHenchman::Update() {
 	enemyHit_ = false;
 
 	worldTransform_.rotate.y = Math::LerpShortAngle(worldTransform_.rotate.y, destinationAngleY_, 0.2f);
-	if (!hit_) {
+	if (!hit_ && !isDamaged_) {
 		followRenju();
 	}
 
@@ -107,7 +111,7 @@ const Vector3 EnemyHenchman::GetWorldPosition() const {
 
 void EnemyHenchman::OnCollision(Collider* collider) {
 
-	if (specal_) {
+	if (specal_ && !isDamaged_ &&worldTransform_.translate.y == 0) {
 		//プレイヤーとの押し出し処理
 		if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {
 			hit_ = true;
@@ -122,7 +126,7 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 			};
 			worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
 			if (worldTransform_.translate.y >= 0) {
-				dead_ = true;
+				//dead_ = true;
 			}
 		}
 		//ヒーラーとの押し出し処理
@@ -138,7 +142,7 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 				.size{collider->GetOBB().size}
 			};
 			worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
-			if (worldTransform_.translate.y >= 0) {
+			if (worldTransform_.translate.y >= 0 && !isDamaged_) {
 				dead_ = true;
 			}
 		}
@@ -155,7 +159,7 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 				.size{collider->GetOBB().size}
 			};
 			worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
-			if (worldTransform_.translate.y >= 0) {
+			if (worldTransform_.translate.y >= 0 && !isDamaged_) {
 				dead_ = true;
 			}
 

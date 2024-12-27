@@ -452,7 +452,6 @@ void AllyAICharacter::ProtectInitialize()
 void AllyAICharacter::ProtectUpdate()
 {
 
-	henchmanNum_ = 0;
 	for (EnemyHenchman* enemy : henchmans_) {
 		if (!enemy->IsDead()) {
 			henchmanDist_ = enemy->GetPos();
@@ -465,10 +464,10 @@ void AllyAICharacter::ProtectUpdate()
 	if (className_ == "Tank") {
 		//レンジャーから最も近い敵を倒す
 		for (EnemyHenchman* enemy : henchmans_) {
-			if (!enemy->IsDead() && !enemy->IsHitEnemy() && enemy) {
+			if (!enemy->IsDead() && !enemy->IsTarget() && !enemy->IsHitEnemy() && enemy) {
 				if (enemy->GetPos().y >= 0) {
-					float distanceToNowDist = GetDistanceSquared(renjuPos_, henchmanDist_);
-					float distanceToHench = GetDistanceSquared(renjuPos_, enemy->GetPos());
+					float distanceToNowDist = Math::GetDistanceSquared(renjuPos_, henchmanDist_);
+					float distanceToHench = Math::GetDistanceSquared(renjuPos_, enemy->GetPos());
 					//今追いかけている子分より更にレンジャーに近い子分がいたらそっちを追いかける
 					if (distanceToNowDist > distanceToHench) {
 						henchmanDist_ = enemy->GetPos();
@@ -483,10 +482,10 @@ void AllyAICharacter::ProtectUpdate()
 		//自分から最も近い敵を倒す
 		for (EnemyHenchman* enemy : henchmans_) {
 
-			if (!enemy->IsDead() && !enemy->IsHitEnemy() && enemy) {
+			if (!enemy->IsDead() && !enemy->IsTarget() && !enemy->IsHitEnemy() && enemy) {
 				if (enemy->GetPos().y >= 0) {
-					float distanceToNowDist = GetDistanceSquared(worldTransformBase_.translate, henchmanDist_);
-					float distanceToHench = GetDistanceSquared(worldTransformBase_.translate, enemy->GetPos());
+					float distanceToNowDist = Math::GetDistanceSquared(worldTransformBase_.translate, henchmanDist_);
+					float distanceToHench = Math::GetDistanceSquared(worldTransformBase_.translate, enemy->GetPos());
 					//今追いかけている子分より更に自分に近い子分がいたらそっちを追いかける
 					if (distanceToNowDist > distanceToHench) {
 						henchmanDist_ = enemy->GetPos();
@@ -835,12 +834,7 @@ bool AllyAICharacter::GetAimCharacter()
 
 }
 
-float AllyAICharacter::GetDistanceSquared(const Vector3& a, const Vector3& b)
-{
-	return (b.x - a.x) * (b.x - a.x) +
-		(b.y - a.y) * (b.y - a.y) +
-		(b.z - a.z) * (b.z - a.z);
-}
+
 
 void AllyAICharacter::OnCollision(Collider* collider)
 {
