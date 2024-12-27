@@ -137,7 +137,6 @@ private: // メンバ変数
 	std::unique_ptr<Sprite> spriteOver_;
 	std::unique_ptr<Sprite> spritePushA_;
 	Vector3 clearSpritePos_ = {GameSceneConstants::kClearSpriteTargetX,-GameSceneConstants::kClearSpriteFinalY,0.0f};
-	bool clearEffect_ = false;
 	//スプライトのディゾルブ
 	float spriteDissolve_ = 1.0f;
 

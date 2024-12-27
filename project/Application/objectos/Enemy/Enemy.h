@@ -108,6 +108,7 @@ namespace EnemyConstants {
 	//影関連
 	const float kShadowHeight = 0.1f;  // 影の高さ
 	const float kMaxShadowHeight = 3.9f;  // 最大影の高さ
+	const float kAlphaIncrease = 0.01f; // 影のアルファ値の加減速度
 
 	//名前のUI関連
 	const float kDistanceScaleBase = 17.0f;  // 名前のスケールの基準距離

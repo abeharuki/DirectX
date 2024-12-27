@@ -50,11 +50,15 @@ void EnemyManager::Update() {
 
 	if (hp_ <= 0) {
 		isDead_ = true;
+		shadowColor_.w -= EnemyConstants::kAlphaIncrease;//影のアルファ値を薄めていく
+	}
+	else {
+		//影の計算
+		shadowColor_.w = 1 - (enemy_->GetWorldPosition().y / EnemyConstants::kMaxShadowHeight);//高さによってアルファ値を変える
+
 	}
 
-	//影の計算
-	shadowColor_.w = 1 - (enemy_->GetWorldPosition().y / EnemyConstants::kMaxShadowHeight);//高さによってアルファ値を変える
-
+	
 	shadowModel_->SetColor(shadowColor_);
 	worldTransformShadow_.translate = { enemy_->GetWorldPosition().x,0.09f,enemy_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();

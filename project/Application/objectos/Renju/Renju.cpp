@@ -15,11 +15,14 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 	AllyAICharacter::Initialize(animation, skillName);
 	worldTransformBow_.Initialize();
 	worldTransformArrow_.Initialize();
+	worldTransformPawaGeji_.Initialize();
 	worldTransformBow_.rotate = RenjuConstants::kBowRotate;
 	worldTransformBase_.translate = RenjuConstants::kBaseTranslat;
+	worldTransformPawaGeji_.translate = RenjuConstants::kPawaTranslat;
+	worldTransformPawaGeji_.scale = { 0.0f,0.0f,0.0f };
 	bulletModel_.reset(Model::CreateModelFromObj("resources/Renju/arrow.obj", "resources/Renju/bow.png"));
 	bowModel_.reset(Model::CreateModelFromObj("resources/Renju/bow.obj", "resources/Renju/bow.png"));
-
+	pawaGejiModel_.reset(Model::CreateFromNoDepthObj("resources/particle/plane.obj", "resources/Renju/pawa-ge-ji-0.png"));
 
 	worldTransformBase_.UpdateMatrix();
 	Relationship();
@@ -95,9 +98,11 @@ void Renju::Update() {
 
 	worldTransformBow_.TransferMatrix();
 	worldTransformArrow_.TransferMatrix();
+	worldTransformPawaGeji_.TransferMatrix();
 
-
-
+	//ゲージスプライトのアニメーション
+	
+	pawaGejiModel_->SetTexture("Renju/pawa-ge-ji-" + std::to_string(gejiNum_) + ".png");
 
 	
 
@@ -142,11 +147,16 @@ void Renju::Update() {
 	}
 
 
+	
 
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("RenjuHp", &hp_, 1.0f);
 	ImGui::End();
-
+	ImGui::Begin("Renju");
+	ImGui::DragFloat3("GajiScale", &worldTransformPawaGeji_.scale.x, 0.1f,0.0f,1.0f);
+	ImGui::Checkbox("Effect", &gajiEffect_);
+	ImGui::DragInt("SpecialTimer", &specialTimer_, 1, 0, 420);
+	ImGui::End();
 
 #ifdef USE_IMGUI
 
@@ -184,6 +194,7 @@ void Renju::Draw(const ViewProjection& camera) {
 
 void Renju::NoDepthDraw(const ViewProjection& camera) {
 	AllyAICharacter::NoDepthDraw(camera);
+	pawaGejiModel_->Draw(worldTransformPawaGeji_, camera, false);
 }
 
 // 移動
@@ -196,6 +207,10 @@ void Renju::MoveUpdate() {
 
 	if (enemy_->GetBehavior() != Behavior::kAttack) {
 		special_ = false;
+	}
+
+	if (worldTransformPawaGeji_.scale.x != 0) {
+		worldTransformPawaGeji_.scale = Math::Lerp(worldTransformPawaGeji_.scale, { 0.0f,0.0f,0.0f }, RenjuConstants::kGejiScaleSpeed);
 	}
 
 	AllyAICharacter::MoveUpdate();
@@ -342,6 +357,7 @@ void Renju::UniqueInitialize() {
 	emitter_.scaleRange = { .min{0.5f,0.5f,0.5f},.max{0.5f,0.5f,0.5f} };
 	filed_.strength = 1.f;
 	animationNumber_ = kAnimeAttack;
+	
 }
 void Renju::UniqueUpdate() {
 	//ローカル座標
@@ -364,6 +380,11 @@ void Renju::UniqueUpdate() {
 		if (fireTimer_ >= 1 && fireTimer_ <= RenjuConstants::kFireTimerCharge) {
 			if (special_ && specialTimer_ >= 0) {
 				--specialTimer_;
+				gejiNum_ = (RenjuConstants::kSpecialTimerDuration-specialTimer_) * RenjuConstants::kGejiSpriteMaxNum /RenjuConstants::kSpecialTimerDuration;
+				gejiNum_ = std::min(gejiNum_, RenjuConstants::kGejiSpriteMaxNum - 1);
+				if (gejiNum_ == RenjuConstants::kGejiSpriteMaxNum - 1) {
+					specialTimer_ = 0;
+				}
 				fireTimer_ = RenjuConstants::kFireTimerCharge;
 			}
 
@@ -376,6 +397,10 @@ void Renju::UniqueUpdate() {
 			particle_->SetEmitter(emitter_);
 			particle_->SetGravityFiled(filed_);
 			particle_->Update();
+		}
+
+		if (special_ && specialTimer_ <= 0) {
+			fireTimer_ = specialTimer_;
 		}
 
 		//チャージが終わったら
@@ -419,11 +444,15 @@ void Renju::BreathUpdate() {
 void Renju::ProtectInitialize(){
 	AllyAICharacter::ProtectInitialize();
 	coolTime_ = RenjuConstants::kProtectCoolTime;
+	worldTransformPawaGeji_.scale = { 0.0f,0.0f,0.0f };
+	gejiNum_ = 0;
 }
 void Renju::ProtectUpdate(){
 	--coolTime_;
 
 	if (coolTime_ > 0) {
+		worldTransformPawaGeji_.scale = Math::Lerp(worldTransformPawaGeji_.scale, RenjuConstants::kGejiMaxScale, RenjuConstants::kGejiScaleSpeed);
+
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
@@ -521,6 +550,12 @@ void Renju::Relationship() {
 			worldTransformArrow_.translate),
 		animation_->GetJointWorldTransform("mixamorig:RightHand").matWorld_);
 
+	//パワーゲージ時のビルボード
+	Matrix4x4 billboardMatrixPawa = backToFrontMatrix * Math::Inverse(viewProjection_.matView);
+	billboardMatrixPawa.m[3][0] = worldTransformBase_.translate.x;
+	billboardMatrixPawa.m[3][1] = worldTransformPawaGeji_.translate.y;
+	billboardMatrixPawa.m[3][2] = worldTransformBase_.translate.z;
+	worldTransformPawaGeji_.matWorld_ = Math::MakeScaleMatrix(worldTransformPawaGeji_.scale) * billboardMatrixPawa;
 }
 
 // 衝突を検出したら呼び出されるコールバック関数

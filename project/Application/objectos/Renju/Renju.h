@@ -11,6 +11,7 @@ namespace RenjuConstants {
 	const Vector3 kBowRotate = { 1.9f, 0.0f, -1.5f }; // 弓の初期回転角度
 	const Vector3 kBaseTranslat = { -3.0f, 0.0f, 0.0f }; // ベースの初期位置
 	const Vector3 kAttackArrowRotate = { -0.3f,0.0f,1.3f };//弓の角度
+	const Vector3 kPawaTranslat = { 0.0f, 5.0f, 0.0f }; // ベースの初期位置
 
 	// クールタイム
 	const int kCoolTime = 60; //クールタイムの初期値
@@ -25,9 +26,11 @@ namespace RenjuConstants {
 	const int kUniqueInitFireTimer = 60; // 初期FireTimer
 	const float kUniqueInitFlameTime = 60.0f; // 初期FlameTime
 	const int kSpecialTimerDuration = 60 * 7; // SpecialTimerの初期値
-	const int kFireTimerCharge = 48; // チャージ中のFireTimer
+	const int kFireTimerCharge = 30; // チャージ中のFireTimer
 	const float kCoolTimeSkill = 10.0f; // スキルを打つ時のクールタイム
-
+	const float kGejiScaleSpeed = 0.2f;//ゲージのスケール増減速度
+	const Vector3 kGejiMaxScale = {1.0f,1.0f,1.0f}; //ゲージのMaxサイズ
+	const int kGejiSpriteMaxNum = 7;//ゲージスプライトの枚数
 
 	// MP関連
 	const int kSkillMpCost = 10; // スキルの消費MP
@@ -136,9 +139,11 @@ private: // メンバ変数
 	
 	WorldTransform worldTransformBow_;
 	WorldTransform worldTransformArrow_;
+	WorldTransform worldTransformPawaGeji_;
 
 	std::unique_ptr<Model> bowModel_;
 	std::unique_ptr<Model> bulletModel_;
+	std::unique_ptr<Model> pawaGejiModel_;
 	
 	ParticleSystem* particle_;
 	EmitterSphere emitter_{};
@@ -168,4 +173,7 @@ private: // メンバ変数
 	bool preHitPlayer_ = false;
 	bool skill_ = false;
 
+	//パワーゲージのスプライト番号
+	int gejiNum_ = 0;
+	bool gajiEffect_ = false;
 };
