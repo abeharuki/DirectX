@@ -25,16 +25,13 @@ void EnemyHenchman::Init(Animations* animation, Vector3 pos)
 void EnemyHenchman::Update() {
 
 	if (!specal_) {
-		thre_ += 0.01f;
-	}
-
-	if (isDamaged_) {
-		thre_ += 0.06f;
+		thre_ += 0.02f;
 	}
 
 	animation_->SetThreshold(thre_);
+	
 
-	if (thre_ >= 0.6f) {
+	if (thre_ >= 0.6f|| isDamaged_) {
 		dead_ = true;
 	}
 
@@ -64,7 +61,7 @@ void EnemyHenchman::Draw(const ViewProjection& camera)
 void EnemyHenchman::followRenju() {
 
 	if (worldTransform_.translate.y < 0) {
-		worldTransform_.translate.y += 0.1f;
+		worldTransform_.translate.y += 0.2f;
 	}
 	else {
 		// 追従対象からロックオン対象へのベクトル
@@ -85,7 +82,7 @@ void EnemyHenchman::followRenju() {
 					: -std::numbers::pi_v<float> / 2.0f;
 			}
 
-			const float kSpeed = 0.08f;
+			const float kSpeed = 0.1f;
 			Vector3 direction = sub;
 
 			velocity_ = Math::Normalize(direction) * kSpeed;
@@ -124,7 +121,7 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 				},
 				.size{collider->GetOBB().size}
 			};
-			worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
+			worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.2f;
 			if (worldTransform_.translate.y >= 0) {
 				//dead_ = true;
 			}

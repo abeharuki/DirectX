@@ -169,6 +169,17 @@ public:
 	void SetTexture(const std::string& texturePath);
 	//マスクテクスチャの設定
 	void SetMaskTexture(const std::string& texturePath);
+	void SetMaskUV(Transform& uvTransform) {
+		// UVTransform用の行列
+		Matrix4x4 uvTransformMatrix = Math::MakeAffineMatrix(
+			{
+				uvTransform.scale.x + 1,
+				uvTransform.scale.y + 1,
+				uvTransform.scale.z + 1,
+			},
+			uvTransform.rotate, uvTransform.translate);
+		lightData->dissolve_.uvTransform = uvTransformMatrix;
+	}
 
 	//指定したジョイントの座標受け取り
 	const WorldTransform& GetJointWorldTransform(const std::string& name)const;

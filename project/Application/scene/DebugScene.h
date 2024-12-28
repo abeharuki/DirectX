@@ -53,11 +53,12 @@ private:
 	WorldTransform worldTransformCollider3_;
 	WorldTransform worldTransformModel_;
 	WorldTransform worldTransformSter_[2];
+	
 	//ローダー
 	std::unique_ptr<ModelLoader> loader_;
 	ViewProjection viewProjection_;
 
-	
+	Animations* animation_;
 	std::unique_ptr<Skybox> skybox_;
 	std::unique_ptr<Model> model_;
 	std::unique_ptr<Model> ster_[2];

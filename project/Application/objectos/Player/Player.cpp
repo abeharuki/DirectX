@@ -138,6 +138,9 @@ void Player::Update() {
 			}
 		}
 	}
+	else {
+		currentTarget_ = nullptr;
+	}
 
 
 	if (hp_ <= 0 && behavior_ != Behavior::kDead) {
@@ -488,7 +491,7 @@ void Player::FindNearestTarget() {
 		currentTarget_ = nearestTarget;
 		// 現在のターゲットのインデックスを見つける
 		newIndex = 0;//std::distance(henchmans_.begin(), std::find(henchmans_.begin(), henchmans_.end(), currentTarget_));
-
+		
 		for (EnemyHenchman* enemy : henchmans_) {
 			enemy->SetTarget(enemy == currentTarget_);
 		}
@@ -539,7 +542,7 @@ void Player::SwitchTarget(int direction) {
 	
 	// 新しいターゲットを設定
 	currentTarget_ = validTargets[newIndex];
-
+	
 	// 他の子分たちのターゲットフラグを更新
 	for (EnemyHenchman* enemy : henchmans_) {
 		if (enemy != currentTarget_) {

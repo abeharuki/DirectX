@@ -57,6 +57,8 @@ void DebugScene::Initialize() {
 	worldTransformModel_.scale = { 1.f,1.f,1.f };
 	worldTransformSter_[0].Initialize();
 	worldTransformSter_[1].Initialize();
+	animation_ = AnimationManager::Create("resources/Enemy", "Atlas_Monsters.png", "Alien.gltf");
+
 	sprite_.reset(Sprite::Create("resources/DDS/cat.dds"));
 
 	sphereModel_.reset(Sphere::CreateSphere("resources/white.png"));
@@ -199,13 +201,13 @@ void DebugScene::Update() {
 	//animeDissolve_.isGradient = isAnimeDissolve_;
 	isBlur_ = postEffects[7];
 	bloom_.isEnble = postEffects[8];
-	sphereModel_->SetThreshold(animeDissolve_.threshold);
+	animation_->SetThreshold(animeDissolve_.threshold);
+	animation_->SetMaskUV(maskUV_);
+	/*sphereModel_->SetThreshold(animeDissolve_.threshold);
 	sphereModel_->SetMaskUV(maskUV_);
 	sphereModel_->SetEdgeColor(animeDissolve_.edgeColor);
-	sphereModel_->IsGradient(true);
-	/*animation_->SetThreshold(animeDissolve_.threshold);
-	animation_->SetEdgeColor(dissolve_.edgeColor);
-	animation_->SetEnvironment(env_, true);*/
+	sphereModel_->IsGradient(true);*/
+	
 
 	PostEffect* const posteffect = PostEffect::GetInstance();
 
@@ -414,7 +416,7 @@ void DebugScene::Update() {
 void DebugScene::Draw() {
 
 
-	//animation_->Draw(worldTransformAnimation_, viewProjection_, true);
+	animation_->Draw(worldTransformAnimation_, viewProjection_, true);
 	colliderManager_[0]->Draw(viewProjection_);
 	colliderManager_[1]->Draw(viewProjection_);
 

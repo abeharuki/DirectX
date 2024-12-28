@@ -503,7 +503,7 @@ void AllyAICharacter::ProtectUpdate()
 	//Y軸の回転
 	DestinationAngle(sub);
 
-	const float kSpeed = 0.1f;
+	const float kSpeed = 0.15f;
 	Vector3 direction = sub;
 
 	velocity_ = Math::Normalize(direction) * kSpeed;
