@@ -126,7 +126,7 @@ void Player::Update() {
 
 	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
 		//どの子分を攻撃するか
-		HenchmanTarget();
+		TargetUpdate();
 		if (enemy_->IsAttack()) {
 			isHit_ = true;
 			if (isHit_ != preHit_) {
@@ -174,11 +174,12 @@ void Player::Update() {
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat("PlayerHp", &hp_, 1.0f);
 	ImGui::End();
+	
 }
 
 void Player::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera, true);
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && currentTarget_) {
 		arrowModel_->Draw(worldTransformTargetArrow_, camera, false);
 	}
 	
@@ -369,6 +370,8 @@ void Player::MoveUpdata() {
 		}
 
 	}
+
+	
 };
 
 // ジャンプ
@@ -467,43 +470,118 @@ void Player::DeadUpdata() {
 
 }
 
-void Player::HenchmanTarget(){
+void Player::FindNearestTarget() {
+	float minDistance = 1e6f;
+	EnemyHenchman* nearestTarget = nullptr;
 
-	//目標対象が死んだときに次のターゲットを見つける
-	if (!auto_ && !isAttack_) {
-		for (EnemyHenchman* enemy : henchmans_) {
-			if (!enemy->IsDead()) {
-				henchmanDist_ = enemy->GetPos();
+	for (EnemyHenchman* enemy : henchmans_) {
+		if (!enemy->IsDead()) {
+			float distance = Math::GetDistanceSquared(worldTransformBase_.translate, enemy->GetPos());
+			if (distance < minDistance) {
+				minDistance = distance;
+				nearestTarget = enemy;
 			}
 		}
+	}
+
+	if (nearestTarget) {
+		currentTarget_ = nearestTarget;
+		// 現在のターゲットのインデックスを見つける
+		newIndex = 0;//std::distance(henchmans_.begin(), std::find(henchmans_.begin(), henchmans_.end(), currentTarget_));
+
+		for (EnemyHenchman* enemy : henchmans_) {
+			enemy->SetTarget(enemy == currentTarget_);
+		}
+	}
+}
+void Player::SwitchTarget(int direction) {
+	if (henchmans_.empty()) return;
+
+	// 現在ターゲットが設定されている場合、そのターゲットを一度解除
+	if (currentTarget_) {
+		currentTarget_->SetTarget(false);
+	}
+
+	// ターゲット候補リスト（生存している敵キャラのみ）
+	std::vector<EnemyHenchman*> validTargets;
+	for (EnemyHenchman* enemy : henchmans_) {
+		if (!enemy->IsDead() && enemy->GetPos().y >= 0) {
+			validTargets.push_back(enemy);
+		}
+	}
+
+	// 候補がない場合は何もしない
+	if (validTargets.empty()) return;
+
+	
+
+	// 現在のターゲットが見つからなければ、最初のターゲットを選択
+	if (newIndex == validTargets.size()) {
+		newIndex = 0; // もしくは適切なインデックスに設定
 	}
 	
 
-	for (EnemyHenchman* enemy : henchmans_) {
-		
-		
-		if (!enemy->IsDead() && !enemy->IsHitEnemy() && enemy) {
-			if (enemy->GetPos().y >= 0) {
-				float distanceToNowDist = Math::GetDistanceSquared(worldTransformBase_.translate, henchmanDist_);
-				float distanceToHench = Math::GetDistanceSquared(worldTransformBase_.translate, enemy->GetPos());
-				//今追いかけている子分より更に自分に近い子分がいたらそっちを追いかける
-				if (distanceToNowDist > distanceToHench) {
-					henchmanDist_ = enemy->GetPos();
-					if (auto_) {
-						enemy->SetTarget(true);
-					}
-				}
-			}
+	// ターゲットを切り替える
+	if (direction > 0) {
+		newIndex++;
+		if (newIndex >= validTargets.size()) {
+			newIndex = 0;  // 最後から先頭に戻る
 		}
-		
-		
-		//ターゲットのみ倒す
-		if (isAttack_ && enemy->IsTarget()) {
-			enemy->SetDamaged(true);
-		}
-		
-
 	}
+	else { // direction <= 0 の場合、左方向（前のターゲット）
+		if (newIndex == 0) {
+			newIndex = validTargets.size() - 1;  // 最初から最後に戻る
+		}
+		else {
+			newIndex--;
+		}
+	}
+	
+	// 新しいターゲットを設定
+	currentTarget_ = validTargets[newIndex];
+
+	// 他の子分たちのターゲットフラグを更新
+	for (EnemyHenchman* enemy : henchmans_) {
+		if (enemy != currentTarget_) {
+			enemy->SetTarget(false); // 現在のターゲット以外はフラグを false にする
+		}
+	}
+
+}
+void Player::AttackCurrentTarget() {
+	if (currentTarget_ && isAttack_) {
+		if (!currentTarget_->IsDead()) {
+			currentTarget_->SetDamaged(true);
+			FindNearestTarget(); // 新たなターゲットを探す
+		}
+	}
+}
+
+void Player::TargetUpdate(){
+
+	//攻撃フェーズに入っていなければ
+	if (behavior_ != Behavior::kAttack && !auto_) {
+		// ターゲットがいない、または現在のターゲットが死亡している場合
+		if (!currentTarget_ || currentTarget_->IsDead()) {
+			FindNearestTarget();
+		}
+
+		// プレイヤー操作によるターゲット切り替え
+		if (Input::GetInstance()->PushKey(DIK_Q)) {
+			SwitchTarget(-1); // 左方向
+		}
+		else if (Input::GetInstance()->PushKey(DIK_E)) {
+			SwitchTarget(1); // 右方向
+		}
+	}
+
+	// 攻撃処理
+	AttackCurrentTarget();
+
+	if (currentTarget_ && !currentTarget_->IsDead()) {
+		henchmanDist_ = currentTarget_->GetWorldPosition();
+	}
+	
 };
 
 // 親子関係

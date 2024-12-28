@@ -146,11 +146,13 @@ void GameScene::Update() {
 		character->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
 		//敵の子分の情報を格納する
 		if (enemyManager_->GetEnemy()->IsSpecial()) {
-			for (EnemyHenchman* enemy : enemyManager_->GetEnemy()->GetEnemys()) {
-				character->SetHenchman(enemy);
-				playerManager_->GetPlayer()->SetHenchman(enemy);
-			}
+			character->SetHenchman(enemyManager_->GetEnemy()->GetEnemys());
 		}
+	}
+
+	//敵の子分の情報を格納する
+	if (enemyManager_->GetEnemy()->IsSpecial()) {
+		playerManager_->GetPlayer()->SetHenchmans(enemyManager_->GetEnemy()->GetEnemys());
 	}
 
 	healerManager_->GetHealer()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());

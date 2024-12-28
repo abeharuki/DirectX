@@ -220,7 +220,7 @@ public:
     void SetBattleStart(bool flag) { battleStart_ = flag;}
     void SetBarrier(bool barrier) { barrier_ = barrier; }
     void SetBarrierPos(Vector3 pos) { barrierPos_ = pos; }
-    void SetHenchman(EnemyHenchman* henchman){ henchmans_.push_back(henchman); }
+    void SetHenchman(std::list<EnemyHenchman*> henchmans){ henchmans_ = henchmans; }
 
     // パーツ親子関係
     virtual void Relationship();

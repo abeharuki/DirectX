@@ -357,7 +357,7 @@ void Renju::UniqueUpdate() {
 
 		//チャージ中アニメーションを止める
 		if (fireTimer_ >= 1 && fireTimer_ <= RenjuConstants::kFireTimerCharge) {
-			if (special_ && specialTimer_ >= 0) {
+			if (special_ && specialTimer_ > 0) {
 				--specialTimer_;
 				gejiNum_ = (RenjuConstants::kSpecialTimerDuration-specialTimer_) * RenjuConstants::kGejiSpriteMaxNum /RenjuConstants::kSpecialTimerDuration;
 				gejiNum_ = std::min(gejiNum_, RenjuConstants::kGejiSpriteMaxNum - 1);
@@ -378,9 +378,9 @@ void Renju::UniqueUpdate() {
 			particle_->Update();
 		}
 
-		if (special_ && specialTimer_ <= 0) {
+		/*if (special_ && specialTimer_ <= 0) {
 			fireTimer_ = specialTimer_;
-		}
+		}*/
 
 		//チャージが終わったら
 		if (fireTimer_ <= 0) {

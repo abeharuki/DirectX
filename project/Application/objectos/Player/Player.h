@@ -169,7 +169,7 @@ public: // メンバ関数
 		// 敵の座標までの距離
 		length_ = Math::Length(Math::Subract(pos, worldTransformBase_.translate));
 	}
-	void SetHenchman(EnemyHenchman* henchman) { henchmans_.push_back(henchman); }
+	void SetHenchmans(std::list<EnemyHenchman*> henchmans) { henchmans_ = henchmans; }
 
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
 	void SetBarrierPos(Vector3 pos) { barrierPos_ = pos; }
@@ -203,7 +203,13 @@ private:
 	void DeadUpdata();
 
 	//攻撃する子分を探す
-	void HenchmanTarget();
+	void FindNearestTarget();
+	//ターゲットの切り替え
+	void SwitchTarget(int direction);
+	//ターゲットを攻撃
+	void AttackCurrentTarget();
+	//ターゲット関連の更新
+	void TargetUpdate();
 
 	// パーツ親子関係
 	void Relationship();
@@ -270,6 +276,8 @@ private: // メンバ変数
 	std::list<EnemyHenchman*> henchmans_;
 	//子分の場所
 	Vector3 henchmanDist_;
+	EnemyHenchman* currentTarget_ = nullptr; // 現在のターゲット
+	size_t newIndex;
 
 	// 攻撃の時間
 	const uint32_t behaviorAttackTime = 15;

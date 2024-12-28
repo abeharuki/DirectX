@@ -868,6 +868,7 @@ void Enemy::SpecialHenchmanInit()
 	isAttack_ = false;
 	worldTransformBarrier_.rotate.y = 0.0f;
 	worldTransformBarrier_.scale = EnemyConstants::kBarrierScale;
+	spawnTime_ = EnemyConstants::kEnemySpawnInterval;
 }
 void Enemy::SpecialHenchmanUpdata()
 {
@@ -891,7 +892,7 @@ void Enemy::SpecialHenchmanUpdata()
 		
 	}
 	else {
-
+		--spawnTime_;
 		
 		if(barrierThreshold_ > 0.6f){
 			barrierThreshold_ -= 0.01f;//バリアを徐々に描画していく
@@ -902,7 +903,7 @@ void Enemy::SpecialHenchmanUpdata()
 		
 		
 		//敵の追加
-		if (moveTime_  % EnemyConstants::kEnemySpawnInterval == 0) {
+		if (spawnTime_ <= 0) {
 			// 敵を生成、初期化
 			EnemyHenchman* newEnemy = new EnemyHenchman();
 			newEnemy->Init(henchman_, Vector3{ worldTransformBase_.translate.x + RandomGenerator::GetRandomFloat(-EnemyConstants::kEnemyHenchmanSpawnRange, EnemyConstants::kEnemyHenchmanSpawnRange),EnemyConstants::kEnemyHenchmanSpawnYOffset,
@@ -911,6 +912,8 @@ void Enemy::SpecialHenchmanUpdata()
 
 
 			henchmans_.push_back(newEnemy);
+
+			spawnTime_ = EnemyConstants::kEnemySpawnInterval;
 		}	
 
 		//弓キャラの必殺技食らったら状態遷移
