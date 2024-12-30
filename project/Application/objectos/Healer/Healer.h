@@ -26,9 +26,11 @@ namespace HealerConstants {
 	// HP関連の閾値
 	const int kSingleHealHpThreshold = 30;  //単体回復を行うHPの閾値
 	const int kAllHealHpThreshold = 50;    //全体回復を行うHPの閾値
+	const int kHenchmanHealHpThreshold = 50;  //敵が子分を出す攻撃をしているときの回復を行うHPの閾値
 	const int kSingleHealAmount = 40;         //単体回復量
 	const int kAllHealAmount = 20;            //全体回復量
 	const int kHealThreshold = 30;            //回復対象のHP閾値
+	const int kHenchmanHealThreshold = 50;            //回復対象のHP閾値
 	const Vector3 kHealAnimationScale = { 0.5f,0.5f,0.5f };//ヒール中のスケール
 	const float kMagicCircleScaleIncrease = 0.5f;//クールタイムによるスケール増加
 	const float kMagicCircleScaleDecrease = 1.0f;//クールタイムによるスケール減少

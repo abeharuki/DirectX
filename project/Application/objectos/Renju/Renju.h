@@ -49,7 +49,7 @@ namespace RenjuConstants {
 	// プロテクト関連
 	const int kProtectCoolTime = 30; // クールタイム
 	const float kRandomPositionOffsetX = 0.5f; // ランダム位置のXオフセット
-	const int kSpecialTimerIncrement = 60; // 特殊タイマーの増加値(子分にぶつかった時に増える)
+	const int kSpecialTimerIncrement = 30; // 特殊タイマーの増加値(子分にぶつかった時に増える)
 
 	// プレイヤーのダメージ関連
 	const float kDamageAlphaInitValue = 2.0f;  // プレイヤーが食らったときダメージ表示の初期アルファ値（透明度）

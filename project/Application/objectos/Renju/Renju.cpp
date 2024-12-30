@@ -378,9 +378,7 @@ void Renju::UniqueUpdate() {
 			particle_->Update();
 		}
 
-		/*if (special_ && specialTimer_ <= 0) {
-			fireTimer_ = specialTimer_;
-		}*/
+		
 
 		//チャージが終わったら
 		if (fireTimer_ <= 0) {
@@ -438,7 +436,7 @@ void Renju::ProtectUpdate(){
 		//Y軸の回転
 		AllyAICharacter::DestinationAngle(sub);
 
-		const float kSpeed = 0.02f;
+		const float kSpeed = 0.025f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = enemy_->GetWorldTransform().translate - worldTransformBase_.translate;
 
@@ -472,46 +470,7 @@ void Renju::DeadInitialize() {
 	AllyAICharacter::DeadInitialize();
 }
 void Renju::DeadUpdate() {
-	/*
-	if (isHitPlayer_ != preHitPlayer_) {
-		if (Input::GetInstance()->GetPadConnect()) {
-			if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)) {
-				//復活時間
-				revivalCount_++;
-			}
-			else {
-				revivalCount_--;
-			}
-		}
-		else {
-			if (Input::GetInstance()->PressKey(DIK_B)) {
-				//復活時間
-				revivalCount_++;
-			}
-			else {
-				revivalCount_--;
-			}
-		}
-	}
-	else {
-		revivalCount_--;
-	}
-
-	if (revivalCount_ <= 0) {
-		revivalCount_ = 0;
-	}
-
-	if (revivalCount_ >= 60) {
-		hp_ = 21;
-		//state_ = CharacterState::Moveing;
-		isDead_ = false;
-	}
-
-	ImGui::Begin("revival");
-	ImGui::Text("T%d", revivalCount_);
-	ImGui::Text("%d", isHitPlayer_);
-	ImGui::Text("%d", preHitPlayer_);
-	ImGui::End();*/
+	particle_->StopParticle();
 }
 
 void Renju::Relationship() {
@@ -545,7 +504,7 @@ void Renju::OnCollision(Collider* collider) {
 	if (collider->GetCollisionAttribute() == kCollisionAttributeHenchman) {
 		isHit_ = true;
 
-		if (isHit_ != preHit_) {
+		if (isHit_ != preHit_ && specialTimer_ > 0) {
 			if (enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
 				hp_ -= RenjuConstants::kEnemyDamageHenchman;
 				specialTimer_ += RenjuConstants::kSpecialTimerIncrement;

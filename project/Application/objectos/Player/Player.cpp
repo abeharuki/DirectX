@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <CollisionManager/CollisionConfig.h>
 #include <AllyAICharacter.h>
+#include <ParticleManager.h>
 
 
 void Player::Initialize() {
@@ -35,6 +36,21 @@ void Player::Initialize() {
 	Relationship();
 	worldTransformHead_.TransferMatrix();
 
+	emitter_ = {
+	.translate{0,0,0},
+	.count{50},
+	.frequency{1000.f},
+	.frequencyTime{0.0f},
+	.scaleRange{.min{1.0f,1.f,1.f},.max{1.f,1.f,1.f}},
+	.translateRange{.min{0.f,0.f,0.f},.max{0.f,0.f,0.f}},
+	.colorRange{.min{0.3f,0,0.3f},.max{0.5f,0,1.0f}},
+	.alphaRange{.min{1.0f},.max{1.0f}},
+	.lifeTimeRange{.min{0.1f},.max{0.2f}},
+	.velocityRange{.min{-0.7f,-0.7f,-0.7f},.max{0.7f,0.7f,0.7f}},
+	};
+	emitter_.isScaleChanging = true;
+	particle_ = ParticleManager::Create("resources/particle/circle.png", 8);
+	particle_->SetEmitter(emitter_);
 
 	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };
 	SetAABB(aabbSize);
@@ -182,10 +198,10 @@ void Player::Update() {
 
 void Player::Draw(const ViewProjection& camera) {
 	animation_->Draw(worldTransformHead_, camera, true);
-	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && currentTarget_) {
+	if (currentTarget_ && enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
 		arrowModel_->Draw(worldTransformTargetArrow_, camera, false);
 	}
-	
+	particle_->Draw(camera);
 	RenderCollisionBounds(worldTransformHead_, camera);
 	
 }
@@ -434,6 +450,7 @@ void Player::AttackInitialize() {
 	worldTransformHammer_.translate.x = 0.0f;
 	animationNumber_ = kAnimeAttack;
 	animation_->SetpreAnimationTimer(0);
+	particle_->SetFrequencyTime(0.0f);
 }
 void Player::AttackUpdata() {
 	
@@ -555,7 +572,12 @@ void Player::AttackCurrentTarget() {
 	if (currentTarget_ && isAttack_) {
 		if (!currentTarget_->IsDead()) {
 			currentTarget_->SetDamaged(true);
-			FindNearestTarget(); // 新たなターゲットを探す
+			particle_->SetTranslate({ currentTarget_->GetWorldPosition().x,currentTarget_->GetWorldPosition().y + 1.0f,currentTarget_->GetWorldPosition().z });
+			currentTarget_->SetDamaged(true);
+			particle_->Update();
+		}
+		else {
+			particle_->StopParticle();
 		}
 	}
 }

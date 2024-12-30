@@ -194,6 +194,24 @@ void GameScene::Update() {
 			}
 
 		}
+
+		//個人回復
+		if (enemyManager_->GetEnemy()->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+			if (healerManager_->GetHealer()->GetPlayerHp() <= HealerConstants::kHenchmanHealThreshold && playerManager_->GetPlayer()->GetHp() > 0) {
+				playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			}
+			else if (healerManager_->GetHealer()->GetHp() <= HealerConstants::kHenchmanHealThreshold && !healerManager_->GetHealer()->IsDead()) {
+				healerManager_->GetHealer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			}
+			else if (healerManager_->GetHealer()->GetRenjuHp() <= HealerConstants::kHenchmanHealThreshold && !renjuManager_->GetRenju()->IsDead()) {
+				renjuManager_->GetRenju()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			}
+			else if (healerManager_->GetHealer()->GetTankHp() <= HealerConstants::kHenchmanHealThreshold && !tankManager_->GetTank()->IsDead()) {
+				tankManager_->GetTank()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			}
+
+		}
+
 	}
 
 	//hp情報の取得
@@ -235,8 +253,8 @@ void GameScene::Update() {
 	tankManager_->GetTank()->SetPos(renjuManager_->GetRenju()->GetWorldPosition());
 
 	//攻撃の受け取り
-	if (healerManager_->IsAttack()) {enemyManager_->OnHealerCollision();}
-	if (tankManager_->IsAttack()) {enemyManager_->OnTankCollision();}
+	if (healerManager_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) { enemyManager_->OnHealerCollision(); }
+	if (tankManager_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) {enemyManager_->OnTankCollision();}
 	if (playerManager_->IsAttack()) {enemyManager_->OnCollision();}
 	if (renjuManager_->GetRenju()->GetHitBullet()) {
 		enemyManager_->OnRenjuCollision(renjuManager_->GetRenju()->GetSkill());
@@ -487,6 +505,7 @@ void GameScene::CheckAllCollision() {
 	for (EnemyHenchman* enemy : enemyManager_->GetEnemy()->GetEnemys()) {
 		collisionManager_->SetColliderList(enemy);
 	}
+	
 
 	for (int i = 0; i < loader_->GetColliderSize(); ++i) {
 		collisionManager_->SetColliderList(loader_->GetCollider(i));

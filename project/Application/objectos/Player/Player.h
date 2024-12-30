@@ -223,6 +223,10 @@ private: // メンバ変数
 	//ターゲットアロー
 	std::unique_ptr<Model> arrowModel_;
 
+	//パーティクル
+	ParticleSystem* particle_;
+	EmitterSphere emitter_{};
+
 	//ダメージ表示
 	WorldTransform worldTransformNum_;
 	std::unique_ptr<Model> damageModel_;

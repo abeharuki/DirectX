@@ -124,7 +124,7 @@ namespace AllyAIConstants {
     const float kBarrierThreshold = 0.1f;
 
     //敵の視野内
-   //最小距離
+    //最小距離
     const float kEnemyMinDistance_ = 2.0f;
     //最大距離
     const float kEnemyMaxDistance_ = 45.0f;
@@ -135,6 +135,9 @@ namespace AllyAIConstants {
     // 逃げる際の速度
     const float kVelocityX = 1.0f;//横方向のvelo
     const float kVelocityZ = -1.5f;//対象から反対方向に逃げる
+
+    //子分との最小距離
+    const float kHenchmanMinDistance_ = 3.0f;
 }
 
 
@@ -384,6 +387,6 @@ protected:
     //レンジャーとの距離が最も近い子分のpos
     Vector3 henchmanDist_;
     bool henchmanSearch_ = false;
-  
+    EnemyHenchman* currentTarget_ = nullptr; // 現在のターゲット
 };
 

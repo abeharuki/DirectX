@@ -25,15 +25,17 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	emitter_ = {
 	.translate{0,0,0},
 	.count{50},
-	.frequency{0.02f},
+	.frequency{1000.f},
 	.frequencyTime{0.0f},
-	.scaleRange{.min{0.1f,0.1f,0.1f},.max{0.1f,0.1f,0.1f}},
-	.translateRange{.min{-0.5f,0.0f,-0.5f},.max{0.5f,1.0f,0.5f}},
-	.colorRange{.min{1.f,0,0.0f},.max{1.f,0.5f,0.0f}},
+	.scaleRange{.min{1.0f,1.f,1.f},.max{1.f,1.f,1.f}},
+	.translateRange{.min{0.f,0.f,0.f},.max{0.f,0.f,0.f}},
+	.colorRange{.min{0.3f,0,0.3f},.max{0.5f,0,1.0f}},
 	.alphaRange{.min{1.0f},.max{1.0f}},
-	.lifeTimeRange{.min{0.5f},.max{0.5f}},
-	.velocityRange{.min{0.f,0.0f,0.f},.max{0.f,0.01f,0.0f}},
+	.lifeTimeRange{.min{0.1f},.max{0.2f}},
+	.velocityRange{.min{-0.7f,-0.7f,-0.7f},.max{0.7f,0.7f,0.7f}},
 	};
+	emitter_.isScaleChanging = true;
+	
 	particle_ = ParticleManager::Create("resources/particle/circle.png", 10);
 	particle_->SetEmitter(emitter_);
 
@@ -82,7 +84,7 @@ void Tank::Update() {
 	}
 
 
-	particle_->SetTranslate(worldTransformBase_.translate);
+	
 	barrierModel_->SetThreshold(barrierThreshold_);
 
 
@@ -125,6 +127,7 @@ void Tank::MoveInitialize() {
 	stanAttack_ = false;
 	barrier_ = false;
 	distance_ = TankConstants::kTargetDistance;
+	particle_->StopParticle();
 };
 void Tank::MoveUpdate() {
 	
@@ -152,26 +155,50 @@ void Tank::JumpUpdate() {
 void Tank::AttackInitialize() { 
 	AllyAICharacter::AttackInitialize();
 	fireTimer_ = TankConstants::kFireTimerInit;
+	particle_->SetFrequencyTime(0.0f);
 };
 void Tank::AttackUpdate() {
 	--fireTimer_;
 
-	// 追従対象からロックオン対象へのベクトル
-	Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
+	//目標がいなくなったら
+	/*if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+		if (!currentTarget_ || currentTarget_->IsDead()) {
+			state_ = NextState("Attack", Output1);
+		}
+	}
+	*/
 
+
+	// 追従対象からロックオン対象へのベクトル
+	Vector3 sub = {0.0f,0.0f,0.0f};
+	if (!currentTarget_) {
+		sub = enemy_->GetWorldPosition() - GetWorldPosition();
+
+		// 敵の座標までの距離
+		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+
+		// 距離条件チェック
+		if (minDistance_ * distance_ <= length && !followPlayer_) {
+			state_ = NextState("Attack", Output1);
+			searchTarget_ = true;
+		}
+	}
+	else {
+		if (enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
+			state_ = NextState("Attack", Output1);
+		}
+
+		if (!currentTarget_->IsDead()) {
+			sub = currentTarget_->GetWorldPosition() - GetWorldPosition();
+		}
+		
+	}
+	
 	//Y軸の回転
 	AllyAICharacter::DestinationAngle(sub);
 
-	// 敵の座標までの距離
-	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-
-	// 距離条件チェック
-	if (minDistance_ * distance_ <= length && !followPlayer_) {
-		state_ = NextState("Attack", Output1);
-		searchTarget_ = true;
-	}
-
-
+	
+	
 	isAttack_ = false;
 	
 	if (fireTimer_ > TankConstants::kFireTimerThreshold1) {
@@ -185,12 +212,34 @@ void Tank::AttackUpdate() {
 	}
 	else if (fireTimer_ <= TankConstants::kFireTimerThreshold2 && fireTimer_ > 0) {
 		isAttack_ = true;
+		//ターゲットがいるか(子分)
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman && currentTarget_) {
+			if (!currentTarget_->IsDead()) {
+				worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, currentTarget_->GetWorldPosition(), 0.2f);
+			}
+			else {
+				state_ = NextState("Attack", Output1);
+			}
 
-		worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.2f);
+		}
+		else {
+			worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, enemy_->GetWorldPosition(), 0.2f);
+		}
+		
+		
+		
 	}
 	else if (fireTimer_ <= 0) {
 		fireTimer_ = TankConstants::kFireTimerInit;
 		coolTime_ = TankConstants::kCoolTimeInit;
+		if (currentTarget_) {
+			if (!currentTarget_->IsDead()) {
+				particle_->SetTranslate({ currentTarget_->GetWorldPosition().x,currentTarget_->GetWorldPosition().y + 1.0f,currentTarget_->GetWorldPosition().z });
+				currentTarget_->SetDamaged(true);
+				particle_->Update();
+			}
+		}
+		
 		state_ = NextState("Attack", Output1);
 	}
 

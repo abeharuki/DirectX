@@ -73,7 +73,7 @@ public:
 
 	/*------セッター-----*/
 	void SetViewProjection(const ViewProjection* viewProjection);
-	void SetParticlePos(Vector3 pos);
+	
 
 private:
 	WorldTransform worldTransformBase_;
@@ -106,11 +106,6 @@ private:
 	Transform revivalTransform_;
 	
 	Vector4 shadowColor_ = { 0.2f,0.2f,0.2f,1.f };//影の色
-
-	//パーティクル
-	ParticleSystem* particle_;
-	EmitterSphere emitter_{};
-	bool isParticle_ = false;
 
 	Vector2 spriteHpSize_ = {};
 	Vector2 spriteMpSize_ = {};

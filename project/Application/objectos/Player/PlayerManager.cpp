@@ -64,23 +64,7 @@ void PlayerManager::Initialize() {
 	worldTransformShadow_.translate = { player_->GetWorldPosition().x,PlayerConstants::kShadowHeight,player_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
 
-	emitter_ = {
-		.translate{0,0,0},
-		.count{10},
-		.frequency{0.02f},
-		.frequencyTime{0.0f},
-		.scaleRange{.min{1,1,1},.max{1,1,1}},
-		.translateRange{.min{0,0,0},.max{0,0,0}},
-		.colorRange{.min{1,1,1},.max{1,1,1}},
-		.alphaRange{.min{1.0f},.max{1.0f}},
-		.lifeTimeRange{.min{0.5f},.max{0.5f}},
-		.velocityRange{.min{-0.2f,-0.2f,-0.2f},.max{0.2f,0.2f,0.2f}},
-	};
-	particle_ = ParticleManager::Create("resources/particle/circle.png",8);
-
-	isParticle_ = false;
 	
-
 	//revivalTransform_.scale = { 137.0f,22.0f,70.0f };
 	//revivalTransform_.translate = { 571.0f,650.0f,1.0f };
 	spriteRevivalG_->SetSize(Vector2(120.0f, revivalTransform_.scale.y));
@@ -104,13 +88,7 @@ void PlayerManager::Update() {
 		isDead_ = true;
 	}
 
-	particle_->SetEmitter(emitter_);
-	if (isParticle_) {
-		particle_->Update();
-		if (!particle_->GetEmit()) {
-			isParticle_ = false;
-		}
-	}
+	
 
 
 	//影の計算
@@ -206,7 +184,6 @@ void PlayerManager::Update() {
 void PlayerManager::Draw(const ViewProjection& camera) {
 	
 	player_->Draw(camera);
-	particle_->Draw(camera);
 	shadowModel_->Draw(worldTransformShadow_,camera,false);
 
 
@@ -271,10 +248,7 @@ void PlayerManager::OnTCollision() {
 }
 
 
-void PlayerManager::SetParticlePos(Vector3 pos) {
-	emitter_.translate = pos;
-	isParticle_ = true;
-}
+
 
 
 const WorldTransform& PlayerManager::GetWorldTransform() { return player_->GetWorldTransform(); }

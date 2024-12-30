@@ -27,6 +27,7 @@ void EnemyHenchman::Update() {
 	if (!specal_) {
 		thre_ += 0.02f;
 	}
+	
 
 	animation_->SetThreshold(thre_);
 	
@@ -54,8 +55,11 @@ void EnemyHenchman::Update() {
 
 void EnemyHenchman::Draw(const ViewProjection& camera)
 {
-	animation_->Draw(worldTransform_, camera, false);
-	RenderCollisionBounds(worldTransform_, camera);
+	if (!dead_) {
+		animation_->Draw(worldTransform_, camera, false);
+		RenderCollisionBounds(worldTransform_, camera);
+	}
+	
 }
 
 void EnemyHenchman::followRenju() {
@@ -82,7 +86,7 @@ void EnemyHenchman::followRenju() {
 					: -std::numbers::pi_v<float> / 2.0f;
 			}
 
-			const float kSpeed = 0.1f;
+			const float kSpeed = 0.15f;
 			Vector3 direction = sub;
 
 			velocity_ = Math::Normalize(direction) * kSpeed;
@@ -122,9 +126,7 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 				.size{collider->GetOBB().size}
 			};
 			worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.2f;
-			if (worldTransform_.translate.y >= 0) {
-				//dead_ = true;
-			}
+			
 		}
 		//ヒーラーとの押し出し処理
 		if (collider->GetCollisionAttribute() == kCollisionAttributeHealer) {
@@ -140,7 +142,7 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 			};
 			worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
 			if (worldTransform_.translate.y >= 0 && !isDamaged_) {
-				dead_ = true;
+				//dead_ = true;
 			}
 		}
 		//タンクとの押し出し処理
@@ -157,7 +159,7 @@ void EnemyHenchman::OnCollision(Collider* collider) {
 			};
 			worldTransform_.translate += Math::PushOutAABBOBB(worldTransform_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * 0.3f;
 			if (worldTransform_.translate.y >= 0 && !isDamaged_) {
-				dead_ = true;
+				//dead_ = true;
 			}
 
 		}

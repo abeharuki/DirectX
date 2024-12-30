@@ -39,7 +39,11 @@ public:
 	/*------------セッター---------*/
 	void SetRenjuPos(Vector3 pos) { renjuPos_ = pos; }
 	void SetSpacal(bool flag) { specal_ = flag; }
-	void SetDamaged(bool flag) { isDamaged_ = flag; }
+	void SetDamaged(bool flag) { 
+		if (specal_) {
+			isDamaged_ = flag;
+		}
+	}
 	void SetTarget(bool flag) { isTarget_ = flag; }
 
 private:

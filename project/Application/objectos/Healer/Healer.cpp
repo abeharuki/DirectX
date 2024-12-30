@@ -185,11 +185,12 @@ void Healer::MoveInitialize() {
 };
 void Healer::MoveUpdate() {
 
-
 	AllyAICharacter::MoveUpdate();
+
 
 	//味方の体力全員が50以下なら全体回復
 	//味方の体力が誰か30以下なら回復
+
 	if ((playerHp_ <= HealerConstants::kSingleHealHpThreshold && playerHp_ > 0) || (renjuHp_ <= HealerConstants::kSingleHealHpThreshold && renjuHp_ > 0) || (tankHp_ <= HealerConstants::kSingleHealHpThreshold && tankHp_ > 0) || (hp_ <= HealerConstants::kSingleHealHpThreshold && hp_ > 0)) {
 		if (mp_ >= HealerConstants::kSingleHealMpCost && coolTime_ <= HealerConstants::kCoolTimeThreshold) {
 			oneHeal_ = true;
@@ -197,12 +198,13 @@ void Healer::MoveUpdate() {
 		}
 
 	}
-	else if (playerHp_ <= HealerConstants::kSingleHealHpThreshold && renjuHp_ <= HealerConstants::kSingleHealHpThreshold && tankHp_ <= HealerConstants::kSingleHealHpThreshold && hp_ <= HealerConstants::kSingleHealHpThreshold) {
+	else if (playerHp_ <= HealerConstants::kAllHealHpThreshold && renjuHp_ <= HealerConstants::kAllHealHpThreshold && tankHp_ <= HealerConstants::kAllHealHpThreshold && hp_ <= HealerConstants::kAllHealHpThreshold) {
 		if (mp_ >= HealerConstants::kAllHealMpCost && coolTime_ <= HealerConstants::kCoolTimeThreshold) {
 			allHeal_ = true;
 			state_ = NextState("Move", Output3);
 		}
 	}
+
 
 
 };
@@ -218,22 +220,51 @@ void Healer::JumpUpdate() {
 //アタック
 void Healer::AttackInitialize() {
 	AllyAICharacter::AttackInitialize();
+	emitter_[kHealer] = {
+	.translate{0,0,0},
+	.count{50},
+	.frequency{1000.f},
+	.frequencyTime{0.0f},
+	.scaleRange{.min{1.0f,1.f,1.f},.max{1.f,1.f,1.f}},
+	.translateRange{.min{0.f,0.f,0.f},.max{0.f,0.f,0.f}},
+	.colorRange{.min{0.3f,0,0.3f},.max{0.5f,0,1.0f}},
+	.alphaRange{.min{1.0f},.max{1.0f}},
+	.lifeTimeRange{.min{0.1f},.max{0.2f}},
+	.velocityRange{.min{-0.7f,-0.7f,-0.7f},.max{0.7f,0.7f,0.7f}},
+	};
+	emitter_[kHealer].isScaleChanging = true;
+	particle_[kHealer]->SetFrequencyTime(0.0f);
+	particle_[kHealer]->SetEmitter(emitter_[kHealer]);
 };
 void Healer::AttackUpdate() {
 	// プレイヤーの座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
 
 	// 距離条件チェック
-	if (minDistance_ * HealerConstants::kMinDistanceMultiplier <= length && !followPlayer_) {
-		state_ = NextState("Attack", Output1);
-		searchTarget_ = true;
+	if (enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
+		if (minDistance_ * HealerConstants::kMinDistanceMultiplier <= length && !followPlayer_) {
+			state_ = NextState("Attack", Output1);
+			searchTarget_ = true;
+		}
 	}
+	
 
 	isAttack_ = false;
 	++attackParameter_;
 	if (attackParameter_ >= HealerConstants::kAttackStartFrames) {
 		isAttack_ = true;
+		if (currentTarget_) {
+			if (!currentTarget_->IsDead()) {
+				particle_[kHealer]->SetTranslate({ currentTarget_->GetWorldPosition().x,currentTarget_->GetWorldPosition().y + 1.0f,currentTarget_->GetWorldPosition().z });
+				currentTarget_->SetDamaged(true);
+				particle_[kHealer]->Update();
+			}
+			else {
+				particle_[kHealer]->StopParticle();
+			}
+		}
 	}
+	
 
 	//攻撃が終わったら
 	if (attackParameter_ >= HealerConstants::kAttackEndFrames) {
@@ -244,6 +275,7 @@ void Healer::AttackUpdate() {
 	}
 
 	AllyAICharacter::AttackUpdate();
+
 }
 
 void Healer::UniqueInitialize() {
@@ -261,13 +293,15 @@ void Healer::UniqueInitialize() {
 
 		if (hp_ <= HealerConstants::kHealThreshold) {
 			worldTransformHeal_[kHealer].scale = { 0.f,0.f,0.f };
-		}
+		}else
 		if (playerHp_ <= HealerConstants::kHealThreshold) {
 			worldTransformHeal_[kPlayer].scale = { 0.f,0.f,0.f };
 		}
+		else
 		if (renjuHp_ <= HealerConstants::kHealThreshold) {
 			worldTransformHeal_[kRenju].scale = { 0.f,0.f,0.f };
 		}
+		else
 		if (tankHp_ <= HealerConstants::kHealThreshold) {
 			worldTransformHeal_[kTank].scale = { 0.f,0.f,0.f };
 		}
@@ -283,6 +317,49 @@ void Healer::UniqueInitialize() {
 		}
 
 	}
+
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+		mp_ -= HealerConstants::kSingleHealMpCost;
+		healAmount_ = HealerConstants::kSingleHealAmount;
+		for (int i = 0; i < kMaxCharacterNum; ++i) {
+			healModel_[i]->SetTexture("character/H40.png");
+		}
+
+		for (int i = 0; i < kMaxCharacterNum; ++i) {
+			worldTransformMagicCircle_[i].scale = HealerConstants::kMagicCircleScale;
+		}
+
+		if (hp_ <= HealerConstants::kHenchmanHealThreshold) {
+			worldTransformHeal_[kHealer].scale = { 0.f,0.f,0.f };
+		}
+		else
+		if (playerHp_ <= HealerConstants::kHenchmanHealThreshold) {
+			worldTransformHeal_[kPlayer].scale = { 0.f,0.f,0.f };
+		}
+		else
+		if (renjuHp_ <= HealerConstants::kHenchmanHealThreshold) {
+			worldTransformHeal_[kRenju].scale = { 0.f,0.f,0.f };
+		}
+		else
+		if (tankHp_ <= HealerConstants::kHenchmanHealThreshold) {
+			worldTransformHeal_[kTank].scale = { 0.f,0.f,0.f };
+		}
+	}
+
+
+	emitter_[kHealer] = {
+	.translate{0,0,0},
+	.count{10},
+	.frequency{0.02f},
+	.frequencyTime{0.0f},
+	.scaleRange{.min{0.05f,0.2f,0.2f},.max{0.05f,0.5f,0.2f}},
+	.translateRange{.min{-0.5f,-0.5f,-0.5f},.max{0.5f,0.5f,0.5f}},
+	.colorRange{.min{0.5f,1,1.0f},.max{0.5f,1,1.0f}},
+	.alphaRange{.min{1.0f},.max{1.0f}},
+	.lifeTimeRange{.min{0.1f},.max{0.5f}},
+	.velocityRange{.min{0.f,0.1f,0.f},.max{0.f,0.4f,0.0f}},
+	};
+	emitter_[kHealer].isScaleChanging = true;
 	for (int i = 0; i < HealerConstants::kEmitterCount; ++i) {
 		particle_[i]->SetFrequencyTime(0.0f);
 		particle_[i]->SetEmitter(emitter_[i]);
@@ -294,7 +371,7 @@ void Healer::UniqueInitialize() {
 		threshold_[i] = HealerConstants::kMagicThreshold;
 	}
 
-	
+
 
 }
 void Healer::UniqueUpdate() {
@@ -312,7 +389,7 @@ void Healer::UniqueUpdate() {
 			healAnimation_ = false;
 			animationNumber_ = kRun;
 		}
-		
+
 	}
 
 	//全体ヒールかどうか
@@ -336,16 +413,18 @@ void Healer::UniqueUpdate() {
 				if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
 					worldTransformHeal_[kHealer].scale = HealerConstants::kHealAnimationScale;
 				}
-
+				else
 				if (playerHp_ <= HealerConstants::kHealThreshold && playerHp_ > 0) {
 					threshold_[kPlayer] -= HealerConstants::kThresholdDecrease;
 					worldTransformHeal_[kPlayer].scale = HealerConstants::kHealAnimationScale;
 				}
+				else
 				if (renjuHp_ <= HealerConstants::kHealThreshold && renjuHp_ > 0) {
 					threshold_[kRenju] -= HealerConstants::kThresholdDecrease;
 					worldTransformHeal_[kRenju].scale = HealerConstants::kHealAnimationScale;
 				}
-				if (tankHp_ <= HealerConstants::kHealThreshold && tankHp_ >0) {
+				else
+				if (tankHp_ <= HealerConstants::kHealThreshold && tankHp_ > 0) {
 					threshold_[kTank] -= HealerConstants::kThresholdDecrease;
 					worldTransformHeal_[kTank].scale = HealerConstants::kHealAnimationScale;
 				}
@@ -355,6 +434,36 @@ void Healer::UniqueUpdate() {
 				threshold_[kHealer] = 0;
 			}
 		}
+
+		//子分が出ているときのヒール
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+			if (threshold_[kHealer] > 0) {
+				threshold_[kHealer] -= HealerConstants::kThresholdDecrease;
+				if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
+					worldTransformHeal_[kHealer].scale = HealerConstants::kHealAnimationScale;
+				}
+				else
+				if (playerHp_ <= HealerConstants::kHenchmanHealThreshold && playerHp_ > 0) {
+					threshold_[kPlayer] -= HealerConstants::kThresholdDecrease;
+					worldTransformHeal_[kPlayer].scale = HealerConstants::kHealAnimationScale;
+				}
+				else
+				if (renjuHp_ <= HealerConstants::kHenchmanHealThreshold && renjuHp_ > 0) {
+					threshold_[kRenju] -= HealerConstants::kThresholdDecrease;
+					worldTransformHeal_[kRenju].scale = HealerConstants::kHealAnimationScale;
+				}
+				else
+				if (tankHp_ <= HealerConstants::kHenchmanHealThreshold && tankHp_ > 0) {
+					threshold_[kTank] -= HealerConstants::kThresholdDecrease;
+					worldTransformHeal_[kTank].scale = HealerConstants::kHealAnimationScale;
+				}
+
+			}
+			else {
+				threshold_[kHealer] = 0;
+			}
+		}
+
 		--coolTime_;
 		particle_[kHealer]->SetTranslate(worldTransformBase_.translate);
 		particle_[kHealer]->Update();
@@ -370,7 +479,7 @@ void Healer::UniqueUpdate() {
 		//Y軸の回転
 		AllyAICharacter::DestinationAngle(sub);
 
-		
+
 		const float kSpeed = 0.04f;
 		// 敵の位置から自分の位置への方向ベクトルを計算
 		Vector3 direction = worldTransformBase_.translate - enemy_->GetWorldTransform().translate;
@@ -387,7 +496,6 @@ void Healer::UniqueUpdate() {
 
 
 	//回復数値の設定
-
 	if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
 		worldTransformHeal_[kHealer].translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + HealerConstants::kHealPositionYOffset,worldTransformBase_.translate.z };
 		healNumMove_[kHealer] = { worldTransformHeal_[kHealer].translate.x ,worldTransformHeal_[kHealer].translate.y + HealerConstants::kHealPositionYOffset,worldTransformHeal_[kHealer].translate.z };
@@ -408,7 +516,9 @@ void Healer::UniqueUpdate() {
 		healNumMove_[kTank] = { worldTransformHeal_[kTank].translate.x ,worldTransformHeal_[kTank].translate.y + 2.0f,worldTransformHeal_[kTank].translate.z };
 
 	}
-	
+
+
+
 	if (coolTime_ < 5) {
 		for (int i = 0; i < kMaxCharacterNum; ++i) {
 			worldTransformMagicCircle_[i].scale = worldTransformMagicCircle_[i].scale - HealerConstants::kMagicCircleScaleDecrease;
@@ -431,15 +541,38 @@ void Healer::UniqueUpdate() {
 			if (playerHp_ <= HealerConstants::kHealThreshold && playerHp_ > 0) {
 				particle_[kPlayer]->Update();
 			}
+			else
 			if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
 				particle_[kMaxCharacterNum]->Update();//healer
 			}
+			else
 			if (renjuHp_ <= HealerConstants::kHealThreshold && renjuHp_ > 0) {
 				particle_[kRenju]->Update();
 			}
+			else
 			if (tankHp_ <= HealerConstants::kHealThreshold && tankHp_ > 0) {
 				particle_[kTank]->Update();
 			}
+		}
+
+		if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+
+			if (playerHp_ <= HealerConstants::kHealThreshold && playerHp_ > 0) {
+				particle_[kPlayer]->Update();
+			}
+			else
+			if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
+				particle_[kMaxCharacterNum]->Update();//healer
+			}
+			else
+			if (renjuHp_ <= HealerConstants::kHealThreshold && renjuHp_ > 0) {
+				particle_[kRenju]->Update();
+			}
+			else
+			if (tankHp_ <= HealerConstants::kHealThreshold && tankHp_ > 0) {
+				particle_[kTank]->Update();
+			}
+
 		}
 	}
 
@@ -448,23 +581,22 @@ void Healer::UniqueUpdate() {
 		state_ = NextState("Heal", Output1);
 		coolTime_ = HealerConstants::kCoolTimeReset;
 
-		for (int i = 0; i < kMaxCharacterNum; ++i) {
-			
-			
-		}
-		if (playerHp_ <= HealerConstants::kHealThreshold && playerHp_ > 0) {
+		if (playerHp_ <= HealerConstants::kHenchmanHealThreshold && playerHp_ > 0) {
 			healAlph_[kPlayer] = HealerConstants::kHealNumThreshold;
 			threshold_[kPlayer] = HealerConstants::kMagicThreshold;
 		}
-		if (hp_ <= HealerConstants::kHealThreshold && hp_ > 0) {
+		else
+		if (hp_ <= HealerConstants::kHenchmanHealThreshold && hp_ > 0) {
 			healAlph_[kHealer] = HealerConstants::kHealNumThreshold;
 			threshold_[kHealer] = HealerConstants::kMagicThreshold;
 		}
-		if (renjuHp_ <= HealerConstants::kHealThreshold && renjuHp_ > 0) {
+		else
+		if (renjuHp_ <= HealerConstants::kHenchmanHealThreshold && renjuHp_ > 0) {
 			healAlph_[kRenju] = HealerConstants::kHealNumThreshold;
 			threshold_[kRenju] = HealerConstants::kMagicThreshold;
 		}
-		if (tankHp_ <= HealerConstants::kHealThreshold && tankHp_ > 0) {
+		else
+		if (tankHp_ <= HealerConstants::kHenchmanHealThreshold && tankHp_ > 0) {
 			healAlph_[kTank] = HealerConstants::kHealNumThreshold;
 			threshold_[kTank] = HealerConstants::kMagicThreshold;
 		}
@@ -480,10 +612,19 @@ void Healer::BreathUpdate() {
 	AllyAICharacter::BreathUpdate();
 }
 
-void Healer::ProtectInitialize(){
+void Healer::ProtectInitialize() {
 	AllyAICharacter::ProtectInitialize();
 }
-void Healer::ProtectUpdate(){
+void Healer::ProtectUpdate() {
+	if (enemy_->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
+		if ((playerHp_ <= HealerConstants::kHenchmanHealHpThreshold && playerHp_ > 0) || (renjuHp_ <= HealerConstants::kHenchmanHealHpThreshold && renjuHp_ > 0) || (tankHp_ <= HealerConstants::kHenchmanHealHpThreshold && tankHp_ > 0) || (hp_ <= HealerConstants::kHenchmanHealHpThreshold && hp_ > 0)) {
+			if (mp_ >= HealerConstants::kSingleHealMpCost) {
+				state_ = CharacterState::Unique;
+			}
+		}
+	}
+	
+
 	AllyAICharacter::ProtectUpdate();
 }
 

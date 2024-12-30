@@ -90,7 +90,7 @@ namespace EnemyConstants {
 	const float kBarrierMaxScale = 100.0f; // バリアの最大スケール
 	const float kBarrierYTranslate = 6.0f; // バリアのY軸位置
 	const float kBarrierRotateSpeed = 0.01f; // バリアの回転速度
-	const int kEnemySpawnInterval = 20; // 敵生成の間隔（フレーム単位）
+	const int kEnemySpawnInterval = 30; // 敵生成の間隔（フレーム単位）
 	const float kEnemyHenchmanSpawnRange = 15.0f; // ヘンチマン生成の範囲
 	const float kEnemyHenchmanSpawnYOffset = -1.0f; // ヘンチマン生成時のY座標
 
@@ -102,7 +102,7 @@ namespace EnemyConstants {
 
 	//必殺技カウントを増やすときに使う定数
 	const float kMaxHp = 800.0f;  // 最大HP
-	const int kHpThreshold = 50;  // HPの閾値
+	const int kHpThreshold = 100;  // HPの閾値
 	
 	/*---------------EnemyManagerでのみ使う定数-----------------*/
 	//影関連

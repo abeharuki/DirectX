@@ -389,6 +389,7 @@ void AllyAICharacter::AttackUpdate()
 
 		}
 	}
+	
 
 	// プレイヤーに集合
 	if (operation_) {
@@ -451,15 +452,15 @@ void AllyAICharacter::ProtectInitialize()
 }
 void AllyAICharacter::ProtectUpdate()
 {
-
-	for (EnemyHenchman* enemy : henchmans_) {
-		if (!enemy->IsDead()) {
-			henchmanDist_ = enemy->GetPos();
-			henchmanSearch_ = false;
+	if (!currentTarget_ || currentTarget_->IsDead()) {
+		for (EnemyHenchman* enemy : henchmans_) {
+			if (!enemy->IsDead()) {
+				currentTarget_ = enemy;
+				henchmanSearch_ = false;
+			}
 		}
 	}
-
-
+	
 	//キャラ後tのに動き方を変える
 	if (className_ == "Tank") {
 		//レンジャーから最も近い敵を倒す
@@ -470,7 +471,9 @@ void AllyAICharacter::ProtectUpdate()
 					float distanceToHench = Math::GetDistanceSquared(renjuPos_, enemy->GetPos());
 					//今追いかけている子分より更にレンジャーに近い子分がいたらそっちを追いかける
 					if (distanceToNowDist > distanceToHench) {
-						henchmanDist_ = enemy->GetPos();
+
+						currentTarget_ = enemy;
+
 					}
 				}
 			}
@@ -488,7 +491,9 @@ void AllyAICharacter::ProtectUpdate()
 					float distanceToHench = Math::GetDistanceSquared(worldTransformBase_.translate, enemy->GetPos());
 					//今追いかけている子分より更に自分に近い子分がいたらそっちを追いかける
 					if (distanceToNowDist > distanceToHench) {
-						henchmanDist_ = enemy->GetPos();
+
+						currentTarget_ = enemy;
+
 					}
 				}
 			}
@@ -497,13 +502,17 @@ void AllyAICharacter::ProtectUpdate()
 
 
 
+	if (currentTarget_ && !currentTarget_->IsDead()) {
+		henchmanDist_ = currentTarget_->GetWorldPosition();
+	}
+
 	//一番近い子分の方を向く// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = henchmanDist_ - GetWorldPosition();
 
 	//Y軸の回転
 	DestinationAngle(sub);
 
-	const float kSpeed = 0.15f;
+	const float kSpeed = 0.2f;
 	Vector3 direction = sub;
 
 	velocity_ = Math::Normalize(direction) * kSpeed;
@@ -511,9 +520,20 @@ void AllyAICharacter::ProtectUpdate()
 	worldTransformBase_.translate += velocity_;
 	worldTransformBase_.translate.y = 0.0f;
 
+	float sub_ = Math::Length(sub);
+
+	//攻撃する
+	if (AllyAIConstants::kHenchmanMinDistance_ >= sub_){
+		//攻撃アクションに移行
+		drawWepon_ = true;
+		animationNumber_ = kStandby;
+		state_ = CharacterState::Attacking;
+	}
+
+	//Moveに戻る
 	if (enemy_->GetBehavior() != Behavior::kAttack) {
 		state_ = NextState("Protect", Output1);
-		
+		currentTarget_ = nullptr;
 	}
 }
 
@@ -523,6 +543,8 @@ void AllyAICharacter::DeadInitialize()
 	isDead_ = true;
 	animationNumber_ = kDeath;
 	animation_->SetLoop(false);
+	animation_->SetpreAnimationTimer(0.0f);
+	animation_->SetAnimationTimer(0.0f, 0.0f);
 }
 
 void AllyAICharacter::Relationship()
