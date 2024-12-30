@@ -592,10 +592,10 @@ void Player::TargetUpdate(){
 		}
 
 		// プレイヤー操作によるターゲット切り替え
-		if (Input::GetInstance()->PushKey(DIK_Q)) {
+		if (Input::GetInstance()->PushKey(DIK_Q) || Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_DPAD_LEFT)) {
 			SwitchTarget(-1); // 左方向
 		}
-		else if (Input::GetInstance()->PushKey(DIK_E)) {
+		else if (Input::GetInstance()->PushKey(DIK_E) || Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_DPAD_RIGHT)) {
 			SwitchTarget(1); // 右方向
 		}
 	}
