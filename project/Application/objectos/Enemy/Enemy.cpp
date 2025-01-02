@@ -363,7 +363,7 @@ void Enemy::AttackInitialize() {
 	int num = RandomGenerator::GetRandomInt(1, 5);
 	if (specialCount_ >= 1 && !special_ && GetBehaviorAttack() != BehaviorAttack::kBreath && GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 		//7～9の番号で必殺技の抽選
-		num = RandomGenerator::GetRandomInt(7, 7);//max9
+		num = RandomGenerator::GetRandomInt(7, 9);//max9
 	}
 	
 	if (num == 1) {

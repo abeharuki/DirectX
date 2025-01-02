@@ -436,7 +436,7 @@ private: // メンバ変数
 	//必殺技フラグ
 	bool special_ = false;
 	//必殺技を打てる回数
-	int specialCount_ = 1;
+	int specialCount_ = 0;
 	//レンジャーの必殺攻撃を食らったかどうか
 	bool renjuSpecial_ = false;
 
