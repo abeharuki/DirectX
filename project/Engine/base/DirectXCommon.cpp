@@ -478,10 +478,10 @@ void ::DirectXCommon::InitializeFixFPS() { reference_ = std::chrono::steady_cloc
 
 void ::DirectXCommon::UpdateFixFPS() {
 	// 1/60秒ぴったりの時間
-	const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
+	const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 100.0f));
 
 	// 1/60秒よりわずかに短い時間
-	const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 65.0f));
+	const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 105.0f));
 
 	// 現在時間の取得
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();

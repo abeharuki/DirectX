@@ -58,13 +58,9 @@ void TitleScene::Initialize() {
 
 	PostEffect::GetInstance()->isGrayscale(false);
 	PostEffect::GetInstance()->ValueOutLine(TitleSceneConstants::kOutLineValue);
-#ifndef NDEBUG
-#else
-	// リリースビルド時のコード
+
 	PostEffect::GetInstance()->isOutLine(true);
 	PostEffect::GetInstance()->isBloom(true);
-#endif
-	
 	
 	
 }

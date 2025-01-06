@@ -102,7 +102,7 @@ namespace EnemyConstants {
 
 	//必殺技カウントを増やすときに使う定数
 	const float kMaxHp = 800.0f;  // 最大HP
-	const int kHpThreshold = 100;  // HPの閾値
+	const int kHpThreshold = 80;  // HPの閾値
 	
 	/*---------------EnemyManagerでのみ使う定数-----------------*/
 	//影関連

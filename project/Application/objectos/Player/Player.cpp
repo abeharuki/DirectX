@@ -449,12 +449,14 @@ void Player::DashUpdata() {
 void Player::AttackInitialize() {
 	worldTransformHammer_.translate.x = 0.0f;
 	animationNumber_ = kAnimeAttack;
+	
 	animation_->SetpreAnimationTimer(0);
 	particle_->SetFrequencyTime(0.0f);
 }
 void Player::AttackUpdata() {
 	
 	if (animation_->GetAnimationTimer() > PlayerConstants::kAttackAnimationStartTime) {
+		flameTime_ = 15.0f;
 		isAttack_ = true;
 	}
 
