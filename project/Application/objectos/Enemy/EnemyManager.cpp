@@ -58,7 +58,7 @@ void EnemyManager::Update() {
 
 	}
 
-	
+
 	shadowModel_->SetColor(shadowColor_);
 	worldTransformShadow_.translate = { enemy_->GetWorldPosition().x,0.09f,enemy_->GetWorldPosition().z };
 	worldTransformShadow_.UpdateMatrix();
@@ -71,14 +71,21 @@ void EnemyManager::Update() {
 	playerLength_ = Math::Length(Math::Subract(playerPos_, enemy_->GetWorldPosition()));
 	//プレイヤーとの距離に応じて名前のサイズの変更
 	nameScale_ = (playerLength_ / EnemyConstants::kDistanceScaleBase) + (EnemyConstants::kDistanceScaleOffset / EnemyConstants::kDistanceScaleBase);
-	worldTransformName_.scale = { nameScale_ ,nameScale_ , 1.f};
+	worldTransformName_.scale = { nameScale_ ,nameScale_ , 1.f };
 
 	//体力によって名前の色を変更
-	if (hp_ <= EnemyConstants::kLowHpThreshold) {
-		color_ = { 1.0f,0.0f,0.0f,1.0f };
-	}else if (hp_ <= EnemyConstants::kMidHpThreshold) {
-		color_ = { 1.0f,0.4f,0.0f,1.0f };
+	if (hp_ <= 0) {
+		color_.w -= 0.01f;
 	}
+	else {
+		if (hp_ <= EnemyConstants::kLowHpThreshold) {
+			color_ = { 1.0f,0.0f,0.0f,1.0f };
+		}
+		else if (hp_ <= EnemyConstants::kMidHpThreshold) {
+			color_ = { 1.0f,0.4f,0.0f,1.0f };
+		}
+	}
+	
 
 	nameModel_->SetColor({ color_ });
 	
