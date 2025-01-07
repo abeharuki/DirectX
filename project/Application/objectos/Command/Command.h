@@ -120,6 +120,9 @@ public:
 
 	//状態の設定
 	void SetTaskType(TaskType num) { behaviorRequest_ = num; taskAnimation_ = true; }
+
+	// 調整項目の適用
+	void ApplyGlobalVariables();
 private:
 	//初期タスクの初期化・更新・描画
 	void InitialInitialize();

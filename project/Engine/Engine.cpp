@@ -46,6 +46,9 @@ void Engine::Initialize(const wchar_t* title, int width, int height) {
 	TextureManager::GetInstance()->Initialize();
 	TextureManager::GetInstance()->Load("resources/white.png");
 
+	// グローバル変数の読み込み
+	GlobalVariables::GetInstance()->LoadFiles();
+
 	//	Inputの初期化処理
 	keyInput = Input::GetInstance();
 	keyInput->Initialize();

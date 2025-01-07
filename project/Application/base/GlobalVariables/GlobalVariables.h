@@ -4,10 +4,10 @@
 #include <string>
 #include <variant>
 
+
 /**
  * @file GlobalVariables
  * @brief グローバル変数を管理するクラス
- * @brief このクラスは現在使用されていません。
  */
 class GlobalVariables {
 public:
@@ -25,12 +25,10 @@ public:
 	// グループの作成
 	void CreateGroup(const std::string& groupName);
 
-	// 値のセット(int)
-	void SetValue(const std::string& grouName, const std::string& key, int32_t value);
-	// 値のセット(float)
-	void SetValue(const std::string& grouName, const std::string& key, float value);
-	// 値のセット(Vector3)
-	void SetValue(const std::string& grouName, const std::string& key, Vector3& value);
+	// 値のセット
+	template <typename T>
+	void SetValue(const std::string& grouName, const std::string& key, T& value);
+	
 
 	// 毎フレーム処理
 	void Updeat();
@@ -47,17 +45,34 @@ public:
 	// ファイルから読み込み
 	void LoadFile(const std::string& groupName);
 
-	// 項目の追加(int)
-	void AddItem(const std::string& grouName, const std::string& key, int32_t value);
-	// 項目の追加(float)
-	void AddItem(const std::string& grouName, const std::string& key, float value);
-	// 項目の追加(Vector3)
-	void AddItem(const std::string& grouName, const std::string& key, Vector3& value);
+	// 項目の追加
+	template <typename T>
+	void AddItem(const std::string& grouName, const std::string& key, T& value) {
+
+		// グループの参照を取得
+		Group& group = datas_[grouName];
+		// 項目の参照を取得
+		if (group.find(key) == group.end()) {
+
+			SetValue(grouName, key, value);
+		}
+	}
 
 	// 値の取得
-	int32_t GetIntValue(const std::string& groupName, const std::string& key);
-	float GetFloatValue(const std::string& groupName, const std::string& key);
-	Vector3 GetVecter3Value(const std::string& groupName, const std::string& key);
+	template <typename T>
+	T GetValue(const std::string& groupName, const std::string& key) {
+
+		// 未登録チェック
+		assert(datas_.find(groupName) != datas_.end());
+
+		// グループの参照を取得
+		Group& group = datas_[groupName];
+
+		// Vector3* ptr = std::get_if<Vector3>(&item.value);
+
+		assert(group.find(key) != group.end());
+		return std::get<T>(group[key]);
+	}
 
 private:
 	GlobalVariables() = default;
@@ -65,3 +80,6 @@ private:
 	GlobalVariables(const GlobalVariables& obj) = delete;
 	GlobalVariables& operator=(const GlobalVariables& obj) = delete;
 };
+
+
+

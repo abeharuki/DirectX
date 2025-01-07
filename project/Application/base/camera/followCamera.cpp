@@ -5,7 +5,7 @@ void FollowCamera::Initialize() {
 
 	viewProjection_.Initialize();
 
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "FollowCamera";
 	// グループを追加
@@ -141,7 +141,6 @@ Vector3 FollowCamera::titleCalculateOffset() const {
 	return offset;
 }
 
-
 void FollowCamera::Reset() {
 	// 追従対象がいれば
 	if (target_) {
@@ -171,13 +170,9 @@ Vector3 FollowCamera::GetTargetWordPos() {
 }
 
 void FollowCamera::ApplyGlobalVariables() {
-#ifdef _DEBUG
-
 	GlobalVariables* globalVaribles = GlobalVariables::GetInstance();
 	const char* groupName = "FollowCamera";
-	delayAmount_ = globalVaribles->GetFloatValue(groupName, "delayAmount");
-
-#endif
+	delayAmount_ = globalVaribles->GetValue<float>(groupName, "delayAmount");
 }
 
 void FollowCamera::CameraDirection(){

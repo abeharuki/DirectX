@@ -1,5 +1,6 @@
 #include "Command.h"
 #include <Input.h>
+#include <GlobalVariables.h>
 
 void Command::Initialize() {
 
@@ -137,6 +138,11 @@ void Command::DrawUI() {
 		ToolTask();
 		break;
 	}
+}
+
+void Command::ApplyGlobalVariables()
+{
+
 }
 
 void Command::InitialInitialize() {

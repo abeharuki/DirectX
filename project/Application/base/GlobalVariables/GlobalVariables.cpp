@@ -15,8 +15,8 @@ void GlobalVariables::CreateGroup(const std::string& groupName) {
 	datas_[groupName];
 }
 
-// int
-void GlobalVariables::SetValue(const std::string& grouName, const std::string& key, int32_t value) {
+template <typename T>
+void GlobalVariables::SetValue(const std::string& grouName, const std::string& key, T& value) {
 	// グループの参照を取得
 	Group& group = datas_[grouName];
 	// 新しい項目のデータ
@@ -26,65 +26,9 @@ void GlobalVariables::SetValue(const std::string& grouName, const std::string& k
 	group[key] = newItem;
 }
 
-// float
-void GlobalVariables::SetValue(const std::string& grouName, const std::string& key, float value) {
-	// グループの参照を取得
-	Group& group = datas_[grouName];
-	// 新しい項目のデータ
-	Item newItem{};
-	newItem = value;
-	// 設定した項目をstd::mapに追加
-	group[key] = newItem;
-}
 
-// Vector3
-void GlobalVariables::SetValue(
-    const std::string& grouName, const std::string& key, Vector3& value) {
-	// グループの参照を取得
-	Group& group = datas_[grouName];
-	// 新しい項目のデータ
-	Item newItem{};
-	newItem = value;
-	// 設定した項目をstd::mapに追加
-	group[key] = newItem;
-}
 
-// int
-void GlobalVariables::AddItem(const std::string& grouName, const std::string& key, int32_t value) {
 
-	// グループの参照を取得
-	Group& group = datas_[grouName];
-	// 項目の参照を取得
-	if (group.find(key) == group.end()) {
-
-		SetValue(grouName, key, value);
-	}
-}
-
-// float
-void GlobalVariables::AddItem(const std::string& grouName, const std::string& key, float value) {
-
-	// グループの参照を取得
-	Group& group = datas_[grouName];
-	// 項目の参照を取得
-
-	if (group.find(key) == group.end()) {
-
-		SetValue(grouName, key, value);
-	}
-}
-
-// Vector3
-void GlobalVariables::AddItem(const std::string& grouName, const std::string& key, Vector3& value) {
-	// グループの参照を取得
-	Group& group = datas_[grouName];
-	// 項目の参照を取得
-
-	if (group.find(key) == group.end()) {
-
-		SetValue(grouName, key, value);
-	}
-}
 
 void GlobalVariables::Updeat() {
 
@@ -261,8 +205,8 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 		// float型の値を保持していれば
 		else if (itItem->is_number_float()) {
 			// float型の値を登録
-			double value = itItem->get<double>();
-			SetValue(groupName, itemName, static_cast<float>(value));
+			float value = static_cast<float>(itItem->get<double>());
+			SetValue(groupName, itemName, value);
 		}
 		// 要素数3の配列いれば
 		else if (itItem->is_array() && itItem->size() == 3) {
@@ -278,7 +222,7 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 }
 
 void GlobalVariables::LoadFiles() {
-	const std::string kDirectoryPathLoad = "Resources/GlobalVariables/";
+	const std::string kDirectoryPathLoad = "resources/GlobalVariables/";
 	// ディレクトがなけれスキップ
 	std::filesystem::path dir(kDirectoryPathLoad);
 	if (!std::filesystem::exists(kDirectoryPathLoad)) {
@@ -300,47 +244,4 @@ void GlobalVariables::LoadFiles() {
 		// ファイル読み込み
 		LoadFile(filePath.stem().string());
 	}
-}
-
-int32_t GlobalVariables::GetIntValue(const std::string& groupName, const std::string& key) {
-
-	// 未登録チェック
-	assert(datas_.find(groupName) != datas_.end());
-
-	// グループの参照を取得
-	Group& group = datas_[groupName];
-
-	// Vector3* ptr = std::get_if<Vector3>(&item.value);
-
-	assert(group.find(key) != group.end());
-	return std::get<int32_t>(group[key]);
-}
-
-float GlobalVariables::GetFloatValue(const std::string& groupName, const std::string& key) {
-	// グループを検索
-	std::map<std::string, Group>::iterator itGroup = datas_.find(groupName);
-	// 未登録チェック
-	assert(itGroup != datas_.end());
-
-	// グループの参照を取得
-	Group& group = datas_[groupName];
-	itGroup = datas_.find(key);
-
-	assert(group.find(key) != group.end());
-	return std::get<float>(group[key]);
-}
-
-Vector3 GlobalVariables::GetVecter3Value(const std::string& groupName, const std::string& key) {
-
-	// 未登録チェック
-	assert(datas_.find(groupName) != datas_.end());
-
-	// グループの参照を取得
-	Group& group = datas_[groupName];
-
-	// Vector3* ptr = std::get_if<Vector3>(&item.value);
-
-	assert(group.find(key) != group.end());
-
-	return std::get<Vector3>(group[key]);
 }

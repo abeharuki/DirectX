@@ -6,6 +6,7 @@
 #include <cassert>
 #include <numbers>
 #include <Sprite.h>
+#include <GlobalVariables.h>
 
 //味方AIキャラクターの定数
 namespace AllyAIConstants {

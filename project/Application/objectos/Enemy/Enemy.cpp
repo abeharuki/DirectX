@@ -1,7 +1,7 @@
 #include "Enemy.h"
 #include <CollisionManager/CollisionConfig.h>
 #include <ParticleManager.h>
-
+#include <GlobalVariables.h>
 
 void Enemy::Initialize() {
 

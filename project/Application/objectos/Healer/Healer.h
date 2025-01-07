@@ -4,6 +4,7 @@
 #include <ParticleSystem.h>
 #include "base/AllyAICharacter.h"
 
+
 //ヒーラークラスの定数
 namespace HealerConstants {
 	//各worldTransformの初期化
