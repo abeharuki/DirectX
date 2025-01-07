@@ -34,36 +34,56 @@ void Command::Initialize() {
 	}
 	
 	for (int i = 0; i < priteType::kMax; ++i) {
-		sprites_[i]->SetSize(CommandConstants::kCommandSize);
+		sprites_[i]->SetSize(kCommandSize);
 	}
 
 	for (int i = 0; i < AttackType::kAttackMax; ++i) {
 		attackType_[i] = false;
 	}
 
-	attack->SetPosition(CommandConstants::kAttackPos);
-	attack->SetSize(CommandConstants::kCommandSize);
+	attack->SetPosition(kAttackPos);
+	attack->SetSize(kCommandSize);
 
-	magic->SetPosition(CommandConstants::kMagicPos);
-	magic->SetSize(CommandConstants::kCommandSize);
+	magic->SetPosition(kMagicPos);
+	magic->SetSize(kCommandSize);
 
-	skill->SetPosition(CommandConstants::kSkillPos);
-	skill->SetSize(CommandConstants::kCommandSize);
+	skill->SetPosition(kSkillPos);
+	skill->SetSize(kCommandSize);
 
-	tool->SetPosition(CommandConstants::kToolPos);
-	tool->SetSize(CommandConstants::kCommandSize);
+	tool->SetPosition(kToolPos);
+	tool->SetSize(kCommandSize);
 
-	operation->SetPosition(CommandConstants::kOperationPos);
-	operation->SetSize(CommandConstants::kCommandSize);
+	operation->SetPosition(kOperationPos);
+	operation->SetSize(kCommandSize);
 
 	arrowPos_ = { CommandConstants::kArrowInitialX,CommandConstants::kArrowInitialY,0.0f };
-	arrow->SetSize(CommandConstants::kArrowSize);
+	arrow->SetSize(kArrowSize);
 
 	backgroundTask[kTask1]->SetSize({ CommandConstants::kBackgroundTaskWidth,CommandConstants::kBackgroundTaskHeight} );
 
 	pos.resize(3);
 	size.resize(3);
+#ifdef USE_IMGUI
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Command";
+	// グループを追加
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
 
+	globalVariables->AddItem(groupName, "AttackPos", kAttackPos);
+	globalVariables->AddItem(groupName, "MagicPos", kMagicPos);
+	globalVariables->AddItem(groupName, "SkillPos", kSkillPos);
+	globalVariables->AddItem(groupName, "ToolPos", kToolPos);
+	globalVariables->AddItem(groupName, "OperationPos", kOperationPos);
+	globalVariables->AddItem(groupName, "CommandSize", kCommandSize);
+	globalVariables->AddItem(groupName, "ChangeTaskCommand", kChangeTaskCommand);
+	globalVariables->AddItem(groupName, "TaskName", kTaskName);
+	globalVariables->AddItem(groupName, "EscapCommand", kEscapCommand);
+	globalVariables->AddItem(groupName, "ReturnCommand", kReturnCommand);
+	globalVariables->AddItem(groupName, "ArrowSize", kArrowSize);
+	globalVariables->AddItem(groupName, "OperationArrowMaxY", kOperationArrowMaxY);
+	globalVariables->AddItem(groupName, "OperationArrowMinY", kOperationArrowMinY);
+
+#endif
 }
 
 void Command::Update() {
@@ -114,9 +134,9 @@ void Command::Update() {
 		break;
 	}
 
-	AnimationArrow();
 	
-
+	AnimationArrow();
+	ApplyGlobalVariables();
 }
 
 void Command::DrawUI() {
@@ -142,15 +162,29 @@ void Command::DrawUI() {
 
 void Command::ApplyGlobalVariables()
 {
-
+	GlobalVariables* globalVaribles = GlobalVariables::GetInstance();
+	const char* groupName = "Command";
+	kAttackPos = globalVaribles->GetValue<Vector2>(groupName, "AttackPos");
+	kMagicPos = globalVaribles->GetValue<Vector2>(groupName, "MagicPos");
+	kSkillPos = globalVaribles->GetValue<Vector2>(groupName, "SkillPos");
+	kToolPos = globalVaribles->GetValue<Vector2>(groupName, "ToolPos");
+	kOperationPos = globalVaribles->GetValue<Vector2>(groupName, "OperationPos");
+	kCommandSize = globalVaribles->GetValue<Vector2>(groupName, "CommandSize");
+	kChangeTaskCommand = globalVaribles->GetValue<Vector2>(groupName, "ChangeTaskCommand");
+	kTaskName = globalVaribles->GetValue<Vector2>(groupName, "TaskName");
+	kEscapCommand = globalVaribles->GetValue<Vector2>(groupName, "EscapCommand");
+	kReturnCommand = globalVaribles->GetValue<Vector2>(groupName, "ReturnCommand");
+	kArrowSize = globalVaribles->GetValue<Vector2>(groupName, "ArrowSize");
+	kOperationArrowMaxY = globalVaribles->GetValue<float>(groupName, "OperationArrowMaxY");
+	kOperationArrowMinY = globalVaribles->GetValue<float>(groupName, "OperationArrowMinY");
 }
 
 void Command::InitialInitialize() {
-	attack->SetPosition(CommandConstants::kAttackPos);
-	magic->SetPosition(CommandConstants::kMagicPos);
-	skill->SetPosition(CommandConstants::kSkillPos);
-	tool->SetPosition(CommandConstants::kToolPos);
-	operation->SetPosition(CommandConstants::kOperationPos);
+	attack->SetPosition(kAttackPos);
+	magic->SetPosition(kMagicPos);
+	skill->SetPosition(kSkillPos);
+	tool->SetPosition(kToolPos);
+	operation->SetPosition(kOperationPos);
 	arrowPos_ = {CommandConstants::kArrowInitialX,CommandConstants::kArrowInitialY,0.0f};
 	backgroundTask[kTask1]->SetPosition(CommandConstants::kBackgroundTask1);
 	backgroundTask[kTask1]->SetSize({ CommandConstants::kBackgroundTaskWidth,CommandConstants::kBackgroundTaskHeight});
@@ -183,10 +217,10 @@ void Command::InitialTask(){
 
 void Command::OperationInitialize()
 {
-	operation->SetPosition( CommandConstants::kChangeTaskCommand);
-	sprites_[kFight]->SetPosition(CommandConstants::kTaskName);
-	sprites_[kEscape]->SetPosition(CommandConstants::kEscapCommand);
-	sprites_[kReturn]->SetPosition(CommandConstants::kReturnCommand);
+	operation->SetPosition(kChangeTaskCommand);
+	sprites_[kFight]->SetPosition(kTaskName);
+	sprites_[kEscape]->SetPosition(kEscapCommand);
+	sprites_[kReturn]->SetPosition(kReturnCommand);
 
 	backgroundTask[kTask3]->SetPosition(CommandConstants::kBackgroundTask3);
 	backgroundTask[kTask3]->SetSize(CommandConstants::kBackgroundTask3Size);
@@ -211,8 +245,8 @@ void Command::OperationTask(){
 }
 
 void Command::MagicInitialize(){
-	magic->SetPosition(CommandConstants::kChangeTaskCommand);
-	sprites_[kReturn]->SetPosition(CommandConstants::kTaskName);
+	magic->SetPosition(kChangeTaskCommand);
+	sprites_[kReturn]->SetPosition(kTaskName);
 	backgroundTask[kTask2]->SetPosition(CommandConstants::kBackgroundTask2);
 	backgroundTask[kTask2]->SetSize(CommandConstants::kBackgroundTask2Size);
 	backgroundTask[kTask1]->SetPosition(CommandConstants::kBackgroundChangeTask1);
@@ -234,8 +268,8 @@ void Command::MagicTask(){
 }
 
 void Command::SkillInitialize(){
-	skill->SetPosition(CommandConstants::kChangeTaskCommand);
-	sprites_[kReturn]->SetPosition(CommandConstants::kTaskName);
+	skill->SetPosition(kChangeTaskCommand);
+	sprites_[kReturn]->SetPosition(kTaskName);
 	backgroundTask[kTask2]->SetPosition(CommandConstants::kBackgroundTask2);
 	backgroundTask[kTask2]->SetSize(CommandConstants::kBackgroundTask2Size);
 	backgroundTask[kTask1]->SetPosition(CommandConstants::kBackgroundChangeTask1);
@@ -256,8 +290,8 @@ void Command::SkillTask(){
 }
 
 void Command::ToolInitialize(){
-	tool->SetPosition(CommandConstants::kChangeTaskCommand);
-	sprites_[kReturn]->SetPosition(CommandConstants::kTaskName);
+	tool->SetPosition(kChangeTaskCommand);
+	sprites_[kReturn]->SetPosition(kTaskName);
 	backgroundTask[kTask2]->SetPosition(CommandConstants::kBackgroundTask2);
 	backgroundTask[kTask2]->SetSize(CommandConstants::kBackgroundTask2Size);
 	backgroundTask[kTask1]->SetPosition(CommandConstants::kBackgroundChangeTask1);
@@ -342,13 +376,13 @@ void Command::MoveArrow() {
 void Command::OperationMoveArrow(){
 	//矢印の移動
 	if (Input::PushKey(DIK_1)|| Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_DPAD_UP)) {
-		if (arrowPos_.y > CommandConstants::kOperationArrowMinY) {
+		if (arrowPos_.y > kOperationArrowMinY) {
 			arrowPos_.y = arrowPos_.y - CommandConstants::kArrowMoveSpeed;
 		}
 
 	}
 	else if (Input::PushKey(DIK_2)|| Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_DPAD_DOWN)) {
-		if (arrowPos_.y < CommandConstants::kOperationArrowMaxY) {
+		if (arrowPos_.y < kOperationArrowMaxY) {
 			arrowPos_.y = arrowPos_.y + CommandConstants::kArrowMoveSpeed;
 		}
 	}

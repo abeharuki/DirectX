@@ -27,9 +27,6 @@ void GlobalVariables::SetValue(const std::string& grouName, const std::string& k
 }
 
 
-
-
-
 void GlobalVariables::Updeat() {
 
 	if (!ImGui::Begin("Global Variadles", nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar)) {
@@ -62,17 +59,22 @@ void GlobalVariables::Updeat() {
 			// int32_t型の値を保持していれば
 			if (std::holds_alternative<int32_t>(item)) {
 				int32_t* ptr = std::get_if<int32_t>(&item);
-				ImGui::SliderInt(itemName.c_str(), ptr, 0, 100);
+				ImGui::SliderInt(itemName.c_str(), ptr, 0, 1000);
 			}
 			// float型の値を保持していれば
 			else if (std::holds_alternative<float>(item)) {
 				float* ptr = std::get_if<float>(&item);
-				ImGui::SliderFloat(itemName.c_str(), ptr, 0, 100);
+				ImGui::SliderFloat(itemName.c_str(), ptr, 0, 1000.0f);
+			}
+			// Vector2型の値を保持していれば
+			else if (std::holds_alternative<Vector2>(item)) {
+				Vector2* ptr = std::get_if<Vector2>(&item);
+				ImGui::SliderFloat2(itemName.c_str(), reinterpret_cast<float*>(ptr),-1000.0f,1000.0f);
 			}
 			// Vector3型の値を保持していれば
 			else if (std::holds_alternative<Vector3>(item)) {
 				Vector3* ptr = std::get_if<Vector3>(&item);
-				ImGui::SliderFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), -3.0f, 3.0f);
+				ImGui::SliderFloat3(itemName.c_str(), reinterpret_cast<float*>(ptr), -1000.0f,1000.0f);
 			}
 		}
 
@@ -124,6 +126,13 @@ void GlobalVariables::SaveFile(const std::string& groupName) {
 		else if (std::holds_alternative<float>(item)) {
 			// float型の値を登録
 			root[groupName][itemName] = std::get<float>(item);
+		}
+		// Vector2型の値を保持していれば
+		else if (std::holds_alternative<Vector2>(item)) {
+			// float型のjson配列登録
+			Vector2 value = std::get<Vector2>(item);
+			// Vector2型の値を登録
+			root[groupName][itemName] = nlohmann::json::array({ value.x, value.y});
 		}
 		// Vector3型の値を保持していれば
 		else if (std::holds_alternative<Vector3>(item)) {
@@ -207,8 +216,17 @@ void GlobalVariables::LoadFile(const std::string& groupName) {
 			// float型の値を登録
 			float value = static_cast<float>(itItem->get<double>());
 			SetValue(groupName, itemName, value);
+		} 
+		// 要素数2の配列があれば Vector2型として処理
+		else if (itItem->is_array() && itItem->size() == 2) {
+			// float型のjson配列
+			Vector2 value = {
+				itItem->at(0),
+				itItem->at(1),
+			};
+			SetValue(groupName, itemName, value);
 		}
-		// 要素数3の配列いれば
+		// 要素数3の配列があれば
 		else if (itItem->is_array() && itItem->size() == 3) {
 			// float型のjson配列
 			Vector3 value = {

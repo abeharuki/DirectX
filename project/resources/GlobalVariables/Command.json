@@ -1,0 +1,50 @@
+{
+    "Command": {
+        "ArrowSize": [
+            50.0,
+            50.0
+        ],
+        "AttackPos": [
+            85.0,
+            472.0
+        ],
+        "ChangeTaskCommand": [
+            85.0,
+            472.0
+        ],
+        "CommandSize": [
+            91.0,
+            46.0
+        ],
+        "EscapCommand": [
+            85.0,
+            541.0
+        ],
+        "MagicPos": [
+            85.0,
+            503.0
+        ],
+        "OperationArrowMaxY": 572.0,
+        "OperationArrowMinY": 510.0,
+        "OperationPos": [
+            85.0,
+            596.0
+        ],
+        "ReturnCommand": [
+            85.0,
+            572.0
+        ],
+        "SkillPos": [
+            85.0,
+            534.0
+        ],
+        "TaskName": [
+            85.0,
+            510.0
+        ],
+        "ToolPos": [
+            85.0,
+            565.0
+        ]
+    }
+}

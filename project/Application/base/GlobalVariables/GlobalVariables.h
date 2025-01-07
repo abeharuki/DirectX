@@ -14,7 +14,7 @@ public:
 	static GlobalVariables* GetInstance();
 
 	// 項目
-	using Item = std::variant<int32_t, float, Vector3>;
+	using Item = std::variant<int32_t, float,Vector2, Vector3>;
 
 	// グループ
 	using Group = std::map<std::string, Item>;
