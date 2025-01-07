@@ -3,6 +3,28 @@
 #include <GlobalVariables.h>
 
 void Command::Initialize() {
+#ifdef USE_IMGUI
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Command";
+	// グループを追加
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+
+	globalVariables->AddItem(groupName, "AttackPos", kAttackPos);
+	globalVariables->AddItem(groupName, "MagicPos", kMagicPos);
+	globalVariables->AddItem(groupName, "SkillPos", kSkillPos);
+	globalVariables->AddItem(groupName, "ToolPos", kToolPos);
+	globalVariables->AddItem(groupName, "OperationPos", kOperationPos);
+	globalVariables->AddItem(groupName, "CommandSize", kCommandSize);
+	globalVariables->AddItem(groupName, "ChangeTaskCommand", kChangeTaskCommand);
+	globalVariables->AddItem(groupName, "TaskName", kTaskName);
+	globalVariables->AddItem(groupName, "EscapCommand", kEscapCommand);
+	globalVariables->AddItem(groupName, "ReturnCommand", kReturnCommand);
+	globalVariables->AddItem(groupName, "ArrowSize", kArrowSize);
+	globalVariables->AddItem(groupName, "OperationArrowMaxY", kOperationArrowMaxY);
+	globalVariables->AddItem(groupName, "OperationArrowMinY", kOperationArrowMinY);
+
+#endif
+	ApplyGlobalVariables();
 
 	taskType_ = TaskType::kInitial;
 
@@ -63,27 +85,7 @@ void Command::Initialize() {
 
 	pos.resize(3);
 	size.resize(3);
-#ifdef USE_IMGUI
-	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
-	const char* groupName = "Command";
-	// グループを追加
-	GlobalVariables::GetInstance()->CreateGroup(groupName);
 
-	globalVariables->AddItem(groupName, "AttackPos", kAttackPos);
-	globalVariables->AddItem(groupName, "MagicPos", kMagicPos);
-	globalVariables->AddItem(groupName, "SkillPos", kSkillPos);
-	globalVariables->AddItem(groupName, "ToolPos", kToolPos);
-	globalVariables->AddItem(groupName, "OperationPos", kOperationPos);
-	globalVariables->AddItem(groupName, "CommandSize", kCommandSize);
-	globalVariables->AddItem(groupName, "ChangeTaskCommand", kChangeTaskCommand);
-	globalVariables->AddItem(groupName, "TaskName", kTaskName);
-	globalVariables->AddItem(groupName, "EscapCommand", kEscapCommand);
-	globalVariables->AddItem(groupName, "ReturnCommand", kReturnCommand);
-	globalVariables->AddItem(groupName, "ArrowSize", kArrowSize);
-	globalVariables->AddItem(groupName, "OperationArrowMaxY", kOperationArrowMaxY);
-	globalVariables->AddItem(groupName, "OperationArrowMinY", kOperationArrowMinY);
-
-#endif
 }
 
 void Command::Update() {

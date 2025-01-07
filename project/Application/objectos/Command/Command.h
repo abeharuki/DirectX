@@ -175,22 +175,22 @@ private:
 	bool follow_ = true;
 
 	//各コマンドUIの初期化位置とサイズ
-	Vector2 kAttackPos = { 85.0f, 472.0f };//攻撃コマンドの座標
-	Vector2 kMagicPos = { 85.0f, 503.0f };//マジックコマンドの座標
-	Vector2 kSkillPos = { 85.0f, 534.0f };//スキルコマンドの座標
-	Vector2 kToolPos = { 85.0f, 565.0f };//アイテムコマンドの座標
-	Vector2 kOperationPos = { 85.0f, 596.0f };//作戦コマンドの座標
-	Vector2 kCommandSize = { 91.0f,46.0f };//コマンドのテクスチャのサイズ
-	Vector2 kChangeTaskCommand = { 85.0f, 472.0f };//タスクが切り替わった時のコマンド座標
-	Vector2 kTaskName = { 85.0f, 510.0f };//タスク名座標
+	Vector2 kAttackPos = {};//攻撃コマンドの座標
+	Vector2 kMagicPos = {};//マジックコマンドの座標
+	Vector2 kSkillPos = {};//スキルコマンドの座標
+	Vector2 kToolPos = {};//アイテムコマンドの座標
+	Vector2 kOperationPos = {};//作戦コマンドの座標
+	Vector2 kCommandSize = {};//コマンドのテクスチャのサイズ
+	Vector2 kChangeTaskCommand = {};//タスクが切り替わった時のコマンド座標
+	Vector2 kTaskName = {};//タスク名座標
 	//作戦コマンドでの各コマンドの座標
-	Vector2 kEscapCommand = { 85.0f, 541.0f };//逃げるコマンドの座標
-	Vector2 kReturnCommand = { 85.0f, 572.0f };//前のタスクに戻るコマンドの座標
+	Vector2 kEscapCommand = {};//逃げるコマンドの座標
+	Vector2 kReturnCommand = {};//前のタスクに戻るコマンドの座標
 	//矢印UIサイズ
-	Vector2 kArrowSize = { 50.0f, 50.0f };//矢印のサイズ
+	Vector2 kArrowSize = {};//矢印のサイズ
 
 	//作戦タスク時の設定
-	float kOperationArrowMaxY = 572.0f;//作戦タスク時の矢印の最大Y座標
-	float kOperationArrowMinY = 510.0f;//作戦タスク時の矢印の最小Y座標
+	float kOperationArrowMaxY;//作戦タスク時の矢印の最大Y座標
+	float kOperationArrowMinY;//作戦タスク時の矢印の最小Y座標
 };
 
