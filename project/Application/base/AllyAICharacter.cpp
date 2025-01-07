@@ -606,7 +606,7 @@ void AllyAICharacter::searchTarget()
 		DestinationAngle(sub);
 
 		// 距離条件チェック
-		if (minDistance_ * distance_ <= enemylength_) {
+		if (minDistance_  <= enemylength_) {
 			if (state_ != CharacterState::Jumping) {
 				if (enemy_->GetBehaviorAttack() != BehaviorAttack::kDash || !enemy_->IsBehaberAttack()) {
 					

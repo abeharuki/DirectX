@@ -130,7 +130,7 @@ void GameScene::Update() {
 		command_->SetBehavior(playerManager_->GetPlayer()->IsRoot());
 		command_->Update();
 	}
-	command_->Update();
+	
 	for (int i = 0; i < kAttackMax; ++i) {
 		playerManager_->GetPlayer()->SetAttack(command_->GetAttack(i), i);
 	}
@@ -340,7 +340,6 @@ void GameScene::Draw() {
 		}
 	}
 
-	command_->DrawUI();
 #pragma endregion
 }
 
