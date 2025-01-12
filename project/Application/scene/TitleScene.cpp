@@ -53,6 +53,7 @@ void TitleScene::Initialize() {
 	spriteTitle_->SetPosition(TitleSceneConstants::kSpriteTitlePos);
 	spritePushA_.reset(Sprite::Create("resources/Title/starte.png"));
 	spritePushA_->SetPosition(TitleSceneConstants::kSpritePushAPos);
+	spritePushA_->SetSize({ 1280,720 });
 	transition_ = std::make_unique<Transition>();
 	transition_->Initialize();
 

@@ -171,7 +171,7 @@ void Tank::AttackUpdate() {
 
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = {0.0f,0.0f,0.0f};
-	if (!currentTarget_) {
+	if (!currentTarget_ && enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 		sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
 		// 敵の座標までの距離

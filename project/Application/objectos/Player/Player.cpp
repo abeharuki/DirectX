@@ -326,7 +326,9 @@ void Player::MoveUpdata() {
 
 	// ジャンプ
 	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_A)||Input::PushKey(DIK_SPACE)) {
-		behaviorRequest_ = Behavior::kJump;
+		if (!enemy_->IsClear()) {
+			behaviorRequest_ = Behavior::kJump;
+		}
 	}
 
 	// 攻撃

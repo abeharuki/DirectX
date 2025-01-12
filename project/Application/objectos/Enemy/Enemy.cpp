@@ -183,7 +183,7 @@ void Enemy::Update() {
 		enemy->Update();
 	}
 	
-	
+
 	barrierModel_->SetThreshold(barrierThreshold_);
 	
 	
