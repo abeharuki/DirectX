@@ -53,7 +53,7 @@ void Renju::Initialize(Animations* animation, std::string skillName) {
 		.stopDistance{0.5f},
 	};
 
-	particle_ = ParticleManager::Create("resources/particle/circle.png", 9);
+	particle_ = ParticleManager::Create("resources/particle/circle.png");
 
 	AABB aabbSize{ .min{-0.7f,-0.0f,-0.4f},.max{0.7f,1.5f,0.4f} };
 	SetAABB(aabbSize);

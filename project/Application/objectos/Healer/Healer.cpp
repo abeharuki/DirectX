@@ -61,7 +61,7 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 		.lifeTimeRange{.min{0.1f},.max{0.2f}},
 		.velocityRange{.min{-0.4f,0.1f,-0.4f},.max{0.4f,0.4f,0.4f}},
 		};
-		particle_[i] = ParticleManager::Create("resources/particle/circle.png", 10 + (i + 1));
+		particle_[i] = ParticleManager::Create("resources/particle/circle.png");
 	}
 
 	emitter_[0] = {

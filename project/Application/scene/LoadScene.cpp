@@ -15,7 +15,7 @@ void LoadScene::Initialize() {
 	loadSprite_->SetSize(Vector2(100.0f, 100.0f));
 	
 	spritePos_.x = 0.0f;
-
+	
 }
 
 void LoadScene::Update() {

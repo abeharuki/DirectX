@@ -87,7 +87,7 @@ void DebugScene::Initialize() {
 		
 	};
 	
-	particle_ = ParticleManager::Create("resources/particle/circle.png",8);
+	particle_ = ParticleManager::Create("resources/particle/circle.png");
 	//particle_->SetModel("particle", "scalePlane.obj");
 
 	//追従カメラ

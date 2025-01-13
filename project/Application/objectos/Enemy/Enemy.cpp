@@ -109,7 +109,7 @@ void Enemy::Initialize() {
 		
 		
 		
-		particle_[i] = ParticleManager::Create("resources/particle/circle.png", 15 + (i + 1));
+		particle_[i] = ParticleManager::Create("resources/particle/circle.png");
 		
 	}
 

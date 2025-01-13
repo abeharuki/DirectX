@@ -49,7 +49,7 @@ void Player::Initialize() {
 	.velocityRange{.min{-0.7f,-0.7f,-0.7f},.max{0.7f,0.7f,0.7f}},
 	};
 	emitter_.isScaleChanging = true;
-	particle_ = ParticleManager::Create("resources/particle/circle.png", 8);
+	particle_ = ParticleManager::Create("resources/particle/circle.png");
 	particle_->SetEmitter(emitter_);
 
 	AABB aabbSize{ .min{-0.5f,-0.0f,-0.4f},.max{0.5f,1.5f,0.4f} };

@@ -36,7 +36,7 @@ void Tank::Initialize(Animations* animation, std::string skillName) {
 	};
 	emitter_.isScaleChanging = true;
 	
-	particle_ = ParticleManager::Create("resources/particle/circle.png", 10);
+	particle_ = ParticleManager::Create("resources/particle/circle.png");
 	particle_->SetEmitter(emitter_);
 
 	barrierThreshold_ = TankConstants::kBarrierThreshold;

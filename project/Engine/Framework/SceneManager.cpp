@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include <cassert>
+#include <ParticleManager.h>
 
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -62,6 +63,7 @@ void SceneManager::LoadScene() {
 void SceneManager::Loading() { 
 	//つぎのシーンの予約があるなら
 	if (nextScene_) {
+		ParticleManager::GetInstance()->particleNum = 0;
 		//旧シーンの終了
 		if (currentScene_) {
 			delete currentScene_;

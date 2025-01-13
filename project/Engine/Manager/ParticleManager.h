@@ -6,13 +6,12 @@
  * @brief パーティクルシステムを一意に識別するための識別子構造体
  */
 struct ParticleId {
-	std::string name;
 	uint32_t Id;
 
-	// 比較演算子をオーバーロードして、std::mapで使えるようにする
-	bool operator<(const ParticleId& other) const {
-		return name < other.name || (name == other.name && Id < other.Id);
-	}
+	//// 比較演算子をオーバーロードして、std::mapで使えるようにする
+	//bool operator<(const ParticleId& other) const {
+	//	return name < other.name || (name == other.name && Id < other.Id);
+	//}
 };
 
 /**
@@ -38,7 +37,12 @@ public:
     /// <param name="name">パーティクルシステムの名前</param>
     /// <param name="Id">パーティクルシステムの識別ID</param>
     /// <returns>生成されたParticleSystemオブジェクト</returns>
-    static ParticleSystem* Create(const std::string& name, uint32_t Id);
+    static ParticleSystem* Create(const std::string& name);
+
+    /// <summary>
+    /// 一つのシーンにあるパーティクルの数
+    /// </summary>
+    uint32_t particleNum;
 
 private:
     /// <summary>
@@ -67,7 +71,7 @@ private:
     /// <param name="name">パーティクルシステムの名前</param>
     /// <param name="Id">パーティクルシステムの識別ID</param>
     /// <returns>生成されたParticleSystemオブジェクト</returns>
-    ParticleSystem* CreateInternal(const std::string& name, uint32_t Id);
+    ParticleSystem* CreateInternal(const std::string& name);
 
 private:
     /// <summary>
@@ -75,8 +79,10 @@ private:
     /// </summary>
     static ParticleManager* instance_;
 
+   
+
     /// <summary>
     /// パーティクルシステムのリスト
     /// </summary>
-    std::map<ParticleId, std::unique_ptr<ParticleSystem>> particleSystems_;
+    std::map<uint32_t, std::unique_ptr<ParticleSystem>> particleSystems_;
 };
