@@ -132,9 +132,9 @@ void DebugScene::Update() {
 	sphereModel_->SetColor({ modelColor_ });
 	emitter_.count = particleCount_;
 	emitter_.isScaleChanging = scaleFlag_;
-	gravityFiled_.min = emitter_.translateRange.min;
-	gravityFiled_.max = emitter_.translateRange.max;
-	gravityFiled_.translate = emitter_.translate;
+	//gravityFiled_.min = emitter_.translateRange.min;
+	//gravityFiled_.max = emitter_.translateRange.max;
+	//gravityFiled_.translate = emitter_.translate;
 	accelerationFiled_.min = Vector3{-5.0f,-5.0f,-5.0f};
 	accelerationFiled_.max = Vector3{5.0f,5.0f,5.0f};
 	worldTransformModel_.rotate.y += 0.01f;
@@ -270,7 +270,10 @@ void DebugScene::Update() {
 		ImGui::SliderFloat3("AccelerationPos", &accelerationFiled_.translate.x, -2.f, 2.f);
 		ImGui::SliderFloat("GravityStrength", &gravityFiled_.strength, 0.0f, 10.0f);
 		ImGui::SliderFloat("GravityStop", &gravityFiled_.stopDistance, 0.0f, 10.0f);
-		
+		ImGui::DragFloat3("GravityFiledMin", &gravityFiled_.min.x, 0.1f);
+		ImGui::DragFloat3("GravityFiledMax", &gravityFiled_.max.x, 0.1f);
+		ImGui::DragFloat3("GravityTranslate", &gravityFiled_.translate.x, 0.1f);
+
 		ImGui::SliderFloat4("Color", &modelColor_.x, -1.0f, 1.0f);
 		ImGui::TreePop();
 	}

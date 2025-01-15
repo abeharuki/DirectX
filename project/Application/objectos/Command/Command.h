@@ -72,6 +72,7 @@ enum class TaskType {
 
 enum AttackType {
 	kNormalAttack,
+	kFireBall,
 	kAttackMax,
 };
 

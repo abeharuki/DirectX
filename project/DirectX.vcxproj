@@ -177,6 +177,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\objectos\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\objectos\Healer\Healer.cpp" />
     <ClCompile Include="Application\objectos\Healer\HealerManager.cpp" />
+    <ClCompile Include="Application\objectos\Player\PlayerCommandAction.cpp" />
     <ClCompile Include="Application\objectos\Player\PlayerManager.cpp" />
     <ClCompile Include="Application\objectos\Renju\Renju.cpp" />
     <ClCompile Include="Application\objectos\Renju\RenjuBullet.cpp" />
@@ -445,6 +446,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\objectos\Enemy\EnemyManager.h" />
     <ClInclude Include="Application\objectos\Healer\Healer.h" />
     <ClInclude Include="Application\objectos\Healer\HealerManager.h" />
+    <ClInclude Include="Application\objectos\Player\PlayerCommandAction.h" />
     <ClInclude Include="Application\objectos\Player\PlayerManager.h" />
     <ClInclude Include="Application\objectos\Renju\Renju.h" />
     <ClInclude Include="Application\objectos\Renju\RenjuBullet.h" />

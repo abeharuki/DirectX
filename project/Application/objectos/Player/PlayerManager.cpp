@@ -165,15 +165,7 @@ void PlayerManager::Update() {
 		hpNumColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
 
-	/*/復活させる時の(今は使ってない)
-	Revival();
-	if (revivalTransform_.scale.x >= 120.0f) {
-		revivalTransform_.scale.x = 120.0f;
-	}
-	spriteRevival_->SetSize(Vector2(revivalTransform_.scale.x, revivalTransform_.scale.y));
-	*/
 	
-
 	ImGui::Begin("Sprite");
 	ImGui::DragFloat2("Hpsize", &spriteHpSize_.x, 1.0f);
 	ImGui::DragFloat2("Mpsize", &spriteMpSize_.x, 1.0f);
@@ -187,7 +179,7 @@ void PlayerManager::Draw(const ViewProjection& camera) {
 	shadowModel_->Draw(worldTransformShadow_,camera,false);
 
 
-	if (player_->GetBehavior() == Player::Behavior::kAttack) {
+	if (player_->GetBehavior() == Player::Behavior::kCommandAction) {
 		HammerModel_->Draw(player_->GetWorldTransformHammer(), camera, false);
 	}
 };

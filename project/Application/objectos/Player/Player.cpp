@@ -24,7 +24,7 @@ void Player::Initialize() {
 
 	isOver_ = false;
 	animation_ = AnimationManager::Create("resources/Player", "Atlas.png", "player.gltf");
-	animationNumber_ = kStandby;
+	animationNumber_ = PlayerAnimationNumber::kStandby;
 	flameTime_ = PlayerConstants::kFlameTimeDefault;
 	attackType_.resize(AttackType::kAttackMax);
 	for (int i = 0; i < AttackType::kAttackMax; ++i) {
@@ -61,6 +61,9 @@ void Player::Initialize() {
 	animation_->SetpreAnimationTimer(0.0f);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
 	animation_->Update(animationNumber_);
+
+	commandAction_ = std::make_unique<PlayerCommandAcition>();
+	commandAction_->Init(animation_);
 }
 
 void Player::Update() {
@@ -68,9 +71,6 @@ void Player::Update() {
 	// 前のフレームの当たり判定のフラグを取得
 	preHit_ = isHit_;
 	isHit_ = false;
-
-	preNoAttack_ = noAttack_;
-	noAttack_ = false;
 
 	root_ = false;
 
@@ -89,8 +89,8 @@ void Player::Update() {
 		case Behavior::kDash:
 			DashInitialize();
 			break;
-		case Behavior::kAttack:
-			AttackInitialize();
+		case Behavior::kCommandAction:
+			CommandActionInitialize();
 			break;
 		case Behavior::kDead:
 			DeadInitilize();
@@ -118,9 +118,9 @@ void Player::Update() {
 		// ジャンプ
 		DashUpdata();
 		break;
-	case Behavior::kAttack:
+	case Behavior::kCommandAction:
 		// 攻撃
-		AttackUpdata();
+		CommandActionUpdata();
 		break;
 	case Behavior::kDead:
 		DeadUpdata();
@@ -181,8 +181,10 @@ void Player::Update() {
 
 	// 回転
 	worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
+	//コマンドアクションではないとき
 	animation_->SetFlameTimer(flameTime_);
 	animation_->Update(animationNumber_);
+	
 	Relationship();
 	worldTransformBase_.UpdateMatrix();
 	worldTransformHead_.TransferMatrix();
@@ -219,13 +221,14 @@ void Player::MoveInitialize() {
 	animation_->SetpreAnimationTimer(0);
 	flameTime_ = PlayerConstants::kFlameTimeDefault;
 	animation_->SetLoop(true);
+	commandAction_->ActionInit();
 };
 void Player::MoveUpdata() {
 	root_ = true;
 
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
-	animationNumber_ = kStandby;
+	animationNumber_ = PlayerAnimationNumber::kStandby;
 	bool isMove = false;
 
 	// 移動速度
@@ -250,7 +253,7 @@ void Player::MoveUpdata() {
 		
 
 		
-		if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B) && preNoAttack_) {
+		if (Input::GetInstance()->GetPadButton(XINPUT_GAMEPAD_B)) {
 			//復活時間
 			revivalCount_++;
 
@@ -302,7 +305,7 @@ void Player::MoveUpdata() {
 	}
 
 	if (isMove) {
-		animationNumber_ = kRun;
+		animationNumber_ = PlayerAnimationNumber::kRun;
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(viewProjection_->rotation_.y);
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		// 現在の位置から移動する位置へのベクトル
@@ -331,9 +334,15 @@ void Player::MoveUpdata() {
 		}
 	}
 
-	// 攻撃
-	if (attackType_[kNormalAttack] && !preNoAttack_) {
+	//コマンドの選択
+	//通常攻撃
+	if (attackType_[kNormalAttack] ) {
 		auto_ = true;
+		actionType_ = kNormalAttack;
+	}
+	//ファイアーボール
+	if (attackType_[kFireBall]) {
+		actionType_ = kFireBall;
 	}
 
 	// ダッシュボタンを押したら
@@ -345,7 +354,7 @@ void Player::MoveUpdata() {
 	}
 
 	if (auto_) {
-		animationNumber_ = kRun;
+		animationNumber_ = PlayerAnimationNumber::kRun;
 		// 敵の座標までの距離
 		float length;
 		// 追従対象からロックオン対象へのベクトル
@@ -387,7 +396,7 @@ void Player::MoveUpdata() {
 
 		if (length < PlayerConstants::kAttackRange) {
 			auto_ = false;
-			behaviorRequest_ = Behavior::kAttack;
+			behaviorRequest_ = Behavior::kCommandAction;
 		}
 
 	}
@@ -401,7 +410,7 @@ void Player::JumpInitialize() {
 	// ジャンプ初速
 	const float kJumpFirstSpeed = 0.6f;
 	velocity_.y = kJumpFirstSpeed;
-	animationNumber_ = kJump;
+	animationNumber_ = PlayerAnimationNumber::kJump;
 	flameTime_ = PlayerConstants::kFlameTimeDefault;
 	animation_->SetAnimationTimer(0.5f, flameTime_);
 	animation_->SetLoop(false);
@@ -430,7 +439,7 @@ void Player::DashInitialize() {
 	workDash_.dashParameter_ = 0;
 	worldTransformBase_.rotate.y = destinationAngleY_;
 	dash_ = true;
-	animationNumber_ = kRun;
+	animationNumber_ = PlayerAnimationNumber::kRun;
 }
 void Player::DashUpdata() {
 	// dashTimer -= 4;
@@ -448,24 +457,36 @@ void Player::DashUpdata() {
 }
 
 // 攻撃
-void Player::AttackInitialize() {
+void Player::CommandActionInitialize() {
 	worldTransformHammer_.translate.x = 0.0f;
-	animationNumber_ = kAnimeAttack;
-	
-	animation_->SetpreAnimationTimer(0);
 	particle_->SetFrequencyTime(0.0f);
-}
-void Player::AttackUpdata() {
-	
-	if (animation_->GetAnimationTimer() > PlayerConstants::kAttackAnimationStartTime) {
-		flameTime_ = 15.0f;
-		isAttack_ = true;
-	}
 
-	if (animation_->GetAnimationTimer() >= PlayerConstants::kAttackAnimationEndTime) {
-		animationNumber_ = kStandby;
+	commandAction_->SetRequest(actionType_);
+}
+void Player::CommandActionUpdata() {
+	
+	commandAction_->Update();
+
+	//値の受け取り
+	isAttack_ = commandAction_->IsAttack();
+	flameTime_ = commandAction_->GetAnimationFlameTime();
+	animationNumber_ = commandAction_->GetAnimationNumber();
+
+	//コマンドが終わったら
+	if (commandAction_->GetActionEnd()) {
+		animationNumber_ = PlayerAnimationNumber::kStandby;
 		behaviorRequest_ = Behavior::kRoot;
 	}
+
+	//if (animation_->GetAnimationTimer() > PlayerConstants::kAttackAnimationStartTime) {
+	//	flameTime_ = 15.0f;
+	//	isAttack_ = true;
+	//}
+
+	//if (animation_->GetAnimationTimer() >= PlayerConstants::kAttackAnimationEndTime) {
+	//	animationNumber_ = kStandby;
+	//	behaviorRequest_ = Behavior::kRoot;
+	//}
 
 	// ダッシュボタンを押したら
 	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
@@ -480,7 +501,7 @@ void Player::AttackUpdata() {
 void Player::DeadInitilize() {
 	threshold_ = 0.0f;
 	isDead_ = true;
-	animationNumber_ = kDeath;
+	animationNumber_ = PlayerAnimationNumber::kDeath;
 	animation_->SetLoop(false);
 	animation_->SetpreAnimationTimer(0.0f);
 	animation_->SetAnimationTimer(0.0f, 0.0f);
@@ -589,7 +610,7 @@ void Player::AttackCurrentTarget() {
 void Player::TargetUpdate(){
 
 	//攻撃フェーズに入っていなければ
-	if (behavior_ != Behavior::kAttack && !auto_) {
+	if (behavior_ != Behavior::kCommandAction && !auto_) {
 		// ターゲットがいない、または現在のターゲットが死亡している場合
 		if (!currentTarget_ || currentTarget_->IsDead()) {
 			FindNearestTarget();
@@ -651,7 +672,7 @@ void Player::Relationship() {
 
 void Player::InitPos() {
 	behaviorRequest_ = Behavior::kRoot;
-	animationNumber_ = kStandby;
+	animationNumber_ = PlayerAnimationNumber::kStandby;
 	worldTransformBase_.translate = { 3.0f,0.0f,-35.0f };
 	worldTransformBase_.rotate = {0.0f,0.0f,0.0f};
 	destinationAngleY_ = 0.0f;

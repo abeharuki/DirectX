@@ -350,6 +350,7 @@ private: // メンバ変数
 	Animations* animation_;
 	Animations* henchman_;
 	int animationNumber_;
+	
 
 	std::unique_ptr<Model> impactModel_;//衝撃波
 	std::unique_ptr<Model> areaModel_;//ダッシュ攻撃エリア

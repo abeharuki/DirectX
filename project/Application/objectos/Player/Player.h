@@ -2,9 +2,8 @@
 #include <optional>
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>
-#include "PostEffects/PostEffect.h"
-#include "Command/Command.h"
 #include "Enemy/Enemy.h"
+#include "PlayerCommandAction.h"
 
 //プレイヤークラスの定数
 namespace PlayerConstants{
@@ -87,7 +86,7 @@ public:
 		kRoot, // 通常状態
 		kJump, // ジャンプ
 		kDash, // ダッシュ
-		kAttack, //攻撃
+		kCommandAction, //コマンドアクション
 		kDead, // 死亡
 	};
 
@@ -141,9 +140,9 @@ public: // メンバ関数
 
 	bool GetIsDead() {
 		if (tankDead_ || renjuDead_ || healerDead_) {
-			if (preNoAttack_) {
+			/*if (preNoAttack_) {
 				return true;
-			}
+			}*/
 
 		}
 
@@ -195,8 +194,8 @@ private:
 	void DashUpdata();
 
 	//攻撃の初期化・更新
-	void AttackInitialize();
-	void AttackUpdata();
+	void CommandActionInitialize();
+	void CommandActionUpdata();
 
 	//死亡の初期化・更新
 	void DeadInitilize();
@@ -235,13 +234,8 @@ private: // メンバ変数
 
 	Animations* animation_;
 	int animationNumber_;
-	enum AnimationNumber {
-		kAnimeAttack,//攻撃
-		kDeath,//死亡
-		kJump,//ジャンプ
-		kRun,//移動
-		kStandby,//待機
-	};
+	std::unique_ptr<PlayerCommandAcition> commandAction_;
+	AttackType actionType_;
 
 	float flameTime_;
 
@@ -272,8 +266,6 @@ private: // メンバ変数
 
 	bool root_;
 	bool dash_;
-	bool noAttack_;
-	bool preNoAttack_;
 	bool auto_;
 
 	//敵子分のposを格納
