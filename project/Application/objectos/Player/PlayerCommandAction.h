@@ -1,7 +1,7 @@
 #pragma once
 #include <Animation/Animation.h>
 #include <Command/Command.h>
-#include "PostEffects/PostEffect.h"
+#include <ParticleSystem.h>
 
 namespace CommandActionConstants {
 	// 攻撃関連

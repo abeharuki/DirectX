@@ -3,6 +3,7 @@
 #include "CollisionManager/Collider.h"
 #include <Animation/Animation.h>
 #include "Enemy/Enemy.h"
+#include "PostEffects/PostEffect.h"
 #include "PlayerCommandAction.h"
 
 //プレイヤークラスの定数
