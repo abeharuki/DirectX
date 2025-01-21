@@ -478,16 +478,6 @@ void Player::CommandActionUpdata() {
 		behaviorRequest_ = Behavior::kRoot;
 	}
 
-	//if (animation_->GetAnimationTimer() > PlayerConstants::kAttackAnimationStartTime) {
-	//	flameTime_ = 15.0f;
-	//	isAttack_ = true;
-	//}
-
-	//if (animation_->GetAnimationTimer() >= PlayerConstants::kAttackAnimationEndTime) {
-	//	animationNumber_ = kStandby;
-	//	behaviorRequest_ = Behavior::kRoot;
-	//}
-
 	// ダッシュボタンを押したら
 	if (Input::GetInstance()->GetPadButtonDown(XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
 		behaviorRequest_ = Behavior::kDash;

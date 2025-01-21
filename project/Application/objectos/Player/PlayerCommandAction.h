@@ -70,4 +70,5 @@ private:
 	//パーティクル
 	ParticleSystem* particle_;
 	EmitterSphere emitter_{};
+	GravityField gravityFiled_;
 };

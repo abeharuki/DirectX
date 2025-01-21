@@ -74,19 +74,26 @@ void DebugScene::Initialize() {
 	animation_.reset(Animations::Create("./resources/Renju", "Atlas.png", "renju.gltf"));*/
 
 	emitter_ = {
-		.translate = {0,1,0},
+		.translate = {0,0,0},
 		.count{50},
 		.frequency{0.075f},
 		.frequencyTime{0.5f},
-		.scaleRange{.min{1.0f,1.0f,11.0f},.max{1.0f,1.0f,1.0f}},
-		.translateRange{.min{-3.f,-3.f,-3.f},.max{3.f,3.f,3.f}},
-		.colorRange{.min{0.33f,0,0.33f},.max{0.5f,0,1.0f}},
+		.scaleRange{.min{0.3f,0.3f,0.3f},.max{0.3f,0.3f,0.3f}},
+		.translateRange{.min{-1.f,-1.f,-1.f},.max{1.f,1.f,1.f}},
+		.colorRange{.min{1.f,0.2f,0.f},.max{1.f,0.2f,0.f}},
 		.alphaRange{.min{1.0f},.max{1.0f}},
 		.lifeTimeRange{.min{0.1f},.max{1.0f}},
-		.velocityRange{.min{0.0f,0.f,0.0f},.max{0.0f,0.f,0.f}},
-		
+		.velocityRange{.min{-0.1f,-0.1f,-0.1f},.max{0.1f,0.1f,0.1f}},
+
 	};
 	
+	gravityFiled_ = {
+		.min{-1.2f,-1.2f,-1.2f},
+		.max{1.2f,1.2f,1.2f},
+		.strength{1.7f},
+		.stopDistance{0.65f},
+	};
+
 	particle_ = ParticleManager::Create("resources/particle/circle.png");
 	//particle_->SetModel("particle", "scalePlane.obj");
 
@@ -134,14 +141,14 @@ void DebugScene::Update() {
 	emitter_.isScaleChanging = scaleFlag_;
 	//gravityFiled_.min = emitter_.translateRange.min;
 	//gravityFiled_.max = emitter_.translateRange.max;
-	//gravityFiled_.translate = emitter_.translate;
+	gravityFiled_.translate = emitter_.translate;
 	accelerationFiled_.min = Vector3{-5.0f,-5.0f,-5.0f};
 	accelerationFiled_.max = Vector3{5.0f,5.0f,5.0f};
 	worldTransformModel_.rotate.y += 0.01f;
 	particle_->SetEmitter(emitter_);
 	particle_->SetAccelerationFiled(accelerationFiled_);
 	particle_->SetGravityFiled(gravityFiled_);
-	particle_->SetColor(modelColor_);
+	//particle_->SetColor(modelColor_);
 	if (particleFlag_) {
 		particle_->Update();
 		

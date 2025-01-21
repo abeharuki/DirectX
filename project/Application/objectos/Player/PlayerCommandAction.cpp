@@ -5,6 +5,28 @@
 void PlayerCommandAcition::Init(Animations* animation){
 	animation_ = animation;
 	particle_ = ParticleManager::Create("resources/particle/circle.png");
+
+	emitter_ = {
+		.translate = {0,0,0},
+		.count{50},
+		.frequency{0.075f},
+		.frequencyTime{0.5f},
+		.scaleRange{.min{0.3f,0.3f,0.3f},.max{0.3f,0.3f,0.3f}},
+		.translateRange{.min{-1.f,-1.f,-1.f},.max{1.f,1.f,1.f}},
+		.colorRange{.min{1.f,0.2f,0.f},.max{1.f,0.2f,0.f}},
+		.alphaRange{.min{1.f},.max{1.f}},
+		.lifeTimeRange{.min{0.1f},.max{1.0f}},
+		.velocityRange{.min{-0.1f,-0.1f,-0.1f},.max{0.1f,0.1f,0.1f}},
+
+	};
+
+	gravityFiled_ = {
+		.min{-1.2f,-1.2f,-1.2f},
+		.max{1.2f,1.2f,1.2f},
+		.strength{1.7f},
+		.stopDistance{0.65f},
+	};
+
 }
 
 void PlayerCommandAcition::Update(){
