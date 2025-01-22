@@ -1,4 +1,22 @@
 #include "math.h"
+#include <numbers>
+
+void Math::DestinationAngle(float& angleY, Vector3& sub) {
+	// y軸周りの回転
+	if (sub.z != 0.0) {
+		angleY = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
+
+		if (sub.z < 0.0) {
+			angleY = (sub.x >= 0.0)
+				? std::numbers::pi_v<float> -angleY
+				: -std::numbers::pi_v<float> -angleY;
+		}
+	}
+	else {
+		angleY = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
+			: -std::numbers::pi_v<float> / 2.0f;
+	}
+}
 
 float Math::Dot(const Vector3& v1, const Vector3& v2)
 {

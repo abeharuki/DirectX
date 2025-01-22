@@ -285,65 +285,22 @@ void Enemy::MoveUpdata() {
 		behaviorRequest_ = Behavior::kAttack;
 	}
 	else {
-
-		
 		// 敵の座標までの距離
 		float length;
-		if (num_ == kPlayer) {
-			length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
-			sub = playerPos_ - GetWorldPosition();
-		}
-		else if (num_ == kHealer) {
-			length = Math::Length(Math::Subract(healerPos_, worldTransformBase_.translate));
-			sub = healerPos_ - GetWorldPosition();
-		}
-		else if (num_ == kRenju) {
-			length = Math::Length(Math::Subract(renjuPos_, worldTransformBase_.translate));
-			sub = renjuPos_ - GetWorldPosition();
-		}
-		else if (num_ == kTank) {
-			length = Math::Length(Math::Subract(tankPos_, worldTransformBase_.translate));
-			sub = tankPos_ - GetWorldPosition();
-		}
-		else {
-			length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
-			sub = playerPos_ - GetWorldPosition();
-		}
+		Vector3 targetPos = GetTargetPosition(num_);
+		length = Math::Length(Math::Subract(targetPos, worldTransformBase_.translate));
 		
+		sub = targetPos - GetWorldPosition();
+
 		if (length > EnemyConstants::kCharacterLength) {
 			++moveTime_;
 			if (moveTime_ > EnemyConstants::kMoveUpdateTime) {
 				animationNumber_ = kRun;
 				// y軸周りの回転
-				if (sub.z != 0.0) {
-					destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-					if (sub.z < 0.0) {
-						destinationAngleY_ = (sub.x >= 0.0)
-							? std::numbers::pi_v<float> -destinationAngleY_
-							: -std::numbers::pi_v<float> -destinationAngleY_;
-					}
-				}
-				else {
-					destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-						: -std::numbers::pi_v<float> / 2.0f;
-				}
-
-
+				Math::DestinationAngle(destinationAngleY_, sub);
 				worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
-				if (num_ == kPlayer) {
-					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, playerPos_, 0.03f);
-				}
-				else if (num_ == kHealer) {
-					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, healerPos_, 0.03f);
-				}
-				else if (num_ == kRenju) {
-					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, renjuPos_, 0.03f);
-				}
-				else if (num_ == kTank) {
-					worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, tankPos_, 0.03f);
-				}
-				
+				worldTransformBase_.translate = Math::Lerp(worldTransformBase_.translate, targetPos, 0.03f);
+
 			}
 			
 		}
@@ -460,24 +417,11 @@ void Enemy::NomalAttackUpdata() {
 		Matrix4x4 rotateMatrix = Math::MakeRotateYMatrix(worldTransformBase_.rotate.y);
 		velocity_ = Math::TransformNormal(velocity_, rotateMatrix);
 		velocity_ = Math::Multiply(0.35f, velocity_);// 接近速度係数をかける
-		Vector3 targetPos = {};
 		//番号で対象を識別
-		if (num_ == kPlayer) {
-			sub = playerPos_ - GetWorldPosition();
-			targetPos = playerPos_;
-		}
-		if (num_ == kHealer) {
-			sub = healerPos_ - GetWorldPosition();
-			targetPos = healerPos_;
-		}
-		if (num_ == kRenju) {
-			sub = renjuPos_ - GetWorldPosition();
-			targetPos = renjuPos_;
-		}
-		if (num_ == kTank) {
-			sub = tankPos_ - GetWorldPosition();
-			targetPos = tankPos_;
-		}
+		Vector3 targetPos = GetTargetPosition(num_);
+		sub = targetPos - GetWorldPosition();
+		
+		
 
 		worldTransformBase_.translate += velocity_;
 		//目的付近まで来たら攻撃
@@ -487,19 +431,7 @@ void Enemy::NomalAttackUpdata() {
 		}
 
 		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
+		Math::DestinationAngle(destinationAngleY_, sub);
 	}
 	else {
 		animationNumber_ = kNomalAttack;
@@ -556,37 +488,10 @@ void Enemy::DashAttackUpdata() {
 	}
 	else {
 		//対象の方を向く
-		if (num_ == kPlayer) {
-			sub = playerPos_ - GetWorldPosition();
-		}
-		if (num_ == kHealer) {
-			sub = healerPos_ - GetWorldPosition();
-		}
-		if (num_ == kRenju) {
-			sub = renjuPos_ - GetWorldPosition();
-		}
-		if (num_ == kTank) {
-			sub = tankPos_ - GetWorldPosition();
-		}
+		sub = GetTargetPosition(num_) - GetWorldPosition();
 		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
-
-
+		Math::DestinationAngle(destinationAngleY_, sub);
 		velocity_ = { 0.0f,0.0f,EnemyConstants::kDashVeloZ};
-
-
 	}
 
 	// 目標の方向に回転
@@ -640,41 +545,15 @@ void Enemy::ThrowingAttackInitialize() {
 void Enemy::ThrowingAttackUpdata() {
 	if (!isAttack_) {
 
-
-		if (num_ == kPlayer) {
-			sub = playerPos_ - GetWorldPosition();
-			worldTransformCircleArea_.translate = { playerPos_.x,EnemyConstants::kAreaTranslate.y,playerPos_.z };
-
-		}
-		else if (num_ == kHealer) {
-			sub = healerPos_ - GetWorldPosition();
-			worldTransformCircleArea_.translate = { healerPos_ .x,EnemyConstants::kAreaTranslate.y, healerPos_.z };
+		// 一度だけ対象の位置を取得
+		Vector3 targetPos = GetTargetPosition(num_);
+		sub = targetPos - GetWorldPosition();
 		
-		}
-		else if (num_ == kRenju) {
-			sub = renjuPos_ - GetWorldPosition();
-			worldTransformCircleArea_.translate = { renjuPos_.x,EnemyConstants::kAreaTranslate.y,renjuPos_.z };
-			
-		}
-		else if (num_ == kTank) {
-			sub = tankPos_ - GetWorldPosition();
-			worldTransformCircleArea_.translate = { tankPos_.x,EnemyConstants::kAreaTranslate.y,tankPos_.z };
-		}
+		// サークルエリア位置の更新
+		worldTransformCircleArea_.translate = { targetPos.x, EnemyConstants::kAreaTranslate.y, targetPos.z };
 
 		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
+		Math::DestinationAngle(destinationAngleY_, sub);
 
 		// 回転
 		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
@@ -709,22 +588,7 @@ void Enemy::ThrowingAttackUpdata() {
 		worldTransformBase_.rotate.y = Math::LerpShortAngle(worldTransformBase_.rotate.y, destinationAngleY_, 0.2f);
 
 		//対象に位置に投擲
-		if (num_ == kPlayer) {
-			sub = playerPos_ - worldTransformRock_.GetWorldPos();
-			
-		}
-		else if (num_ == kHealer) {
-			sub = healerPos_ - worldTransformRock_.GetWorldPos();
-			
-		}
-		else if (num_ == kRenju) {
-			sub = renjuPos_ - worldTransformRock_.GetWorldPos();
-			
-		}
-		else if (num_ == kTank) {
-			sub = tankPos_ - worldTransformRock_.GetWorldPos();
-			
-		}
+		sub = GetTargetPosition(num_) - worldTransformRock_.GetWorldPos();
 
 		const float kThrowSpeed = 1.0f;// 投げる速度
 		Vector3 direction = sub;

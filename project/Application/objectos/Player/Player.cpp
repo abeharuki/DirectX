@@ -312,19 +312,8 @@ void Player::MoveUpdata() {
 		Vector3 sub = (worldTransformBase_.translate + velocity_) - GetLocalPosition();
 		// 平行移動
 		worldTransformBase_.translate += velocity_;
-		if (sub.z != 0.0f) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0f) {
-				destinationAngleY_ = (sub.x >= 0.0f)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0f) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
+		// y軸周りの回転
+		Math::DestinationAngle(destinationAngleY_,sub);
 	}
 
 	// ジャンプ
@@ -372,19 +361,7 @@ void Player::MoveUpdata() {
 		
 
 		// y軸周りの回転
-		if (sub.z != 0.0) {
-			destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-			if (sub.z < 0.0) {
-				destinationAngleY_ = (sub.x >= 0.0)
-					? std::numbers::pi_v<float> -destinationAngleY_
-					: -std::numbers::pi_v<float> -destinationAngleY_;
-			}
-		}
-		else {
-			destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-				: -std::numbers::pi_v<float> / 2.0f;
-		}
+		Math::DestinationAngle(destinationAngleY_, sub);
 
 		const float kSpeed = 0.7f;
 		Vector3 direction = sub;
@@ -622,7 +599,8 @@ void Player::TargetUpdate(){
 		henchmanDist_ = currentTarget_->GetWorldPosition();
 	}
 	
-};
+}
+
 
 // 親子関係
 void Player::Relationship() {

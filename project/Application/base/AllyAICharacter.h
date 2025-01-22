@@ -248,8 +248,6 @@ public:
     void IsVisibleToEnemy();
     //barrierの範囲内か
     void BarrierRange();
-    //目標までの回転
-    void  DestinationAngle(Vector3 sub);
     //ダメージを食らったときのスプライトの座標やアルファ値の初期化
     void DameageInit() {
         alpha_ = AllyAIConstants::kDamageAlphaInitValue;

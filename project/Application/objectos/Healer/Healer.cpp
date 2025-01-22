@@ -476,8 +476,8 @@ void Healer::UniqueUpdate() {
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-		//Y軸の回転
-		AllyAICharacter::DestinationAngle(sub);
+		// y軸周りの回転
+		Math::DestinationAngle(destinationAngleY_, sub);
 
 
 		const float kSpeed = 0.04f;

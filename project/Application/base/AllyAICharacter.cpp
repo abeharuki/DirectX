@@ -409,8 +409,8 @@ void AllyAICharacter::BreathUpdate() {
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = tankPos_ - GetWorldPosition();
 
-	//Y軸の回転
-	DestinationAngle(sub);
+	// y軸周りの回転
+	Math::DestinationAngle(destinationAngleY_, sub);
 
 	
 	// 敵の位置から自分の位置への方向ベクトルを計算
@@ -509,8 +509,8 @@ void AllyAICharacter::ProtectUpdate()
 	//一番近い子分の方を向く// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = henchmanDist_ - GetWorldPosition();
 
-	//Y軸の回転
-	DestinationAngle(sub);
+	// y軸周りの回転
+	Math::DestinationAngle(destinationAngleY_, sub);
 
 	const float kSpeed = 0.2f;
 	Vector3 direction = sub;
@@ -570,8 +570,8 @@ void AllyAICharacter::followPlayer()
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = playerPos_ - GetWorldPosition();
 
-		//Y軸の回転
-		DestinationAngle(sub);
+		// y軸周りの回転
+		Math::DestinationAngle(destinationAngleY_, sub);
 
 		// プレイヤーの座標までの距離
 		float length = Math::Length(Math::Subract(playerPos_, worldTransformBase_.translate));
@@ -602,8 +602,8 @@ void AllyAICharacter::searchTarget()
 		// 追従対象からロックオン対象へのベクトル
 		Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-		//Y軸の回転
-		DestinationAngle(sub);
+		// y軸周りの回転
+		Math::DestinationAngle(destinationAngleY_, sub);
 
 		// 距離条件チェック
 		if (minDistance_  <= enemylength_) {
@@ -706,23 +706,6 @@ void AllyAICharacter::BarrierRange() {
 		}
 	}
 
-}
-
-void AllyAICharacter::DestinationAngle(Vector3 sub){
-	// y軸周りの回転
-	if (sub.z != 0.0) {
-		destinationAngleY_ = std::asin(sub.x / std::sqrt(sub.x * sub.x + sub.z * sub.z));
-
-		if (sub.z < 0.0) {
-			destinationAngleY_ = (sub.x >= 0.0)
-				? std::numbers::pi_v<float> -destinationAngleY_
-				: -std::numbers::pi_v<float> -destinationAngleY_;
-		}
-	}
-	else {
-		destinationAngleY_ = (sub.x >= 0.0) ? std::numbers::pi_v<float> / 2.0f
-			: -std::numbers::pi_v<float> / 2.0f;
-	}
 }
 
 void AllyAICharacter::RunAway()

@@ -194,8 +194,8 @@ void Tank::AttackUpdate() {
 		
 	}
 	
-	//Y軸の回転
-	AllyAICharacter::DestinationAngle(sub);
+	// y軸周りの回転
+	Math::DestinationAngle(destinationAngleY_, sub);
 
 	
 	
@@ -265,8 +265,8 @@ void Tank::UniqueUpdate(){
 	// 追従対象からロックオン対象へのベクトル
 	Vector3 sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-	//Y軸の回転
-	AllyAICharacter::DestinationAngle(sub);
+	// y軸周りの回転
+	Math::DestinationAngle(destinationAngleY_, sub);
 
 	// 敵の座標までの距離
 	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));

@@ -325,6 +325,17 @@ private:
 	// パーツ親子関係
 	void Relationship();
 
+	//ターゲットの座標を返す
+	Vector3 GetTargetPosition(int num) {
+		switch (num) {
+		case kPlayer: return playerPos_;
+		case kHealer: return healerPos_;
+		case kRenju: return renjuPos_;
+		case kTank:   return tankPos_;
+		default:      return playerPos_; // デフォルトの処理
+		}
+	}
+
 	//ターゲットを抽選
 	void SelectTarget();
 private: // メンバ変数
