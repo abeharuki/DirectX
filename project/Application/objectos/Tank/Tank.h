@@ -89,11 +89,6 @@ public: // メンバ関数
 	
 
 	/*-----セッター-----*/
-	void SetHeal(float heal) {
-		if (!isDead_) {
-			hp_ += heal;
-		}
-	}
 	void SetLight(DirectionLight directionLight) override{
 		AllyAICharacter::SetLight(directionLight);
 		//shield_->DirectionalLightDraw(directionLight);

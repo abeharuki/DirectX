@@ -147,12 +147,7 @@ public: // メンバ関数
 		renjuHp_ = hp.y;
 		tankHp_ = hp.z;
 	}
-	void SetHeal(float heal) {
-		if (!isDead_) {
-			hp_ += heal;
-		}
-		
-	}
+	
 	
 private:
 	// パーツ親子関係

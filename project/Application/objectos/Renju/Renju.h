@@ -115,11 +115,7 @@ public: // メンバ関数
 	/*-----セッター-----*/
 	void SetBarrierThreshold(float threshold) { barrierThreshold_ = threshold; }
 	void SetTankPos(Vector3 pos) { tankPos_ = pos; }
-	void SetHeal(float heal) {
-		if (!isDead_) {
-			hp_ += heal;
-		}
-	}
+
 
 
 	void SetLight(DirectionLight directionLight)override { 

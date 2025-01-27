@@ -10,7 +10,7 @@
 #include "CollisionManager/CollisionManager.h"
 #include <Command/Command.h>
 #include <ModelLoader.h>
-#include <Transition/Transition.h>
+#include <Transition/TransitionEffect.h>
 
 //ゲームシーンクラスの定数
 namespace GameSceneConstants {
@@ -68,11 +68,11 @@ private:
 	//バトル開始の演出
 	void BattleBegin();
 
-	//ゲームクリアの演出
-	void GameClearEffect();
+	//エフェクトの管理
+	void Effect();
 
-	//ゲームオーバーの演出
-	void GameOverEffect();
+	//回復の適用
+	void ApplyHealing();
 
 	//当たり判定
 	void CheckAllCollision();
@@ -97,13 +97,12 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelSkydome_;
 	//ローダー
 	std::unique_ptr<ModelLoader> loader_;
-
-	// フェードイン・フェードアウト用
-	std::unique_ptr<Transition> transition_;
 	
+	//遷移エフェクトと遷移を管理
+	std::unique_ptr<TransitionEffect> transitionEffect_;
+
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
-
 
 	//プレイヤー
 	std::unique_ptr<PlayerManager> playerManager_;
@@ -130,14 +129,5 @@ private: // メンバ変数
 
 	//味方AIキャラクター
 	std::vector<AllyAICharacter*> characters;
-
-
-	//ゲームオーバーとクリア画面のスプライト
-	std::unique_ptr<Sprite> spriteClear_;
-	std::unique_ptr<Sprite> spriteOver_;
-	std::unique_ptr<Sprite> spritePushA_;
-	Vector3 clearSpritePos_ = {GameSceneConstants::kClearSpriteTargetX,-GameSceneConstants::kClearSpriteFinalY,0.0f};
-	//スプライトのディゾルブ
-	float spriteDissolve_ = 1.0f;
 
 };

@@ -225,6 +225,8 @@ public:
     void SetBarrier(bool barrier) { barrier_ = barrier; }
     void SetBarrierPos(Vector3 pos) { barrierPos_ = pos; }
     void SetHenchman(std::list<EnemyHenchman*> henchmans){ henchmans_ = henchmans; }
+    //ヒールの受け取り
+    void SetHeal(float heal) { if (!isDead_) {hp_ += heal;}}
 
     // パーツ親子関係
     virtual void Relationship();
@@ -254,6 +256,7 @@ public:
         worldTransformNum_.translate = { worldTransformBase_.translate.x,worldTransformBase_.translate.y + AllyAIConstants::kDamageDisplayHeight,worldTransformBase_.translate.z };
         numMove_ = { worldTransformNum_.translate.x ,worldTransformNum_.translate.y + AllyAIConstants::kDamageDisplayHeight,worldTransformNum_.translate.z };
     }
+  
 
     //次の状態遷移をノードから検索
     CharacterState NextState(std::string name, int outputNum);
