@@ -49,9 +49,22 @@ public:
 		}
 		playerPos_ = pos;
 	};
-	void SetHealerPos(Vector3 pos) { enemy_->SetHealerPos(pos); };
-	void SetRenjuPos(Vector3 pos) { enemy_->SetRenjuPos(pos); };
-	void SetTankPos(Vector3 pos) { enemy_->SetTankPos(pos); };
+	void SetHealerPos(Vector3 pos) { 
+		if (!enemy_->IsBehaberAttack()) {
+			enemy_->SetHealerPos(pos);
+		}
+	};
+	void SetRenjuPos(Vector3 pos) { 
+		if (!enemy_->IsBehaberAttack()) {
+			enemy_->SetRenjuPos(pos);
+		}
+	};
+	void SetTankPos(Vector3 pos) { 
+		if (!enemy_->IsBehaberAttack() || enemy_->GetBehavior() == Behavior::kAttack && enemy_->GetBehaviorAttack() == BehaviorAttack::kBreath) {
+			enemy_->SetTankPos(pos);
+		}
+		
+	};
 	void SetCamera(const ViewProjection& camera) { 
 		camera_ = camera; 
 	

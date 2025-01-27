@@ -80,9 +80,6 @@ void GameScene::Update() {
 		enemyManager_->Stop();
 	}
 
-	healerManager_->GetHealer()->SetBarrier(tankManager_->GetTank()->GetBarrier());
-	renjuManager_->GetRenju()->SetBarrier(tankManager_->GetTank()->GetBarrier());
-
 	//各キャラの情報の取得
 	playerManager_->GetPlayer()->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
 
@@ -126,9 +123,7 @@ void GameScene::Update() {
 		playerManager_->GetPlayer()->SetHenchmans(enemyManager_->GetEnemy()->GetEnemys());
 	}
 
-	healerManager_->GetHealer()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
-	renjuManager_->GetRenju()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
-
+	
 	//回復の適用
 	ApplyHealing();
 	
@@ -140,68 +135,26 @@ void GameScene::Update() {
 		}
 	}
 
-	//生存しているかどうか
-	enemyManager_->GetEnemy()->SetIsDeadPlayer(playerManager_->GetPlayer()->GetIsDead());
-	enemyManager_->GetEnemy()->SetIsDeadHealer(healerManager_->GetHealer()->IsDead());
-	enemyManager_->GetEnemy()->SetIsDeadRenju(renjuManager_->GetRenju()->IsDead());
-	enemyManager_->GetEnemy()->SetIsDeadTank(tankManager_->GetTank()->IsDead());
-
-	//プレイヤーと味方座標の取得
-	enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
-	if (!enemyManager_->GetEnemy()->IsBehaberAttack()) {
-		enemyManager_->SetHealerPos(healerManager_->GetHealer()->GetWorldPosition());
-		enemyManager_->SetRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
-		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
-	}
-	//必殺技の時tankだけposを受け取る
-	if (enemyManager_->GetEnemy()->GetBehavior() == Behavior::kAttack && enemyManager_->GetEnemy()->GetBehaviorAttack() == BehaviorAttack::kBreath) {
-		enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
-	}
-	//ブレスパーティクルのフィールド用
-	enemyManager_->GetEnemy()->SetTankRotation(tankManager_->GetTank()->GetWorldTransform().rotate);
-	enemyManager_->GetEnemy()->SethmansRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
-
 	//レンジャーを守るためのpos
 	tankManager_->GetTank()->SetPos(renjuManager_->GetRenju()->GetWorldPosition());
 
-	//攻撃の受け取り
-	if (healerManager_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) { enemyManager_->OnHealerCollision(); }
-	if (tankManager_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) {enemyManager_->OnTankCollision();}
-	if (playerManager_->IsAttack()) {enemyManager_->OnCollision();}
-	if (renjuManager_->GetRenju()->GetHitBullet()) {
-		enemyManager_->OnRenjuCollision(renjuManager_->GetRenju()->GetSkill());
-		enemyManager_->GetEnemy()->SetRenjuSpecial(renjuManager_->GetRenju()->GetSpecial());
-	}
+	//味方がバリアを張り始めているか
+	healerManager_->GetHealer()->SetBarrier(tankManager_->GetTank()->GetBarrier());
+	renjuManager_->GetRenju()->SetBarrier(tankManager_->GetTank()->GetBarrier());
+	healerManager_->GetHealer()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
+	renjuManager_->GetRenju()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
+
+	//敵に必要な情報を渡す
+	ConfigureEnemyState();
+	
 	skydome_->Update();
 	loader_->Update();
 
 	//当たり判定
 	CheckAllCollision();
 
-	// 追従カメラの更新
-	if ((!cameraDirection_||battle_) && radialBlur_.blurWidth == GameSceneConstants::kRadialBlurInitWidth && !playerManager_->IsOver()) {
-		followCamera_->Update();
-	}
-	viewProjection_.matView = followCamera_->GetViewProjection().matView;
-	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-	viewProjection_.TransferMatrix();
-
-	//viewの設定
-	enemyManager_->SetCamera(viewProjection_);
-	playerManager_->GetPlayer()->SetCamera(viewProjection_);
-	//ライティングの設定
-	playerManager_->GetPlayer()->SetLight(directionLight_);
-	enemyManager_->GetEnemy()->SetLight(directionLight_);
-
-	//view・ライティングの設定
-	for (auto* character : characters) {
-		character->SetViewProjection(viewProjection_);
-		character->SetLight(directionLight_);
-	}
-	
-	loader_->SetLight(directionLight_);
-
-	
+	//カメラやライティングの更新
+	ViewConfig();
 }
 
 void GameScene::Draw() {
@@ -233,11 +186,6 @@ void GameScene::Draw() {
 	enemyManager_->GetEnemy()->BarrierDraw(viewProjection_);
 	tankManager_->GetTank()->BarrierDraw(viewProjection_);
 
-	//コマンド
-	if (battle_) {
-		//command_->Draw(viewProjection_);
-	}
-	
 #pragma endregion
 
 #pragma region 前景スプライト描画
@@ -412,6 +360,59 @@ void GameScene::ApplyHealing(){
 	if (healerManager_->GetHealer()->GetState() != CharacterState::Unique) {
 		healerManager_->GetHealer()->SetHp({ playerManager_->GetPlayer()->GetHp(),renjuManager_->GetRenju()->GetHp(),tankManager_->GetTank()->GetHp() });
 	}
+
+}
+
+void GameScene::ConfigureEnemyState(){
+	//生存しているかどうか
+	enemyManager_->GetEnemy()->SetIsDeadPlayer(playerManager_->GetPlayer()->GetIsDead());
+	enemyManager_->GetEnemy()->SetIsDeadHealer(healerManager_->GetHealer()->IsDead());
+	enemyManager_->GetEnemy()->SetIsDeadRenju(renjuManager_->GetRenju()->IsDead());
+	enemyManager_->GetEnemy()->SetIsDeadTank(tankManager_->GetTank()->IsDead());
+
+	//プレイヤーと味方AI座標の取得
+	enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
+	enemyManager_->SetHealerPos(healerManager_->GetHealer()->GetWorldPosition());
+	enemyManager_->SetRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
+	enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
+
+	//ブレスパーティクルのフィールド用
+	enemyManager_->GetEnemy()->SetTankRotation(tankManager_->GetTank()->GetWorldTransform().rotate);
+	enemyManager_->GetEnemy()->SethmansRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
+
+	//攻撃の受け取り
+	if (healerManager_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) { enemyManager_->OnHealerCollision(); }
+	if (tankManager_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) { enemyManager_->OnTankCollision(); }
+	if (playerManager_->IsAttack()) { enemyManager_->OnCollision(); }
+	if (renjuManager_->GetRenju()->GetHitBullet()) {
+		enemyManager_->OnRenjuCollision(renjuManager_->GetRenju()->GetSkill());
+		enemyManager_->GetEnemy()->SetRenjuSpecial(renjuManager_->GetRenju()->GetSpecial());
+	}
+}
+
+void GameScene::ViewConfig(){
+	// 追従カメラの更新
+	if ((!cameraDirection_ || battle_) && radialBlur_.blurWidth == GameSceneConstants::kRadialBlurInitWidth && !playerManager_->IsOver()) {
+		followCamera_->Update();
+	}
+	viewProjection_.matView = followCamera_->GetViewProjection().matView;
+	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+	viewProjection_.TransferMatrix();
+
+	//viewの設定
+	enemyManager_->SetCamera(viewProjection_);
+	playerManager_->GetPlayer()->SetCamera(viewProjection_);
+	//ライティングの設定
+	playerManager_->GetPlayer()->SetLight(directionLight_);
+	enemyManager_->GetEnemy()->SetLight(directionLight_);
+
+	//view・ライティングの設定
+	for (auto* character : characters) {
+		character->SetViewProjection(viewProjection_);
+		character->SetLight(directionLight_);
+	}
+
+	loader_->SetLight(directionLight_);
 
 }
 

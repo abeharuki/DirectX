@@ -74,6 +74,12 @@ private:
 	//回復の適用
 	void ApplyHealing();
 
+	//各キャラクターの情報を敵に渡す
+	void ConfigureEnemyState();
+
+	//カメラやライティングなどの視覚情報の更新とセット
+	void ViewConfig();
+
 	//当たり判定
 	void CheckAllCollision();
 private://基本変数
