@@ -87,7 +87,6 @@ void GameScene::Update() {
 	playerManager_->GetPlayer()->SetEnemy(enemyManager_->GetEnemy());
 	
 	//playerの更新
-	playerManager_->GetPlayer()->SetEnemyLength(enemyManager_->GetWorldTransform().translate);
 	if (radialBlur_.blurWidth == GameSceneConstants::kRadialBlurInitWidth) {
 		playerManager_->Update();
 	}
@@ -99,6 +98,7 @@ void GameScene::Update() {
 		command_->Update();
 	}
 	
+	//コマンドの受取り
 	for (int i = 0; i < kAttackMax; ++i) {
 		playerManager_->GetPlayer()->SetAttack(command_->GetAttack(i), i);
 	}
@@ -176,7 +176,7 @@ void GameScene::Draw() {
 	// レンジャー
 	renjuManager_->Draw(viewProjection_);
 	
-	//ポストエフェクトをかける
+	//ダッシュではない時ポストエフェクトをかける
 	if (!playerManager_->GetPlayer()->IsDash()) {
 		//プレイヤー
 		playerManager_->Draw(viewProjection_);

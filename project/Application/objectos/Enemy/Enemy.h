@@ -214,9 +214,9 @@ public: // メンバ関数
 	/*-----ゲッター-----*/
 	const Vector3 GetWorldPosition() const override;
 	const WorldTransform& GetWorldTransform() const override { return worldTransformBase_; }
-	BehaviorAttack GetBehaviorAttack() { return attack_; }
-	Behavior GetBehavior() { return behavior_; }
-	Behavior GetBehaviorRequest() {
+	const BehaviorAttack GetBehaviorAttack() const { return attack_; }
+	const Behavior GetBehavior() const { return behavior_; }
+	const Behavior GetBehaviorRequest()const {
 		if (behaviorRequest_) {
 			return behaviorRequest_.value();
 		}
@@ -231,8 +231,8 @@ public: // メンバ関数
 		}
 		return false;
 	}
-	Collider* GetCollider(int i) { return colliderManager_[i].get(); }
-	Collider* GetRockCollider() { return colliderRockManager_.get(); }
+	Collider* GetCollider(int i) const { return colliderManager_[i].get(); }
+	Collider* GetRockCollider() const { return colliderRockManager_.get(); }
 	// 敵リストの取得
 	const std::list<EnemyHenchman*>& GetEnemys() const { return henchmans_; }
 	WorldTransform& GetWorldTransformBody() { return worldTransformBody_; }

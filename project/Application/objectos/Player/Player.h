@@ -165,10 +165,7 @@ public: // メンバ関数
 	void SetCamera(const ViewProjection& camera) {camera_ = camera;}
 	//敵の情報の受け取り
 	void SetEnemy(Enemy* enemy) { enemy_ = enemy; }
-	void SetEnemyLength(Vector3 pos){
-		// 敵の座標までの距離
-		length_ = Math::Length(Math::Subract(pos, worldTransformBase_.translate));
-	}
+	
 	void SetHenchmans(std::list<EnemyHenchman*> henchmans) { henchmans_ = henchmans; }
 
 	void SetLight(DirectionLight directionLight) { animation_->DirectionalLightDraw(directionLight); }
@@ -210,6 +207,12 @@ private:
 	void AttackCurrentTarget();
 	//ターゲット関連の更新
 	void TargetUpdate();
+
+	//敵との距離
+	void EnemyLength() {
+		// 敵の座標までの距離
+		length_ = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+	}
 
 	// パーツ親子関係
 	void Relationship();

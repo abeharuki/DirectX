@@ -214,9 +214,7 @@ void Renju::MoveUpdate() {
 	//スキル
 	if (mp_ >= RenjuConstants::kSkillMpCost && enemy_->IsBehaviorRequest() && coolTime_ < RenjuConstants::kCoolTimeSkill) {
 		if (enemy_->GetBehavior() != enemy_->GetBehaviorRequest() && enemy_->GetBehaviorRequest() != Behavior::kAttack && enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
-			// 敵の座標までの距離
-			float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-			if (length >= minDistance_ * RenjuConstants::kMinDistanceMultiplier) {
+			if (enemylength_ >= minDistance_ * RenjuConstants::kMinDistanceMultiplier) {
 				state_ = CharacterState::Unique;
 				special_ = false;
 			}
@@ -251,16 +249,14 @@ void Renju::AttackInitialize() {
 	worldTransformArrow_.rotate = RenjuConstants::kAttackArrowRotate;
 };
 void Renju::AttackUpdate() {
-	// 敵の座標までの距離
-	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-
+	
 	// 距離条件チェック
-	if (minDistance_ * distance_ <= length && !followPlayer_) {
+	if (minDistance_ * distance_ <= enemylength_ && !followPlayer_) {
 		state_ = NextState("Attack", Output1);
 		searchTarget_ = true;
 	}
 
-	if (length >= minDistance_ * RenjuConstants::kMinDistanceMultiplier) {
+	if (enemylength_ >= minDistance_ * RenjuConstants::kMinDistanceMultiplier) {
 		isAttack_ = true;
 		animation_->SetLoop(false);
 		animationNumber_ = kAnimeAttack;

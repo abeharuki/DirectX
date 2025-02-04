@@ -174,11 +174,8 @@ void Tank::AttackUpdate() {
 	if (!currentTarget_ && enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 		sub = enemy_->GetWorldPosition() - GetWorldPosition();
 
-		// 敵の座標までの距離
-		float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-
 		// 距離条件チェック
-		if (minDistance_ * distance_ <= length && !followPlayer_) {
+		if (minDistance_ * distance_ <= enemylength_ && !followPlayer_) {
 			state_ = NextState("Attack", Output1);
 			searchTarget_ = true;
 		}
@@ -268,10 +265,7 @@ void Tank::UniqueUpdate(){
 	// y軸周りの回転
 	Math::DestinationAngle(destinationAngleY_, sub);
 
-	// 敵の座標までの距離
-	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-
-	if (length >= minDistance_ * distance_) {
+	if (enemylength_ >= minDistance_ * distance_) {
 		barrier_ = true;
 		animation_->SetLoop(false);
 		animationNumber_ = kStandby;

@@ -237,12 +237,10 @@ void Healer::AttackInitialize() {
 	particle_[kHealer]->SetEmitter(emitter_[kHealer]);
 };
 void Healer::AttackUpdate() {
-	// プレイヤーの座標までの距離
-	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-
+	
 	// 距離条件チェック
 	if (enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
-		if (minDistance_ * HealerConstants::kMinDistanceMultiplier <= length && !followPlayer_) {
+		if (minDistance_ * HealerConstants::kMinDistanceMultiplier <= enemylength_ && !followPlayer_) {
 			state_ = NextState("Attack", Output1);
 			searchTarget_ = true;
 		}
@@ -376,11 +374,8 @@ void Healer::UniqueInitialize() {
 }
 void Healer::UniqueUpdate() {
 
-	// 敵の座標までの距離
-	float length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-
 	//距離チェック
-	if (length >= minDistance_ * HealerConstants::kMinDistanceMultiplier) {
+	if (enemylength_ >= minDistance_ * HealerConstants::kMinDistanceMultiplier) {
 		healAnimation_ = true;
 		animationNumber_ = kStandby;//攻撃モーションをいれたら変える
 	}

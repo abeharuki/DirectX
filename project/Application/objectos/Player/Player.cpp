@@ -74,6 +74,9 @@ void Player::Update() {
 
 	root_ = false;
 
+	//敵との距離
+	EnemyLength();
+
 	if (behaviorRequest_) {
 		// 振る舞い変更
 		behavior_ = behaviorRequest_.value();
@@ -350,7 +353,7 @@ void Player::MoveUpdata() {
 		Vector3 sub;
 		if (enemy_->GetBehaviorAttack() != BehaviorAttack::kHenchman) {
 			//敵本体
-			length = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+			length = length_;
 			sub = enemy_->GetWorldPosition() - GetWorldPosition();
 		}
 		else {
@@ -600,6 +603,7 @@ void Player::TargetUpdate(){
 	}
 	
 }
+
 
 
 // 親子関係

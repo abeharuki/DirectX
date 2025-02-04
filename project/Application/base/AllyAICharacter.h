@@ -332,9 +332,6 @@ protected:
     //キャラごとの敵との距離感覚
     int distance_ = 1;
 
-   
-
-   
     //敵の攻撃範囲ないかどうか
     bool isArea_ = false;
 

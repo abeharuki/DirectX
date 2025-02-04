@@ -66,7 +66,7 @@ void AllyAICharacter::Update() {
 	worldTransformShadow_.translate = { worldTransformBase_.translate.x,AllyAIConstants::kShadowTranslateOffset,worldTransformBase_.translate.z };
 	worldTransformShadow_.UpdateMatrix();
 
-
+	
 
 	//体力がなくなあったら強制的に死亡に状態遷移
 	if (hp_ <= 0) {
@@ -135,6 +135,9 @@ void AllyAICharacter::Update() {
 	worldTransformBody_.TransferMatrix();
 	worldTransformNum_.TransferMatrix();
 
+	// 敵の座標までの距離
+	enemylength_ = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
+
 	spriteHP_->SetSize({ hp_,AllyAIConstants::kSpriteHPSize.y});
 	spriteMP_->SetSize({ mp_,AllyAIConstants::kSpriteMPSize.y});
 	//HP,MP表示の計算
@@ -190,8 +193,7 @@ void AllyAICharacter::Update() {
 		hpNumColor_ = AllyAIConstants::kDefaultHPColor;
 	}
 
-
-
+	
 }
 
 void AllyAICharacter::Draw(const ViewProjection& camera) {
@@ -247,10 +249,7 @@ void AllyAICharacter::MoveUpdate() {
 
 
 	--coolTime_;
-	// 敵の座標までの距離
-	enemylength_ = Math::Length(Math::Subract(enemy_->GetWorldPosition(), worldTransformBase_.translate));
-
-
+	
 	// プレイヤーに集合
 	if ((operation_ || !searchTarget_) && (!gameStart_ || battleStart_)) {
 		followPlayer_ = true;
