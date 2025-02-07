@@ -838,8 +838,6 @@ bool AllyAICharacter::GetAimCharacter()
 
 }
 
-
-
 void AllyAICharacter::OnCollision(Collider* collider)
 {
 	//敵との当たり判定
@@ -922,6 +920,34 @@ void AllyAICharacter::OnCollision(Collider* collider)
 	if (collider->GetCollisionAttribute() == kCollisionAttributeHenchman) {
 		henchmanSearch_ = true;
 	}
+
+	//各キャラ同士の当たり判定
+	static const std::unordered_map<std::string, std::vector<uint32_t>> collisionMap = {
+	  {"Healer", {kCollisionAttributePlayer, kCollisionAttributeRenju, kCollisionAttributeTank}},
+	  {"Renju",  {kCollisionAttributePlayer, kCollisionAttributeHealer, kCollisionAttributeTank}},
+	  {"Tank",   {kCollisionAttributePlayer, kCollisionAttributeHealer, kCollisionAttributeRenju}}
+	};
+
+	auto it = collisionMap.find(className_);
+	if (it == collisionMap.end()) return;
+
+	if (std::find(it->second.begin(), it->second.end(), collider->GetCollisionAttribute()) == it->second.end()) return;
+
+	OBB obb = {
+		.center = collider->GetOBB().center + collider->GetWorldPosition(),
+		.orientations = {
+			Vector3{collider->GetWorldTransform().matWorld_.m[0][0], collider->GetWorldTransform().matWorld_.m[0][1], collider->GetWorldTransform().matWorld_.m[0][2]},
+			Vector3{collider->GetWorldTransform().matWorld_.m[1][0], collider->GetWorldTransform().matWorld_.m[1][1], collider->GetWorldTransform().matWorld_.m[1][2]},
+			Vector3{collider->GetWorldTransform().matWorld_.m[2][0], collider->GetWorldTransform().matWorld_.m[2][1], collider->GetWorldTransform().matWorld_.m[2][2]}
+		},
+		.size = collider->GetOBB().size
+	};
+
+	if (state_ != CharacterState::Unique) {
+		worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * AllyAIConstants::kCollisionPushOutFactor;
+		worldTransformBase_.translate.y = 0.0f;
+	}
+
 
 	worldTransformBase_.UpdateMatrix();
 }

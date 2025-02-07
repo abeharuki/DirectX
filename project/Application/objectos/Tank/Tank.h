@@ -120,8 +120,4 @@ private: // メンバ変数
 	//復活時間
 	int revivalCount_ = 0;
 
-	//プレイヤーと当たっているか
-	bool isHitPlayer_ = false;
-	bool preHitPlayer_ = false;
-
 };

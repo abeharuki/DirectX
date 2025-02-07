@@ -193,8 +193,6 @@ private: // メンバ変数
 	float healAmount_;
 	//復活時間
 	int revivalCount_ = 0;
-	bool isHitPlayer_ = false;
-	bool preHitPlayer_ = false;
 
 	//味方のHp
 	float playerHp_;

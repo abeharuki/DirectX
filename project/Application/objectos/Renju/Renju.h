@@ -165,8 +165,6 @@ private: // メンバ変数
 	int revivalCount_ = 0;
 
 	//ヒット確認
-	bool isHitPlayer_ = false;
-	bool preHitPlayer_ = false;
 	bool skill_ = false;
 
 	//パワーゲージのスプライト番号

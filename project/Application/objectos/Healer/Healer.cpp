@@ -109,11 +109,7 @@ void Healer::Update() {
 	preHit_ = isHit_;
 	isHit_ = false;
 
-	preHitPlayer_ = isHitPlayer_;
-	isHitPlayer_ = false;
-
-
-
+	
 	//魔法陣の表示
 	for (int i = 0; i < kMaxCharacterNum; ++i) {
 		magicCircle_[i]->SetThreshold(threshold_[i]);
@@ -719,28 +715,6 @@ void Healer::OnCollision(Collider* collider) {
 		}
 	}
 
-	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer ||
-		collider->GetCollisionAttribute() == kCollisionAttributeRenju ||
-		collider->GetCollisionAttribute() == kCollisionAttributeTank) {
-		OBB obb = {
-			.center{collider->GetOBB().center.x + collider->GetWorldPosition().x,collider->GetOBB().center.y + collider->GetWorldPosition().y,collider->GetOBB().center.z + collider->GetWorldPosition().z},
-
-			.orientations{
-			 {Vector3{collider->GetWorldTransform().matWorld_.m[0][0],collider->GetWorldTransform().matWorld_.m[0][1],collider->GetWorldTransform().matWorld_.m[0][2]}},
-			 {Vector3{collider->GetWorldTransform().matWorld_.m[1][0],collider->GetWorldTransform().matWorld_.m[1][1],collider->GetWorldTransform().matWorld_.m[1][2]}},
-			 {Vector3{collider->GetWorldTransform().matWorld_.m[2][0],collider->GetWorldTransform().matWorld_.m[2][1],collider->GetWorldTransform().matWorld_.m[2][2]}},
-			},
-			.size{collider->GetOBB().size}
-		};
-		if (state_ != CharacterState::Unique) {
-			worldTransformBase_.translate += Math::PushOutAABBOBB(worldTransformBase_.translate, GetAABB(), collider->GetWorldTransform().translate, obb) * AllyAIConstants::kCollisionPushOutFactor;
-			worldTransformBase_.translate.y = 0.0f;
-		}
-	}
-
-	if (collider->GetCollisionAttribute() == kCollisionAttributePlayer) {
-		isHitPlayer_ = true;
-	}
 }
 
 
