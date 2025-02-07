@@ -41,15 +41,15 @@ void GameScene::Initialize() {
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize();
 
-	//タンク
-	tankManager_ = std::make_unique<TankManager>();
-	tankManager_->Initialize();
-	//レンジャー
-	renjuManager_ = std::make_unique<RenjuManager>();
-	renjuManager_->Initialize();
-	//ヒーラー
-	healerManager_ = std::make_unique<HealerManager>();
-	healerManager_->Initialize();
+	// タンク
+	tank_ = std::make_unique<Tank>();
+	tank_->Initialize(AnimationManager::Create("./resources/Tank", "Atlas.png", "tank.gltf"), "Tank");
+	// レンジャー
+	renju_ = std::make_unique<Renju>();
+	renju_->Initialize(AnimationManager::Create("./resources/Renju", "Atlas.png", "renju.gltf"), "Renju");
+	// ヒーラー
+	healer_ = std::make_unique<Healer>();
+	healer_->Initialize(AnimationManager::Create("./resources/Healer", "Atlas.png", "healer.gltf"), "Healer");
 
 	//コマンド
 	command_ = std::make_unique<Command>();
@@ -65,7 +65,7 @@ void GameScene::Initialize() {
 	radialBlur_.rotation = GameSceneConstants::kRadialBlurInitRotation;
 	
 
-	characters = {healerManager_->GetHealer(), renjuManager_->GetRenju(),tankManager_->GetTank()};
+	characters = {healer_.get(), renju_.get(),tank_.get()};
 
 }
 
@@ -81,7 +81,7 @@ void GameScene::Update() {
 	}
 
 	//各キャラの情報の取得
-	playerManager_->GetPlayer()->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
+	playerManager_->GetPlayer()->SetBarrierPos(tank_->GetBarrierWorldPos());
 
 	//敵の情報取得
 	playerManager_->GetPlayer()->SetEnemy(enemyManager_->GetEnemy());
@@ -111,7 +111,7 @@ void GameScene::Update() {
 		//プレイヤーに追従
 		character->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
 		//バリアを展開しているposの受け取り
-		character->SetBarrierPos(tankManager_->GetTank()->GetBarrierWorldPos());
+		character->SetBarrierPos(tank_->GetBarrierWorldPos());
 		//敵の子分の情報を格納する
 		if (enemyManager_->GetEnemy()->IsSpecial()) {
 			character->SetHenchman(enemyManager_->GetEnemy()->GetEnemys());
@@ -136,13 +136,13 @@ void GameScene::Update() {
 	}
 
 	//レンジャーを守るためのpos
-	tankManager_->GetTank()->SetPos(renjuManager_->GetRenju()->GetWorldPosition());
+	tank_->SetPos(renju_->GetWorldPosition());
 
 	//味方がバリアを張り始めているか
-	healerManager_->GetHealer()->SetBarrier(tankManager_->GetTank()->GetBarrier());
-	renjuManager_->GetRenju()->SetBarrier(tankManager_->GetTank()->GetBarrier());
-	healerManager_->GetHealer()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
-	renjuManager_->GetRenju()->SetBarrierThreshold(tankManager_->GetTank()->GetBarrierThreshold());
+	healer_->SetBarrier(tank_->GetBarrier());
+	renju_->SetBarrier(tank_->GetBarrier());
+	healer_->SetBarrierThreshold(tank_->GetBarrierThreshold());
+	renju_->SetBarrierThreshold(tank_->GetBarrierThreshold());
 
 	//敵に必要な情報を渡す
 	ConfigureEnemyState();
@@ -170,11 +170,11 @@ void GameScene::Draw() {
 	//敵
 	enemyManager_->Draw(viewProjection_);
 	// タンク
-	tankManager_->Draw(viewProjection_);
+	tank_->Draw(viewProjection_);
 	// ヒーラー
-	healerManager_->Draw(viewProjection_);
+	healer_->Draw(viewProjection_);
 	// レンジャー
-	renjuManager_->Draw(viewProjection_);
+	renju_->Draw(viewProjection_);
 	
 	//ダッシュではない時ポストエフェクトをかける
 	if (!playerManager_->GetPlayer()->IsDash()) {
@@ -184,7 +184,7 @@ void GameScene::Draw() {
 
 	//バリアの描画
 	enemyManager_->GetEnemy()->BarrierDraw(viewProjection_);
-	tankManager_->GetTank()->BarrierDraw(viewProjection_);
+	tank_->BarrierDraw(viewProjection_);
 
 #pragma endregion
 
@@ -231,9 +231,9 @@ void GameScene::RenderDirect() {
 
 	//デプスのないオブジェクト
 	playerManager_->GetPlayer()->NoDepthDraw(viewProjection_);
-	healerManager_->GetHealer()->NoDepthDraw(viewProjection_);
-	renjuManager_->GetRenju()->NoDepthDraw(viewProjection_);
-	tankManager_->GetTank()->NoDepthDraw(viewProjection_);
+	healer_->NoDepthDraw(viewProjection_);
+	renju_->NoDepthDraw(viewProjection_);
+	tank_->NoDepthDraw(viewProjection_);
 	enemyManager_->NoDepthDraw(viewProjection_);
 	
 	//遷移演出の描画
@@ -250,9 +250,9 @@ void GameScene::BattleBegin(){
 		radialBlur_.blurWidth = Math::LerpShortAngle(radialBlur_.blurWidth,1.0f,0.1f);
 		cameraDirectionTime_ = GameSceneConstants::kCameraDirectionTimeMax;
 
-		healerManager_->GetHealer()->SetGameStart(true);
-		renjuManager_->GetRenju()->SetGameStart(true);
-		tankManager_->GetTank()->SetGameStart(true);
+		healer_->SetGameStart(true);
+		renju_->SetGameStart(true);
+		tank_->SetGameStart(true);
 	}
 
 	//カメラの演出に移行
@@ -265,9 +265,9 @@ void GameScene::BattleBegin(){
 			cameraDirection_ = true;
 			//位置の初期化
 			playerManager_->GetPlayer()->InitPos();
-			healerManager_->GetHealer()->InitPos(GameSceneConstants::kHealerInitPos);
-			renjuManager_->GetRenju()->InitPos(GameSceneConstants::kRenjuInitPos);
-			tankManager_->GetTank()->InitPos(GameSceneConstants::kTankInitPos);
+			healer_->InitPos(GameSceneConstants::kHealerInitPos);
+			renju_->InitPos(GameSceneConstants::kRenjuInitPos);
+			tank_->InitPos(GameSceneConstants::kTankInitPos);
 			//カメラの初期化
 			followCamera_->InitAngle();
 			followCamera_->SetinterTargetPos(GameSceneConstants::kFollowCameraInit);
@@ -295,9 +295,9 @@ void GameScene::BattleBegin(){
 	//バトル開始のフラグ受け取り
 	playerManager_->GetPlayer()->SetBattleStart(battle_);
 	enemyManager_->GetEnemy()->SetBattleStart(battle_);
-	healerManager_->GetHealer()->SetBattleStart(battle_);
-	renjuManager_->GetRenju()->SetBattleStart(battle_);
-	tankManager_->GetTank()->SetBattleStart(battle_);
+	healer_->SetBattleStart(battle_);
+	renju_->SetBattleStart(battle_);
+	tank_->SetBattleStart(battle_);
 }
 
 void GameScene::Effect(){
@@ -311,28 +311,28 @@ void GameScene::Effect(){
 
 void GameScene::ApplyHealing(){
 	//魔法陣に使う座標の受け取り
-	healerManager_->GetHealer()->SetPos(renjuManager_->GetRenju()->GetWorldPosition(), tankManager_->GetTank()->GetWorldPosition());
-	renjuManager_->GetRenju()->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
+	healer_->SetPos(renju_->GetWorldPosition(), tank_->GetWorldPosition());
+	renju_->SetTankPos(tank_->GetWorldPosition());
 	//回復
-	if (healerManager_->GetHealer()->GetHeal()) {
+	if (healer_->GetHeal()) {
 		//全体回復
-		if (healerManager_->GetHealer()->GetAllHeal()) {
-			playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+		if (healer_->GetAllHeal()) {
+			playerManager_->GetPlayer()->SetHeal(healer_->GetHealAmount());
 			for (auto* character : characters) {
 				if (!character->IsDead()) {
-					character->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+					character->SetHeal(healer_->GetHealAmount());
 				}
 			}
 		}
 		//個人回復
-		if (healerManager_->GetHealer()->GetOneHeal()) {
-			if (healerManager_->GetHealer()->GetPlayerHp() <= HealerConstants::kSingleHealHpThreshold && playerManager_->GetPlayer()->GetHp() > 0) {
-				playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+		if (healer_->GetOneHeal()) {
+			if (healer_->GetPlayerHp() <= HealerConstants::kSingleHealHpThreshold && playerManager_->GetPlayer()->GetHp() > 0) {
+				playerManager_->GetPlayer()->SetHeal(healer_->GetHealAmount());
 			}
 			else {
 				for (auto* character : characters) {
 					if (character->GetHp() <= HealerConstants::kSingleHealHpThreshold && !character->IsDead()) {
-						character->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+						character->SetHeal(healer_->GetHealAmount());
 						break;
 					}
 				}
@@ -341,13 +341,13 @@ void GameScene::ApplyHealing(){
 
 		//個人回復(敵が子分を出す攻撃を出してきたとき用。回復させるタイミングが違うので二つ用意している。)
 		if (enemyManager_->GetEnemy()->GetBehaviorAttack() == BehaviorAttack::kHenchman) {
-			if (healerManager_->GetHealer()->GetPlayerHp() <= HealerConstants::kHenchmanHealThreshold && playerManager_->GetPlayer()->GetHp() > 0) {
-				playerManager_->GetPlayer()->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+			if (healer_->GetPlayerHp() <= HealerConstants::kHenchmanHealThreshold && playerManager_->GetPlayer()->GetHp() > 0) {
+				playerManager_->GetPlayer()->SetHeal(healer_->GetHealAmount());
 			}
 			else {
 				for (auto* character : characters) {
 					if (character->GetHp() <= HealerConstants::kHenchmanHealThreshold && !character->IsDead()) {
-						character->SetHeal(healerManager_->GetHealer()->GetHealAmount());
+						character->SetHeal(healer_->GetHealAmount());
 						break;
 					}
 				}
@@ -357,8 +357,8 @@ void GameScene::ApplyHealing(){
 	}
 
 	//hp情報の取得
-	if (healerManager_->GetHealer()->GetState() != CharacterState::Unique) {
-		healerManager_->GetHealer()->SetHp({ playerManager_->GetPlayer()->GetHp(),renjuManager_->GetRenju()->GetHp(),tankManager_->GetTank()->GetHp() });
+	if (healer_->GetState() != CharacterState::Unique) {
+		healer_->SetHp({ playerManager_->GetPlayer()->GetHp(),renju_->GetHp(),tank_->GetHp() });
 	}
 
 }
@@ -366,27 +366,27 @@ void GameScene::ApplyHealing(){
 void GameScene::ConfigureEnemyState(){
 	//生存しているかどうか
 	enemyManager_->GetEnemy()->SetIsDeadPlayer(playerManager_->GetPlayer()->GetIsDead());
-	enemyManager_->GetEnemy()->SetIsDeadHealer(healerManager_->GetHealer()->IsDead());
-	enemyManager_->GetEnemy()->SetIsDeadRenju(renjuManager_->GetRenju()->IsDead());
-	enemyManager_->GetEnemy()->SetIsDeadTank(tankManager_->GetTank()->IsDead());
+	enemyManager_->GetEnemy()->SetIsDeadHealer(healer_->IsDead());
+	enemyManager_->GetEnemy()->SetIsDeadRenju(renju_->IsDead());
+	enemyManager_->GetEnemy()->SetIsDeadTank(tank_->IsDead());
 
 	//プレイヤーと味方AI座標の取得
 	enemyManager_->SetPlayerPos(playerManager_->GetPlayer()->GetWorldPosition());
-	enemyManager_->SetHealerPos(healerManager_->GetHealer()->GetWorldPosition());
-	enemyManager_->SetRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
-	enemyManager_->SetTankPos(tankManager_->GetTank()->GetWorldPosition());
+	enemyManager_->SetHealerPos(healer_->GetWorldPosition());
+	enemyManager_->SetRenjuPos(renju_->GetWorldPosition());
+	enemyManager_->SetTankPos(tank_->GetWorldPosition());
 
 	//ブレスパーティクルのフィールド用
-	enemyManager_->GetEnemy()->SetTankRotation(tankManager_->GetTank()->GetWorldTransform().rotate);
-	enemyManager_->GetEnemy()->SethmansRenjuPos(renjuManager_->GetRenju()->GetWorldPosition());
+	enemyManager_->GetEnemy()->SetTankRotation(tank_->GetWorldTransform().rotate);
+	enemyManager_->GetEnemy()->SethmansRenjuPos(renju_->GetWorldPosition());
 
 	//攻撃の受け取り
-	if (healerManager_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) { enemyManager_->OnHealerCollision(); }
-	if (tankManager_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) { enemyManager_->OnTankCollision(); }
+	if (healer_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) { enemyManager_->OnHealerCollision(); }
+	if (tank_->IsAttack() && enemyManager_->GetEnemy()->GetBehaviorAttack() != BehaviorAttack::kHenchman) { enemyManager_->OnTankCollision(); }
 	if (playerManager_->IsAttack()) { enemyManager_->OnCollision(); }
-	if (renjuManager_->GetRenju()->GetHitBullet()) {
-		enemyManager_->OnRenjuCollision(renjuManager_->GetRenju()->GetSkill());
-		enemyManager_->GetEnemy()->SetRenjuSpecial(renjuManager_->GetRenju()->GetSpecial());
+	if (renju_->GetHitBullet()) {
+		enemyManager_->OnRenjuCollision(renju_->GetSkill());
+		enemyManager_->GetEnemy()->SetRenjuSpecial(renju_->GetSpecial());
 	}
 }
 
@@ -433,7 +433,7 @@ void GameScene::CheckAllCollision() {
 		collisionManager_->SetColliderList(character);
 	}
 	
-	for (RenjuBullet* bullet : renjuManager_->GetRenju()->GetBullets()) {
+	for (RenjuBullet* bullet : renju_->GetBullets()) {
 		collisionManager_->SetColliderList(bullet);
 	}
 	
@@ -448,8 +448,8 @@ void GameScene::CheckAllCollision() {
 	collisionManager_->CheckAllCollisions();
 
 	//死亡フラグの受け取り
-	playerManager_->GetPlayer()->SetTankDead(tankManager_->GetTank()->IsDead());
-	playerManager_->GetPlayer()->SetRenjuDead(renjuManager_->GetRenju()->IsDead());
-	playerManager_->GetPlayer()->SetHealerDead(healerManager_->GetHealer()->IsDead());
+	playerManager_->GetPlayer()->SetTankDead(tank_->IsDead());
+	playerManager_->GetPlayer()->SetRenjuDead(renju_->IsDead());
+	playerManager_->GetPlayer()->SetHealerDead(healer_->IsDead());
 
 }

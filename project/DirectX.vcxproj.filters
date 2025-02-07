@@ -348,20 +348,11 @@
     <ClCompile Include="Application\objectos\Renju\Renju.cpp">
       <Filter>ソース ファイル\Application\objects\Renju</Filter>
     </ClCompile>
-    <ClCompile Include="Application\objectos\Healer\HealerManager.cpp">
-      <Filter>ソース ファイル\Application\objects\Healer</Filter>
-    </ClCompile>
     <ClCompile Include="Application\objectos\Renju\RenjuBullet.cpp">
-      <Filter>ソース ファイル\Application\objects\Renju</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Renju\RenjuManager.cpp">
       <Filter>ソース ファイル\Application\objects\Renju</Filter>
     </ClCompile>
     <ClCompile Include="Application\objectos\Player\PlayerManager.cpp">
       <Filter>ソース ファイル\Application\objects\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\objectos\Tank\TankManager.cpp">
-      <Filter>ソース ファイル\Application\objects\Tank</Filter>
     </ClCompile>
     <ClCompile Include="Application\objectos\Tank\Tank.cpp">
       <Filter>ソース ファイル\Application\objects\Tank</Filter>
@@ -778,9 +769,6 @@
     <ClInclude Include="Application\objectos\Player\Player.h">
       <Filter>ヘッダー ファイル\Application\objects\Player</Filter>
     </ClInclude>
-    <ClInclude Include="Application\objectos\Healer\HealerManager.h">
-      <Filter>ヘッダー ファイル\Application\objects\Healer</Filter>
-    </ClInclude>
     <ClInclude Include="Application\objectos\Player\PlayerManager.h">
       <Filter>ヘッダー ファイル\Application\objects\Player</Filter>
     </ClInclude>
@@ -790,13 +778,7 @@
     <ClInclude Include="Application\objectos\Renju\RenjuBullet.h">
       <Filter>ヘッダー ファイル\Application\objects\Renju</Filter>
     </ClInclude>
-    <ClInclude Include="Application\objectos\Renju\RenjuManager.h">
-      <Filter>ヘッダー ファイル\Application\objects\Renju</Filter>
-    </ClInclude>
     <ClInclude Include="Application\objectos\Tank\Tank.h">
-      <Filter>ヘッダー ファイル\Application\objects\Tank</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\objectos\Tank\TankManager.h">
       <Filter>ヘッダー ファイル\Application\objects\Tank</Filter>
     </ClInclude>
     <ClInclude Include="externals\imnode\imnodes.h">

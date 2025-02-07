@@ -164,6 +164,9 @@ private: // メンバ変数
 		kTank,
 		kMaxCharacterNum,
 	};
+
+	//ステック
+	std::unique_ptr<Model> StaffModel_;
 	//魔法陣
 	std::unique_ptr<Model> magicCircle_[4];
 	//回復数値

@@ -38,14 +38,14 @@ void TitleScene::Initialize() {
 	enemyManager_->Initialize();
 	
 	// タンク
-	tankManager_ = std::make_unique<TankManager>();
-	tankManager_->Initialize();
+	tank_ = std::make_unique<Tank>();
+	tank_->Initialize(AnimationManager::Create("./resources/Tank", "Atlas.png", "tank.gltf"), "Tank");
 	// レンジャー
-	renjuManager_ = std::make_unique<RenjuManager>();
-	renjuManager_->Initialize();
+	renju_ = std::make_unique<Renju>();
+	renju_->Initialize(AnimationManager::Create("./resources/Renju", "Atlas.png", "renju.gltf"), "Renju");
 	// ヒーラー
-	healerManager_ = std::make_unique<HealerManager>();
-	healerManager_->Initialize();
+	healer_ = std::make_unique<Healer>();
+	healer_->Initialize(AnimationManager::Create("./resources/Healer", "Atlas.png", "healer.gltf"), "Healer");
 
 	
 	spriteTitle_.reset(Sprite::Create("resources/Title/DRAPONQUEST1.png"));
@@ -88,9 +88,9 @@ void TitleScene::Update() {
 	//ライティングの設定
 	playerManager_->GetPlayer()->SetLight(directionLight_);
 	enemyManager_->GetEnemy()->SetLight(directionLight_);
-	healerManager_->GetHealer()->SetLight(directionLight_);
-	renjuManager_->GetRenju()->SetLight(directionLight_);
-	tankManager_->GetTank()->SetLight(directionLight_);
+	healer_->SetLight(directionLight_);
+	renju_->SetLight(directionLight_);
+	tank_->SetLight(directionLight_);
 	loader_->SetLight(directionLight_);
 
 	
@@ -123,11 +123,11 @@ void TitleScene::Draw() {
 	// 敵
 	enemyManager_->Draw(viewProjection_);
 	// タンク
-	tankManager_->Draw(viewProjection_);
+	tank_->Draw(viewProjection_);
 	// ヒーラー
-	healerManager_->Draw(viewProjection_);
+	healer_->Draw(viewProjection_);
 	// レンジャー
-	renjuManager_->Draw(viewProjection_);
+	renju_->Draw(viewProjection_);
 
 	
 	

@@ -4,9 +4,9 @@
 #include <Player/PlayerManager.h>
 #include "camera/followCamera.h"
 #include <Enemy/EnemyManager.h>
-#include <Healer/HealerManager.h>
-#include <Tank/TankManager.h>
-#include <Renju/RenjuManager.h>
+#include <Healer/Healer.h>
+#include <Tank/Tank.h>
+#include <Renju/Renju.h>
 #include "CollisionManager/CollisionManager.h"
 #include <Command/Command.h>
 #include <ModelLoader.h>
@@ -116,11 +116,11 @@ private: // メンバ変数
 	std::unique_ptr<EnemyManager> enemyManager_;
 
 	//タンク
-	std::unique_ptr<TankManager> tankManager_;
+	std::unique_ptr<Tank> tank_;
 	//ヒーラー
-	std::unique_ptr<HealerManager> healerManager_;
+	std::unique_ptr<Healer> healer_;
 	//レンジャー
-	std::unique_ptr<RenjuManager> renjuManager_;
+	std::unique_ptr<Renju> renju_;
 
 	//コマンド
 	std::unique_ptr<Command> command_;

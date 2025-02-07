@@ -15,6 +15,9 @@ void Healer::Initialize(Animations* animation, std::string skillName) {
 	// 初期化
 	AllyAICharacter::Initialize(animation, skillName);
 
+	StaffModel_.reset(Model::CreateModelFromObj("resources/Healer/weapon.obj", "resources/Healer/staff.png"));
+
+
 	worldTransformBase_.translate = HealerConstants::kBaseTranslate;
 
 	worldTransformCane_.Initialize();
@@ -158,6 +161,10 @@ void Healer::Draw(const ViewProjection& camera) {
 
 	for (int i = 0; i < kMaxCharacterNum; ++i) {
 		magicCircle_[i]->Draw(worldTransformMagicCircle_[i], camera, true);
+	}
+
+	if (drawWepon_) {
+		StaffModel_->Draw(worldTransformCane_, camera, false);
 	}
 
 	RenderCollisionBounds(worldTransformBody_, camera);

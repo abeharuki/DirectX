@@ -5,9 +5,9 @@
 #include <camera/followCamera.h>
 #include <Player/PlayerManager.h>
 #include <Enemy/EnemyManager.h>
-#include <Healer/HealerManager.h>
-#include <Tank/TankManager.h>
-#include <Renju/RenjuManager.h>
+#include <Healer/Healer.h>
+#include <Tank/Tank.h>
+#include <Renju/Renju.h>
 #include "PostEffects/PostEffect.h"
 #include <ModelLoader.h>
 #include <Transition/Transition.h>
@@ -80,11 +80,11 @@ private:
 	// 敵
 	std::unique_ptr<EnemyManager> enemyManager_;
 	//タンク
-	std::unique_ptr<TankManager> tankManager_;
+	std::unique_ptr<Tank> tank_;
 	// ヒーラー
-	std::unique_ptr<HealerManager> healerManager_;
+	std::unique_ptr<Healer> healer_;
 	// レンジャー
-	std::unique_ptr<RenjuManager> renjuManager_;
+	std::unique_ptr<Renju> renju_;
 
 	// フェードイン・フェードアウト用
 	std::unique_ptr<Transition> transition_;
