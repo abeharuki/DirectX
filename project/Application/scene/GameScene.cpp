@@ -160,8 +160,7 @@ void GameScene::Update() {
 void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
-	//Model::LightDraw(color_, direction_, intensity_);
-
+	
 	// 天球
 	skydome_->Draw(viewProjection_, false);
 	//地面

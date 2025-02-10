@@ -6,10 +6,6 @@
 void TitleScene::Initialize() {
 	viewProjection_.Initialize();
 	
-	/*audio_ = Audio::GetInstance();
-	audioData_[0] = audio_->SoundLoadMP3("resources/audio/BGM.mp3");
-	audio_->SoundPlayMP3(audioData_[1], true, 3.0f);*/
-
 	// 天球
 	skydome_ = std::make_unique<Skydome>();
 	// 3Dモデルの生成

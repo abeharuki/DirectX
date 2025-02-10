@@ -604,8 +604,6 @@ void Player::TargetUpdate(){
 	
 }
 
-
-
 // 親子関係
 void Player::Relationship() {
 	worldTransformHead_.matWorld_ = Math::Multiply(
