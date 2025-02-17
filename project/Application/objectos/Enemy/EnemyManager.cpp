@@ -48,6 +48,7 @@ void EnemyManager::Update() {
 	preHitT_ = isHitT_;
 	isHitT_ = false;
 
+	
 	if (hp_ <= 0) {
 		isDead_ = true;
 		shadowColor_.w -= EnemyConstants::kAlphaIncrease;//影のアルファ値を薄めていく

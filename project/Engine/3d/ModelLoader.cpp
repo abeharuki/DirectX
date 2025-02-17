@@ -128,10 +128,18 @@ void ModelLoader::LoadJsonObjFile(const std::string& filename) {
 		// 今回追加した要素の参照を得る
 		Scene::ObjectData& objectData = levelData->objects.back();
 
+		//無効フラグの検知
+		//ここに書く(TL2_03_03)参照
 
 		if (object.contains("file_name")) {
 			objectData.filename = object["file_name"];
 		}
+
+		//自キャラの発生ポイント
+		//ここに書く(TL2_03_04)参照
+		//敵キャラの発生ポイント
+		//ここに書く(TL2_03_05)参照
+
 		ModelManager::GetInstance()->LoadJsonObject(object, objectData);
 
 	}

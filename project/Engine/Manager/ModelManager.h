@@ -30,6 +30,14 @@ struct ColliderData {
 
 /**
  * @struct Scene
+ * @brief シーン内のPlayerを管理する構造体
+ */
+struct PlayerSpawnData {
+    Vector3 translation;
+    Vector3 rotation;
+};
+/**
+ * @struct Scene
  * @brief シーン内のオブジェクトデータを管理する構造体
  */
 struct Scene {
@@ -41,6 +49,7 @@ struct Scene {
 	};
 
 	std::vector<ObjectData> objects;
+    //std::vector<PlayerSpawnData> objects;
 };
 
 /**
